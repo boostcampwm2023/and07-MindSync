@@ -1,0 +1,23 @@
+name: AOS-ktlint
+on:
+  pull_request:
+    branches:
+      - main
+      - AOS-develop
+  push:
+    paths:
+      - '**.kt'
+jobs:
+  ktlint:
+    name: AOS-ktlint
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout mindsync
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: ktlint
+        uses: ScaCap/action-ktlint@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-check
