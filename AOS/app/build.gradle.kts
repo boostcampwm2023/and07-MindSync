@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "boostcamp.and07.mindsync"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
