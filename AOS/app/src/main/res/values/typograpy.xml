@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Typography">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Typography.Title01" parent="Typography">
+        <item name="fontFamily">@font/pretendard_semi_bold</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="Typography.Title02" parent="Typography">
+        <item name="fontFamily">@font/pretendard_semi_bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Typography.Title03" parent="Typography">
+        <item name="fontFamily">@font/pretendard_semi_bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Typography.Body01.Medium" parent="Typography">
+        <item name="fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Typography.Body01.Regular" parent="Typography">
+        <item name="fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Typography.Body02.Medium" parent="Typography">
+        <item name="fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Typography.Body02.Regular" parent="Typography">
+        <item name="fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Typography.Body02.Light" parent="Typography">
+        <item name="fontFamily">@font/pretendard_light</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Typography.Body03.Medium" parent="Typography">
+        <item name="fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Typography.Body03.Regular" parent="Typography">
+        <item name="fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Typography.Body03.Light" parent="Typography">
+        <item name="fontFamily">@font/pretendard_light</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Typography.Bottom01" parent="Typography">
+        <item name="fontFamily">@font/pretendard_semi_bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Typography.Bottom02" parent="Typography">
+        <item name="fontFamily">@font/pretendard_semi_bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+</resources>
