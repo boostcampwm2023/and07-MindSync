@@ -7,7 +7,6 @@ import androidx.databinding.ViewDataBinding
 
 abstract class BaseActivity<T : ViewDataBinding>(private val layoutResId: Int) :
     AppCompatActivity() {
-
     private var _binding: T? = null
     val binding get() = _binding!!
 
