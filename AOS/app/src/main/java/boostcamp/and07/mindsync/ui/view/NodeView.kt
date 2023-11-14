@@ -11,6 +11,7 @@ import boostcamp.and07.mindsync.data.SampleNode
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.ui.util.toPx
 
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private val head = SampleNode.head
@@ -46,16 +47,21 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun drawCircleNode(canvas: Canvas, node: CircleNode, depth: Int) {
-        canvas.drawCircle(node.path.centerX, node.path.centerY, node.path.radius, circlePaint)
+        canvas.drawCircle(
+            node.path.centerX.toPx(context).toFloat(),
+            node.path.centerY.toPx(context).toFloat(),
+            node.path.radius.toPx(context).toFloat(),
+            circlePaint
+        )
     }
 
     private fun drawRectangleNode(canvas: Canvas, node: RectangleNode, depth: Int) {
         rectanglePaint.color = Color.rgb(node.color.red, node.color.green, node.color.blue)
         canvas.drawRect(
-            node.path.startX,
-            node.path.topY,
-            node.path.endX,
-            node.path.bottomY,
+            node.path.startX.toPx(context).toFloat(),
+            node.path.topY.toPx(context).toFloat(),
+            node.path.endX.toPx(context).toFloat(),
+            node.path.bottomY.toPx(context).toFloat(),
             rectanglePaint
         )
     }
