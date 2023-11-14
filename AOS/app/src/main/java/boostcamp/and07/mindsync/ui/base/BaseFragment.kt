@@ -15,7 +15,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutResId: Int) :
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = DataBindingUtil.inflate(inflater, layoutResId, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -24,7 +24,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutResId: Int) :
 
     override fun onViewCreated(
         view: View,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
         initView()
