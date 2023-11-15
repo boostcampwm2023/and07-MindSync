@@ -9,16 +9,13 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import boostcamp.and07.mindsync.data.SampleNode
-import boostcamp.and07.mindsync.data.model.CirclePath
 import boostcamp.and07.mindsync.data.model.Node
-import boostcamp.and07.mindsync.data.model.NodePath
-import boostcamp.and07.mindsync.data.model.RectanglePath
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
 
 class LineView constructor(
     context: Context,
-    attrs: AttributeSet? = null,
+    attrs: AttributeSet? = null
 ) : View(context, attrs) {
     private val paint = Paint().apply {
         color = Color.BLACK
@@ -38,36 +35,23 @@ class LineView constructor(
 
     private fun traverseLine(canvas: Canvas, node: Node, depth: Int) {
         for (toNode in node.nodes) {
-            Log.d("Line", "${node.description} ${toNode.description}")
             drawLine(node, toNode, canvas)
             traverseLine(canvas, toNode, depth + 1)
         }
     }
 
     private fun drawLine(fromNode: Node, toNode: Node, canvas: Canvas) {
-        val fromCenterX = calculateCenterX(fromNode.path)
-        val fromCenterY = calculateCenterY(fromNode.path)
-        val toCenterX = calculateCenterX(toNode.path)
-        val toCenterY = calculateCenterY(toNode.path)
         val path = path.apply {
             reset()
-            moveTo(fromCenterX, fromCenterY)
-            lineTo(toCenterX, toCenterY)
+            moveTo(
+                fromNode.path.centerX.toPx(context).toFloat(),
+                fromNode.path.centerY.toPx(context).toFloat(),
+            )
+            lineTo(
+                toNode.path.centerX.toPx(context).toFloat(),
+                toNode.path.centerY.toPx(context).toFloat(),
+            )
         }
         canvas.drawPath(path, paint)
-    }
-
-    private fun calculateCenterX(path: NodePath): Float {
-        return when (path) {
-            is RectanglePath -> ((path.endX + path.startX) / Dp(2f)).toPx(context).toFloat()
-            is CirclePath -> path.centerX.toPx(context).toFloat()
-        }
-    }
-
-    private fun calculateCenterY(path: NodePath): Float {
-        return when (path) {
-            is RectanglePath -> ((path.bottomY + path.topY) / Dp(2f)).toPx(context).toFloat()
-            is CirclePath -> path.centerY.toPx(context).toFloat()
-        }
     }
 }

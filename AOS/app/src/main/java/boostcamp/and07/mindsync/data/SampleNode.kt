@@ -11,51 +11,51 @@ import boostcamp.and07.mindsync.ui.util.Dp
 object SampleNode {
     val head: Node = CircleNode(
         CirclePath(
-            Dp(500f),
-            Dp(800f),
-            Dp(75f),
+            Dp(100f),
+            Dp(100f),
+            Dp(50f),
         ),
         ColorRGB(100, 100, 100),
         "Root",
         listOf(
             RectangleNode(
-                RectanglePath(Dp(125f), Dp(225f), Dp(225f), Dp(325f)),
+                RectanglePath(Dp(200f), Dp(100f), Dp(50f), Dp(50f)),
                 ColorRGB(200, 200, 200),
                 "Child1",
                 listOf(
                     RectangleNode(
-                        RectanglePath(Dp(425f), Dp(525f), Dp(325f), Dp(625f)),
+                        RectanglePath(Dp(250f), Dp(200f), Dp(50f), Dp(50f)),
                         ColorRGB(30, 30, 30),
                         "Child3",
                         listOf(
                             RectangleNode(
-                                RectanglePath(Dp(725f), Dp(825f), Dp(825f), Dp(925f)),
+                                RectanglePath(Dp(350f), Dp(450f), Dp(50f), Dp(50f)),
                                 ColorRGB(50, 70, 80),
                                 "Child5",
                                 listOf(),
                             ),
                             RectangleNode(
-                                RectanglePath(Dp(225f), Dp(325f), Dp(525f), Dp(625f)),
+                                RectanglePath(Dp(350f), Dp(550f), Dp(50f), Dp(50f)),
                                 ColorRGB(100, 200, 100),
                                 "Child6",
                                 listOf(),
-                            ),
-                        ),
+                            )
+                        )
                     ),
                     RectangleNode(
-                        RectanglePath(Dp(325f), Dp(525f), Dp(625f), Dp(725f)),
+                        RectanglePath(Dp(250f), Dp(400f), Dp(50f), Dp(50f)),
                         ColorRGB(10, 23, 40),
                         "Child4",
                         listOf(),
-                    ),
-                ),
+                    )
+                )
             ),
             RectangleNode(
-                RectanglePath(Dp(125f), Dp(225f), Dp(425f), Dp(525f)),
+                RectanglePath(Dp(200f), Dp(300f), Dp(50f), Dp(50f)),
                 ColorRGB(0, 0, 0),
                 "Child2",
                 listOf(),
-            ),
-        ),
+            )
+        )
     )
 }

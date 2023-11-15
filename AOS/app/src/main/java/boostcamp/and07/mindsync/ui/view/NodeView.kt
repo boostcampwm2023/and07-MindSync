@@ -39,7 +39,6 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun drawNode(canvas: Canvas, node: Node, depth: Int) {
-        Log.d("NodeView", "drawNode: ${node.description} $depth")
         when (node) {
             is CircleNode -> drawCircleNode(canvas, node, depth)
             is RectangleNode -> drawRectangleNode(canvas, node, depth)
@@ -58,10 +57,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun drawRectangleNode(canvas: Canvas, node: RectangleNode, depth: Int) {
         rectanglePaint.color = Color.rgb(node.color.red, node.color.green, node.color.blue)
         canvas.drawRect(
-            node.path.startX.toPx(context).toFloat(),
-            node.path.topY.toPx(context).toFloat(),
-            node.path.endX.toPx(context).toFloat(),
-            node.path.bottomY.toPx(context).toFloat(),
+            node.path.leftX().toPx(context).toFloat(),
+            node.path.topY().toPx(context).toFloat(),
+            node.path.rightX().toPx(context).toFloat(),
+            node.path.bottomY().toPx(context).toFloat(),
             rectanglePaint,
         )
     }
