@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.SampleNode
@@ -39,21 +38,19 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun traverseNode(canvas: Canvas, node: Node, depth: Int) {
         drawNode(canvas, node, depth)
-        if (node.nodes.isNotEmpty()) {
-            node.nodes.forEach { node ->
-                traverseNode(canvas, node, depth + 1)
-            }
+        node.nodes.forEach { node ->
+            traverseNode(canvas, node, depth + 1)
         }
     }
 
     private fun drawNode(canvas: Canvas, node: Node, depth: Int) {
         when (node) {
-            is CircleNode -> drawCircleNode(canvas, node, depth)
+            is CircleNode -> drawCircleNode(canvas, node)
             is RectangleNode -> drawRectangleNode(canvas, node, depth)
         }
     }
 
-    private fun drawCircleNode(canvas: Canvas, node: CircleNode, depth: Int) {
+    private fun drawCircleNode(canvas: Canvas, node: CircleNode) {
         canvas.drawCircle(
             node.path.centerX.toPx(context).toFloat(),
             node.path.centerY.toPx(context).toFloat(),
