@@ -1,16 +1,18 @@
 package boostcamp.and07.mindsync.data.model
 
+import boostcamp.and07.mindsync.ui.util.Dp
+
 sealed class NodePath
 
 data class RectanglePath(
-    val startX: Float,
-    val endX: Float,
-    val topY: Float,
-    val bottomY: Float,
+    val startX: Dp,
+    val endX: Dp,
+    val topY: Dp,
+    val bottomY: Dp,
 ) : NodePath()
 
 data class CirclePath(
-    val centerX: Float,
-    val centerY: Float,
-    val radius: Float,
+    val centerX: Dp,
+    val centerY: Dp,
+    val radius: Dp,
 ) : NodePath()
