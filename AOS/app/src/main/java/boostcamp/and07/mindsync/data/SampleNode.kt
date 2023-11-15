@@ -11,7 +11,9 @@ import boostcamp.and07.mindsync.ui.util.Dp
 object SampleNode {
     val head: Node = CircleNode(
         CirclePath(
-            Dp(500f), Dp(800f), Dp(75f)
+            Dp(500f),
+            Dp(800f),
+            Dp(75f),
         ),
         ColorRGB(100, 100, 100),
         "Root",
@@ -38,7 +40,7 @@ object SampleNode {
                                 "Child6",
                                 listOf(),
                             ),
-                        )
+                        ),
                     ),
                     RectangleNode(
                         RectanglePath(Dp(325f), Dp(525f), Dp(625f), Dp(725f)),
@@ -46,7 +48,7 @@ object SampleNode {
                         "Child4",
                         listOf(),
                     ),
-                )
+                ),
             ),
             RectangleNode(
                 RectanglePath(Dp(125f), Dp(225f), Dp(425f), Dp(525f)),
@@ -54,6 +56,6 @@ object SampleNode {
                 "Child2",
                 listOf(),
             ),
-        )
+        ),
     )
 }
