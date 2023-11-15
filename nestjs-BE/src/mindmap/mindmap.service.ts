@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import * as Y from 'yjs';
+import { LWWMap, lwwMapState } from 'crdt/lww-map';
 
 @Injectable()
 export class MindmapService {
-  private ydocs = new Map<string, Y.Doc>();
+  private boards = new Map<string, LWWMap<string>>();
 
-  updateMindmap(boardId: string, message: any) {
-    const ydoc = this.getMindmap(boardId);
-    Y.applyUpdate(ydoc, message);
+  updateMindmap(boardId: string, message: any): void {
+    const board = this.getMindmap(boardId);
+    board.merge(message);
   }
 
-  getEncodedState(boardId: string) {
-    const ydoc = this.getMindmap(boardId);
-    return Y.encodeStateAsUpdate(ydoc);
+  getEncodedState(boardId: string): lwwMapState<string> {
+    const board = this.getMindmap(boardId);
+    return board.getState();
   }
 
   private getMindmap(boardId: string) {
-    let ydoc = this.ydocs.get(boardId);
-    if (!ydoc) {
-      ydoc = new Y.Doc();
-      this.ydocs.set(boardId, ydoc);
+    let board = this.boards.get(boardId);
+    if (!board) {
+      board = new LWWMap<string>(boardId); // boardId 대신에 서버 아이디???
+      this.boards.set(boardId, board);
     }
-    return ydoc;
+    return board;
   }
 }
