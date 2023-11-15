@@ -49,8 +49,10 @@ data class Px(val pxVal: Float) {
 
 fun Dp.toPx(context: Context): Int {
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, dpVal, context.resources
-            .displayMetrics
+        TypedValue.COMPLEX_UNIT_DIP,
+        dpVal,
+        context.resources
+            .displayMetrics,
     ).toInt()
 }
 

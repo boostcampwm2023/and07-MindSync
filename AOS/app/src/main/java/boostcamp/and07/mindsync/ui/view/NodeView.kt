@@ -51,7 +51,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             node.path.centerX.toPx(context).toFloat(),
             node.path.centerY.toPx(context).toFloat(),
             node.path.radius.toPx(context).toFloat(),
-            circlePaint
+            circlePaint,
         )
     }
 
@@ -62,8 +62,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             node.path.topY.toPx(context).toFloat(),
             node.path.endX.toPx(context).toFloat(),
             node.path.bottomY.toPx(context).toFloat(),
-            rectanglePaint
+            rectanglePaint,
         )
     }
-
 }
