@@ -15,16 +15,15 @@ import boostcamp.and07.mindsync.ui.util.toPx
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private val head = SampleNode.head
     private val circlePaint = Paint().apply {
-        color = context.getColor(R.color.sub1)
+        color = context.getColor(R.color.mindmap1)
     }
     private val rectanglePaint = Paint()
     private val nodeColors = listOf(
-        context.getColor(R.color.main2),
-        context.getColor(R.color.main4),
-        context.getColor(R.color.main1),
         context.getColor(R.color.main3),
-        context.getColor(R.color.sub2),
-        context.getColor(R.color.sub1),
+        context.getColor(R.color.mindmap2),
+        context.getColor(R.color.mindmap3),
+        context.getColor(R.color.mindmap4),
+        context.getColor(R.color.mindmap5),
     )
 
     override fun onDraw(canvas: Canvas) {
