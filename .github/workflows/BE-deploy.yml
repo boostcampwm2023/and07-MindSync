@@ -1,0 +1,33 @@
+name: BE-deploy
+on:
+  push:
+    branches:
+      - "BE-develop"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      run: |
+        git clone https://github.com/boostcampwm2023/and07-MindSync.git mindsync
+        cd mindSync/nestjs-BE
+    - name: Login to github Packages
+      run: echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
+    - name: Build and push Docker image
+      run: |
+        docker build -t ghcr.io/${{ secrets.PACKGE_USERNAME }}/mindsync .
+        docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Pull Docker image
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.REMOTE_SSH_KEY }}
+        script: |
+          echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
+          docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
+          docker run -p 3000:3000 ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
