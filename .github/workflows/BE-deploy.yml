@@ -14,7 +14,7 @@ jobs:
       run: echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
     - name: Build and push Docker image
       run: |
-        docker build -t ghcr.io/${{ secrets.PACKGE_USERNAME }}/mindsync ./nestjs-BE
+        docker build -t ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync ./nestjs-BE
         docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
 
   deploy:
