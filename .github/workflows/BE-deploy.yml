@@ -31,4 +31,6 @@ jobs:
         script: |
           echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
           docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
-          docker run -p 3000:3000 ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
+          docker stop mindsync_server || true
+          docker rm mindsync_server || true
+          docker run -d --name mindsync_server -p 3000:3000 ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
