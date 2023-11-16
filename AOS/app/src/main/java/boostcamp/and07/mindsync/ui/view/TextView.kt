@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import boostcamp.and07.mindsync.data.SampleNode
@@ -19,6 +20,7 @@ class TextView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private val head = SampleNode.head
     private lateinit var selectNode: Node
     private var select = false
+    private var lastClickTime = 0L
     private val textPaint = Paint().apply {
         color = Color.RED
         textSize = Dp(12f).toPx(context).toFloat()
@@ -41,9 +43,15 @@ class TextView constructor(context: Context, attrs: AttributeSet?) : View(contex
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val clickTime = System.currentTimeMillis()
+                if (clickTime - lastClickTime < DOUBLE_CLICK_TIME) {
+                    traverseHead(event.x, event.y)
+                } else {
+                    lastClickTime = clickTime
+                    select = false
+                    invalidate()
+                }
             }
         }
-        traverseHead(event.x, event.y)
         return super.onTouchEvent(event)
     }
 
@@ -52,6 +60,7 @@ class TextView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun traverseHead(x: Float, y: Float) {
+        Log.d(tag, "$x $y")
         val node = dfs(head, x, y)
         node?.let {
             selectNode = node
@@ -144,5 +153,9 @@ class TextView constructor(context: Context, attrs: AttributeSet?) : View(contex
             node.path.centerY.toPx(context).toFloat() - (height / 2).toFloat(),
             textBoxPaint,
         )
+    }
+
+    companion object {
+        const val DOUBLE_CLICK_TIME = 200
     }
 }
