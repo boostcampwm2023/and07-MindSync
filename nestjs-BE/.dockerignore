@@ -1,0 +1,10 @@
+README.md
+/node_modules
+/test
+
+.eslintrc.js
+.gitignore
+.prettierrc
+nest-cli.json
+
+*.spec.ts
