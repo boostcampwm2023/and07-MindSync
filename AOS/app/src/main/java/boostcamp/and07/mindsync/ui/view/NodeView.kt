@@ -120,7 +120,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             is CircleNode -> drawCircleNode(canvas, node)
             is RectangleNode -> drawRectangleNode(canvas, node, depth)
         }
-        drawText(canvas, node, depth)
+        drawText(canvas, node)
     }
 
     private fun drawCircleNode(canvas: Canvas, node: CircleNode) {
@@ -143,7 +143,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         )
     }
 
-    private fun drawText(canvas: Canvas, node: Node, depth: Int) {
+    private fun drawText(canvas: Canvas, node: Node) {
         val width = textPaint.measureText(node.description).toInt()
         val height = textPaint.descent().toInt() - textPaint.ascent().toInt()
         when (node) {
@@ -158,7 +158,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             }
 
             is RectangleNode -> {
-                textPaint.color = Color.BLUE
+                textPaint.color = Color.BLACK
                 canvas.drawText(
                     node.description,
                     node.path.centerX.toPx(context).toFloat() - (width / 2).toFloat(),
