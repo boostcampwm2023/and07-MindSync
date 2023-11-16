@@ -20,7 +20,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    step:
+    steps:
     - name: Pull Docker image
       uses: appleboy/ssh-action@master
       with:
