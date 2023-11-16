@@ -59,6 +59,7 @@ class TextView constructor(context: Context, attrs: AttributeSet?) : View(contex
             invalidate()
         } ?: run {
             select = false
+            invalidate()
         }
     }
 
