@@ -33,4 +33,4 @@ jobs:
           docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
           docker stop mindsync_server || true
           docker rm mindsync_server || true
-          docker run -d --name mindsync_server -p 3000:3000 ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
+          docker run -d --name mindsync_server -p ${{ secrets.SERVER_PORT }}:${{ secrets.CONTAINER_PORT }} ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
