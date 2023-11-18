@@ -11,9 +11,10 @@ import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.toPx
+import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    private val head = SampleNode.head
+    private var head = SampleNode.head
     private val circlePaint = Paint().apply {
         color = context.getColor(R.color.mindmap1)
     }
@@ -25,10 +26,21 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         context.getColor(R.color.mindmap4),
         context.getColor(R.color.mindmap5),
     )
+    private val rightLayoutManager = MindmapRightLayoutManager()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        arrangement()
         traverseHead(canvas)
+    }
+
+    override fun invalidate() {
+        arrangement()
+        super.invalidate()
+    }
+
+    private fun arrangement() {
+        head = rightLayoutManager.arrangement(head)
     }
 
     private fun traverseHead(canvas: Canvas) {

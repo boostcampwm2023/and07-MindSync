@@ -6,16 +6,16 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import boostcamp.and07.mindsync.data.SampleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
+import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 
 class LineView constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
 ) : View(context, attrs) {
     private val paint = Paint().apply {
         color = Color.BLACK
@@ -24,13 +24,24 @@ class LineView constructor(
         isAntiAlias = true
     }
     private val path = Path()
-    private val head = SampleNode.head
+    private var head = SampleNode.head
+    private val rightLayoutManager = MindmapRightLayoutManager()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        arrangement()
         if (head.nodes.isNotEmpty()) {
             traverseLine(canvas, head, 1)
         }
+    }
+
+    override fun invalidate() {
+        arrangement()
+        super.invalidate()
+    }
+
+    private fun arrangement() {
+        head = rightLayoutManager.arrangement(head)
     }
 
     private fun traverseLine(canvas: Canvas, node: Node, depth: Int) {
