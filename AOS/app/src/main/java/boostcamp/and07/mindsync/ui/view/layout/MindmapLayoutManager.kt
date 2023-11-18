@@ -65,5 +65,4 @@ class MindmapRightLayoutManager {
 
         return heightSum
     }
-
 }
