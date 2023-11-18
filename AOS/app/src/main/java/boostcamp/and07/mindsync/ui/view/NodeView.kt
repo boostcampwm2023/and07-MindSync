@@ -51,9 +51,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun drawCircleNode(canvas: Canvas, node: CircleNode) {
         canvas.drawCircle(
-            node.path.centerX.toPx(context).toFloat(),
-            node.path.centerY.toPx(context).toFloat(),
-            node.path.radius.toPx(context).toFloat(),
+            node.path.centerX.toPx(context),
+            node.path.centerY.toPx(context),
+            node.path.radius.toPx(context),
             circlePaint,
         )
     }
@@ -61,10 +61,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun drawRectangleNode(canvas: Canvas, node: RectangleNode, depth: Int) {
         rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
         canvas.drawRect(
-            node.path.leftX().toPx(context).toFloat(),
-            node.path.topY().toPx(context).toFloat(),
-            node.path.rightX().toPx(context).toFloat(),
-            node.path.bottomY().toPx(context).toFloat(),
+            node.path.leftX().toPx(context),
+            node.path.topY().toPx(context),
+            node.path.rightX().toPx(context),
+            node.path.bottomY().toPx(context),
             rectanglePaint,
         )
     }

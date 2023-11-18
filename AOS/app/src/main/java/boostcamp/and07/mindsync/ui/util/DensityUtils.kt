@@ -128,16 +128,16 @@ data class Px(val pxVal: Float) {
     }
 }
 
-fun Dp.toPx(context: Context): Int {
+fun Dp.toPx(context: Context): Float {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dpVal,
         context.resources
             .displayMetrics,
-    ).toInt()
+    )
 }
 
-fun Px.toDp(context: Context): Int {
+fun Px.toDp(context: Context): Float {
     val scale = context.resources.displayMetrics.density
-    return (pxVal / scale).toInt()
+    return pxVal / scale
 }

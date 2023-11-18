@@ -20,7 +20,7 @@ class LineView constructor(
     private val paint = Paint().apply {
         color = Color.BLACK
         style = Paint.Style.STROKE
-        strokeWidth = Dp(5f).toPx(context).toFloat()
+        strokeWidth = Dp(5f).toPx(context)
         isAntiAlias = true
     }
     private val path = Path()
@@ -44,12 +44,12 @@ class LineView constructor(
         val path = path.apply {
             reset()
             moveTo(
-                fromNode.path.centerX.toPx(context).toFloat(),
-                fromNode.path.centerY.toPx(context).toFloat(),
+                fromNode.path.centerX.toPx(context),
+                fromNode.path.centerY.toPx(context),
             )
             lineTo(
-                toNode.path.centerX.toPx(context).toFloat(),
-                toNode.path.centerY.toPx(context).toFloat(),
+                toNode.path.centerX.toPx(context),
+                toNode.path.centerY.toPx(context),
             )
         }
         canvas.drawPath(path, paint)
