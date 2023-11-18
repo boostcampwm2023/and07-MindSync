@@ -29,19 +29,19 @@ class LineView constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        arrangement()
+        arrangeNode()
         if (head.nodes.isNotEmpty()) {
             traverseLine(canvas, head, 1)
         }
     }
 
     override fun invalidate() {
-        arrangement()
+        arrangeNode()
         super.invalidate()
     }
 
-    private fun arrangement() {
-        head = rightLayoutManager.arrangement(head)
+    private fun arrangeNode() {
+        head = rightLayoutManager.arrangeNode(head)
     }
 
     private fun traverseLine(canvas: Canvas, node: Node, depth: Int) {

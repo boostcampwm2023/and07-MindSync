@@ -9,7 +9,7 @@ class MindmapRightLayoutManager {
     private val horizontalSpacing = Dp(50f)
     private val verticalSpacing = Dp(50f)
 
-    fun arrangement(node: Node): Node {
+    fun arrangeNode(node: Node): Node {
         val childHeightSum = measureChildHeight(node)
         val newNodes = mutableListOf<RectangleNode>()
 
@@ -37,7 +37,7 @@ class MindmapRightLayoutManager {
         }
 
         newNodes.forEachIndexed { index, childNode ->
-            newNodes[index] = arrangement(childNode) as RectangleNode
+            newNodes[index] = arrangeNode(childNode) as RectangleNode
         }
 
         val newNode = when (node) {

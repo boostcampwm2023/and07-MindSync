@@ -30,17 +30,17 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        arrangement()
+        arrangeNode()
         traverseHead(canvas)
     }
 
     override fun invalidate() {
-        arrangement()
+        arrangeNode()
         super.invalidate()
     }
 
-    private fun arrangement() {
-        head = rightLayoutManager.arrangement(head)
+    private fun arrangeNode() {
+        head = rightLayoutManager.arrangeNode(head)
     }
 
     private fun traverseHead(canvas: Canvas) {
