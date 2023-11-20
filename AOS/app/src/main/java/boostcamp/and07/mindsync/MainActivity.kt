@@ -1,13 +1,12 @@
 package boostcamp.and07.mindsync
 
 import android.os.Bundle
-import android.util.Log
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
-import boostcamp.and07.mindsync.ui.view.NodeClickListener
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
+import boostcamp.and07.mindsync.ui.view.NodeClickListener
 
 class MainActivity :
     BaseActivity<ActivityMainBinding>(R.layout.activity_main),
@@ -21,12 +20,12 @@ class MainActivity :
         binding.customNodeView.setTextViewClickListener(this)
     }
 
-    override fun onDoubleClicked(node: Node) {
-        val dialog = EditDescriptionDialog(this)
+    override fun onDoubleClicked(node: Node, color: Int) {
+        val dialog = EditDescriptionDialog(color)
         dialog.setListener(object : EditDialogInterface {
             override fun onSubmitClick(description: String) {
             }
         })
-        dialog.show()
+        dialog.show(this.supportFragmentManager,"EditDescriptionDialog")
     }
 }
