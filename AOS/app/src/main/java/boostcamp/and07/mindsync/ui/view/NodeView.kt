@@ -167,7 +167,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun traverseRangeNode(node: Node, x: Float, y: Float, depth: Int): Pair<Node, Int>? {
-        if (checkRange(node, x, y)) {
+        if (isInsideNode(node, x, y)) {
             return Pair(node, depth)
         }
         for (child in node.nodes) {
@@ -176,7 +176,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         return null
     }
 
-    private fun checkRange(node: Node, x: Float, y: Float): Boolean {
+    private fun isInsideNode(node: Node, x: Float, y: Float): Boolean {
         when (node) {
             is CircleNode -> {
                 if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(

@@ -16,9 +16,9 @@ import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 class EditDescriptionDialog(private val color: Int) : DialogFragment() {
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
-    private lateinit var confirmDialogInterface: EditDialogInterface
+    private lateinit var editDialogInterface: EditDialogInterface
     fun setListener(listener: EditDialogInterface) {
-        confirmDialogInterface = listener
+        editDialogInterface = listener
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -40,7 +40,7 @@ class EditDescriptionDialog(private val color: Int) : DialogFragment() {
                 dismiss()
             }
             btnSubmit.setOnClickListener {
-                confirmDialogInterface.onSubmitClick(binding.etNodeDescription.text.toString())
+                editDialogInterface.onSubmitClick(binding.etNodeDescription.text.toString())
                 dismiss()
             }
         }
