@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
@@ -103,6 +104,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun changeSize(node: Node, width: Px, height: Float): Node {
+        if(node.description=="Child121313213") {
+            Log.d("NodeView", "node : ${node.description}, ${node.path}")
+            Log.d("NodeView", "$width, $height")
+        }
         when (node) {
             is CircleNode -> {
                 var newRadius = node.path.radius
@@ -118,16 +123,15 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             }
 
             is RectangleNode -> {
-                var newWidth: Dp
-                var newHeight: Dp
+                var newWidth = node.path.width
+                var newHeight = node.path.height
                 if (width.toDp(context)
                         .toFloat() > node.path.width.dpVal && !node.description.contains("\n")
                 ) {
                     newWidth = Dp(width.toDp(context).toFloat()) + Dp(lineHeight)
-                    return node.copy(node.path.copy(width = newWidth))
                 }
                 newHeight = Dp(height) / Dp(2f) + Dp(lineHeight)
-                return node.copy(node.path.copy(height = newHeight))
+                return node.copy(node.path.copy(width = newWidth, height = newHeight))
             }
         }
     }
@@ -264,7 +268,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context).toFloat(),
-                        node.path.centerY.toPx(context).toFloat() + lineHeight/2,
+                        node.path.centerY.toPx(context).toFloat() + lineHeight / 2,
                         textPaint,
                     )
                 }
@@ -288,7 +292,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context).toFloat(),
-                        node.path.centerY.toPx(context).toFloat() + lineHeight/2,
+                        node.path.centerY.toPx(context).toFloat() + lineHeight / 2,
                         textPaint,
                     )
                 }
