@@ -35,11 +35,6 @@ class LineView constructor(
         }
     }
 
-    override fun invalidate() {
-        arrangeNode()
-        super.invalidate()
-    }
-
     private fun arrangeNode() {
         head = rightLayoutManager.arrangeNode(head)
     }

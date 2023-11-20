@@ -49,12 +49,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         strokeWidth = Dp(5f).toPx(context)
         isAntiAlias = true
     }
-    private var listener: NodeClickListener? = null
-    private val lineHeight = 15f
+
+    private val lineHeight = Dp(15f)
     private var touchedNode: Node? = null
-    fun setTextViewClickListener(listener: NodeClickListener) {
-        this.listener = listener
-    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -95,9 +92,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun traverseTextNode(node: Node): Node {
-        val newNodes = mutableListOf<Node>()
+        val newNodes = mutableListOf<RectangleNode>()
         node.nodes.forEach { child ->
-            newNodes.add(traverseTextNode(child))
+            newNodes.add(traverseTextNode(child) as RectangleNode)
             traverseTextNode(child)
         }
         val copyNode =
@@ -113,26 +110,23 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         when (node) {
             is CircleNode -> {
                 var newRadius = node.path.radius
-                if (width.toDp(context)
-                        .toFloat() > node.path.radius.dpVal && !node.description.contains("\n")
+                if (width.toDp(context) > node.path.radius.dpVal && !node.description.contains("\n")
                 ) {
-                    newRadius = Dp(width.toDp(context) / 2) + Dp(lineHeight / 2)
+                    newRadius = Dp(width.toDp(context) / 2) + lineHeight / 2
                 }
                 if (node.description.contains("\n")) {
-                    newRadius = (Dp(height) - Dp(lineHeight)) / Dp(2f)
+                    newRadius = (Dp(height) - lineHeight) / 2
                 }
                 return node.copy(node.path.copy(radius = newRadius))
             }
 
             is RectangleNode -> {
                 var newWidth = node.path.width
-                var newHeight = node.path.height
-                if (width.toDp(context)
-                        .toFloat() > node.path.width.dpVal && !node.description.contains("\n")
+                if (width.toDp(context) > node.path.width.dpVal && !node.description.contains("\n")
                 ) {
-                    newWidth = Dp(width.toDp(context)) + Dp(lineHeight)
+                    newWidth = Dp(width.toDp(context)) + lineHeight
                 }
-                newHeight = Dp(height) / Dp(2f) + Dp(lineHeight)
+                val newHeight = Dp(height) / 2 + lineHeight
                 return node.copy(node.path.copy(width = newWidth, height = newHeight))
             }
         }
@@ -185,8 +179,12 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun checkRange(node: Node, x: Float, y: Float): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
+                        context,
+                    ) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
+                        context,
+                    )
                 ) {
                     return true
                 }
@@ -237,7 +235,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         var sum = 0f
         description.split("\n").forEach { line ->
             textPaint.getTextBounds(line, 0, line.length, bounds)
-            sum += bounds.height() + lineHeight
+            sum += bounds.height() + lineHeight.dpVal
         }
         return sum
     }
@@ -260,13 +258,13 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                             y + bounds.height(),
                             textPaint,
                         )
-                        y += bounds.height() + lineHeight
+                        y += bounds.height() + lineHeight.dpVal
                     }
                 } else {
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context),
-                        node.path.centerY.toPx(context) + lineHeight / 2,
+                        node.path.centerY.toPx(context) + lineHeight.dpVal / 2,
                         textPaint,
                     )
                 }
@@ -284,13 +282,13 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                             y + bounds.height(),
                             textPaint,
                         )
-                        y += bounds.height() + lineHeight
+                        y += bounds.height() + lineHeight.dpVal
                     }
                 } else {
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context),
-                        node.path.centerY.toPx(context) + lineHeight / 2,
+                        node.path.centerY.toPx(context) + lineHeight.dpVal / 2,
                         textPaint,
                     )
                 }
