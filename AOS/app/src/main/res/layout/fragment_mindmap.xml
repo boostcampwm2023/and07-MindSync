@@ -12,6 +12,22 @@
         android:layout_height="match_parent"
         tools:context=".ui.mindmap.MindmapFragment">
 
+        <boostcamp.and07.mindsync.ui.view.LineView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/ll_mindmap_bottom_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <boostcamp.and07.mindsync.ui.view.NodeView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/ll_mindmap_bottom_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <LinearLayout
             android:id="@+id/ll_mindmap_bottom_bar"
             android:layout_width="0dp"
