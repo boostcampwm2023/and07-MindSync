@@ -11,10 +11,10 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.SampleNode
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
@@ -22,7 +22,7 @@ import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    private var head = SampleNode.head
+    private lateinit var head: Node
     private val circlePaint = Paint().apply {
         color = context.getColor(R.color.mindmap1)
     }
@@ -52,14 +52,18 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private val lineHeight = Dp(15f)
     private var touchedNode: Node? = null
+    private lateinit var mindMapViewModel: MindMapViewModel
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         traverseTextHead()
         arrangeNode()
         traverseDrawHead(canvas)
-        touchedNode?.let { touchNode ->
-            makeStrokeNode(canvas, touchNode)
+//        touchedNode?.let { touchNode ->
+//            makeStrokeNode(canvas, touchNode)
+//        }
+        mindMapViewModel.selectedNode.value?.let { selectNode ->
+            makeStrokeNode(canvas, selectNode)
         }
     }
 
@@ -74,6 +78,11 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             }
         }
         return super.onTouchEvent(event)
+    }
+
+    fun setViewModel(viewModel: MindMapViewModel) {
+        this.mindMapViewModel = viewModel
+        head = mindMapViewModel.head.value
     }
 
     private fun traverseDrawHead(canvas: Canvas) {
@@ -137,8 +146,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
         rangeResult?.let {
             touchedNode = it.first
+            mindMapViewModel.selectNode(it.first)
         } ?: run {
             touchedNode = null
+            mindMapViewModel.selectNode(null)
         }
         invalidate()
     }
