@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
@@ -40,8 +41,16 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         typeface = ResourcesCompat.getFont(context, R.font.pretendard_bold)
         textAlign = Paint.Align.CENTER
     }
+
+    private val strokePaint = Paint().apply {
+        color = context.getColor(R.color.blue)
+        style = Paint.Style.STROKE
+        strokeWidth = Dp(5f).toPx(context).toFloat()
+        isAntiAlias = true
+    }
     private var listener: NodeClickListener? = null
     private val lineHeight = 15f
+    private var touchedNode: Node? = null
     fun setTextViewClickListener(listener: NodeClickListener) {
         this.listener = listener
     }
@@ -50,6 +59,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         super.onDraw(canvas)
         traverseTextHead()
         traverseDrawHead(canvas)
+        touchedNode?.let { touchNode ->
+            makeStrokeNode(canvas, touchNode)
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -77,7 +89,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun traverseTextNode(node: Node): Node {
-        val newNodes = mutableListOf<Node>() // Node의 자식들.
+        val newNodes = mutableListOf<Node>()
         node.nodes.forEach { child ->
             newNodes.add(traverseTextNode(child))
             traverseTextNode(child)
@@ -108,13 +120,14 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
             is RectangleNode -> {
                 var newWidth: Dp
+                var newHeight: Dp
                 if (width.toDp(context)
                         .toFloat() > node.path.width.dpVal && !node.description.contains("\n")
                 ) {
                     newWidth = Dp(width.toDp(context).toFloat()) + Dp(lineHeight)
                     return node.copy(node.path.copy(width = newWidth))
                 }
-                var newHeight: Dp = Dp(height) / Dp(2f)
+                newHeight = Dp(height) / Dp(2f)
                 return node.copy(node.path.copy(height = newHeight))
             }
         }
@@ -124,13 +137,33 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
-            when (it.first) {
-                is CircleNode -> listener?.onDoubleClicked(
-                    it.first,
-                    context.getColor(R.color.mindmap1),
-                )
+            touchedNode = it.first
+        } ?: run {
+            touchedNode = null
+        }
+        invalidate()
+    }
 
-                is RectangleNode -> listener?.onDoubleClicked(it.first, nodeColors[it.second - 1])
+    private fun makeStrokeNode(canvas: Canvas, node: Node) {
+        Log.d("NodeView", "find : ${node.description}")
+        when (node) {
+            is CircleNode -> {
+                canvas.drawCircle(
+                    node.path.centerX.toPx(context).toFloat(),
+                    node.path.centerY.toPx(context).toFloat(),
+                    node.path.radius.toPx(context).toFloat(),
+                    strokePaint,
+                )
+            }
+
+            is RectangleNode -> {
+                canvas.drawRect(
+                    node.path.leftX().toPx(context).toFloat(),
+                    node.path.topY().toPx(context).toFloat(),
+                    node.path.rightX().toPx(context).toFloat(),
+                    node.path.bottomY().toPx(context).toFloat(),
+                    strokePaint,
+                )
             }
         }
     }
