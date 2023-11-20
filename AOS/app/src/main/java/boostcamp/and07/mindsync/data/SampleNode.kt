@@ -11,7 +11,7 @@ object SampleNode {
     val head: Node = CircleNode(
         CirclePath(
             Dp(100f),
-            Dp(100f),
+            Dp(500f),
             Dp(50f),
         ),
         "Root",

@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
@@ -20,6 +19,7 @@ import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.util.toPx
+import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var head = SampleNode.head
@@ -34,9 +34,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         context.getColor(R.color.mindmap4),
         context.getColor(R.color.mindmap5),
     )
+    private val rightLayoutManager = MindmapRightLayoutManager()
     private val textPaint = TextPaint().apply {
         color = Color.RED
-        textSize = Dp(12f).toPx(context).toFloat()
+        textSize = Dp(12f).toPx(context)
         isAntiAlias = true
         typeface = ResourcesCompat.getFont(context, R.font.pretendard_bold)
         textAlign = Paint.Align.CENTER
@@ -45,7 +46,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private val strokePaint = Paint().apply {
         color = context.getColor(R.color.blue)
         style = Paint.Style.STROKE
-        strokeWidth = Dp(5f).toPx(context).toFloat()
+        strokeWidth = Dp(5f).toPx(context)
         isAntiAlias = true
     }
     private var listener: NodeClickListener? = null
@@ -58,10 +59,15 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         traverseTextHead()
+        arrangeNode()
         traverseDrawHead(canvas)
         touchedNode?.let { touchNode ->
             makeStrokeNode(canvas, touchNode)
         }
+    }
+
+    private fun arrangeNode() {
+        head = rightLayoutManager.arrangeNode(head)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -104,17 +110,13 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun changeSize(node: Node, width: Px, height: Float): Node {
-        if(node.description=="Child121313213") {
-            Log.d("NodeView", "node : ${node.description}, ${node.path}")
-            Log.d("NodeView", "$width, $height")
-        }
         when (node) {
             is CircleNode -> {
                 var newRadius = node.path.radius
                 if (width.toDp(context)
                         .toFloat() > node.path.radius.dpVal && !node.description.contains("\n")
                 ) {
-                    newRadius = Dp(width.toDp(context).toFloat() / 2) + Dp(lineHeight / 2)
+                    newRadius = Dp(width.toDp(context) / 2) + Dp(lineHeight / 2)
                 }
                 if (node.description.contains("\n")) {
                     newRadius = (Dp(height) - Dp(lineHeight)) / Dp(2f)
@@ -128,7 +130,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                 if (width.toDp(context)
                         .toFloat() > node.path.width.dpVal && !node.description.contains("\n")
                 ) {
-                    newWidth = Dp(width.toDp(context).toFloat()) + Dp(lineHeight)
+                    newWidth = Dp(width.toDp(context)) + Dp(lineHeight)
                 }
                 newHeight = Dp(height) / Dp(2f) + Dp(lineHeight)
                 return node.copy(node.path.copy(width = newWidth, height = newHeight))
@@ -151,19 +153,19 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         when (node) {
             is CircleNode -> {
                 canvas.drawCircle(
-                    node.path.centerX.toPx(context).toFloat(),
-                    node.path.centerY.toPx(context).toFloat(),
-                    node.path.radius.toPx(context).toFloat(),
+                    node.path.centerX.toPx(context),
+                    node.path.centerY.toPx(context),
+                    node.path.radius.toPx(context),
                     strokePaint,
                 )
             }
 
             is RectangleNode -> {
                 canvas.drawRect(
-                    node.path.leftX().toPx(context).toFloat(),
-                    node.path.topY().toPx(context).toFloat(),
-                    node.path.rightX().toPx(context).toFloat(),
-                    node.path.bottomY().toPx(context).toFloat(),
+                    node.path.leftX().toPx(context),
+                    node.path.topY().toPx(context),
+                    node.path.rightX().toPx(context),
+                    node.path.bottomY().toPx(context),
                     strokePaint,
                 )
             }
@@ -183,21 +185,17 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun checkRange(node: Node, x: Float, y: Float): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)
-                        .toFloat()..(node.path.centerX + node.path.radius).toPx(context)
-                        .toFloat() &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)
-                        .toFloat()..(node.path.centerY + node.path.radius).toPx(context).toFloat()
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
                 ) {
                     return true
                 }
             }
 
             is RectangleNode -> {
-                if (x in node.path.leftX().toPx(context).toFloat()..node.path.rightX().toPx(context)
-                        .toFloat() &&
-                    y in node.path.topY().toPx(context).toFloat()..node.path.bottomY()
-                        .toPx(context).toFloat()
+                if (x in node.path.leftX().toPx(context)..node.path.rightX().toPx(context) &&
+                    y in node.path.topY().toPx(context)..node.path.bottomY()
+                        .toPx(context)
                 ) {
                     return true
                 }
@@ -216,9 +214,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun drawCircleNode(canvas: Canvas, node: CircleNode) {
         canvas.drawCircle(
-            node.path.centerX.toPx(context).toFloat(),
-            node.path.centerY.toPx(context).toFloat(),
-            node.path.radius.toPx(context).toFloat(),
+            node.path.centerX.toPx(context),
+            node.path.centerY.toPx(context),
+            node.path.radius.toPx(context),
             circlePaint,
         )
     }
@@ -226,10 +224,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun drawRectangleNode(canvas: Canvas, node: RectangleNode, depth: Int) {
         rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
         canvas.drawRect(
-            node.path.leftX().toPx(context).toFloat(),
-            node.path.topY().toPx(context).toFloat(),
-            node.path.rightX().toPx(context).toFloat(),
-            node.path.bottomY().toPx(context).toFloat(),
+            node.path.leftX().toPx(context),
+            node.path.topY().toPx(context),
+            node.path.rightX().toPx(context),
+            node.path.bottomY().toPx(context),
             rectanglePaint,
         )
     }
@@ -253,12 +251,12 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             is CircleNode -> {
                 textPaint.color = Color.WHITE
                 if (lines.size > 1) {
-                    var y = node.path.centerY.toPx(context).toFloat() - totalHeight / 2
+                    var y = node.path.centerY.toPx(context) - totalHeight / 2
                     for (line in lines) {
                         textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
                             line,
-                            node.path.centerX.toPx(context).toFloat(),
+                            node.path.centerX.toPx(context),
                             y + bounds.height(),
                             textPaint,
                         )
@@ -267,8 +265,8 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                 } else {
                     canvas.drawText(
                         node.description,
-                        node.path.centerX.toPx(context).toFloat(),
-                        node.path.centerY.toPx(context).toFloat() + lineHeight / 2,
+                        node.path.centerX.toPx(context),
+                        node.path.centerY.toPx(context) + lineHeight / 2,
                         textPaint,
                     )
                 }
@@ -277,12 +275,12 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             is RectangleNode -> {
                 textPaint.color = Color.BLACK
                 if (lines.size > 1) {
-                    var y = node.path.centerY.toPx(context).toFloat() - totalHeight / 2
+                    var y = node.path.centerY.toPx(context) - totalHeight / 2
                     for (line in lines) {
                         textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
                             line,
-                            node.path.centerX.toPx(context).toFloat(),
+                            node.path.centerX.toPx(context),
                             y + bounds.height(),
                             textPaint,
                         )
@@ -291,8 +289,8 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                 } else {
                     canvas.drawText(
                         node.description,
-                        node.path.centerX.toPx(context).toFloat(),
-                        node.path.centerY.toPx(context).toFloat() + lineHeight / 2,
+                        node.path.centerX.toPx(context),
+                        node.path.centerY.toPx(context) + lineHeight / 2,
                         textPaint,
                     )
                 }
