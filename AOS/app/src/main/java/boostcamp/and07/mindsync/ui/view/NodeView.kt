@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
@@ -127,7 +126,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                     newWidth = Dp(width.toDp(context).toFloat()) + Dp(lineHeight)
                     return node.copy(node.path.copy(width = newWidth))
                 }
-                newHeight = Dp(height) / Dp(2f)
+                newHeight = Dp(height) / Dp(2f) + Dp(lineHeight)
                 return node.copy(node.path.copy(height = newHeight))
             }
         }
@@ -145,7 +144,6 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun makeStrokeNode(canvas: Canvas, node: Node) {
-        Log.d("NodeView", "find : ${node.description}")
         when (node) {
             is CircleNode -> {
                 canvas.drawCircle(
@@ -266,7 +264,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context).toFloat(),
-                        node.path.centerY.toPx(context).toFloat(),
+                        node.path.centerY.toPx(context).toFloat() + lineHeight/2,
                         textPaint,
                     )
                 }
@@ -290,7 +288,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context).toFloat(),
-                        node.path.centerY.toPx(context).toFloat(),
+                        node.path.centerY.toPx(context).toFloat() + lineHeight/2,
                         textPaint,
                     )
                 }
