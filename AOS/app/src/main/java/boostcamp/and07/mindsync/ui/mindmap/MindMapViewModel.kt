@@ -1,13 +1,12 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
 import androidx.lifecycle.ViewModel
+import boostcamp.and07.mindsync.data.IdGenerator
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.CirclePath
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.data.model.RectanglePath
 import boostcamp.and07.mindsync.ui.util.Dp
-import boostcamp.and07.mindsync.ui.util.IdGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -28,17 +27,12 @@ class MindMapViewModel : ViewModel() {
     private var _selectedNode = MutableStateFlow<Node?>(null)
     val selectedNode: StateFlow<Node?> = _selectedNode
 
-    fun addNode(parent: Node, description: String) {
+    fun addNode(parent: Node, addNode: RectangleNode) {
         _head.value?.let { head ->
             _head.value = traverseAddNode(
                 head,
                 parent,
-                RectangleNode(
-                    id = IdGenerator.makeRandomNodeId(),
-                    RectanglePath(Dp(200f), Dp(100f), Dp(50f), Dp(50f)),
-                    description = description,
-                    listOf(),
-                ),
+                addNode,
             )
         }
     }
@@ -82,21 +76,21 @@ class MindMapViewModel : ViewModel() {
         }
     }
 
-    fun updateNode(updateNode: Node, description: String) {
-        _head.value = traverseUpdateNode(head.value, updateNode, description)
+    fun updateNode(updateNode: Node) {
+        _head.value = traverseUpdateNode(head.value, updateNode)
     }
 
-    private fun traverseUpdateNode(node: Node, target: Node, description: String): Node {
+    private fun traverseUpdateNode(node: Node, target: Node): Node {
         val newNodes = node.nodes.toMutableList()
         if (node.id == target.id) {
             return when (node) {
-                is CircleNode -> node.copy(description = description)
-                is RectangleNode -> node.copy(description = description)
+                is CircleNode -> node.copy(description = target.description)
+                is RectangleNode -> node.copy(description = target.description)
             }
         }
         newNodes.clear()
         node.nodes.forEach { child ->
-            newNodes.add(traverseUpdateNode(child, target, description) as RectangleNode)
+            newNodes.add(traverseUpdateNode(child, target) as RectangleNode)
         }
         return when (node) {
             is RectangleNode -> node.copy(nodes = newNodes)

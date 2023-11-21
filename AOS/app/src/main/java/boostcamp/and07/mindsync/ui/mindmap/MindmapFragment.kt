@@ -3,7 +3,10 @@ package boostcamp.and07.mindsync.ui.mindmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.data.NodeGenerator
+import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
+import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.databinding.FragmentMindmapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
@@ -42,15 +45,20 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
         })
         dialog.show(activity?.supportFragmentManager!!, "EditDescriptionDialog")
     }
+
     fun addButtonListener(selectNode: Node) {
-        showDialog(selectNode) { node, description ->
-            mindMapViewModel.addNode(node, description)
+        showDialog(selectNode) { parent, description ->
+            mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description))
         }
     }
 
     fun editButtonListener(selectNode: Node) {
         showDialog(selectNode) { node, description ->
-            mindMapViewModel.updateNode(node, description)
+            val newNode = when (node) {
+                is CircleNode -> node.copy(description = description)
+                is RectangleNode -> node.copy(description = description)
+            }
+            mindMapViewModel.updateNode(newNode)
         }
     }
 }
