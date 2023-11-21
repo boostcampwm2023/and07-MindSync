@@ -116,6 +116,11 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             is CircleNode -> copyNode.copy(nodes = newNodes)
             is RectangleNode -> copyNode.copy(nodes = newNodes)
         }
+        mindMapViewModel?.selectedNode?.value.let { selectedNode ->
+            if (selectedNode?.id == newNode.id) {
+                mindMapViewModel?.selectNode(newNode)
+            }
+        }
         return newNode
     }
 
