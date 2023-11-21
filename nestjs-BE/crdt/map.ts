@@ -1,4 +1,4 @@
-import { LWWRegister, lwwRegisterState } from './lww-register';
+import { LWWRegister, lwwRegisterState } from './register';
 
 export type lwwMapState<T> = {
   [key: string]: lwwRegisterState<T>;

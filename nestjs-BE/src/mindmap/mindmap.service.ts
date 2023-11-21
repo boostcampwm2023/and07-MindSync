@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LWWMap, lwwMapState } from 'crdt/lww-map';
+import { LWWMap, lwwMapState } from 'crdt/map';
 
 @Injectable()
 export class MindmapService {
