@@ -70,6 +70,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun arrangeNode() {
         head = rightLayoutManager.arrangeNode(head)
+        mindmapContainer?.updateHead(head)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
