@@ -20,6 +20,7 @@ import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
+import java.lang.Float.max
 
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private lateinit var head: Node
@@ -51,6 +52,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private val lineHeight = Dp(15f)
+    private val padding = Dp(20f)
     private var touchedNode: Node? = null
     private lateinit var mindMapViewModel: MindMapViewModel
 
@@ -59,9 +61,6 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         traverseTextHead()
         arrangeNode()
         traverseDrawHead(canvas)
-//        touchedNode?.let { touchNode ->
-//            makeStrokeNode(canvas, touchNode)
-//        }
         mindMapViewModel.selectedNode.value?.let { selectNode ->
             makeStrokeNode(canvas, selectNode)
         }
@@ -115,27 +114,21 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         return newNode
     }
 
-    private fun changeSize(node: Node, width: Px, height: Float): Node {
+    private fun changeSize(node: Node, width: Float, height: Float): Node {
         when (node) {
             is CircleNode -> {
-                var newRadius = node.path.radius
-                if (width.toDp(context) > node.path.radius.dpVal && !node.description.contains("\n")
-                ) {
-                    newRadius = Dp(width.toDp(context) / 2) + lineHeight / 2
-                }
-                if (node.description.contains("\n")) {
-                    newRadius = (Dp(height) - lineHeight) / 2
-                }
+                var newRadius = Dp(
+                    max(
+                        (Dp(Px(width).toDp(context) / 2) + padding).dpVal,
+                        ((Dp(Px(height).toDp(context)) + padding*2)/2).dpVal,
+                    ),
+                )
                 return node.copy(node.path.copy(radius = newRadius))
             }
 
             is RectangleNode -> {
-                var newWidth = node.path.width
-                if (width.toDp(context) > node.path.width.dpVal && !node.description.contains("\n")
-                ) {
-                    newWidth = Dp(width.toDp(context)) + lineHeight
-                }
-                val newHeight = Dp(height) / 2 + lineHeight
+                var newWidth = Dp(Px(width).toDp(context)) + padding
+                val newHeight = Dp(Px(height).toDp(context)) + padding
                 return node.copy(node.path.copy(width = newWidth, height = newHeight))
             }
         }
@@ -251,7 +244,14 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         return sum
     }
 
-    private fun sumWidth(description: String) = Px(textPaint.measureText(description))
+    private fun sumWidth(description: String): Float {
+        var sum = 0f
+        description.split("\n").forEach {
+            sum = max(sum, textPaint.measureText(it))
+        }
+        return sum
+    }
+
     private fun drawText(canvas: Canvas, node: Node) {
         val lines = node.description.split("\n")
         var bounds = Rect()
