@@ -35,7 +35,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayo
     lateinit var mindmapContainer: MindmapContainer
     lateinit var mindMapViewModel: MindMapViewModel
 
-    fun run() {
+    fun initializeZoomLayout() {
         mindMapViewModel = mindmapContainer.mindMapViewModel
         nodeView = NodeView(context, attrs = null)
         nodeView.setViewModel(mindMapViewModel)

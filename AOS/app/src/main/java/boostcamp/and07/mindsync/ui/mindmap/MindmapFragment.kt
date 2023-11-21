@@ -33,7 +33,7 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
         binding.view = this
         mindmapContainer.setViewModel(mindMapViewModel)
         binding.zoomLayoutMindmapRoot.mindmapContainer = mindmapContainer
-        binding.zoomLayoutMindmapRoot.run()
+        binding.zoomLayoutMindmapRoot.initializeZoomLayout()
     }
 
     private fun showDialog(selectNode: Node, action: (Node, String) -> Unit) {
