@@ -81,4 +81,26 @@ class MindMapViewModel : ViewModel() {
             is CircleNode -> node.copy(nodes = newNodes)
         }
     }
+
+    fun updateNode(updateNode: Node, description: String) {
+        _head.value = traverseUpdateNode(head.value, updateNode, description)
+    }
+
+    private fun traverseUpdateNode(node: Node, target: Node, description: String): Node {
+        val newNodes = node.nodes.toMutableList()
+        if (node.id == target.id) {
+            return when (node) {
+                is CircleNode -> node.copy(description = description)
+                is RectangleNode -> node.copy(description = description)
+            }
+        }
+        newNodes.clear()
+        node.nodes.forEach { child ->
+            newNodes.add(traverseUpdateNode(child, target, description) as RectangleNode)
+        }
+        return when (node) {
+            is RectangleNode -> node.copy(nodes = newNodes)
+            is CircleNode -> node.copy(nodes = newNodes)
+        }
+    }
 }

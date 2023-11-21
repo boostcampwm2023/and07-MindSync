@@ -48,4 +48,10 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
             mindMapViewModel.addNode(node, description)
         }
     }
+
+    fun editButtonListener(selectNode: Node) {
+        showDialog(selectNode) { node, description ->
+            mindMapViewModel.updateNode(node, description)
+        }
+    }
 }
