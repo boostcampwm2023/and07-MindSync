@@ -13,7 +13,6 @@ import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
-import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 
 class LineView constructor(
     context: Context,
@@ -27,18 +26,12 @@ class LineView constructor(
     }
     private val path = Path()
     var head = SampleNode.head
-    private val rightLayoutManager = MindmapRightLayoutManager()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        arrangeNode()
         if (head.nodes.isNotEmpty()) {
             traverseLine(canvas, head, 0)
         }
-    }
-
-    private fun arrangeNode() {
-        head = rightLayoutManager.arrangeNode(head)
     }
 
     fun updateWithNewHead(newHead: Node) {
