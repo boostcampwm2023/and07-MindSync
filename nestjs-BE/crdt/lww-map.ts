@@ -37,7 +37,7 @@ export class LWWMap<T> {
         key,
         new LWWRegister(this.id, {
           id: this.id,
-          timestamp: Date.now(),
+          timestamp: 1,
           value,
         }),
       );

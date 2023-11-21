@@ -18,7 +18,7 @@ export class LWWRegister<T> {
   }
 
   setValue(value: T): void {
-    this.state = { id: this.id, timestamp: Date.now(), value };
+    this.state = { id: this.id, timestamp: this.state.timestamp + 1, value };
   }
 
   merge(state: lwwRegisterState<T>): void {
