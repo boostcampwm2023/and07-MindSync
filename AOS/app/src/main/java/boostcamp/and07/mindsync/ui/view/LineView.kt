@@ -8,10 +8,11 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
 import boostcamp.and07.mindsync.data.SampleNode
+import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
+import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
-import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 
 class LineView constructor(
     context: Context,
@@ -24,22 +25,21 @@ class LineView constructor(
         isAntiAlias = true
     }
     private val path = Path()
-    private var head = SampleNode.head
-    private val rightLayoutManager = MindmapRightLayoutManager()
+    var head = SampleNode.head
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        arrangeNode()
         if (head.nodes.isNotEmpty()) {
-            traverseLine(canvas, head, 1)
+            traverseLine(canvas, head, 0)
         }
     }
 
-    private fun arrangeNode() {
-        head = rightLayoutManager.arrangeNode(head)
+    fun updateWithNewHead(newHead: Node) {
+        head = newHead
+        invalidate()
     }
 
-    private fun traverseLine(canvas: Canvas, node: Node, depth: Int) {
+    fun traverseLine(canvas: Canvas, node: Node, depth: Int) {
         for (toNode in node.nodes) {
             drawLine(node, toNode, canvas)
             traverseLine(canvas, toNode, depth + 1)
@@ -47,17 +47,26 @@ class LineView constructor(
     }
 
     private fun drawLine(fromNode: Node, toNode: Node, canvas: Canvas) {
+        val startX = getNodeEdgeX(fromNode, true)
+        val startY = fromNode.path.centerY.toPx(context)
+        val endX = getNodeEdgeX(toNode, false)
+        val endY = toNode.path.centerY.toPx(context)
+        val midX = (startX + endX) / 2
+
         val path = path.apply {
             reset()
-            moveTo(
-                fromNode.path.centerX.toPx(context),
-                fromNode.path.centerY.toPx(context),
-            )
-            lineTo(
-                toNode.path.centerX.toPx(context),
-                toNode.path.centerY.toPx(context),
-            )
+            moveTo(startX, startY)
+            cubicTo(midX, startY, midX, endY, endX, endY)
         }
         canvas.drawPath(path, paint)
+    }
+
+    private fun getNodeEdgeX(node: Node, isStart: Boolean): Float {
+        val nodeCenterX = node.path.centerX.toPx(context)
+        val widthOffset = when (node) {
+            is CircleNode -> node.path.radius.toPx(context)
+            is RectangleNode -> node.path.width.toPx(context) / 2
+        }
+        return if (isStart) nodeCenterX + widthOffset else nodeCenterX - widthOffset
     }
 }

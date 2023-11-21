@@ -50,10 +50,10 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         strokeWidth = Dp(5f).toPx(context)
         isAntiAlias = true
     }
-
     private val lineHeight = Dp(15f)
     private val padding = Dp(20f)
     private var touchedNode: Node? = null
+    var mindmapContainer: MindmapContainer? = null
     private lateinit var mindMapViewModel: MindMapViewModel
 
     override fun onDraw(canvas: Canvas) {
@@ -66,8 +66,14 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         }
     }
 
+    fun changeNodeSize() {
+        traverseTextHead()
+        mindmapContainer?.updateHead(head)
+    }
+
     private fun arrangeNode() {
         head = rightLayoutManager.arrangeNode(head)
+        mindmapContainer?.updateHead(head)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
