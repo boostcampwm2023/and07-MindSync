@@ -2,7 +2,6 @@ package boostcamp.and07.mindsync.ui.dialog
 
 import android.app.Dialog
 import android.content.DialogInterface
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -13,7 +12,7 @@ import androidx.fragment.app.DialogFragment
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 
-class EditDescriptionDialog(private val color: Int) : DialogFragment() {
+class EditDescriptionDialog : DialogFragment() {
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
     private lateinit var editDialogInterface: EditDialogInterface
@@ -49,7 +48,6 @@ class EditDescriptionDialog(private val color: Int) : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        binding.root.backgroundTintList = ColorStateList.valueOf(color)
         dialog?.window?.setLayout(
             1000,
             1000,

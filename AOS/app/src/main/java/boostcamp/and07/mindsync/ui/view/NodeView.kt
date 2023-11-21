@@ -11,22 +11,36 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.SampleNode
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
+import java.lang.Float.max
 
 class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    var head = SampleNode.head
+    private lateinit var head: Node
     private val circlePaint = Paint().apply {
         color = context.getColor(R.color.mindmap1)
     }
     private val rectanglePaint = Paint()
+    private val textPaint = TextPaint().apply {
+        color = Color.RED
+        textSize = Dp(12f).toPx(context)
+        isAntiAlias = true
+        typeface = ResourcesCompat.getFont(context, R.font.pretendard_bold)
+        textAlign = Paint.Align.CENTER
+    }
+    private val strokePaint = Paint().apply {
+        color = context.getColor(R.color.blue)
+        style = Paint.Style.STROKE
+        strokeWidth = Dp(5f).toPx(context)
+        isAntiAlias = true
+    }
     private val nodeColors = listOf(
         context.getColor(R.color.main3),
         context.getColor(R.color.mindmap2),
@@ -35,37 +49,19 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         context.getColor(R.color.mindmap5),
     )
     private val rightLayoutManager = MindmapRightLayoutManager()
-    private val textPaint = TextPaint().apply {
-        color = Color.RED
-        textSize = Dp(12f).toPx(context)
-        isAntiAlias = true
-        typeface = ResourcesCompat.getFont(context, R.font.pretendard_bold)
-        textAlign = Paint.Align.CENTER
-    }
-
-    private val strokePaint = Paint().apply {
-        color = context.getColor(R.color.blue)
-        style = Paint.Style.STROKE
-        strokeWidth = Dp(5f).toPx(context)
-        isAntiAlias = true
-    }
     private val lineHeight = Dp(15f)
-    private var touchedNode: Node? = null
+    private val padding = Dp(20f)
     var mindmapContainer: MindmapContainer? = null
+    private var mindMapViewModel = mindmapContainer?.mindMapViewModel
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         traverseTextHead()
         arrangeNode()
         traverseDrawHead(canvas)
-        touchedNode?.let { touchNode ->
-            makeStrokeNode(canvas, touchNode)
+        mindMapViewModel?.selectedNode?.value?.let { selectNode ->
+            makeStrokeNode(canvas, selectNode)
         }
-    }
-
-    fun changeNodeSize() {
-        traverseTextHead()
-        mindmapContainer?.updateHead(head)
     }
 
     private fun arrangeNode() {
@@ -82,11 +78,26 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         return super.onTouchEvent(event)
     }
 
-    fun traverseDrawHead(canvas: Canvas) {
+    fun setViewModel(viewModel: MindMapViewModel) {
+        this.mindMapViewModel = viewModel
+        head = viewModel.head.value
+    }
+
+    fun updateHead(headNode: Node) {
+        head = headNode
+        invalidate()
+    }
+
+    private fun traverseDrawHead(canvas: Canvas) {
         traverseDrawNode(canvas, head, 0)
     }
 
     private fun traverseDrawNode(canvas: Canvas, node: Node, depth: Int) {
+        mindMapViewModel?.selectedNode?.value.let { selectedNode ->
+            if (selectedNode?.id == node.id) {
+                mindMapViewModel?.setSelectedNode(node)
+            }
+        }
         drawNode(canvas, node, depth)
         node.nodes.forEach { node ->
             traverseDrawNode(canvas, node, depth + 1)
@@ -95,6 +106,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun traverseTextHead() {
         head = traverseTextNode(head)
+        mindmapContainer?.updateHead(head)
     }
 
     private fun traverseTextNode(node: Node): Node {
@@ -115,21 +127,29 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun changeSize(node: Node, width: Float, height: Float): Node {
         when (node) {
             is CircleNode -> {
-                var newRadius = node.path.radius
-                newRadius = Dp(
-                    maxOf(
-                        (Dp(Px(width).toDp(context) / 2) + lineHeight / 2).dpVal,
-                        ((Dp(height) - lineHeight) / 2).dpVal,
+                var newRadius = Dp(
+                    max(
+                        (Dp(Px(width).toDp(context) / 2) + padding).dpVal,
+                        ((Dp(Px(height).toDp(context)) + padding * 2) / 2).dpVal,
                     ),
                 )
-                return node.copy(node.path.copy(radius = newRadius))
+                return node.copy(
+                    id = node.id,
+                    node.path.copy(radius = newRadius),
+                    description = node.description,
+                    nodes = node.nodes,
+                )
             }
 
             is RectangleNode -> {
-                var newWidth = node.path.width
-                newWidth = Dp(Px(width).toDp(context)) / 2 + lineHeight
-                val newHeight = Dp(height) / 2 + lineHeight
-                return node.copy(node.path.copy(width = newWidth, height = newHeight))
+                var newWidth = Dp(Px(width).toDp(context)) + padding
+                val newHeight = Dp(Px(height).toDp(context)) + padding
+                return node.copy(
+                    id = node.id,
+                    node.path.copy(width = newWidth, height = newHeight),
+                    description = node.description,
+                    nodes = node.nodes,
+                )
             }
         }
     }
@@ -138,9 +158,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
-            touchedNode = it.first
+            mindMapViewModel?.setSelectedNode(it.first)
         } ?: run {
-            touchedNode = null
+            mindMapViewModel?.setSelectedNode(null)
         }
         invalidate()
     }
@@ -244,9 +264,8 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun sumWidth(description: String): Float {
         var sum = 0f
-        Px(textPaint.measureText(description))
         description.split("\n").forEach {
-            sum = maxOf(sum, textPaint.measureText(description))
+            sum = max(sum, textPaint.measureText(it))
         }
         return sum
     }

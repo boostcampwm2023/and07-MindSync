@@ -4,7 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel" />
+        <import type="android.view.View"/>
+        <variable
+            name="view"
+            type="boostcamp.and07.mindsync.ui.mindmap.MindmapFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,17 +19,18 @@
         tools:context=".ui.mindmap.MindmapFragment">
 
         <boostcamp.and07.mindsync.ui.view.ZoomLayout
+            android:id="@+id/zoom_layout_mindmap_root"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toTopOf="@id/view_mindmap_side_bar"/>
 
         <androidx.constraintlayout.widget.Group
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:visibility="gone"
+            android:visibility="@{vm.selectedNode != null ? View.VISIBLE : View.GONE}"
             app:constraint_referenced_ids="imgbtn_mindmap_add,imgbtn_mindmap_back,imgbtn_mindmap_remove,imgbtn_mindmap_edit,view_mindmap_side_bar"
             app:layout_constraintBottom_toBottomOf="@id/view_mindmap_side_bar"
             app:layout_constraintEnd_toEndOf="@id/view_mindmap_side_bar"
@@ -45,18 +52,19 @@
             android:layout_height="25dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_add"
+            android:onClick="@{() -> view.addButtonListener(vm.selectedNode)}"
             app:layout_constraintBottom_toBottomOf="@id/view_mindmap_side_bar"
             app:layout_constraintEnd_toStartOf="@id/imgbtn_mindmap_remove"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="@id/view_mindmap_side_bar"
             app:layout_constraintTop_toTopOf="@id/view_mindmap_side_bar" />
-
         <ImageButton
             android:id="@+id/imgbtn_mindmap_remove"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_remove"
+            android:background="@drawable/btn_remove"
+            android:onClick="@{() -> vm.removeNode(vm.selectedNode)}"
+            app:removeBtn="@{vm.selectedNode}"
             app:layout_constraintBottom_toBottomOf="@id/view_mindmap_side_bar"
             app:layout_constraintEnd_toStartOf="@id/imgbtn_mindmap_edit"
             app:layout_constraintHorizontal_chainStyle="spread"
@@ -69,6 +77,7 @@
             android:layout_height="25dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_outlined_drawing"
+            android:onClick="@{() -> view.editButtonListener(vm.selectedNode)}"
             app:layout_constraintBottom_toBottomOf="@id/view_mindmap_side_bar"
             app:layout_constraintEnd_toStartOf="@id/imgbtn_mindmap_back"
             app:layout_constraintHorizontal_chainStyle="spread"
