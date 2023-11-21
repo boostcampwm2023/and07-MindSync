@@ -41,6 +41,11 @@ class LineView constructor(
         head = rightLayoutManager.arrangeNode(head)
     }
 
+    fun updateWithNewHead(newHead: Node) {
+        head = newHead
+        invalidate()
+    }
+
     fun traverseLine(canvas: Canvas, node: Node, depth: Int) {
         for (toNode in node.nodes) {
             drawLine(node, toNode, canvas)
