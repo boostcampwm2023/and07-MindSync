@@ -95,7 +95,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private fun traverseDrawNode(canvas: Canvas, node: Node, depth: Int) {
         mindMapViewModel?.selectedNode?.value.let { selectedNode ->
             if (selectedNode?.id == node.id) {
-                mindMapViewModel?.selectNode(node)
+                mindMapViewModel?.setSelectedNode(node)
             }
         }
         drawNode(canvas, node, depth)
@@ -158,9 +158,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
-            mindMapViewModel?.selectNode(it.first)
+            mindMapViewModel?.setSelectedNode(it.first)
         } ?: run {
-            mindMapViewModel?.selectNode(null)
+            mindMapViewModel?.setSelectedNode(null)
         }
         invalidate()
     }

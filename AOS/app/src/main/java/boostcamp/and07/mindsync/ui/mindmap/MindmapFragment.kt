@@ -12,6 +12,7 @@ import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.view.MindmapContainer
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_mindmap) {
@@ -20,8 +21,8 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
     private val mindmapContainer = MindmapContainer()
     override fun initView() {
         setBinding()
-        lifecycleScope.launch {
-            mindMapViewModel.head.collect { newHead ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            mindMapViewModel.head.collectLatest { newHead ->
                 binding.zoomLayoutMindmapRoot.lineView.updateHead(newHead)
                 binding.zoomLayoutMindmapRoot.nodeView.updateHead(newHead)
             }
@@ -43,7 +44,7 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
                 action.invoke(selectNode, description)
             }
         })
-        dialog.show(activity?.supportFragmentManager!!, "EditDescriptionDialog")
+        dialog.show(requireActivity().supportFragmentManager, "EditDescriptionDialog")
     }
 
     fun addButtonListener(selectNode: Node) {

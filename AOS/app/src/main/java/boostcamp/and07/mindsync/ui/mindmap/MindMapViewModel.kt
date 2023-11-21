@@ -42,7 +42,7 @@ class MindMapViewModel : ViewModel() {
         _head.value = traverseRemoveNode(head.value, target as RectangleNode)
     }
 
-    fun selectNode(selectNode: Node?) {
+    fun setSelectedNode(selectNode: Node?) {
         _selectedNode.value = selectNode
     }
 
