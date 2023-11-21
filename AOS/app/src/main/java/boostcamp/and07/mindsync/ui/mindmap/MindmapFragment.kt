@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
-import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import boostcamp.and07.mindsync.R

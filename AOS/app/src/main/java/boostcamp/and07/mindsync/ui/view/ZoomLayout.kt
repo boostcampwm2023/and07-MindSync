@@ -33,7 +33,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayo
     lateinit var nodeView: NodeView
     lateinit var lineView: LineView
     lateinit var mindmapContainer: MindmapContainer
-    lateinit var mindMapViewModel : MindMapViewModel
+    lateinit var mindMapViewModel: MindMapViewModel
 
     fun run() {
         mindMapViewModel = mindmapContainer.mindMapViewModel
