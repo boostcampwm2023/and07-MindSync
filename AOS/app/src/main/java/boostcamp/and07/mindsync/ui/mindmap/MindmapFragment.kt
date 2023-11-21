@@ -20,8 +20,8 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
         setBinding()
         lifecycleScope.launch {
             mindMapViewModel.head.collect { newHead ->
-                binding.rootView.lineView.updateHead(newHead)
-                binding.rootView.nodeView.updateHead(newHead)
+                binding.zoomLayoutMindmapRoot.lineView.updateHead(newHead)
+                binding.zoomLayoutMindmapRoot.nodeView.updateHead(newHead)
             }
         }
     }
@@ -30,8 +30,8 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
         binding.vm = mindMapViewModel
         binding.view = this
         mindmapContainer.setViewModel(mindMapViewModel)
-        binding.rootView.mindmapContainer = mindmapContainer
-        binding.rootView.run()
+        binding.zoomLayoutMindmapRoot.mindmapContainer = mindmapContainer
+        binding.zoomLayoutMindmapRoot.run()
     }
 
     private fun showDialog(selectNode: Node, action: (Node, String) -> Unit) {
