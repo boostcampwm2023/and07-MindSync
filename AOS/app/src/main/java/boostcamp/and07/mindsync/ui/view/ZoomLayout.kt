@@ -29,6 +29,21 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayo
     private var dx = 0f
     private var dy = 0f
     private var mode = LayoutMode.DRAG
+    private var nodeView: NodeView
+    private var lineView: LineView
+    private val mindmapContainer = MindmapContainer()
+
+    init {
+        nodeView = NodeView(context, attrs)
+        lineView = LineView(context, attrs)
+        mindmapContainer.nodeView = nodeView
+        mindmapContainer.lineView = lineView
+        nodeView.mindmapContainer = mindmapContainer
+        nodeView.changeNodeSize()
+        addView(nodeView)
+        addView(lineView)
+        applyScaleAndTranslation()
+    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
