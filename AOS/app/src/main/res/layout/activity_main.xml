@@ -11,7 +11,7 @@
         android:id="@+id/drawer_layout_main_side_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.MainActivity"
+        tools:context=".ui.main.MainActivity"
         tools:openDrawer="start">
 
         <androidx.constraintlayout.widget.ConstraintLayout
