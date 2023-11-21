@@ -7,10 +7,10 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
-import boostcamp.and07.mindsync.data.SampleNode
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
 
@@ -25,7 +25,11 @@ class LineView constructor(
         isAntiAlias = true
     }
     private val path = Path()
-    var head = SampleNode.head
+
+    // private var head = SampleNode.head
+
+    lateinit var head: Node
+    private lateinit var mindMapViewModel: MindMapViewModel
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -36,6 +40,16 @@ class LineView constructor(
 
     fun updateWithNewHead(newHead: Node) {
         head = newHead
+        invalidate()
+    }
+
+    fun setViewModel(viewModel: MindMapViewModel) {
+        this.mindMapViewModel = viewModel
+        head = viewModel.head.value
+    }
+
+    fun updateHead(headNode: Node) {
+        head = headNode
         invalidate()
     }
 
