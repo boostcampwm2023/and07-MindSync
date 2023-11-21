@@ -93,6 +93,11 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun traverseDrawNode(canvas: Canvas, node: Node, depth: Int) {
+        mindMapViewModel?.selectedNode?.value.let { selectedNode ->
+            if (selectedNode?.id == node.id) {
+                mindMapViewModel?.selectNode(node)
+            }
+        }
         drawNode(canvas, node, depth)
         node.nodes.forEach { node ->
             traverseDrawNode(canvas, node, depth + 1)
@@ -115,11 +120,6 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         val newNode = when (copyNode) {
             is CircleNode -> copyNode.copy(nodes = newNodes)
             is RectangleNode -> copyNode.copy(nodes = newNodes)
-        }
-        mindMapViewModel?.selectedNode?.value.let { selectedNode ->
-            if (selectedNode?.id == newNode.id) {
-                mindMapViewModel?.selectNode(newNode)
-            }
         }
         return newNode
     }
