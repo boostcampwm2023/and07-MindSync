@@ -4,12 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
 import boostcamp.and07.mindsync.ui.view.model.LayoutMode
 import java.lang.Float.max
 import java.lang.Float.min
 
-class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayout(context, attrs) {
+class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
     private var scaleFactor = DEFAULT_ZOOM
     private var focusX = 0f
     private var focusY = 0f
