@@ -12,29 +12,49 @@ import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.view.MindmapContainer
+import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
+import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_mindmap) {
+class MindmapFragment :
+    BaseFragment<FragmentMindmapBinding>(R.layout.fragment_mindmap),
+    NodeClickListener,
+    NodeUpdateListener {
 
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private val mindmapContainer = MindmapContainer()
     override fun initView() {
         setBinding()
-        viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.head.collectLatest { newHead ->
-                binding.zoomLayoutMindmapRoot.lineView.updateHead(newHead)
-                binding.zoomLayoutMindmapRoot.nodeView.updateHead(newHead)
-            }
-        }
+        collectHead()
+        collectSelectedNode()
     }
 
     private fun setBinding() {
         binding.vm = mindMapViewModel
         binding.view = this
-        mindmapContainer.setViewModel(mindMapViewModel)
+        mindmapContainer.setNodeClickListener(this)
+        mindmapContainer.setNodeUpdateListener(this)
         binding.zoomLayoutMindmapRoot.mindmapContainer = mindmapContainer
         binding.zoomLayoutMindmapRoot.initializeZoomLayout()
+    }
+
+    private fun collectHead() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mindMapViewModel.head.collectLatest { newHead ->
+                mindmapContainer.updateHead(newHead)
+                binding.zoomLayoutMindmapRoot.lineView.updateHead(mindmapContainer.head)
+                binding.zoomLayoutMindmapRoot.nodeView.updateHead(mindmapContainer.head)
+            }
+        }
+    }
+
+    private fun collectSelectedNode() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mindMapViewModel.selectedNode.collectLatest { selectNode ->
+                mindmapContainer.setSelectedNode(selectNode)
+            }
+        }
     }
 
     private fun showDialog(selectNode: Node, action: (Node, String) -> Unit) {
@@ -61,5 +81,13 @@ class MindmapFragment : BaseFragment<FragmentMindmapBinding>(R.layout.fragment_m
             }
             mindMapViewModel.updateNode(newNode)
         }
+    }
+
+    override fun clickNode(node: Node?) {
+        mindMapViewModel.setSelectedNode(node)
+    }
+
+    override fun updateHead(head: Node) {
+        mindMapViewModel.updateHead(head)
     }
 }
