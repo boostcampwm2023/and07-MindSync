@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.constraintlayout.widget.ConstraintLayout
-import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 import boostcamp.and07.mindsync.ui.view.model.LayoutMode
 import java.lang.Float.max
 import java.lang.Float.min
@@ -33,19 +32,12 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayo
     lateinit var nodeView: NodeView
     lateinit var lineView: LineView
     lateinit var mindmapContainer: MindmapContainer
-    lateinit var mindMapViewModel: MindMapViewModel
 
     fun initializeZoomLayout() {
-        mindMapViewModel = mindmapContainer.mindMapViewModel
-        nodeView = NodeView(context, attrs = null)
-        nodeView.setViewModel(mindMapViewModel)
-        lineView = LineView(context, attrs = null)
-        lineView.setViewModel(mindMapViewModel)
-        mindmapContainer.nodeView = nodeView
-        mindmapContainer.lineView = lineView
-        nodeView.mindmapContainer = mindmapContainer
-        addView(nodeView)
+        nodeView = NodeView(mindmapContainer, context, attrs = null)
+        lineView = LineView(mindmapContainer, context, attrs = null)
         addView(lineView)
+        addView(nodeView)
         applyScaleAndTranslation()
     }
 

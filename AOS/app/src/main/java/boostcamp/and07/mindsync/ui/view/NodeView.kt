@@ -14,7 +14,6 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
@@ -22,8 +21,12 @@ import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 import java.lang.Float.max
 
-class NodeView constructor(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    private lateinit var head: Node
+class NodeView constructor(
+    val mindmapContainer: MindmapContainer,
+    context: Context,
+    attrs: AttributeSet?,
+) : View(context, attrs) {
+    lateinit var head: Node
     private val circlePaint = Paint().apply {
         color = context.getColor(R.color.mindmap1)
     }
@@ -51,22 +54,20 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     private val rightLayoutManager = MindmapRightLayoutManager()
     private val lineHeight = Dp(15f)
     private val padding = Dp(20f)
-    var mindmapContainer: MindmapContainer? = null
-    private var mindMapViewModel = mindmapContainer?.mindMapViewModel
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         traverseTextHead()
         arrangeNode()
         traverseDrawHead(canvas)
-        mindMapViewModel?.selectedNode?.value?.let { selectNode ->
-            makeStrokeNode(canvas, selectNode)
+        mindmapContainer.selectNode?.let { selectedNode ->
+            makeStrokeNode(canvas, selectedNode)
         }
     }
 
     private fun arrangeNode() {
         head = rightLayoutManager.arrangeNode(head)
-        mindmapContainer?.updateHead(head)
+        mindmapContainer.updateHead(head)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -76,11 +77,6 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
             }
         }
         return super.onTouchEvent(event)
-    }
-
-    fun setViewModel(viewModel: MindMapViewModel) {
-        this.mindMapViewModel = viewModel
-        head = viewModel.head.value
     }
 
     fun updateHead(headNode: Node) {
@@ -93,9 +89,9 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
     }
 
     private fun traverseDrawNode(canvas: Canvas, node: Node, depth: Int) {
-        mindMapViewModel?.selectedNode?.value.let { selectedNode ->
-            if (selectedNode?.id == node.id) {
-                mindMapViewModel?.setSelectedNode(node)
+        mindmapContainer.selectNode?.let { selectedNode ->
+            if (selectedNode.id == node.id) {
+                mindmapContainer.setSelectedNode(node)
             }
         }
         drawNode(canvas, node, depth)
@@ -106,7 +102,7 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
 
     private fun traverseTextHead() {
         head = traverseTextNode(head)
-        mindmapContainer?.updateHead(head)
+        mindmapContainer.updateHead(head)
     }
 
     private fun traverseTextNode(node: Node): Node {
@@ -158,9 +154,11 @@ class NodeView constructor(context: Context, attrs: AttributeSet?) : View(contex
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
-            mindMapViewModel?.setSelectedNode(it.first)
+            mindmapContainer.setSelectedNode(it.first)
+            // mindMapViewModel?.setSelectedNode(it.first)
         } ?: run {
-            mindMapViewModel?.setSelectedNode(null)
+            mindmapContainer.setSelectedNode(null)
+            // mindMapViewModel?.setSelectedNode(null)
         }
         invalidate()
     }

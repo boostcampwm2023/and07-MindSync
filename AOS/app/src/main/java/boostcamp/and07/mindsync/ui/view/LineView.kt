@@ -10,11 +10,11 @@ import android.view.View
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
 
 class LineView constructor(
+    val mindmapContainer: MindmapContainer,
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
@@ -25,27 +25,12 @@ class LineView constructor(
         isAntiAlias = true
     }
     private val path = Path()
-
-    // private var head = SampleNode.head
-
-    lateinit var head: Node
-    private lateinit var mindMapViewModel: MindMapViewModel
-
+    private lateinit var head: Node
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (head.nodes.isNotEmpty()) {
             traverseLine(canvas, head, 0)
         }
-    }
-
-    fun updateWithNewHead(newHead: Node) {
-        head = newHead
-        invalidate()
-    }
-
-    fun setViewModel(viewModel: MindMapViewModel) {
-        this.mindMapViewModel = viewModel
-        head = viewModel.head.value
     }
 
     fun updateHead(headNode: Node) {
