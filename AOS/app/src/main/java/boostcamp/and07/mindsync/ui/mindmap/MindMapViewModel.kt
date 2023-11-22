@@ -9,9 +9,10 @@ import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 class MindMapViewModel : ViewModel() {
-    private var _head = MutableStateFlow<Node>(
+    private val _head = MutableStateFlow<Node>(
         CircleNode(
             id = IdGenerator.makeRandomNodeId(),
             path = CirclePath(
@@ -100,5 +101,13 @@ class MindMapViewModel : ViewModel() {
 
     fun updateHead(newHead: Node) {
         _head.value = newHead
+    }
+
+    fun updateHead(windowHeight: Dp) {
+        _head.update { root ->
+            (root as CircleNode).copy(
+                path = root.path.copy(centerY = windowHeight),
+            )
+        }
     }
 }

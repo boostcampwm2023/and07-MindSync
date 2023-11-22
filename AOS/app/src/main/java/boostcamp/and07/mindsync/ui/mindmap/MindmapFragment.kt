@@ -11,6 +11,9 @@ import boostcamp.and07.mindsync.databinding.FragmentMindmapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
+import boostcamp.and07.mindsync.ui.util.Dp
+import boostcamp.and07.mindsync.ui.util.Px
+import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindmapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
 import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
@@ -25,9 +28,16 @@ class MindmapFragment :
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private val mindmapContainer = MindmapContainer()
     override fun initView() {
+        setupRootNode()
         setBinding()
         collectHead()
         collectSelectedNode()
+    }
+
+    private fun setupRootNode() {
+        val displayMetrics = requireActivity().resources.displayMetrics
+        val screenHeight = Dp(Px(displayMetrics.heightPixels.toFloat()).toDp(requireContext()))
+        mindMapViewModel.updateHead(screenHeight / 2)
     }
 
     private fun setBinding() {
