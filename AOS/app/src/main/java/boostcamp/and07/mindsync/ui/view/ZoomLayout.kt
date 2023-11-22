@@ -136,7 +136,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayo
 
     companion object {
         private const val DEFAULT_ZOOM = 1f
-        private const val MIN_ZOOM = 0.5f
+        private const val MIN_ZOOM = 0.2f
         private const val MAX_ZOOM = 5f
     }
 }
