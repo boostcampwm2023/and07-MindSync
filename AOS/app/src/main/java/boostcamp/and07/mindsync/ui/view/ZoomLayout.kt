@@ -2,7 +2,6 @@ package boostcamp.and07.mindsync.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.constraintlayout.widget.ConstraintLayout
