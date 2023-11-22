@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.view.layout
 
 import boostcamp.and07.mindsync.data.model.CircleNode
+import boostcamp.and07.mindsync.data.model.CirclePath
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
@@ -39,16 +40,26 @@ class MindmapRightLayoutManager {
         newNodes.forEachIndexed { index, childNode ->
             newNodes[index] = arrangeNode(childNode) as RectangleNode
         }
-
         val newNode = when (node) {
             is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
+            is CircleNode -> {
+                val newCenterY =
+                    if (node.path.centerY.dpVal >= (childHeightSum / 2).dpVal) node.path.centerY else childHeightSum / 2
+                node.copy(
+                    path = CirclePath(
+                        centerX = node.path.centerX,
+                        centerY = newCenterY,
+                        radius = node.path.radius,
+                    ),
+                    nodes = newNodes,
+                )
+            }
         }
 
         return newNode
     }
 
-    private fun measureChildHeight(node: Node): Dp {
+    fun measureChildHeight(node: Node): Dp {
         var heightSum = Dp(0f)
 
         if (node.nodes.isNotEmpty()) {
