@@ -97,4 +97,8 @@ class MindMapViewModel : ViewModel() {
             is CircleNode -> node.copy(nodes = newNodes)
         }
     }
+
+    fun updateHead(newHead: Node) {
+        _head.value = newHead
+    }
 }
