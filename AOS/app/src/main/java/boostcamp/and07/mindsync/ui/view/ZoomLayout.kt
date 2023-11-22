@@ -12,12 +12,16 @@ import java.lang.Float.min
 
 class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayout(context, attrs) {
     private var scaleFactor = DEFAULT_ZOOM
+    private var focusX = 0f
+    private var focusY = 0f
     private val scaleGestureDetector = ScaleGestureDetector(
         context,
         object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 scaleFactor *= detector.scaleFactor
                 scaleFactor = max(MIN_ZOOM, min(scaleFactor, MAX_ZOOM))
+                focusX = detector.focusX
+                focusY = detector.focusY
                 requestLayout()
                 applyScaleAndTranslation()
                 return true
@@ -122,6 +126,8 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : ConstraintLayo
             with(getChildAt(index)) {
                 scaleX = scaleFactor
                 scaleY = scaleFactor
+                pivotX = focusX
+                pivotY = focusY
                 translationX = dx
                 translationY = dy
             }
