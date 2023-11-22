@@ -23,6 +23,7 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_margin="20dp"
+                android:background="@android:color/transparent"
                 android:onClick="openDrawerButtonOnClick"
                 android:src="@drawable/ic_menu"
                 app:layout_constraintStart_toStartOf="parent"
