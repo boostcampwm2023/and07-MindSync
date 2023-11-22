@@ -34,21 +34,24 @@ export default class LRUCache {
       this.add(node);
       return node.value;
     }
-    return -1;
+    return null;
   }
 
   put(key: string, value: any): void {
-    if (this.hashmap[key]) this.remove(this.hashmap[key]);
+    if (this.hashmap[key]) this.delete(key);
 
     const node = new LRUNode(key, value);
     this.add(node);
     this.hashmap[key] = node;
-    if (Object.keys(this.hashmap).length > this.capacity) {
-      const oldestNode = this.head.next;
-      if (oldestNode) {
-        this.remove(oldestNode);
-        delete this.hashmap[oldestNode.key];
-      }
+
+    if (Object.keys(this.hashmap).length > this.capacity) this.removeOldest(1);
+  }
+
+  delete(key: string): void {
+    if (this.hashmap[key]) {
+      const node = this.hashmap[key];
+      this.remove(node);
+      delete this.hashmap[key];
     }
   }
 
