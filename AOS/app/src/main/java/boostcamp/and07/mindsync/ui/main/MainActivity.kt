@@ -6,7 +6,7 @@ import androidx.activity.addCallback
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
@@ -21,11 +21,17 @@ class MainActivity :
     private lateinit var navController: NavController
     override fun init() {
         drawerLayout = binding.drawerLayoutMainSideBar
-        navController = findNavController(R.id.fcv_main_nav_host)
+        setNavController()
         setBackPressedToast()
         setBackPressed()
         setSideBar()
         setSideBarNavigation()
+    }
+
+    private fun setNavController() {
+        val navHostFragment =
+            (supportFragmentManager.findFragmentById(R.id.fcv_main_nav_host) as NavHostFragment)
+        navController = navHostFragment.navController
     }
 
     private fun setSideBarNavigation() {
