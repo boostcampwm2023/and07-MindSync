@@ -48,11 +48,12 @@ class MindMapRightLayoutManager {
                 is RectangleNode -> node.copy(nodes = newNodes)
                 is CircleNode -> {
                     node.copy(
-                        path = CirclePath(
-                            centerX = node.path.centerX,
-                            centerY = newCenterY,
-                            radius = node.path.radius,
-                        ),
+                        path =
+                            CirclePath(
+                                centerX = node.path.centerX,
+                                centerY = newCenterY,
+                                radius = node.path.radius,
+                            ),
                         nodes = newNodes,
                     )
                 }

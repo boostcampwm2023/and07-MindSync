@@ -8,12 +8,13 @@ object NodeGenerator {
     fun makeNode(description: String) =
         RectangleNode(
             id = IdGenerator.makeRandomNodeId(),
-            path = RectanglePath(
-                Dp(0f),
-                Dp(0f),
-                Dp(0f),
-                Dp(0f),
-            ),
+            path =
+                RectanglePath(
+                    Dp(0f),
+                    Dp(0f),
+                    Dp(0f),
+                    Dp(0f),
+                ),
             description = description,
             listOf(),
         )

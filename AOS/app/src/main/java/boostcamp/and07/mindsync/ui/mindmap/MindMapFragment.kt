@@ -73,11 +73,13 @@ class MindMapFragment :
         action: (Node, String) -> Unit,
     ) {
         val dialog = EditDescriptionDialog()
-        dialog.setListener(object : EditDialogInterface {
-            override fun onSubmitClick(description: String) {
-                action.invoke(selectNode, description)
-            }
-        })
+        dialog.setListener(
+            object : EditDialogInterface {
+                override fun onSubmitClick(description: String) {
+                    action.invoke(selectNode, description)
+                }
+            },
+        )
         dialog.show(requireActivity().supportFragmentManager, "EditDescriptionDialog")
     }
 

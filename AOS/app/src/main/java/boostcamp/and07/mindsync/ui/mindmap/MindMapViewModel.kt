@@ -17,11 +17,11 @@ class MindMapViewModel : ViewModel() {
             CircleNode(
                 id = IdGenerator.makeRandomNodeId(),
                 path =
-                CirclePath(
-                    Dp(100f),
-                    Dp(500f),
-                    Dp(50f),
-                ),
+                    CirclePath(
+                        Dp(100f),
+                        Dp(500f),
+                        Dp(50f),
+                    ),
                 "Root1",
                 listOf(),
             ),
@@ -29,6 +29,7 @@ class MindMapViewModel : ViewModel() {
     val head: StateFlow<Node> = _head
     private var _selectedNode = MutableStateFlow<Node?>(null)
     val selectedNode: StateFlow<Node?> = _selectedNode
+
     fun addNode(
         parent: Node,
         addNode: RectangleNode,

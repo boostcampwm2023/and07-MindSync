@@ -8,7 +8,6 @@ import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
 import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
 
 class MindMapContainer(context: Context) {
-
     lateinit var head: Node
     var selectNode: Node? = null
     private var nodeClickListener: NodeClickListener? = null
