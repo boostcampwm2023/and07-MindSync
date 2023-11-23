@@ -6,6 +6,7 @@ import {
   OperationInput,
   OperationLog,
   OperationMove,
+  OperationUpdate,
   SerializedOperation,
 } from './operation';
 import { Tree } from './tree';
@@ -65,6 +66,17 @@ export class CrdtTree<T> {
     return new OperationMove<T>(input);
   }
 
+  generateOperationUpdate(targetId: string, content: T): OperationUpdate<T> {
+    this.clock.increment();
+    const clock = this.clock.copy();
+    const input: OperationInput<T> = {
+      id: targetId,
+      content,
+      clock,
+    };
+    return new OperationUpdate<T>(input);
+  }
+
   serializeOperationAdd(operation: OperationAdd<T>): SerializedOperation<T> {
     const serializedOperation: SerializedOperation<T> = {
       operationType: 'add',
@@ -93,6 +105,18 @@ export class CrdtTree<T> {
       id: operation.id,
       clock: { id: operation.clock.id, counter: operation.clock.counter },
       parentId: operation.parentId,
+    };
+    return serializedOperation;
+  }
+
+  serializeOperationUpdate(
+    operation: OperationUpdate<T>,
+  ): SerializedOperation<T> {
+    const serializedOperation: SerializedOperation<T> = {
+      operationType: 'update',
+      id: operation.id,
+      clock: { id: operation.clock.id, counter: operation.clock.counter },
+      content: operation.content,
     };
     return serializedOperation;
   }
@@ -137,6 +161,20 @@ export class CrdtTree<T> {
       ),
     };
     return new OperationMove<T>(input);
+  }
+
+  deserializeOperationUpdate(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationUpdate<T> {
+    const input: OperationInput<T> = {
+      id: serializedOperation.id,
+      content: serializedOperation.content,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationUpdate<T>(input);
   }
 
   applyOperation(operation: Operation<T>) {

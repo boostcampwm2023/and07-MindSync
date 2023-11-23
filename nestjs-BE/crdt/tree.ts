@@ -55,4 +55,11 @@ export class Tree<T> {
 
     return this.nodes.get(targetId);
   }
+
+  updateNode(targetId: string, content: T) {
+    const targetNode = this.nodes.get(targetId);
+    if (!targetNode) return;
+
+    targetNode.content = content;
+  }
 }

@@ -117,3 +117,28 @@ export class OperationMove<T> extends Operation<T> {
     return redoLog;
   }
 }
+
+export class OperationUpdate<T> extends Operation<T> {
+  content: T;
+
+  constructor(input: OperationInput<T>) {
+    super('update', input.id, input.clock);
+    this.content = input.content;
+  }
+
+  doOperation(tree: Tree<T>): OperationLog<T> {
+    const node = tree.get(this.id);
+    const oldContent = node.content;
+    tree.updateNode(this.id, this.content);
+    return { operation: this, oldContent };
+  }
+
+  undoOperation(tree: Tree<T>, log: OperationLog<T>): void {
+    tree.updateNode(log.operation.id, log.oldContent);
+  }
+
+  redoOperation(tree: Tree<T>, log?: OperationLog<T>): OperationLog<T> {
+    const redoLog = log.operation.doOperation(tree);
+    return redoLog;
+  }
+}
