@@ -80,17 +80,20 @@ class MainActivity :
     private fun getSampleSpace(): List<Space> {
         val sampleSpace =
             mutableListOf(
-                Space("0",
+                Space(
+                    "0",
                     "space1",
                     "error",
                 ),
                 Space(
-                    "3",
+                    "1",
                     "space3",
-                    "https://img.freepik.com/premium-vector/cute-kawaii-shiba-inu-dog-cartoon-style-character-mascot-corgi-dog_945253-162.jpg",
+                    "https://img.freepik.com/premium-vector/" +
+                            "cute-kawaii-shiba-inu-dog-cartoon-style" +
+                            "-character-mascot-corgi-dog_945253-162.jpg",
                 ),
                 Space(
-                    "3",
+                    "2",
                     "space3",
                     "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg",
                 ),
