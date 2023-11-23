@@ -33,3 +33,9 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# 환경 변수
+.env
+
+# csv
+/operations
