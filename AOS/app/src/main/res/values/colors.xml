@@ -17,4 +17,13 @@
 
     <color name="sub2">#49AA95</color>
     <color name="sub1">#FB5D67</color>
+
+
+    <color name="mindmap1">#E1719F</color>
+    <color name="mindmap2">#B9BC81</color>
+    <color name="mindmap3">#7AA37D</color>
+    <color name="mindmap4">#4B877B</color>
+    <color name="mindmap5">#336770</color>
+    <color name="blue">#007EC2</color>
+    <color name="beige">#EEE9E9</color>
 </resources>

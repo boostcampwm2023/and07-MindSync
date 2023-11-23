@@ -1,16 +1,26 @@
 package boostcamp.and07.mindsync.data.model
 
-sealed class NodePath
+import boostcamp.and07.mindsync.ui.util.Dp
+
+sealed class NodePath(open val centerX: Dp, open val centerY: Dp)
 
 data class RectanglePath(
-    val startX: Float,
-    val endX: Float,
-    val topY: Float,
-    val bottomY: Float,
-) : NodePath()
+    override val centerX: Dp,
+    override val centerY: Dp,
+    val width: Dp,
+    val height: Dp,
+) : NodePath(centerX, centerY) {
+    fun leftX() = centerX - (width / (Dp(2f)))
+
+    fun topY() = centerY - (height / (Dp(2f)))
+
+    fun rightX() = centerX + (width / (Dp(2f)))
+
+    fun bottomY() = centerY + (height / (Dp(2f)))
+}
 
 data class CirclePath(
-    val centerX: Float,
-    val centerY: Float,
-    val radius: Float,
-) : NodePath()
+    override val centerX: Dp,
+    override val centerY: Dp,
+    val radius: Dp,
+) : NodePath(centerX, centerY)

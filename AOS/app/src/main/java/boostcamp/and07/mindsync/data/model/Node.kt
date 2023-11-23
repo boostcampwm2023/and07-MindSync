@@ -1,8 +1,22 @@
 package boostcamp.and07.mindsync.data.model
 
-data class Node(
-    val path: NodePath,
-    val color: ColorRGB,
-    val description: String,
-    val nodes: List<Node>,
+sealed class Node(
+    open val id: String,
+    open val path: NodePath,
+    open val description: String,
+    open val nodes: List<RectangleNode>,
 )
+
+data class CircleNode(
+    override val id: String,
+    override val path: CirclePath,
+    override val description: String,
+    override val nodes: List<RectangleNode>,
+) : Node(id, path, description, nodes)
+
+data class RectangleNode(
+    override val id: String,
+    override val path: RectanglePath,
+    override val description: String,
+    override val nodes: List<RectangleNode>,
+) : Node(id, path, description, nodes)
