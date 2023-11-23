@@ -18,6 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fcv_main_nav_host"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:navGraph="@navigation/nav_graph" />
+
             <ImageButton
                 android:id="@+id/imgbtn_main_menu"
                 android:layout_width="25dp"
@@ -28,13 +35,6 @@
                 android:src="@drawable/ic_menu"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fcv_main_nav_host"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:navGraph="@navigation/nav_graph" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
