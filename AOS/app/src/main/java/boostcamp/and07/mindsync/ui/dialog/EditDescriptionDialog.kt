@@ -8,11 +8,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 
 class EditDescriptionDialog : DialogFragment() {
+
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
     private lateinit var editDialogInterface: EditDialogInterface
@@ -33,7 +35,7 @@ class EditDescriptionDialog : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = DialogEditDescriptionBinding.inflate(inflater, container, false)
         binding.run {
             btnCancel.setOnClickListener {
@@ -49,10 +51,19 @@ class EditDescriptionDialog : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(
-            1000,
-            1000,
-        )
+        resizeDialog()
+    }
+
+    private fun resizeDialog() {
+        val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
+
+        val displayMetrics = requireActivity().resources.displayMetrics
+        val deviceWidth = displayMetrics.widthPixels
+        val deviceHeight = displayMetrics.heightPixels
+
+        params?.width = (deviceWidth * 0.8).toInt()
+        params?.height = (deviceHeight * 0.5).toInt()
+        dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 
     override fun onDismiss(dialog: DialogInterface) {
