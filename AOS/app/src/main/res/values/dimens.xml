@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_space_width">40dp</dimen>
+    <dimen name="item_space_height">40dp</dimen>
+    <dimen name="item_space_margin_horizontal">15dp</dimen>
+    <dimen name="item_space_margin_vertical">8dp</dimen>
+</resources>

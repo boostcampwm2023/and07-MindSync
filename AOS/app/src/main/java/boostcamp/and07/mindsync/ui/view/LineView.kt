@@ -12,7 +12,7 @@ import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class LineView constructor(
-    val mindmapContainer: MindMapContainer,
+    val mindMapContainer: MindMapContainer,
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {

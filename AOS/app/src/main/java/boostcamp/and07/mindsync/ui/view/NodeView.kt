@@ -15,7 +15,7 @@ import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class NodeView(
-    val mindmapContainer: MindMapContainer,
+    val mindMapContainer: MindMapContainer,
     context: Context,
     attrs: AttributeSet?,
 ) : View(context, attrs) {
@@ -33,7 +33,7 @@ class NodeView(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         traverseDrawHead(canvas)
-        mindmapContainer.selectNode?.let { selectedNode ->
+        mindMapContainer.selectNode?.let { selectedNode ->
             makeStrokeNode(canvas, selectedNode)
         }
     }
@@ -61,9 +61,9 @@ class NodeView(
         node: Node,
         depth: Int,
     ) {
-        mindmapContainer.selectNode?.let { selectedNode ->
+        mindMapContainer.selectNode?.let { selectedNode ->
             if (selectedNode.id == node.id) {
-                mindmapContainer.setSelectedNode(node)
+                mindMapContainer.setSelectedNode(node)
             }
         }
         drawNode(canvas, node, depth)
@@ -79,9 +79,9 @@ class NodeView(
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
-            mindmapContainer.setSelectedNode(it.first)
+            mindMapContainer.setSelectedNode(it.first)
         } ?: run {
-            mindmapContainer.setSelectedNode(null)
+            mindMapContainer.setSelectedNode(null)
         }
         invalidate()
     }

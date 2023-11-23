@@ -2,10 +2,26 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mindmapFragment">
+    app:startDestination="@id/mindMapFragment">
 
     <fragment
-        android:id="@+id/mindmapFragment"
+        android:id="@+id/mindMapFragment"
         android:name="boostcamp.and07.mindsync.ui.mindmap.MindMapFragment"
         android:label="MindMapFragment" />
+    <fragment
+        android:id="@+id/boardListFragment"
+        android:name="boostcamp.and07.mindsync.ui.boardlist.BoardListFragment"
+        android:label="BoardListFragment" />
+    <fragment
+        android:id="@+id/recycleBinFragment"
+        android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
+        android:label="RecycleBinFragment" />
+
+    <action
+        android:id="@+id/action_to_boardListFragment"
+        app:destination="@id/boardListFragment" />
+    <action
+        android:id="@+id/action_to_recycleBinFragment"
+        app:destination="@id/recycleBinFragment" />
+
 </navigation>

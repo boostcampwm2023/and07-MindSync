@@ -34,14 +34,12 @@ class MindMapViewModel : ViewModel() {
         parent: Node,
         addNode: RectangleNode,
     ) {
-        _head.value?.let { head ->
-            _head.value =
-                traverseAddNode(
-                    head,
-                    parent,
-                    addNode,
-                )
-        }
+        _head.value =
+            traverseAddNode(
+                head.value,
+                parent,
+                addNode,
+            )
     }
 
     fun removeNode(target: Node) {

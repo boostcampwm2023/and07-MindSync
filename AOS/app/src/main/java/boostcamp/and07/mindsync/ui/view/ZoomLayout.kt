@@ -37,11 +37,11 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     private var mode = LayoutMode.DRAG
     lateinit var nodeView: NodeView
     lateinit var lineView: LineView
-    lateinit var mindmapContainer: MindMapContainer
+    lateinit var mindMapContainer: MindMapContainer
 
     fun initializeZoomLayout() {
-        nodeView = NodeView(mindmapContainer, context, attrs = null)
-        lineView = LineView(mindmapContainer, context, attrs = null)
+        nodeView = NodeView(mindMapContainer, context, attrs = null)
+        lineView = LineView(mindMapContainer, context, attrs = null)
         addView(lineView)
         addView(nodeView)
         applyScaleAndTranslation()

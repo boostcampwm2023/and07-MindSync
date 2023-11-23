@@ -59,7 +59,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     // material
     implementation("com.google.android.material:material:1.10.0")
-    // hilt,
+    // hilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     // retrofit
@@ -68,6 +68,8 @@ dependencies {
     val nav_version = "2.7.5"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+    // coil
+    implementation("io.coil-kt:coil:2.5.0")
 }
 
 val ktlintCheck by tasks.registering(JavaExec::class) {
