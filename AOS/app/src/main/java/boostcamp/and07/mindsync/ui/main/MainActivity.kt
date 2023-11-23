@@ -89,8 +89,8 @@ class MainActivity :
                     "1",
                     "space3",
                     "https://img.freepik.com/premium-vector/" +
-                            "cute-kawaii-shiba-inu-dog-cartoon-style" +
-                            "-character-mascot-corgi-dog_945253-162.jpg",
+                    "cute-kawaii-shiba-inu-dog-cartoon-style" +
+                    "-character-mascot-corgi-dog_945253-162.jpg",
                 ),
                 Space(
                     "2",
