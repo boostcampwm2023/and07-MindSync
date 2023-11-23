@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
@@ -16,12 +18,25 @@ class MainActivity :
     private var backPressedTime: Long = 0L
     private var backPressedToast: Toast? = null
     private lateinit var spaceAdapter: SideBarSpaceAdapter
-
+    private lateinit var navController: NavController
     override fun init() {
         drawerLayout = binding.drawerLayoutMainSideBar
+        navController = findNavController(R.id.fcv_main_nav_host)
         setBackPressedToast()
         setBackPressed()
         setSideBar()
+        setSideBarNavigation()
+    }
+
+    private fun setSideBarNavigation() {
+        with(binding.includeMainInDrawer) {
+            tvSideBarBoardList.setOnClickListener {
+                navController.navigate(R.id.action_to_boardListFragment)
+            }
+            tvSideBarRecycleBin.setOnClickListener {
+                navController.navigate(R.id.action_to_recycleBinFragment)
+            }
+        }
     }
 
     private fun setBackPressedToast() {
