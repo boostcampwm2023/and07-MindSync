@@ -17,28 +17,42 @@ class SideBarSpaceAdapter :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SideBarSpaceViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): SideBarSpaceViewHolder {
         val binding = ItemSpaceBinding.inflate(LayoutInflater.from(parent.context))
         return SideBarSpaceViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SideBarSpaceViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: SideBarSpaceViewHolder,
+        position: Int,
+    ) {
         holder.bind(getItem(position))
-        holder.itemView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-        )
+        holder.itemView.layoutParams =
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            )
     }
 
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Space>() {
-            override fun areItemsTheSame(oldItem: Space, newItem: Space): Boolean {
-                return oldItem.id == newItem.id
-            }
+        val DIFF_CALLBACK =
+            object : DiffUtil.ItemCallback<Space>() {
+                override fun areItemsTheSame(
+                    oldItem: Space,
+                    newItem: Space,
+                ): Boolean {
+                    return oldItem.id == newItem.id
+                }
 
-            override fun areContentsTheSame(oldItem: Space, newItem: Space): Boolean {
-                return oldItem == newItem
+                override fun areContentsTheSame(
+                    oldItem: Space,
+                    newItem: Space,
+                ): Boolean {
+                    return oldItem == newItem
+                }
             }
-        }
     }
 }

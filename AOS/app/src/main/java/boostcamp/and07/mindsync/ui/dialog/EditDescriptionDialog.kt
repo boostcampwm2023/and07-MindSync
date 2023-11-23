@@ -14,7 +14,6 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 
 class EditDescriptionDialog : DialogFragment() {
-
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
     private lateinit var editDialogInterface: EditDialogInterface
