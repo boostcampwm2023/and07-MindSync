@@ -21,7 +21,9 @@ class MindmapRightLayoutManager {
 
         val criteriaX = node.path.centerX + nodeWidth + horizontalSpacing
         var startX: Dp
-        var startY = node.path.centerY - (childHeightSum / 2)
+        val newCenterY =
+            if (node.path.centerY.dpVal >= (childHeightSum / 2).dpVal) node.path.centerY else childHeightSum / 2
+        var startY = newCenterY - (childHeightSum / 2)
 
         node.nodes.forEach { childNode ->
             startX = criteriaX + (childNode.path.width / 2)
@@ -43,8 +45,6 @@ class MindmapRightLayoutManager {
         val newNode = when (node) {
             is RectangleNode -> node.copy(nodes = newNodes)
             is CircleNode -> {
-                val newCenterY =
-                    if (node.path.centerY.dpVal >= (childHeightSum / 2).dpVal) node.path.centerY else childHeightSum / 2
                 node.copy(
                     path = CirclePath(
                         centerX = node.path.centerX,
