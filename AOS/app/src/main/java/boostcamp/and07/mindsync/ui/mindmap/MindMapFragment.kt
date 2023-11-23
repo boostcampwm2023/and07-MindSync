@@ -25,7 +25,7 @@ class MindMapFragment :
     NodeClickListener,
     NodeUpdateListener {
     private val mindMapViewModel: MindMapViewModel by viewModels()
-    lateinit var mindmapContainer: MindMapContainer
+    private lateinit var mindMapContainer: MindMapContainer
 
     override fun initView() {
         setupRootNode()
@@ -43,19 +43,19 @@ class MindMapFragment :
     private fun setBinding() {
         binding.vm = mindMapViewModel
         binding.view = this
-        mindmapContainer = MindMapContainer(requireContext())
-        mindmapContainer.setNodeClickListener(this)
-        mindmapContainer.setNodeUpdateListener(this)
-        binding.zoomLayoutMindMapRoot.mindmapContainer = mindmapContainer
+        mindMapContainer = MindMapContainer(requireContext())
+        mindMapContainer.setNodeClickListener(this)
+        mindMapContainer.setNodeUpdateListener(this)
+        binding.zoomLayoutMindMapRoot.mindMapContainer = mindMapContainer
         binding.zoomLayoutMindMapRoot.initializeZoomLayout()
     }
 
     private fun collectHead() {
         viewLifecycleOwner.lifecycleScope.launch {
             mindMapViewModel.head.collectLatest { newHead ->
-                mindmapContainer.updateHead(newHead)
-                binding.zoomLayoutMindMapRoot.lineView.updateHead(mindmapContainer.head)
-                binding.zoomLayoutMindMapRoot.nodeView.updateHead(mindmapContainer.head)
+                mindMapContainer.updateHead(newHead)
+                binding.zoomLayoutMindMapRoot.lineView.updateHead(mindMapContainer.head)
+                binding.zoomLayoutMindMapRoot.nodeView.updateHead(mindMapContainer.head)
             }
         }
     }
@@ -63,7 +63,7 @@ class MindMapFragment :
     private fun collectSelectedNode() {
         viewLifecycleOwner.lifecycleScope.launch {
             mindMapViewModel.selectedNode.collectLatest { selectNode ->
-                mindmapContainer.setSelectedNode(selectNode)
+                mindMapContainer.setSelectedNode(selectNode)
             }
         }
     }
