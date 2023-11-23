@@ -17,11 +17,11 @@ class MindMapViewModel : ViewModel() {
             CircleNode(
                 id = IdGenerator.makeRandomNodeId(),
                 path =
-                CirclePath(
-                    Dp(100f),
-                    Dp(500f),
-                    Dp(50f),
-                ),
+                    CirclePath(
+                        Dp(100f),
+                        Dp(500f),
+                        Dp(50f),
+                    ),
                 "Root1",
                 listOf(),
             ),
