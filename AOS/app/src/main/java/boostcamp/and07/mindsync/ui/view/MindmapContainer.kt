@@ -1,15 +1,21 @@
 package boostcamp.and07.mindsync.ui.view
 
+import android.content.Context
 import boostcamp.and07.mindsync.data.model.Node
+import boostcamp.and07.mindsync.ui.view.layout.MeasureTextSize
+import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
 import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
 
-class MindmapContainer {
+class MindmapContainer(context: Context) {
 
     lateinit var head: Node
     var selectNode: Node? = null
     private var nodeClickListener: NodeClickListener? = null
     private var nodeUpdateListener: NodeUpdateListener? = null
+
+    private val rightLayoutManager = MindmapRightLayoutManager()
+    private val measureTextSize = MeasureTextSize(context)
     fun setNodeClickListener(clickListener: NodeClickListener) {
         this.nodeClickListener = clickListener
     }
@@ -19,7 +25,7 @@ class MindmapContainer {
     }
 
     fun updateHead(head: Node) {
-        this.head = head
+        this.head = rightLayoutManager.arrangeNode(measureTextSize.traverseTextHead(head))
         nodeUpdateListener?.updateHead(head)
     }
 

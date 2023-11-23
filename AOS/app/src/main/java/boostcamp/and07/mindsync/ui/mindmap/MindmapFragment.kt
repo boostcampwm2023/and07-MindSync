@@ -26,7 +26,7 @@ class MindmapFragment :
     NodeUpdateListener {
 
     private val mindMapViewModel: MindMapViewModel by viewModels()
-    private val mindmapContainer = MindmapContainer()
+    lateinit var mindmapContainer: MindmapContainer
     override fun initView() {
         setupRootNode()
         setBinding()
@@ -43,6 +43,7 @@ class MindmapFragment :
     private fun setBinding() {
         binding.vm = mindMapViewModel
         binding.view = this
+        mindmapContainer = MindmapContainer(requireContext())
         mindmapContainer.setNodeClickListener(this)
         mindmapContainer.setNodeUpdateListener(this)
         binding.zoomLayoutMindmapRoot.mindmapContainer = mindmapContainer
