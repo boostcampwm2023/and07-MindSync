@@ -14,6 +14,7 @@ interface OperationData {
 @Injectable()
 export class TemporaryDatabaseService {
   private database: Map<string, Map<string, Map<string, any>>> = new Map();
+  private userProfilesMap: Map<string, string[]> = new Map();
   private readonly FOLDER_NAME = 'operations';
 
   constructor(private readonly prisma: PrismaService) {
@@ -22,7 +23,7 @@ export class TemporaryDatabaseService {
   }
 
   private initializeDatabase() {
-    const services = ['user', 'space', 'board'];
+    const services = ['USER_TB', 'PROFILE_TB', 'SPACE_TB', 'BOARD_TB'];
     const operations = ['insert', 'update', 'delete'];
 
     services.forEach((service) => {
@@ -99,6 +100,7 @@ export class TemporaryDatabaseService {
 
   private async performInsert(service: string, dataMap: Map<string, any>) {
     const data = this.prepareData(service, 'insert', dataMap);
+    this.userProfilesMap.clear();
     if (!data.length) return;
     await this.prisma[service].createMany({
       data: data,
@@ -151,5 +153,24 @@ export class TemporaryDatabaseService {
 
   private clearFile(filename: string) {
     writeFileSync(join(this.FOLDER_NAME, filename), '', 'utf8');
+  }
+
+  getUserProfiles(user_id: string): string[] {
+    return this.userProfilesMap.get(user_id) || [];
+  }
+
+  addUserProfile(user_id: string, profile_uuid: string): void {
+    const profiles = this.getUserProfiles(user_id);
+    profiles.push(profile_uuid);
+    this.userProfilesMap.set(user_id, profiles);
+  }
+
+  removeUserProfile(user_id: string, profile_uuid: string): void {
+    const profiles = this.getUserProfiles(user_id);
+    const index = profiles.indexOf(profile_uuid);
+    if (index > -1) {
+      profiles.splice(index, 1);
+      this.userProfilesMap.set(user_id, profiles);
+    }
   }
 }
