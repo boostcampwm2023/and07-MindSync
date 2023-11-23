@@ -3,23 +3,16 @@ package boostcamp.and07.mindsync.ui.view
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
-import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.res.ResourcesCompat
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.ui.util.Dp
-import boostcamp.and07.mindsync.ui.util.Px
-import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.util.toPx
-import boostcamp.and07.mindsync.ui.view.layout.MindmapRightLayoutManager
-import java.lang.Float.max
+import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class NodeView constructor(
     val mindmapContainer: MindmapContainer,
@@ -27,23 +20,7 @@ class NodeView constructor(
     attrs: AttributeSet?,
 ) : View(context, attrs) {
     lateinit var head: Node
-    private val circlePaint = Paint().apply {
-        color = context.getColor(R.color.mindmap1)
-    }
-    private val rectanglePaint = Paint()
-    private val textPaint = TextPaint().apply {
-        color = Color.RED
-        textSize = Dp(12f).toPx(context)
-        isAntiAlias = true
-        typeface = ResourcesCompat.getFont(context, R.font.pretendard_bold)
-        textAlign = Paint.Align.CENTER
-    }
-    private val strokePaint = Paint().apply {
-        color = context.getColor(R.color.blue)
-        style = Paint.Style.STROKE
-        strokeWidth = Dp(5f).toPx(context)
-        isAntiAlias = true
-    }
+    private val drawInfo = DrawInfo(context)
     private val nodeColors = listOf(
         context.getColor(R.color.main3),
         context.getColor(R.color.mindmap2),
@@ -51,23 +28,13 @@ class NodeView constructor(
         context.getColor(R.color.mindmap4),
         context.getColor(R.color.mindmap5),
     )
-    private val rightLayoutManager = MindmapRightLayoutManager()
-    private val lineHeight = Dp(15f)
-    private val padding = Dp(20f)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        traverseTextHead()
-        arrangeNode()
         traverseDrawHead(canvas)
         mindmapContainer.selectNode?.let { selectedNode ->
             makeStrokeNode(canvas, selectedNode)
         }
-    }
-
-    private fun arrangeNode() {
-        head = rightLayoutManager.arrangeNode(head)
-        mindmapContainer.updateHead(head)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -100,65 +67,13 @@ class NodeView constructor(
         }
     }
 
-    private fun traverseTextHead() {
-        head = traverseTextNode(head)
-        mindmapContainer.updateHead(head)
-    }
-
-    private fun traverseTextNode(node: Node): Node {
-        val newNodes = mutableListOf<RectangleNode>()
-        node.nodes.forEach { child ->
-            newNodes.add(traverseTextNode(child) as RectangleNode)
-            traverseTextNode(child)
-        }
-        val copyNode =
-            changeSize(node, sumWidth(node.description), sumTotalHeight(node.description))
-        val newNode = when (copyNode) {
-            is CircleNode -> copyNode.copy(nodes = newNodes)
-            is RectangleNode -> copyNode.copy(nodes = newNodes)
-        }
-        return newNode
-    }
-
-    private fun changeSize(node: Node, width: Float, height: Float): Node {
-        when (node) {
-            is CircleNode -> {
-                var newRadius = Dp(
-                    max(
-                        (Dp(Px(width).toDp(context) / 2) + padding).dpVal,
-                        ((Dp(Px(height).toDp(context)) + padding * 2) / 2).dpVal,
-                    ),
-                )
-                return node.copy(
-                    id = node.id,
-                    node.path.copy(radius = newRadius),
-                    description = node.description,
-                    nodes = node.nodes,
-                )
-            }
-
-            is RectangleNode -> {
-                var newWidth = Dp(Px(width).toDp(context)) + padding
-                val newHeight = Dp(Px(height).toDp(context)) + padding
-                return node.copy(
-                    id = node.id,
-                    node.path.copy(width = newWidth, height = newHeight),
-                    description = node.description,
-                    nodes = node.nodes,
-                )
-            }
-        }
-    }
-
     private fun traverseRangeHead(x: Float, y: Float) {
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
             mindmapContainer.setSelectedNode(it.first)
-            // mindMapViewModel?.setSelectedNode(it.first)
         } ?: run {
             mindmapContainer.setSelectedNode(null)
-            // mindMapViewModel?.setSelectedNode(null)
         }
         invalidate()
     }
@@ -170,7 +85,7 @@ class NodeView constructor(
                     node.path.centerX.toPx(context),
                     node.path.centerY.toPx(context),
                     node.path.radius.toPx(context),
-                    strokePaint,
+                    drawInfo.strokePaint,
                 )
             }
 
@@ -180,7 +95,7 @@ class NodeView constructor(
                     node.path.topY().toPx(context),
                     node.path.rightX().toPx(context),
                     node.path.bottomY().toPx(context),
-                    strokePaint,
+                    drawInfo.strokePaint,
                 )
             }
         }
@@ -235,88 +150,75 @@ class NodeView constructor(
             node.path.centerX.toPx(context),
             node.path.centerY.toPx(context),
             node.path.radius.toPx(context),
-            circlePaint,
+            drawInfo.circlePaint,
         )
     }
 
     private fun drawRectangleNode(canvas: Canvas, node: RectangleNode, depth: Int) {
-        rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
+        drawInfo.rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
         canvas.drawRect(
             node.path.leftX().toPx(context),
             node.path.topY().toPx(context),
             node.path.rightX().toPx(context),
             node.path.bottomY().toPx(context),
-            rectanglePaint,
+            drawInfo.rectanglePaint,
         )
-    }
-
-    private fun sumTotalHeight(description: String): Float {
-        val bounds = Rect()
-        var sum = 0f
-        description.split("\n").forEach { line ->
-            textPaint.getTextBounds(line, 0, line.length, bounds)
-            sum += bounds.height() + lineHeight.dpVal
-        }
-        return sum
-    }
-
-    private fun sumWidth(description: String): Float {
-        var sum = 0f
-        description.split("\n").forEach {
-            sum = max(sum, textPaint.measureText(it))
-        }
-        return sum
     }
 
     private fun drawText(canvas: Canvas, node: Node) {
         val lines = node.description.split("\n")
         var bounds = Rect()
-        var totalHeight = sumTotalHeight(node.description)
         when (node) {
             is CircleNode -> {
-                textPaint.color = Color.WHITE
+                drawInfo.textPaint.color = Color.WHITE
                 if (lines.size > 1) {
-                    var y = node.path.centerY.toPx(context) - totalHeight / 2
+                    var y =
+                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) / 2 + drawInfo.padding.toPx(
+                            context,
+                        ) / 2
                     for (line in lines) {
-                        textPaint.getTextBounds(line, 0, line.length, bounds)
+                        drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
                             line,
                             node.path.centerX.toPx(context),
                             y + bounds.height(),
-                            textPaint,
+                            drawInfo.textPaint,
                         )
-                        y += bounds.height() + lineHeight.dpVal
+                        y += bounds.height() + drawInfo.lineHeight.dpVal
                     }
                 } else {
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context),
-                        node.path.centerY.toPx(context) + lineHeight.dpVal / 2,
-                        textPaint,
+                        node.path.centerY.toPx(context) + drawInfo.lineHeight.dpVal / 2,
+                        drawInfo.textPaint,
                     )
                 }
             }
 
             is RectangleNode -> {
-                textPaint.color = Color.BLACK
+                drawInfo.textPaint.color = Color.BLACK
                 if (lines.size > 1) {
-                    var y = node.path.centerY.toPx(context) - totalHeight / 2
+                    var y =
+                        node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(
+                            context,
+                        ) / 2
                     for (line in lines) {
-                        textPaint.getTextBounds(line, 0, line.length, bounds)
+                        drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
                             line,
                             node.path.centerX.toPx(context),
                             y + bounds.height(),
-                            textPaint,
+                            drawInfo.textPaint,
                         )
-                        y += bounds.height() + lineHeight.dpVal
+                        y += bounds.height() + drawInfo.lineHeight.dpVal
                     }
                 } else {
                     canvas.drawText(
                         node.description,
                         node.path.centerX.toPx(context),
-                        node.path.centerY.toPx(context) + lineHeight.dpVal / 2,
-                        textPaint,
+                        node.path.centerY.toPx(context) + drawInfo.lineHeight.dpVal / 2,
+                        drawInfo.textPaint,
                     )
                 }
             }

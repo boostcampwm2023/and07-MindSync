@@ -2,28 +2,21 @@ package boostcamp.and07.mindsync.ui.view
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.toPx
+import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class LineView constructor(
     val mindmapContainer: MindmapContainer,
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
-    private val paint = Paint().apply {
-        color = Color.BLACK
-        style = Paint.Style.STROKE
-        strokeWidth = Dp(5f).toPx(context)
-        isAntiAlias = true
-    }
+    private val drawInfo = DrawInfo(context)
     private val path = Path()
     private lateinit var head: Node
     override fun onDraw(canvas: Canvas) {
@@ -51,13 +44,12 @@ class LineView constructor(
         val endX = getNodeEdgeX(toNode, false)
         val endY = toNode.path.centerY.toPx(context)
         val midX = (startX + endX) / 2
-
         val path = path.apply {
             reset()
             moveTo(startX, startY)
             cubicTo(midX, startY, midX, endY, endX, endY)
         }
-        canvas.drawPath(path, paint)
+        canvas.drawPath(path, drawInfo.linePaint)
     }
 
     private fun getNodeEdgeX(node: Node, isStart: Boolean): Float {
