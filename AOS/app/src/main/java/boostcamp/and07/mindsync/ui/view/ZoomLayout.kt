@@ -13,20 +13,21 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     private var scaleFactor = DEFAULT_ZOOM
     private var focusX = 0f
     private var focusY = 0f
-    private val scaleGestureDetector = ScaleGestureDetector(
-        context,
-        object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScale(detector: ScaleGestureDetector): Boolean {
-                scaleFactor *= detector.scaleFactor
-                scaleFactor = max(MIN_ZOOM, min(scaleFactor, MAX_ZOOM))
-                focusX = detector.focusX
-                focusY = detector.focusY
-                requestLayout()
-                applyScaleAndTranslation()
-                return true
-            }
-        },
-    )
+    private val scaleGestureDetector =
+        ScaleGestureDetector(
+            context,
+            object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    scaleFactor *= detector.scaleFactor
+                    scaleFactor = max(MIN_ZOOM, min(scaleFactor, MAX_ZOOM))
+                    focusX = detector.focusX
+                    focusY = detector.focusY
+                    requestLayout()
+                    applyScaleAndTranslation()
+                    return true
+                }
+            },
+        )
     private var touchStartX = 0f
     private var touchStartY = 0f
     private var preDx = 0f
@@ -36,7 +37,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     private var mode = LayoutMode.DRAG
     lateinit var nodeView: NodeView
     lateinit var lineView: LineView
-    lateinit var mindmapContainer: MindmapContainer
+    lateinit var mindmapContainer: MindMapContainer
 
     fun initializeZoomLayout() {
         nodeView = NodeView(mindmapContainer, context, attrs = null)
@@ -46,7 +47,10 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
         applyScaleAndTranslation()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int,
+    ) {
         var width = 0
         var height = 0
         for (index in 0 until childCount) {
@@ -61,7 +65,13 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
         )
     }
 
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    override fun onLayout(
+        changed: Boolean,
+        l: Int,
+        t: Int,
+        r: Int,
+        b: Int,
+    ) {
         val childCount = childCount
         for (index in 0 until childCount) {
             val child = getChildAt(index)

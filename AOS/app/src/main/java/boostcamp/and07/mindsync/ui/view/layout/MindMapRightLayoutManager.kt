@@ -6,7 +6,7 @@ import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
 
-class MindmapRightLayoutManager {
+class MindMapRightLayoutManager {
     private val horizontalSpacing = Dp(50f)
     private val verticalSpacing = Dp(50f)
 
@@ -14,10 +14,11 @@ class MindmapRightLayoutManager {
         val childHeightSum = measureChildHeight(node)
         val newNodes = mutableListOf<RectangleNode>()
 
-        val nodeWidth = when (node) {
-            is RectangleNode -> node.path.width
-            is CircleNode -> node.path.radius
-        }
+        val nodeWidth =
+            when (node) {
+                is RectangleNode -> node.path.width
+                is CircleNode -> node.path.radius
+            }
 
         val criteriaX = node.path.centerX + nodeWidth + horizontalSpacing
         var startX: Dp
@@ -42,19 +43,20 @@ class MindmapRightLayoutManager {
         newNodes.forEachIndexed { index, childNode ->
             newNodes[index] = arrangeNode(childNode) as RectangleNode
         }
-        val newNode = when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> {
-                node.copy(
-                    path = CirclePath(
-                        centerX = node.path.centerX,
-                        centerY = newCenterY,
-                        radius = node.path.radius,
-                    ),
-                    nodes = newNodes,
-                )
+        val newNode =
+            when (node) {
+                is RectangleNode -> node.copy(nodes = newNodes)
+                is CircleNode -> {
+                    node.copy(
+                        path = CirclePath(
+                            centerX = node.path.centerX,
+                            centerY = newCenterY,
+                            radius = node.path.radius,
+                        ),
+                        nodes = newNodes,
+                    )
+                }
             }
-        }
 
         return newNode
     }
@@ -68,10 +70,11 @@ class MindmapRightLayoutManager {
             }
             heightSum += verticalSpacing * (node.nodes.size - 1)
         } else {
-            heightSum = when (node) {
-                is CircleNode -> node.path.radius
-                is RectangleNode -> node.path.height
-            }
+            heightSum =
+                when (node) {
+                    is CircleNode -> node.path.radius
+                    is RectangleNode -> node.path.height
+                }
         }
 
         return heightSum

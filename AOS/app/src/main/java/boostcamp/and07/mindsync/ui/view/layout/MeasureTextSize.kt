@@ -11,10 +11,10 @@ import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class MeasureTextSize(private val context: Context) {
-
     private val drawInfo = DrawInfo(context)
 
     fun traverseTextHead(head: Node) = traverseTextNode(head)
+
     private fun traverseTextNode(node: Node): Node {
         val newNodes = mutableListOf<RectangleNode>()
         node.nodes.forEach { child ->
@@ -23,22 +23,28 @@ class MeasureTextSize(private val context: Context) {
         }
         val copyNode =
             changeSize(node, sumWidth(node.description), sumTotalHeight(node.description))
-        val newNode = when (copyNode) {
-            is CircleNode -> copyNode.copy(nodes = newNodes)
-            is RectangleNode -> copyNode.copy(nodes = newNodes)
-        }
+        val newNode =
+            when (copyNode) {
+                is CircleNode -> copyNode.copy(nodes = newNodes)
+                is RectangleNode -> copyNode.copy(nodes = newNodes)
+            }
         return newNode
     }
 
-    private fun changeSize(node: Node, width: Float, height: Float): Node {
+    private fun changeSize(
+        node: Node,
+        width: Float,
+        height: Float,
+    ): Node {
         when (node) {
             is CircleNode -> {
-                var newRadius = Dp(
-                    maxOf(
-                        (Dp(Px(width).toDp(context) / 2) + drawInfo.padding).dpVal,
-                        ((Dp(Px(height).toDp(context)) + drawInfo.padding * 2) / 2).dpVal,
-                    ),
-                )
+                var newRadius =
+                    Dp(
+                        maxOf(
+                            (Dp(Px(width).toDp(context) / 2) + drawInfo.padding).dpVal,
+                            ((Dp(Px(height).toDp(context)) + drawInfo.padding * 2) / 2).dpVal,
+                        ),
+                    )
                 return node.copy(
                     id = node.id,
                     node.path.copy(radius = newRadius),

@@ -63,7 +63,6 @@ data class Dp(val dpVal: Float) {
     operator fun rem(value: Int): Dp {
         return Dp(dpVal % value)
     }
-
 }
 
 data class Px(val pxVal: Float) {

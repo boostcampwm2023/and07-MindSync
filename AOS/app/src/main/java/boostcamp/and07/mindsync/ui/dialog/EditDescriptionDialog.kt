@@ -16,6 +16,7 @@ class EditDescriptionDialog : DialogFragment() {
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
     private lateinit var editDialogInterface: EditDialogInterface
+
     fun setListener(listener: EditDialogInterface) {
         editDialogInterface = listener
     }

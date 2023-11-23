@@ -8,9 +8,10 @@ import boostcamp.and07.mindsync.data.model.RectangleNode
 
 @BindingAdapter("app:removeBtn")
 fun ImageButton.setEnabled(selectedNode: Node?) {
-    this.isEnabled = when (selectedNode) {
-        is CircleNode -> false
-        is RectangleNode -> true
-        else -> false
-    }
+    this.isEnabled =
+        when (selectedNode) {
+            is CircleNode -> false
+            is RectangleNode -> true
+            else -> false
+        }
 }

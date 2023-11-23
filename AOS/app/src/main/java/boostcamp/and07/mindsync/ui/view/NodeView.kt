@@ -14,20 +14,21 @@ import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
-class NodeView constructor(
-    val mindmapContainer: MindmapContainer,
+class NodeView(
+    val mindmapContainer: MindMapContainer,
     context: Context,
     attrs: AttributeSet?,
 ) : View(context, attrs) {
     lateinit var head: Node
     private val drawInfo = DrawInfo(context)
-    private val nodeColors = listOf(
-        context.getColor(R.color.main3),
-        context.getColor(R.color.mindmap2),
-        context.getColor(R.color.mindmap3),
-        context.getColor(R.color.mindmap4),
-        context.getColor(R.color.mindmap5),
-    )
+    private val nodeColors =
+        listOf(
+            context.getColor(R.color.main3),
+            context.getColor(R.color.mindmap2),
+            context.getColor(R.color.mindmap3),
+            context.getColor(R.color.mindmap4),
+            context.getColor(R.color.mindmap5),
+        )
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -55,7 +56,11 @@ class NodeView constructor(
         traverseDrawNode(canvas, head, 0)
     }
 
-    private fun traverseDrawNode(canvas: Canvas, node: Node, depth: Int) {
+    private fun traverseDrawNode(
+        canvas: Canvas,
+        node: Node,
+        depth: Int,
+    ) {
         mindmapContainer.selectNode?.let { selectedNode ->
             if (selectedNode.id == node.id) {
                 mindmapContainer.setSelectedNode(node)
@@ -67,7 +72,10 @@ class NodeView constructor(
         }
     }
 
-    private fun traverseRangeHead(x: Float, y: Float) {
+    private fun traverseRangeHead(
+        x: Float,
+        y: Float,
+    ) {
         val rangeResult = traverseRangeNode(head, x, y, 0)
 
         rangeResult?.let {
@@ -78,7 +86,10 @@ class NodeView constructor(
         invalidate()
     }
 
-    private fun makeStrokeNode(canvas: Canvas, node: Node) {
+    private fun makeStrokeNode(
+        canvas: Canvas,
+        node: Node,
+    ) {
         when (node) {
             is CircleNode -> {
                 canvas.drawCircle(
@@ -101,7 +112,12 @@ class NodeView constructor(
         }
     }
 
-    private fun traverseRangeNode(node: Node, x: Float, y: Float, depth: Int): Pair<Node, Int>? {
+    private fun traverseRangeNode(
+        node: Node,
+        x: Float,
+        y: Float,
+        depth: Int,
+    ): Pair<Node, Int>? {
         if (isInsideNode(node, x, y)) {
             return Pair(node, depth)
         }
@@ -111,15 +127,15 @@ class NodeView constructor(
         return null
     }
 
-    private fun isInsideNode(node: Node, x: Float, y: Float): Boolean {
+    private fun isInsideNode(
+        node: Node,
+        x: Float,
+        y: Float,
+    ): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
-                        context,
-                    ) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
-                        context,
-                    )
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
                 ) {
                     return true
                 }
@@ -127,8 +143,7 @@ class NodeView constructor(
 
             is RectangleNode -> {
                 if (x in node.path.leftX().toPx(context)..node.path.rightX().toPx(context) &&
-                    y in node.path.topY().toPx(context)..node.path.bottomY()
-                        .toPx(context)
+                    y in node.path.topY().toPx(context)..node.path.bottomY().toPx(context)
                 ) {
                     return true
                 }
@@ -137,7 +152,11 @@ class NodeView constructor(
         return false
     }
 
-    private fun drawNode(canvas: Canvas, node: Node, depth: Int) {
+    private fun drawNode(
+        canvas: Canvas,
+        node: Node,
+        depth: Int,
+    ) {
         when (node) {
             is CircleNode -> drawCircleNode(canvas, node)
             is RectangleNode -> drawRectangleNode(canvas, node, depth)
@@ -145,7 +164,10 @@ class NodeView constructor(
         drawText(canvas, node)
     }
 
-    private fun drawCircleNode(canvas: Canvas, node: CircleNode) {
+    private fun drawCircleNode(
+        canvas: Canvas,
+        node: CircleNode,
+    ) {
         canvas.drawCircle(
             node.path.centerX.toPx(context),
             node.path.centerY.toPx(context),
@@ -154,7 +176,11 @@ class NodeView constructor(
         )
     }
 
-    private fun drawRectangleNode(canvas: Canvas, node: RectangleNode, depth: Int) {
+    private fun drawRectangleNode(
+        canvas: Canvas,
+        node: RectangleNode,
+        depth: Int,
+    ) {
         drawInfo.rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
         canvas.drawRect(
             node.path.leftX().toPx(context),
@@ -165,7 +191,10 @@ class NodeView constructor(
         )
     }
 
-    private fun drawText(canvas: Canvas, node: Node) {
+    private fun drawText(
+        canvas: Canvas,
+        node: Node,
+    ) {
         val lines = node.description.split("\n")
         var bounds = Rect()
         when (node) {

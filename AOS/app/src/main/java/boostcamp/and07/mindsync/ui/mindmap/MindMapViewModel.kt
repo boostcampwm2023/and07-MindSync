@@ -12,29 +12,34 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class MindMapViewModel : ViewModel() {
-    private val _head = MutableStateFlow<Node>(
-        CircleNode(
-            id = IdGenerator.makeRandomNodeId(),
-            path = CirclePath(
-                Dp(100f),
-                Dp(500f),
-                Dp(50f),
+    private val _head =
+        MutableStateFlow<Node>(
+            CircleNode(
+                id = IdGenerator.makeRandomNodeId(),
+                path =
+                CirclePath(
+                    Dp(100f),
+                    Dp(500f),
+                    Dp(50f),
+                ),
+                "Root1",
+                listOf(),
             ),
-            "Root1",
-            listOf(),
-        ),
-    )
+        )
     val head: StateFlow<Node> = _head
     private var _selectedNode = MutableStateFlow<Node?>(null)
     val selectedNode: StateFlow<Node?> = _selectedNode
-
-    fun addNode(parent: Node, addNode: RectangleNode) {
+    fun addNode(
+        parent: Node,
+        addNode: RectangleNode,
+    ) {
         _head.value?.let { head ->
-            _head.value = traverseAddNode(
-                head,
-                parent,
-                addNode,
-            )
+            _head.value =
+                traverseAddNode(
+                    head,
+                    parent,
+                    addNode,
+                )
         }
     }
 
@@ -47,7 +52,11 @@ class MindMapViewModel : ViewModel() {
         _selectedNode.value = selectNode
     }
 
-    private fun traverseAddNode(node: Node, target: Node, addNode: RectangleNode): Node {
+    private fun traverseAddNode(
+        node: Node,
+        target: Node,
+        addNode: RectangleNode,
+    ): Node {
         val newNodes = node.nodes.toMutableList()
         if (node.id == target.id) {
             newNodes.add(addNode)
@@ -63,7 +72,10 @@ class MindMapViewModel : ViewModel() {
         }
     }
 
-    private fun traverseRemoveNode(node: Node, removeNode: RectangleNode): Node {
+    private fun traverseRemoveNode(
+        node: Node,
+        removeNode: RectangleNode,
+    ): Node {
         val newNodes = node.nodes.toMutableList()
         newNodes.clear()
         node.nodes.forEach { child ->
@@ -81,7 +93,10 @@ class MindMapViewModel : ViewModel() {
         _head.value = traverseUpdateNode(head.value, updateNode)
     }
 
-    private fun traverseUpdateNode(node: Node, target: Node): Node {
+    private fun traverseUpdateNode(
+        node: Node,
+        target: Node,
+    ): Node {
         val newNodes = node.nodes.toMutableList()
         if (node.id == target.id) {
             return when (node) {

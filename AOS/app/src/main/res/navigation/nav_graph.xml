@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/mindmapFragment"
-        android:name="boostcamp.and07.mindsync.ui.mindmap.MindmapFragment"
-        android:label="MindmapFragment" />
+        android:name="boostcamp.and07.mindsync.ui.mindmap.MindMapFragment"
+        android:label="MindMapFragment" />
 </navigation>

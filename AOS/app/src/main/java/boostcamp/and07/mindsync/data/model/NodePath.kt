@@ -11,8 +11,11 @@ data class RectanglePath(
     val height: Dp,
 ) : NodePath(centerX, centerY) {
     fun leftX() = centerX - (width / (Dp(2f)))
+
     fun topY() = centerY - (height / (Dp(2f)))
+
     fun rightX() = centerX + (width / (Dp(2f)))
+
     fun bottomY() = centerY + (height / (Dp(2f)))
 }
 

@@ -7,26 +7,26 @@ import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.databinding.FragmentMindmapBinding
+import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
-import boostcamp.and07.mindsync.ui.view.MindmapContainer
+import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
 import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class MindmapFragment :
-    BaseFragment<FragmentMindmapBinding>(R.layout.fragment_mindmap),
+class MindMapFragment :
+    BaseFragment<FragmentMindMapBinding>(R.layout.fragment_mind_map),
     NodeClickListener,
     NodeUpdateListener {
-
     private val mindMapViewModel: MindMapViewModel by viewModels()
-    lateinit var mindmapContainer: MindmapContainer
+    lateinit var mindmapContainer: MindMapContainer
+
     override fun initView() {
         setupRootNode()
         setBinding()
@@ -43,19 +43,19 @@ class MindmapFragment :
     private fun setBinding() {
         binding.vm = mindMapViewModel
         binding.view = this
-        mindmapContainer = MindmapContainer(requireContext())
+        mindmapContainer = MindMapContainer(requireContext())
         mindmapContainer.setNodeClickListener(this)
         mindmapContainer.setNodeUpdateListener(this)
-        binding.zoomLayoutMindmapRoot.mindmapContainer = mindmapContainer
-        binding.zoomLayoutMindmapRoot.initializeZoomLayout()
+        binding.zoomLayoutMindMapRoot.mindmapContainer = mindmapContainer
+        binding.zoomLayoutMindMapRoot.initializeZoomLayout()
     }
 
     private fun collectHead() {
         viewLifecycleOwner.lifecycleScope.launch {
             mindMapViewModel.head.collectLatest { newHead ->
                 mindmapContainer.updateHead(newHead)
-                binding.zoomLayoutMindmapRoot.lineView.updateHead(mindmapContainer.head)
-                binding.zoomLayoutMindmapRoot.nodeView.updateHead(mindmapContainer.head)
+                binding.zoomLayoutMindMapRoot.lineView.updateHead(mindmapContainer.head)
+                binding.zoomLayoutMindMapRoot.nodeView.updateHead(mindmapContainer.head)
             }
         }
     }
@@ -68,7 +68,10 @@ class MindmapFragment :
         }
     }
 
-    private fun showDialog(selectNode: Node, action: (Node, String) -> Unit) {
+    private fun showDialog(
+        selectNode: Node,
+        action: (Node, String) -> Unit,
+    ) {
         val dialog = EditDescriptionDialog()
         dialog.setListener(object : EditDialogInterface {
             override fun onSubmitClick(description: String) {
@@ -86,10 +89,11 @@ class MindmapFragment :
 
     fun editButtonListener(selectNode: Node) {
         showDialog(selectNode) { node, description ->
-            val newNode = when (node) {
-                is CircleNode -> node.copy(description = description)
-                is RectangleNode -> node.copy(description = description)
-            }
+            val newNode =
+                when (node) {
+                    is CircleNode -> node.copy(description = description)
+                    is RectangleNode -> node.copy(description = description)
+                }
             mindMapViewModel.updateNode(newNode)
         }
     }
