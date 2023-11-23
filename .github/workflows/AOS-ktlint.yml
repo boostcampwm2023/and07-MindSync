@@ -24,4 +24,4 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x AOS/gradlew
       - name: ktlint Format
-        run: ./gradlew ktlintFormat
+        run: cd AOS && ./gradlew ktlintFormat
