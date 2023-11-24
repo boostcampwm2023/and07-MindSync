@@ -63,7 +63,7 @@ export abstract class BaseService<T extends HasUuid> {
     return data;
   }
 
-  async update(key: string, updateData: any) {
+  async update(key: string, updateData: T) {
     const data = await this.getDataFromCacheOrDB(key);
 
     if (data) {
@@ -117,7 +117,7 @@ export abstract class BaseService<T extends HasUuid> {
     return databaseData;
   }
 
-  private mergeWithUpdateCommand(data: any, key: string): T {
+  private mergeWithUpdateCommand(data: T, key: string): T {
     const updateCommand = this.temporaryDatabaseService.get(
       this.className,
       key,

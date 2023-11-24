@@ -3,15 +3,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
 import { BaseService } from '../base/base.service';
 import { USER_CACHE_SIZE } from '../config/magic-number';
-
-export interface User {
-  uuid?: string;
-  email: string;
-  password: string;
-}
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
-export class UsersService extends BaseService<User> {
+export class UsersService extends BaseService<UpdateUserDto> {
   constructor(
     protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,

@@ -3,16 +3,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
 import { BaseService } from '../base/base.service';
 import { PROFILE_CACHE_SIZE } from 'src/config/magic-number';
-
-export interface Profile {
-  uuid?: string;
-  user_id: string;
-  image: string;
-  nickname: string;
-}
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CreateProfileDto } from './dto/create-profile.dto';
 
 @Injectable()
-export class ProfilesService extends BaseService<Profile> {
+export class ProfilesService extends BaseService<UpdateProfileDto> {
   constructor(
     protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,
@@ -30,7 +25,7 @@ export class ProfilesService extends BaseService<Profile> {
     return data.uuid;
   }
 
-  async create(data: Profile): Promise<Profile | string> {
+  async create(data: CreateProfileDto): Promise<UpdateProfileDto | string> {
     const createdProfile = await super.create(data);
     if (typeof createdProfile !== 'string') {
       this.temporaryDatabaseService.addUserProfile(
