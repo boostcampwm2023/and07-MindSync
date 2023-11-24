@@ -25,16 +25,6 @@
                 android:layout_height="match_parent"
                 app:navGraph="@navigation/nav_graph" />
 
-            <ImageButton
-                android:id="@+id/imgbtn_main_menu"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_margin="20dp"
-                android:background="@android:color/transparent"
-                android:onClick="openDrawerButtonOnClick"
-                android:src="@drawable/ic_menu"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
