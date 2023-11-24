@@ -79,21 +79,9 @@
             android:src="@drawable/ic_outlined_drawing"
             android:onClick="@{() -> view.editButtonListener(vm.selectedNode)}"
             app:layout_constraintBottom_toBottomOf="@id/view_mind_map_side_bar"
-            app:layout_constraintEnd_toStartOf="@id/imgbtn_mind_map_back"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toEndOf="@id/imgbtn_mind_map_remove"
-            app:layout_constraintTop_toTopOf="@id/view_mind_map_side_bar" />
-
-        <ImageButton
-            android:id="@+id/imgbtn_mind_map_back"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_undo"
-            app:layout_constraintBottom_toBottomOf="@id/view_mind_map_side_bar"
-            app:layout_constraintEnd_toEndOf="@id/view_mind_map_side_bar"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toEndOf="@id/imgbtn_mind_map_edit"
             app:layout_constraintTop_toTopOf="@id/view_mind_map_side_bar" />
 
 
