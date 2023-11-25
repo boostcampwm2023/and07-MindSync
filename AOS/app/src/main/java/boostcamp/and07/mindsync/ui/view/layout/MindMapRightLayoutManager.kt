@@ -1,7 +1,6 @@
 package boostcamp.and07.mindsync.ui.view.layout
 
 import boostcamp.and07.mindsync.data.model.CircleNode
-import boostcamp.and07.mindsync.data.model.CirclePath
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
@@ -16,7 +15,7 @@ class MindMapRightLayoutManager {
         if (head.path.centerX.dpVal <= (totalHeight / 2).dpVal) {
             val newPath =
                 head.path.copy(
-                    centerY = totalHeight / 2 + horizontalSpacing
+                    centerY = totalHeight / 2 + horizontalSpacing,
                 )
             newHead = newHead.copy(path = newPath)
         }
