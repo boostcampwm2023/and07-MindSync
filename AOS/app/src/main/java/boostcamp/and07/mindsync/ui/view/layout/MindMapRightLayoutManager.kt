@@ -30,8 +30,8 @@ class MindMapRightLayoutManager {
             startX = criteriaX + (childNode.path.width / 2)
 
             val childHeight = measureChildHeight(childNode)
-            val newCenterY = startY + (childHeight / 2)
-            val newPath = childNode.path.copy(centerX = startX, centerY = newCenterY)
+            val newY = startY + (childHeight / 2)
+            val newPath = childNode.path.copy(centerX = startX, centerY = newY)
 
             newNodes.add(
                 childNode.copy(path = newPath),
