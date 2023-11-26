@@ -31,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="@{vm.selectedNode != null ? View.VISIBLE : View.GONE}"
-            app:constraint_referenced_ids="imgbtn_mind_map_add,imgbtn_mind_map_back,imgbtn_mind_map_remove,imgbtn_mind_map_edit,view_mind_map_side_bar"
+            app:constraint_referenced_ids="imgbtn_mind_map_add,imgbtn_mind_map_remove,imgbtn_mind_map_edit,view_mind_map_side_bar"
             app:layout_constraintBottom_toBottomOf="@id/view_mind_map_side_bar"
             app:layout_constraintEnd_toEndOf="@id/view_mind_map_side_bar"
             app:layout_constraintStart_toStartOf="@id/view_mind_map_side_bar"
