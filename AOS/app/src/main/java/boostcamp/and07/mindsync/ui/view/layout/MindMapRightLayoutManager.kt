@@ -1,7 +1,6 @@
 package boostcamp.and07.mindsync.ui.view.layout
 
 import boostcamp.and07.mindsync.data.model.CircleNode
-import boostcamp.and07.mindsync.data.model.CirclePath
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.ui.util.Dp
@@ -10,7 +9,20 @@ class MindMapRightLayoutManager {
     private val horizontalSpacing = Dp(50f)
     private val verticalSpacing = Dp(50f)
 
-    fun arrangeNode(node: Node): Node {
+    fun arrangeNode(head: CircleNode): Node {
+        val totalHeight = measureChildHeight(head)
+        var newHead = head
+        if (head.path.centerX.dpVal <= (totalHeight / 2).dpVal) {
+            val newPath =
+                head.path.copy(
+                    centerY = totalHeight / 2 + horizontalSpacing,
+                )
+            newHead = newHead.copy(path = newPath)
+        }
+        return recurArrangeNode(newHead)
+    }
+
+    private fun recurArrangeNode(node: Node): Node {
         val childHeightSum = measureChildHeight(node)
         val newNodes = mutableListOf<RectangleNode>()
 
@@ -20,18 +32,16 @@ class MindMapRightLayoutManager {
                 is CircleNode -> node.path.radius
             }
 
-        val criteriaX = node.path.centerX + nodeWidth + horizontalSpacing
+        val criteriaX = node.path.centerX + nodeWidth / 2 + horizontalSpacing
         var startX: Dp
-        val newCenterY =
-            if (node.path.centerY.dpVal >= (childHeightSum / 2).dpVal) node.path.centerY else childHeightSum / 2
-        var startY = newCenterY - (childHeightSum / 2)
+        var startY = node.path.centerY - (childHeightSum / 2)
 
         node.nodes.forEach { childNode ->
             startX = criteriaX + (childNode.path.width / 2)
 
             val childHeight = measureChildHeight(childNode)
-            val newCenterY = startY + (childHeight / 2)
-            val newPath = childNode.path.copy(centerX = startX, centerY = newCenterY)
+            val newY = startY + (childHeight / 2)
+            val newPath = childNode.path.copy(centerX = startX, centerY = newY)
 
             newNodes.add(
                 childNode.copy(path = newPath),
@@ -41,19 +51,13 @@ class MindMapRightLayoutManager {
         }
 
         newNodes.forEachIndexed { index, childNode ->
-            newNodes[index] = arrangeNode(childNode) as RectangleNode
+            newNodes[index] = recurArrangeNode(childNode) as RectangleNode
         }
         val newNode =
             when (node) {
                 is RectangleNode -> node.copy(nodes = newNodes)
                 is CircleNode -> {
                     node.copy(
-                        path =
-                            CirclePath(
-                                centerX = node.path.centerX,
-                                centerY = newCenterY,
-                                radius = node.path.radius,
-                            ),
                         nodes = newNodes,
                     )
                 }

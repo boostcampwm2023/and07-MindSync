@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.view
 
 import android.content.Context
+import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.ui.view.layout.MeasureTextSize
 import boostcamp.and07.mindsync.ui.view.layout.MindMapRightLayoutManager
@@ -24,7 +25,7 @@ class MindMapContainer(context: Context) {
     }
 
     fun updateHead(head: Node) {
-        this.head = rightLayoutManager.arrangeNode(measureTextSize.traverseTextHead(head))
+        this.head = rightLayoutManager.arrangeNode(measureTextSize.traverseTextHead(head) as CircleNode)
         nodeUpdateListener?.updateHead(head)
     }
 
