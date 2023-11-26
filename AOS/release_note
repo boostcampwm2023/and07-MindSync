@@ -1,0 +1,17 @@
+2023.11.26
+version: 0.1.0
+💻 Feature Updates
+- 마인드 맵 기능
+   - 노드 추가
+   - 노드 삭제
+   - 노드 편집
+   - 노드 자동 정렬
+- 화면 드래그, 확대, 축소
+🐞Bug Fix
+-
+👩‍👩‍👧‍👦 Member
+- 이재한(Android)
+- 양선아(Android)
+- 이상준(Android)
+- 김찬희(Be)
+- 이용환(Be)
