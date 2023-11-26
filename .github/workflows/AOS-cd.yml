@@ -1,7 +1,8 @@
 name: AOS-cd
 on:
   push:
-      - release
+    branches:
+        - release
 jobs:
   build:
     runs-on: ubuntu-latest
