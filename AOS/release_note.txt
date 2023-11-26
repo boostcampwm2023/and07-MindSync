@@ -8,7 +8,7 @@ version: 0.1.0
    - 노드 자동 정렬
 - 화면 드래그, 확대, 축소
 🐞Bug Fix
--
+- 노드에 화면이 잘리는 현상 해결
 👩‍👩‍👧‍👦 Member
 - 이재한(Android)
 - 양선아(Android)
