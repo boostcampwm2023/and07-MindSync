@@ -22,7 +22,6 @@ class CrdtTree(id: String) {
         description: String,
     ): OperationAdd {
         clock.increment()
-        var newCount = clock.counter
         val input = OperationInput(targetId, clock.copy(), description, parentId)
         return OperationAdd(input)
     }
