@@ -34,8 +34,9 @@ export class UsersService extends BaseService<UpdateUserDto> {
     if (!user) return null;
 
     const profiles = user.profiles || [];
-    const temporaryProfilesUuids =
-      this.temporaryDatabaseService.getUserProfiles(user.uuid);
+    const temporaryProfilesUuids = this.temporaryDatabaseService.getEntries(
+      user.uuid,
+    );
     const temporaryProfiles = temporaryProfilesUuids.map((uuid) =>
       this.temporaryDatabaseService.get('PROFILE_TB', uuid, 'insert'),
     );

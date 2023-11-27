@@ -14,7 +14,7 @@ interface OperationData {
 @Injectable()
 export class TemporaryDatabaseService {
   private database: Map<string, Map<string, Map<string, any>>> = new Map();
-  private userProfilesMap: Map<string, string[]> = new Map();
+  private entriesMap: Map<string, string[]> = new Map();
   private readonly FOLDER_NAME = 'operations';
 
   constructor(private readonly prisma: PrismaService) {
@@ -23,7 +23,13 @@ export class TemporaryDatabaseService {
   }
 
   private initializeDatabase() {
-    const services = ['USER_TB', 'PROFILE_TB', 'SPACE_TB', 'BOARD_TB'];
+    const services = [
+      'USER_TB',
+      'PROFILE_TB',
+      'SPACE_TB',
+      'BOARD_TB',
+      'PROFILE_SPACE_TB',
+    ];
     const operations = ['insert', 'update', 'delete'];
 
     services.forEach((service) => {
@@ -89,7 +95,7 @@ export class TemporaryDatabaseService {
     });
   }
 
-  @Cron('0 */10 * * * *')
+  @Cron('* * * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
@@ -101,7 +107,7 @@ export class TemporaryDatabaseService {
 
   private async performInsert(service: string, dataMap: Map<string, any>) {
     const data = this.prepareData(service, 'insert', dataMap);
-    this.userProfilesMap.clear();
+    this.entriesMap.clear();
     if (!data.length) return;
     await this.prisma[service].createMany({
       data: data,
@@ -130,10 +136,11 @@ export class TemporaryDatabaseService {
     await Promise.all(
       data.map(async (item) => {
         try {
-          return this.prisma[service].delete({
+          await this.prisma[service].delete({
             where: { [item.field]: item.value },
           });
-        } catch (error) {
+        } catch {
+        } finally {
           return;
         }
       }),
@@ -155,22 +162,22 @@ export class TemporaryDatabaseService {
     fs.writeFile(join(this.FOLDER_NAME, filename), '', 'utf8');
   }
 
-  getUserProfiles(user_id: string): string[] {
-    return this.userProfilesMap.get(user_id) || [];
+  getEntries(key: string): string[] {
+    return this.entriesMap.get(key) || [];
   }
 
-  addUserProfile(user_id: string, profile_uuid: string): void {
-    const profiles = this.getUserProfiles(user_id);
-    profiles.push(profile_uuid);
-    this.userProfilesMap.set(user_id, profiles);
+  addEntry(key: string, value: string): void {
+    const entries = this.getEntries(key);
+    entries.push(value);
+    this.entriesMap.set(key, entries);
   }
 
-  removeUserProfile(user_id: string, profile_uuid: string): void {
-    const profiles = this.getUserProfiles(user_id);
-    const index = profiles.indexOf(profile_uuid);
+  removeEntry(key: string, value: string): void {
+    const entries = this.getEntries(key);
+    const index = entries.indexOf(value);
     if (index > -1) {
-      profiles.splice(index, 1);
-      this.userProfilesMap.set(user_id, profiles);
+      entries.splice(index, 1);
+      this.entriesMap.set(key, entries);
     }
   }
 }
