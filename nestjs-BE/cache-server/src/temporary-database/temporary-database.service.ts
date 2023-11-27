@@ -84,6 +84,14 @@ export class TemporaryDatabaseService {
 
   delete(service: string, uniqueKey: string, command: string) {
     this.database.get(service).get(command).delete(uniqueKey);
+    const filePath = join(this.FOLDER_NAME, `${service}-${command}.csv`);
+    fs.readFile(filePath, 'utf8').then((fileData) => {
+      const lines = fileData.split('\n');
+      const updatedFileData = lines
+        .filter((line) => !line.startsWith(`${uniqueKey},`))
+        .join('\n');
+      fs.writeFile(filePath, updatedFileData);
+    });
   }
 
   operation({ service, uniqueKey, command, data }: OperationData) {
@@ -95,7 +103,7 @@ export class TemporaryDatabaseService {
     });
   }
 
-  @Cron('* * * * * *')
+  @Cron('0 */10 * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
