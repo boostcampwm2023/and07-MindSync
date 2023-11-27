@@ -8,9 +8,9 @@ class Tree {
     val nodes get() = _nodes.toMap()
 
     init {
-        _nodes["root"] =
+        _nodes[ROOT_ID] =
             CircleNode(
-                id = "root",
+                id = ROOT_ID,
                 parentId = null,
                 path =
                     CirclePath(
@@ -24,7 +24,7 @@ class Tree {
     }
 
     fun get(id: String): Node {
-        return _nodes[id] ?: throw IllegalArgumentException("Invalid Node Id")
+        return _nodes[id] ?: throw IllegalArgumentException(ERROR_MESSAGE_INVALID_NODE_ID)
     }
 
     fun addNode(
@@ -32,8 +32,8 @@ class Tree {
         parentId: String?,
         content: String,
     ) {
-        if (_nodes[targetId] != null) throw IllegalArgumentException("Target node is exist")
-        if (parentId == null) throw IllegalArgumentException("Parent is not exist")
+        if (_nodes[targetId] != null) throw IllegalArgumentException(ERROR_MESSAGE_DUPLICATED_NODE)
+        if (parentId == null) throw IllegalArgumentException(ERROR_MESSAGE_PARENT_NODE_NOT_EXIST)
         val newNode =
             NodeGenerator.makeNode(content, parentId).copy(id = targetId, parentId = parentId)
         val parentNode = _nodes[parentId] ?: return
@@ -52,7 +52,7 @@ class Tree {
         targetId: String,
         parentId: String?,
     ) {
-        if (targetId == "root" || parentId == null) return
+        if (targetId == ROOT_ID || parentId == null) return
         val targetNode = nodes[targetId] ?: return
 
         val newTargetNode =
@@ -74,11 +74,11 @@ class Tree {
     }
 
     fun removeNode(targetId: String) {
-        if (targetId == "root") throw IllegalArgumentException("Root can't remove")
-        val targetNode = _nodes[targetId] ?: throw IllegalArgumentException("Target Node is not exist")
+        if (targetId == ROOT_ID) throw IllegalArgumentException(ERROR_MESSAGE_ROOT_CANT_REMOVE)
+        val targetNode = _nodes[targetId] ?: throw IllegalArgumentException(ERROR_MESSAGE_TARGET_NODE_NOT_EXIST)
         targetNode.parentId?.let { parentId ->
             val parentNode =
-                _nodes[parentId] ?: throw IllegalArgumentException("Parent node is not exist")
+                _nodes[parentId] ?: throw IllegalArgumentException(ERROR_MESSAGE_PARENT_NODE_NOT_EXIST)
             val newChildren = parentNode.children.filter { node -> node.id != targetId }
             val newParent =
                 when (parentNode) {
@@ -87,7 +87,7 @@ class Tree {
                     is RectangleNode -> parentNode.copy(children = newChildren)
                 }
             _nodes[parentId] = newParent
-        } ?: throw IllegalArgumentException("Root can't remove")
+        } ?: throw IllegalArgumentException(ERROR_MESSAGE_ROOT_CANT_REMOVE)
     }
 
     fun updateNode(
@@ -95,7 +95,7 @@ class Tree {
         description: String,
     ) {
         val targetNode =
-            _nodes[targetId] ?: throw IllegalArgumentException("Target Node is not exist")
+            _nodes[targetId] ?: throw IllegalArgumentException(ERROR_MESSAGE_TARGET_NODE_NOT_EXIST)
         val newTargetNode =
             when (targetNode) {
                 is CircleNode -> targetNode.copy(description = description)
@@ -113,5 +113,14 @@ class Tree {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val ROOT_ID = "root"
+        private const val ERROR_MESSAGE_INVALID_NODE_ID = "Node Id is invalid"
+        private const val ERROR_MESSAGE_DUPLICATED_NODE = "Target node is duplicated"
+        private const val ERROR_MESSAGE_TARGET_NODE_NOT_EXIST = "Target Node is not exist"
+        private const val ERROR_MESSAGE_PARENT_NODE_NOT_EXIST = "Parent Node is not exist"
+        private const val ERROR_MESSAGE_ROOT_CANT_REMOVE = "Root can't remove"
     }
 }
