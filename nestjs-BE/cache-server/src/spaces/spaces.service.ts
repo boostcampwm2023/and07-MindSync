@@ -23,23 +23,4 @@ export class SpacesService extends BaseService<UpdateSpaceDto> {
   generateKey(data: UpdateSpaceDto): string {
     return data.uuid;
   }
-
-  async joinSpace(profileUuid: string, spaceUuid: string) {
-    const profileSpace = {
-      space_uuid: spaceUuid,
-      profile_uuid: profileUuid,
-    };
-
-    await this.prisma['PROFILE_SPACE_TB'].create({
-      data: profileSpace,
-    });
-
-    return profileSpace;
-  }
-
-  async leaveSpace(profileUuid: string, spaceUuid: string) {
-    await this.prisma['PROFILE_SPACE_TB'].delete({
-      where: { space_uuid: spaceUuid, profile_uuid: profileUuid },
-    });
-  }
 }
