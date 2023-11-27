@@ -67,7 +67,7 @@ class NodeView(
             }
         }
         drawNode(canvas, node, depth)
-        node.nodes.forEach { node ->
+        node.children.forEach { node ->
             traverseDrawNode(canvas, node, depth + 1)
         }
     }
@@ -121,7 +121,7 @@ class NodeView(
         if (isInsideNode(node, x, y)) {
             return Pair(node, depth)
         }
-        for (child in node.nodes) {
+        for (child in node.children) {
             return traverseRangeNode(child, x, y, depth + 1) ?: continue
         }
         return null

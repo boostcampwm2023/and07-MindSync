@@ -17,7 +17,7 @@ class MeasureTextSize(private val context: Context) {
 
     private fun traverseTextNode(node: Node): Node {
         val newNodes = mutableListOf<RectangleNode>()
-        node.nodes.forEach { child ->
+        node.children.forEach { child ->
             newNodes.add(traverseTextNode(child) as RectangleNode)
             traverseTextNode(child)
         }
@@ -25,8 +25,8 @@ class MeasureTextSize(private val context: Context) {
             changeSize(node, sumWidth(node.description), sumTotalHeight(node.description))
         val newNode =
             when (copyNode) {
-                is CircleNode -> copyNode.copy(nodes = newNodes)
-                is RectangleNode -> copyNode.copy(nodes = newNodes)
+                is CircleNode -> copyNode.copy(children = newNodes)
+                is RectangleNode -> copyNode.copy(children = newNodes)
             }
         return newNode
     }
@@ -47,9 +47,10 @@ class MeasureTextSize(private val context: Context) {
                     )
                 return node.copy(
                     id = node.id,
-                    node.path.copy(radius = newRadius),
+                    parentId = node.parentId,
+                    path = node.path.copy(radius = newRadius),
                     description = node.description,
-                    nodes = node.nodes,
+                    children = node.children,
                 )
             }
 
@@ -58,9 +59,10 @@ class MeasureTextSize(private val context: Context) {
                 val newHeight = Dp(Px(height).toDp(context)) + drawInfo.padding
                 return node.copy(
                     id = node.id,
-                    node.path.copy(width = newWidth, height = newHeight),
+                    parentId = node.parentId,
+                    path = node.path.copy(width = newWidth, height = newHeight),
                     description = node.description,
-                    nodes = node.nodes,
+                    children = node.children,
                 )
             }
         }
