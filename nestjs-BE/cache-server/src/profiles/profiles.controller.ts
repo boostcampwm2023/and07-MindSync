@@ -51,4 +51,9 @@ export class ProfilesController {
   ) {
     return this.profilesService.leaveSpace(profileUuid, spaceUuid);
   }
+
+  @Get('users/:uuid')
+  findUsers(@Param('uuid') uuid: string) {
+    return this.profilesService.findUsers(uuid);
+  }
 }

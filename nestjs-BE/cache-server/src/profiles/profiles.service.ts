@@ -129,4 +129,43 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     }
     return;
   }
+
+  async findUsers(uuid: string) {
+    const space = await this.prisma['SPACE_TB'].findUnique({
+      where: {
+        uuid,
+      },
+      include: {
+        profiles: { include: { profile: true } },
+      },
+    });
+
+    space.profiles = space.profiles.filter((profileSpace) => {
+      const deleteTempData = this.temporaryDatabaseService.get(
+        'PROFILE_SPACE_TB',
+        `${profileSpace.profile_uuid}_${profileSpace.space_uuid}`,
+        'delete',
+      );
+      return !deleteTempData;
+    });
+
+    const spaceUuidsFromTempDB = this.temporaryDatabaseService.getEntries(uuid);
+    for (const spaceUuid of spaceUuidsFromTempDB) {
+      const insertTempData = this.temporaryDatabaseService.get(
+        'PROFILE_SPACE_TB',
+        `${spaceUuid}_${uuid}`,
+        'insert',
+      );
+      if (insertTempData) {
+        const userProfile = await super.getDataFromCacheOrDB(spaceUuid);
+        if (userProfile) {
+          space.profiles.push({
+            profile_uuid: spaceUuid,
+            profile: userProfile,
+          });
+        }
+      }
+    }
+    return space.profiles.map((profileSpace) => profileSpace.profile);
+  }
 }
