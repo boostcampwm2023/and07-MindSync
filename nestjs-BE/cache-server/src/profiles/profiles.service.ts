@@ -10,7 +10,7 @@ import { ProfileSpaceDto } from './dto/profile-space.dto';
 
 @Injectable()
 export class ProfilesService extends BaseService<UpdateProfileDto> {
-  joinTable = 'PROFILE_SPACE_TB';
+  profileSpaceTable = 'PROFILE_SPACE_TB';
   constructor(
     protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,
@@ -49,8 +49,11 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     const { profile_uuid: profileUuid, space_uuid: spaceUuid } = data;
     const result = await this.getProfileAndSpace(profileUuid, spaceUuid);
     if (typeof result === 'string') return result;
+    const key = `${profileUuid}_${spaceUuid}`;
+    const isExists = await this.isDataExists(key, spaceUuid, profileUuid);
+    if (typeof isExists === 'string') return isExists;
 
-    this.temporaryDatabaseService.create(this.joinTable, profileUuid, data);
+    this.temporaryDatabaseService.create(this.profileSpaceTable, key, data);
     this.temporaryDatabaseService.addEntry(profileUuid, spaceUuid);
     this.temporaryDatabaseService.addEntry(spaceUuid, profileUuid);
   }
@@ -58,16 +61,16 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
   async leaveSpace(profileUuid: string, spaceUuid: string) {
     const result = await this.getProfileAndSpace(profileUuid, spaceUuid);
     if (typeof result === 'string') return result;
-
+    const key = `${profileUuid}_${spaceUuid}`;
     const insertTemporaryData = this.temporaryDatabaseService.get(
-      this.joinTable,
-      profileUuid,
+      this.profileSpaceTable,
+      key,
       'insert',
     );
     if (insertTemporaryData) {
       this.temporaryDatabaseService.delete(
-        this.joinTable,
-        profileUuid,
+        this.profileSpaceTable,
+        key,
         'insert',
       );
       this.temporaryDatabaseService.removeEntry(profileUuid, spaceUuid);
@@ -80,7 +83,7 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
           profile_uuid: profileUuid,
         },
       };
-      this.temporaryDatabaseService.remove(this.joinTable, profileUuid, data);
+      this.temporaryDatabaseService.remove(this.profileSpaceTable, key, data);
     }
   }
 
@@ -90,5 +93,40 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     const space = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
     if (!space) return `Space not found: ${spaceUuid}`;
     return { profile, space };
+  }
+
+  async isDataExists(key: string, space_uuid: string, profile_uuid: string) {
+    const existingEntry = await this.prisma[this.profileSpaceTable].findUnique({
+      where: {
+        space_uuid_profile_uuid: {
+          space_uuid,
+          profile_uuid,
+        },
+      },
+    });
+
+    const existingTempEntry = this.temporaryDatabaseService.get(
+      this.profileSpaceTable,
+      key,
+      'insert',
+    );
+
+    const deleteTemporaryData = this.temporaryDatabaseService.get(
+      this.profileSpaceTable,
+      key,
+      'delete',
+    );
+    if (deleteTemporaryData) {
+      this.temporaryDatabaseService.delete(
+        this.profileSpaceTable,
+        key,
+        'delete',
+      );
+      return 'Removed the data scheduled for deletion and re-joined the room.';
+    }
+    if (existingEntry || existingTempEntry) {
+      return 'Data already exists.';
+    }
+    return;
   }
 }
