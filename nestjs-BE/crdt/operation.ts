@@ -4,13 +4,13 @@ import { Tree } from './tree';
 export interface OperationLog<T> {
   operation: Operation<T>;
   oldParentId?: string;
-  oldContent?: T;
+  oldDescription?: T;
 }
 
 export interface OperationInput<T> {
   id: string;
   clock: Clock;
-  content?: T;
+  description?: T;
   parentId?: string;
 }
 
@@ -23,7 +23,7 @@ export interface SerializedOperation<T> {
   operationType: string;
   id: string;
   clock: ClockInterface;
-  content?: T;
+  description?: T;
   parentId?: string;
 }
 
@@ -44,17 +44,17 @@ export abstract class Operation<T> {
 }
 
 export class OperationAdd<T> extends Operation<T> {
-  content: T;
+  description: T;
   parentId: string;
 
   constructor(input: OperationInput<T>) {
     super('add', input.id, input.clock);
-    this.content = input.content;
+    this.description = input.description;
     this.parentId = input.parentId;
   }
 
   doOperation(tree: Tree<T>): OperationLog<T> {
-    tree.addNode(this.id, this.parentId, this.content);
+    tree.addNode(this.id, this.parentId, this.description);
     return { operation: this };
   }
 
@@ -119,22 +119,22 @@ export class OperationMove<T> extends Operation<T> {
 }
 
 export class OperationUpdate<T> extends Operation<T> {
-  content: T;
+  description: T;
 
   constructor(input: OperationInput<T>) {
     super('update', input.id, input.clock);
-    this.content = input.content;
+    this.description = input.description;
   }
 
   doOperation(tree: Tree<T>): OperationLog<T> {
     const node = tree.get(this.id);
-    const oldContent = node.content;
-    tree.updateNode(this.id, this.content);
-    return { operation: this, oldContent };
+    const oldDescription = node.description;
+    tree.updateNode(this.id, this.description);
+    return { operation: this, oldDescription: oldDescription };
   }
 
   undoOperation(tree: Tree<T>, log: OperationLog<T>): void {
-    tree.updateNode(log.operation.id, log.oldContent);
+    tree.updateNode(log.operation.id, log.oldDescription);
   }
 
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {

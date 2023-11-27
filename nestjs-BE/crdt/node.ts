@@ -1,16 +1,16 @@
 export class Node<T> {
   targetId: string;
   parentId: string;
-  content: T;
+  description: T;
   children = new Array<string>();
 
   constructor(
     targetId: string,
     parentId: string = '0',
-    content: T | null = null,
+    description: T | null = null,
   ) {
     this.targetId = targetId;
     this.parentId = parentId;
-    this.content = content;
+    this.description = description;
   }
 }

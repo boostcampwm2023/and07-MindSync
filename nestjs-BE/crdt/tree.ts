@@ -11,8 +11,8 @@ export class Tree<T> {
     return this.nodes.get(id);
   }
 
-  addNode(targetId: string, parentId: string, content: T) {
-    const newNode = new Node<T>(targetId, parentId, content);
+  addNode(targetId: string, parentId: string, description: T) {
+    const newNode = new Node<T>(targetId, parentId, description);
 
     const parentNode = this.nodes.get(parentId);
     if (!parentNode) return;
@@ -45,10 +45,10 @@ export class Tree<T> {
     return this.nodes.get(targetId);
   }
 
-  updateNode(targetId: string, content: T) {
+  updateNode(targetId: string, description: T) {
     const targetNode = this.nodes.get(targetId);
     if (!targetNode) return;
 
-    targetNode.content = content;
+    targetNode.description = description;
   }
 }
