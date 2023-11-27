@@ -2,7 +2,6 @@ import { Node } from './node';
 
 export class Tree<T> {
   nodes = new Map<string, Node<T>>();
-  children = new Map<string, Set<string>>();
 
   constructor() {
     this.nodes.set('root', new Node<T>());
@@ -12,19 +11,22 @@ export class Tree<T> {
     return this.nodes.get(id);
   }
 
+  getNodeChildren(id: string): Array<string> | null {
+    const node = this.get(id);
+    if (!node) return null;
+
+    const childrenArray = Array.from(node.children);
+    childrenArray.sort();
+    return childrenArray;
+  }
+
   addNode(targetId: string, parentId: string, content: T) {
     const newNode = new Node<T>(parentId, content);
 
     const parentNode = this.nodes.get(parentId);
     if (!parentNode) return;
 
-    let childrenSet = this.children.get(parentId);
-    if (!childrenSet) {
-      childrenSet = new Set();
-      this.children.set(parentId, childrenSet);
-    }
-
-    childrenSet.add(targetId);
+    parentNode.children.add(targetId);
     this.nodes.set(targetId, newNode);
   }
 
@@ -35,13 +37,7 @@ export class Tree<T> {
     const parentNode = this.nodes.get(parentId);
     if (!parentNode) return;
 
-    let childrenSet = this.children.get(parentId);
-    if (!childrenSet) {
-      childrenSet = new Set();
-      this.children.set(parentId, childrenSet);
-    }
-
-    childrenSet.add(targetId);
+    parentNode.children.add(targetId);
     targetNode.parentId = parentId;
   }
 
@@ -49,9 +45,10 @@ export class Tree<T> {
     const targetNode = this.nodes.get(targetId);
     if (!targetNode) return;
 
-    const parentChildren = this.children.get(targetNode.parentId);
-    if (!parentChildren) return;
-    parentChildren.delete(targetId);
+    const parentNode = this.nodes.get(targetNode.parentId);
+    if (!parentNode) return;
+
+    parentNode.children.delete(targetId);
 
     return this.nodes.get(targetId);
   }
