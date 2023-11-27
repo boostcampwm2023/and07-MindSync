@@ -23,6 +23,22 @@ class Tree {
             )
     }
 
+    fun getRoot(): CircleNode {
+        _nodes[ROOT_ID] ?: throw IllegalArgumentException(ERROR_MESSAGE_ROOT_NODE_NOT_EXIST)
+        return _nodes[ROOT_ID] as CircleNode
+    }
+
+    fun setRoot(root: CircleNode) {
+        _nodes[ROOT_ID] = root
+    }
+
+    fun set(
+        id: String,
+        node: Node,
+    ) {
+        _nodes[id] = node
+    }
+
     fun get(id: String): Node {
         return _nodes[id] ?: throw IllegalArgumentException(ERROR_MESSAGE_INVALID_NODE_ID)
     }
@@ -36,9 +52,12 @@ class Tree {
         if (parentId == null) throw IllegalArgumentException(ERROR_MESSAGE_PARENT_NODE_NOT_EXIST)
         val newNode =
             NodeGenerator.makeNode(content, parentId).copy(id = targetId, parentId = parentId)
-        val parentNode = _nodes[parentId] ?: return
+        val parentNode =
+            _nodes[parentId] ?: throw IllegalArgumentException(
+                ERROR_MESSAGE_PARENT_NODE_NOT_EXIST,
+            )
         val newChildren = parentNode.children.toMutableList()
-        newChildren.add(newNode)
+        newChildren.add(targetId)
         val newParent =
             when (parentNode) {
                 is CircleNode -> parentNode.copy(children = newChildren)
@@ -62,7 +81,7 @@ class Tree {
             }
         val parentNode = nodes[parentId] ?: return
         val newNodes = parentNode.children.toMutableList()
-        newNodes.add(newTargetNode as RectangleNode)
+        newNodes.add(targetId)
         val newParentNode =
             when (parentNode) {
                 is CircleNode -> parentNode.copy(children = newNodes)
@@ -75,11 +94,14 @@ class Tree {
 
     fun removeNode(targetId: String) {
         if (targetId == ROOT_ID) throw IllegalArgumentException(ERROR_MESSAGE_ROOT_CANT_REMOVE)
-        val targetNode = _nodes[targetId] ?: throw IllegalArgumentException(ERROR_MESSAGE_TARGET_NODE_NOT_EXIST)
+        val targetNode =
+            _nodes[targetId] ?: throw IllegalArgumentException(ERROR_MESSAGE_TARGET_NODE_NOT_EXIST)
         targetNode.parentId?.let { parentId ->
             val parentNode =
-                _nodes[parentId] ?: throw IllegalArgumentException(ERROR_MESSAGE_PARENT_NODE_NOT_EXIST)
-            val newChildren = parentNode.children.filter { node -> node.id != targetId }
+                _nodes[parentId] ?: throw IllegalArgumentException(
+                    ERROR_MESSAGE_PARENT_NODE_NOT_EXIST,
+                )
+            val newChildren = parentNode.children.filter { id -> id != targetId }
             val newParent =
                 when (parentNode) {
                     is CircleNode -> parentNode.copy(children = newChildren)
@@ -102,16 +124,26 @@ class Tree {
                 is RectangleNode -> targetNode.copy(description = description)
             }
         _nodes[targetId] = newTargetNode
-        targetNode.parentId ?: return
-        _nodes[targetNode.parentId]?.let { parent ->
-            val newChildren = mutableListOf<RectangleNode>()
-            for (i in 0 until parent.children.size) {
-                if (parent.children[i].id == targetId) {
-                    newChildren.add(newTargetNode as RectangleNode)
-                } else {
-                    newChildren.add(parent.children[i])
-                }
-            }
+    }
+
+    fun doPreorderTraversal(
+        node: Node = getRoot(),
+        action: (node: Node) -> Unit,
+    ) {
+        action.invoke(node)
+        node.children.forEach { childId ->
+            doPreorderTraversal(get(childId), action)
+        }
+    }
+
+    fun doPreorderTraversal(
+        node: Node = getRoot(),
+        depth: Int = 0,
+        action: (node: Node, depth: Int) -> Unit,
+    ) {
+        action.invoke(node, depth)
+        node.children.forEach { childId ->
+            doPreorderTraversal(get(childId), depth + 1, action)
         }
     }
 
@@ -121,6 +153,7 @@ class Tree {
         private const val ERROR_MESSAGE_DUPLICATED_NODE = "Target node is duplicated"
         private const val ERROR_MESSAGE_TARGET_NODE_NOT_EXIST = "Target Node is not exist"
         private const val ERROR_MESSAGE_PARENT_NODE_NOT_EXIST = "Parent Node is not exist"
+        private const val ERROR_MESSAGE_ROOT_NODE_NOT_EXIST = "Root Node is not exist"
         private const val ERROR_MESSAGE_ROOT_CANT_REMOVE = "Root can't remove"
     }
 }
