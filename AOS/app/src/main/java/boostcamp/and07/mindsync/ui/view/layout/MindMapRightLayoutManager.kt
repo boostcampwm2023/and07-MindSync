@@ -36,7 +36,7 @@ class MindMapRightLayoutManager {
         var startX: Dp
         var startY = node.path.centerY - (childHeightSum / 2)
 
-        node.nodes.forEach { childNode ->
+        node.children.forEach { childNode ->
             startX = criteriaX + (childNode.path.width / 2)
 
             val childHeight = measureChildHeight(childNode)
@@ -55,10 +55,10 @@ class MindMapRightLayoutManager {
         }
         val newNode =
             when (node) {
-                is RectangleNode -> node.copy(nodes = newNodes)
+                is RectangleNode -> node.copy(children = newNodes)
                 is CircleNode -> {
                     node.copy(
-                        nodes = newNodes,
+                        children = newNodes,
                     )
                 }
             }
@@ -69,11 +69,11 @@ class MindMapRightLayoutManager {
     fun measureChildHeight(node: Node): Dp {
         var heightSum = Dp(0f)
 
-        if (node.nodes.isNotEmpty()) {
-            node.nodes.forEach { childNode ->
+        if (node.children.isNotEmpty()) {
+            node.children.forEach { childNode ->
                 heightSum += measureChildHeight(childNode)
             }
-            heightSum += verticalSpacing * (node.nodes.size - 1)
+            heightSum += verticalSpacing * (node.children.size - 1)
         } else {
             heightSum =
                 when (node) {

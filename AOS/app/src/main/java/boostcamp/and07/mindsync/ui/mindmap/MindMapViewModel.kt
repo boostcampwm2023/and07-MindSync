@@ -16,6 +16,7 @@ class MindMapViewModel : ViewModel() {
         MutableStateFlow<Node>(
             CircleNode(
                 id = IdGenerator.makeRandomNodeId(),
+                parentId = null,
                 path =
                     CirclePath(
                         Dp(100f),
@@ -56,18 +57,18 @@ class MindMapViewModel : ViewModel() {
         target: Node,
         addNode: RectangleNode,
     ): Node {
-        val newNodes = node.nodes.toMutableList()
+        val newNodes = node.children.toMutableList()
         if (node.id == target.id) {
             newNodes.add(addNode)
         } else {
             newNodes.clear()
-            node.nodes.forEach { child ->
+            node.children.forEach { child ->
                 newNodes.add(traverseAddNode(child, target, addNode) as RectangleNode)
             }
         }
         return when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
+            is RectangleNode -> node.copy(children = newNodes)
+            is CircleNode -> node.copy(children = newNodes)
         }
     }
 
@@ -75,16 +76,16 @@ class MindMapViewModel : ViewModel() {
         node: Node,
         removeNode: RectangleNode,
     ): Node {
-        val newNodes = node.nodes.toMutableList()
+        val newNodes = node.children.toMutableList()
         newNodes.clear()
-        node.nodes.forEach { child ->
+        node.children.forEach { child ->
             if (child.id != removeNode.id) {
                 newNodes.add(traverseRemoveNode(child, removeNode) as RectangleNode)
             }
         }
         return when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
+            is RectangleNode -> node.copy(children = newNodes)
+            is CircleNode -> node.copy(children = newNodes)
         }
     }
 
@@ -96,7 +97,7 @@ class MindMapViewModel : ViewModel() {
         node: Node,
         target: Node,
     ): Node {
-        val newNodes = node.nodes.toMutableList()
+        val newNodes = node.children.toMutableList()
         if (node.id == target.id) {
             return when (node) {
                 is CircleNode -> node.copy(description = target.description)
@@ -104,12 +105,12 @@ class MindMapViewModel : ViewModel() {
             }
         }
         newNodes.clear()
-        node.nodes.forEach { child ->
+        node.children.forEach { child ->
             newNodes.add(traverseUpdateNode(child, target) as RectangleNode)
         }
         return when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
+            is RectangleNode -> node.copy(children = newNodes)
+            is CircleNode -> node.copy(children = newNodes)
         }
     }
 

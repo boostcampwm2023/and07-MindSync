@@ -85,7 +85,7 @@ class MindMapFragment :
 
     fun addButtonListener(selectNode: Node) {
         showDialog(selectNode) { parent, description ->
-            mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description))
+            mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description, parent.id))
         }
     }
 

@@ -22,7 +22,7 @@ class LineView constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (head.nodes.isNotEmpty()) {
+        if (head.children.isNotEmpty()) {
             traverseLine(canvas, head, 0)
         }
     }
@@ -37,7 +37,7 @@ class LineView constructor(
         node: Node,
         depth: Int,
     ) {
-        for (toNode in node.nodes) {
+        for (toNode in node.children) {
             drawLine(node, toNode, canvas)
             traverseLine(canvas, toNode, depth + 1)
         }
