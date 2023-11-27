@@ -1,17 +1,16 @@
 package boostcamp.and07.mindsync.data.model
 
-import boostcamp.and07.mindsync.data.IdGenerator
 import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.ui.util.Dp
 
 class Tree {
     private val _nodes = mutableMapOf<String, Node>()
-    val nodes = _nodes.toMap()
+    val nodes get() = _nodes.toMap()
 
     init {
         _nodes["root"] =
             CircleNode(
-                id = IdGenerator.makeRandomNodeId(),
+                id = "root",
                 parentId = null,
                 path =
                     CirclePath(
@@ -38,13 +37,15 @@ class Tree {
         val newNode =
             NodeGenerator.makeNode(content, parentId).copy(id = targetId, parentId = parentId)
         val parentNode = _nodes[parentId] ?: return
-        val newNodes = parentNode.children.toMutableList()
-        newNodes.add(newNode)
-        when (parentNode) {
-            is CircleNode -> parentNode.copy(children = newNodes)
-            is RectangleNode -> parentNode.copy(children = newNodes)
-        }
-        _nodes[parentId] = newNode
+        val newChildren = parentNode.children.toMutableList()
+        newChildren.add(newNode)
+        val newParent =
+            when (parentNode) {
+                is CircleNode -> parentNode.copy(children = newChildren)
+                is RectangleNode -> parentNode.copy(children = newChildren)
+            }
+        _nodes[parentId] = newParent
+        _nodes[targetId] = newNode
     }
 
     fun attachNode(
@@ -53,32 +54,39 @@ class Tree {
     ) {
         if (targetId == "root" || parentId == null) return
         val targetNode = nodes[targetId] ?: return
+
+        val newTargetNode =
+            when (targetNode) {
+                is CircleNode -> targetNode.copy(parentId = parentId)
+                is RectangleNode -> targetNode.copy(parentId = parentId)
+            }
         val parentNode = nodes[parentId] ?: return
         val newNodes = parentNode.children.toMutableList()
-        newNodes.add(targetNode as RectangleNode)
-        when (parentNode) {
-            is CircleNode -> parentNode.copy(children = newNodes)
-            is RectangleNode -> parentNode.copy(children = newNodes)
-        }
-        targetNode.copy(id = parentId)
-        _nodes[targetId] = targetNode
-        _nodes[parentId] = parentNode
+        newNodes.add(newTargetNode as RectangleNode)
+        val newParentNode =
+            when (parentNode) {
+                is CircleNode -> parentNode.copy(children = newNodes)
+                is RectangleNode -> parentNode.copy(children = newNodes)
+            }
+
+        _nodes[targetId] = newTargetNode
+        _nodes[parentId] = newParentNode
     }
 
     fun removeNode(targetId: String) {
         if (targetId == "root") throw IllegalArgumentException("Root can't remove")
-        val targetNode =
-            _nodes.remove(targetId) ?: throw IllegalArgumentException("Target Node is not exist")
+        val targetNode = _nodes[targetId] ?: throw IllegalArgumentException("Target Node is not exist")
         targetNode.parentId?.let { parentId ->
             val parentNode =
                 _nodes[parentId] ?: throw IllegalArgumentException("Parent node is not exist")
-            val newNodes = parentNode.children.filter { node -> node.id == targetId }
-            when (parentNode) {
-                is CircleNode -> parentNode.copy(children = newNodes)
+            val newChildren = parentNode.children.filter { node -> node.id != targetId }
+            val newParent =
+                when (parentNode) {
+                    is CircleNode -> parentNode.copy(children = newChildren)
 
-                is RectangleNode -> parentNode.copy(children = newNodes)
-            }
-            _nodes[parentId] = parentNode
+                    is RectangleNode -> parentNode.copy(children = newChildren)
+                }
+            _nodes[parentId] = newParent
         } ?: throw IllegalArgumentException("Root can't remove")
     }
 
@@ -88,10 +96,22 @@ class Tree {
     ) {
         val targetNode =
             _nodes[targetId] ?: throw IllegalArgumentException("Target Node is not exist")
-        when (targetNode) {
-            is CircleNode -> targetNode.copy(description = description)
-            is RectangleNode -> targetNode.copy(description = description)
+        val newTargetNode =
+            when (targetNode) {
+                is CircleNode -> targetNode.copy(description = description)
+                is RectangleNode -> targetNode.copy(description = description)
+            }
+        _nodes[targetId] = newTargetNode
+        targetNode.parentId ?: return
+        _nodes[targetNode.parentId]?.let { parent ->
+            val newChildren = mutableListOf<RectangleNode>()
+            for (i in 0 until parent.children.size) {
+                if (parent.children[i].id == targetId) {
+                    newChildren.add(newTargetNode as RectangleNode)
+                } else {
+                    newChildren.add(parent.children[i])
+                }
+            }
         }
-        _nodes[targetId] = targetNode
     }
 }
