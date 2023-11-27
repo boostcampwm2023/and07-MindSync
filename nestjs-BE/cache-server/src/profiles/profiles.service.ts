@@ -10,6 +10,7 @@ import { ProfileSpaceDto } from './dto/profile-space.dto';
 
 @Injectable()
 export class ProfilesService extends BaseService<UpdateProfileDto> {
+  joinTable = 'PROFILE_SPACE_TB';
   constructor(
     protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,
@@ -49,7 +50,7 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     const result = await this.getProfileAndSpace(profileUuid, spaceUuid);
     if (typeof result === 'string') return result;
 
-    this.temporaryDatabaseService.create('PROFILE_SPACE_TB', profileUuid, data);
+    this.temporaryDatabaseService.create(this.joinTable, profileUuid, data);
     this.temporaryDatabaseService.addEntry(profileUuid, spaceUuid);
     this.temporaryDatabaseService.addEntry(spaceUuid, profileUuid);
   }
@@ -58,16 +59,29 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     const result = await this.getProfileAndSpace(profileUuid, spaceUuid);
     if (typeof result === 'string') return result;
 
-    const data = {
-      field: 'space_uuid_profile_uuid',
-      value: {
-        space_uuid: spaceUuid,
-        profile_uuid: profileUuid,
-      },
-    };
-    this.temporaryDatabaseService.remove('PROFILE_SPACE_TB', profileUuid, data);
-    this.temporaryDatabaseService.removeEntry(profileUuid, spaceUuid);
-    this.temporaryDatabaseService.removeEntry(spaceUuid, profileUuid);
+    const insertTemporaryData = this.temporaryDatabaseService.get(
+      this.joinTable,
+      profileUuid,
+      'insert',
+    );
+    if (insertTemporaryData) {
+      this.temporaryDatabaseService.delete(
+        this.joinTable,
+        profileUuid,
+        'insert',
+      );
+      this.temporaryDatabaseService.removeEntry(profileUuid, spaceUuid);
+      this.temporaryDatabaseService.removeEntry(spaceUuid, profileUuid);
+    } else {
+      const data = {
+        field: 'space_uuid_profile_uuid',
+        value: {
+          space_uuid: spaceUuid,
+          profile_uuid: profileUuid,
+        },
+      };
+      this.temporaryDatabaseService.remove(this.joinTable, profileUuid, data);
+    }
   }
 
   private async getProfileAndSpace(profileUuid: string, spaceUuid: string) {
