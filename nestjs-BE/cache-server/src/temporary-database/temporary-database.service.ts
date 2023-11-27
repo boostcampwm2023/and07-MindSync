@@ -128,13 +128,12 @@ export class TemporaryDatabaseService {
     if (!data.length) return;
     await Promise.all(
       data.map(async (item) => {
-        const existing = await this.prisma[service].findUnique({
-          where: { [item.field]: item.value },
-        });
-        if (existing) {
+        try {
           return this.prisma[service].delete({
             where: { [item.field]: item.value },
           });
+        } catch (error) {
+          return;
         }
       }),
     );
