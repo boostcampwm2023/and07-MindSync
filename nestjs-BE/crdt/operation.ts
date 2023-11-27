@@ -62,7 +62,7 @@ export class OperationAdd<T> extends Operation<T> {
     tree.removeNode(log.operation.id);
   }
 
-  redoOperation(tree: Tree<T>, log?: OperationLog<T>): OperationLog<T> {
+  redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     tree.attachNode(log.operation.id, this.parentId);
     return { operation: this };
   }
@@ -84,7 +84,7 @@ export class OperationDelete<T> extends Operation<T> {
     tree.attachNode(log.operation.id, log.oldParentId);
   }
 
-  redoOperation(tree: Tree<T>, log?: OperationLog<T>): OperationLog<T> {
+  redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
   }
@@ -112,7 +112,7 @@ export class OperationMove<T> extends Operation<T> {
     tree.attachNode(log.operation.id, log.oldParentId);
   }
 
-  redoOperation(tree: Tree<T>, log?: OperationLog<T>): OperationLog<T> {
+  redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
   }
@@ -137,7 +137,7 @@ export class OperationUpdate<T> extends Operation<T> {
     tree.updateNode(log.operation.id, log.oldContent);
   }
 
-  redoOperation(tree: Tree<T>, log?: OperationLog<T>): OperationLog<T> {
+  redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
   }
