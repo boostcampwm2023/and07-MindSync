@@ -21,7 +21,7 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     });
   }
 
-  generateKey(data: any): string {
+  generateKey(data: UpdateProfileDto): string {
     return data.uuid;
   }
 

@@ -20,7 +20,7 @@ export class SpacesService extends BaseService<UpdateSpaceDto> {
     });
   }
 
-  generateKey(data: any): string {
+  generateKey(data: UpdateSpaceDto): string {
     return data.uuid;
   }
 

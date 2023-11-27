@@ -20,7 +20,7 @@ export class UsersService extends BaseService<UpdateUserDto> {
     });
   }
 
-  generateKey(data: any): string {
+  generateKey(data: UpdateUserDto): string {
     return data.email;
   }
 

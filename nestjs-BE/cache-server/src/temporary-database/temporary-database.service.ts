@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Cron } from '@nestjs/schedule';
-import { writeFileSync, readFileSync, existsSync, readdirSync } from 'fs';
+import { promises as fs } from 'fs';
 import { join } from 'path';
 
 interface OperationData {
@@ -35,8 +35,8 @@ export class TemporaryDatabaseService {
     });
   }
 
-  private readDataFromFiles() {
-    const files = readdirSync(this.FOLDER_NAME);
+  private async readDataFromFiles() {
+    const files = await fs.readdir(this.FOLDER_NAME);
     files.forEach((file) => {
       if (file.endsWith('.csv')) {
         this.readDataFromFile(file);
@@ -44,10 +44,10 @@ export class TemporaryDatabaseService {
     });
   }
 
-  private readDataFromFile(file: string) {
+  private async readDataFromFile(file: string) {
     const [service, commandWithExtension] = file.split('-');
     const command = commandWithExtension.replace('.csv', '');
-    const fileData = readFileSync(join(this.FOLDER_NAME, file), 'utf8');
+    const fileData = await fs.readFile(join(this.FOLDER_NAME, file), 'utf8');
     fileData.split('\n').forEach((line) => {
       if (line.trim() !== '') {
         const [uniqueKey, ...dataParts] = line.split(',');
@@ -82,10 +82,11 @@ export class TemporaryDatabaseService {
 
   operation({ service, uniqueKey, command, data }: OperationData) {
     const filePath = join(this.FOLDER_NAME, `${service}-${command}.csv`);
-    let fileData = existsSync(filePath) ? readFileSync(filePath, 'utf8') : '';
-    fileData += `${uniqueKey},${JSON.stringify(data)}\n`;
-    writeFileSync(filePath, fileData);
-    this.database.get(service).get(command).set(uniqueKey, data);
+    fs.readFile(filePath, 'utf8').then((fileData) => {
+      fileData += `${uniqueKey},${JSON.stringify(data)}\n`;
+      fs.writeFile(filePath, fileData);
+      this.database.get(service).get(command).set(uniqueKey, data);
+    });
   }
 
   @Cron('0 */10 * * * *')
@@ -151,7 +152,7 @@ export class TemporaryDatabaseService {
   }
 
   private clearFile(filename: string) {
-    writeFileSync(join(this.FOLDER_NAME, filename), '', 'utf8');
+    fs.writeFile(join(this.FOLDER_NAME, filename), '', 'utf8');
   }
 
   getUserProfiles(user_id: string): string[] {
