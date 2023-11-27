@@ -25,22 +25,38 @@ export class UsersService extends BaseService<UpdateUserDto> {
   }
 
   async getProfiles(email: string) {
+    const user = await this.getUser(email);
+    if (!user) return;
+
+    const profiles = user.profiles || [];
+    const temporaryProfiles = this.getTemporaryProfiles(user);
+    const combinedProfiles = [...profiles, ...temporaryProfiles];
+    const mergedData = this.mergeProfileData(combinedProfiles);
+
+    return mergedData;
+  }
+
+  async getUser(email: string) {
     let user = await this.prisma[this.className].findUnique({
       where: { email },
       include: { profiles: true },
     });
 
     if (!user) user = await super.getDataFromCacheOrDB(email);
-    if (!user) return null;
+    return user;
+  }
 
-    const profiles = user.profiles || [];
+  getTemporaryProfiles(user: UpdateUserDto) {
     const temporaryProfilesUuids = this.temporaryDatabaseService.getEntries(
       user.uuid,
     );
     const temporaryProfiles = temporaryProfilesUuids.map((uuid) =>
       this.temporaryDatabaseService.get('PROFILE_TB', uuid, 'insert'),
     );
-    const combinedProfiles = [...profiles, ...temporaryProfiles];
+    return temporaryProfiles;
+  }
+
+  mergeProfileData(combinedProfiles: UpdateUserDto[]) {
     const mergedData = combinedProfiles.map((data) => {
       const updateOperation = this.temporaryDatabaseService.get(
         'PROFILE_TB',
