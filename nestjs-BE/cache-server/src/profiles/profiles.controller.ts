@@ -10,6 +10,7 @@ import {
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ProfileSpaceDto } from './dto/profile-space.dto';
 
 @Controller('profiles')
 export class ProfilesController {
@@ -36,5 +37,18 @@ export class ProfilesController {
   @Delete(':uuid')
   remove(@Param('uuid') uuid: string) {
     return this.profilesService.remove(uuid);
+  }
+
+  @Post('/spaces')
+  joinSpace(@Body() profileSpaceDto: ProfileSpaceDto) {
+    return this.profilesService.joinSpace(profileSpaceDto);
+  }
+
+  @Delete(':profile_uuid/spaces/:space_uuid')
+  leaveSpace(
+    @Param('profile_uuid') profileUuid: string,
+    @Param('space_uuid') spaceUuid: string,
+  ) {
+    return this.profilesService.leaveSpace(profileUuid, spaceUuid);
   }
 }
