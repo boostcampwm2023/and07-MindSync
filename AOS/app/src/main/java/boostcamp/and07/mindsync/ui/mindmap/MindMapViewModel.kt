@@ -18,12 +18,16 @@ class MindMapViewModel : ViewModel() {
         parent: Node,
         addNode: RectangleNode,
     ) {
-        _tree.value.addNode(addNode.id, parent.id, addNode.description)
+        val newTree = _tree.value.copy(_tree.value.nodes)
+        newTree.addNode(addNode.id, parent.id, addNode.description)
+        _tree.value = newTree
     }
 
     fun removeNode(target: Node) {
         _selectedNode.value = null
-        _tree.value.removeNode(target.id)
+        val newTree = _tree.value.copy(_tree.value.nodes)
+        newTree.removeNode(target.id)
+        _tree.value = newTree
     }
 
     fun setSelectedNode(selectNode: Node?) {
@@ -31,7 +35,9 @@ class MindMapViewModel : ViewModel() {
     }
 
     fun updateNode(updateNode: Node) {
-        _tree.value.updateNode(updateNode.id, updateNode.description)
+        val newTree = _tree.value.copy(_tree.value.nodes)
+        newTree.updateNode(updateNode.id, updateNode.description)
+        _tree.value = newTree
     }
 
     fun update(newTree: Tree) {
@@ -39,10 +45,12 @@ class MindMapViewModel : ViewModel() {
     }
 
     fun changeRootY(windowHeight: Dp) {
-        _tree.value.setRoot(
+        val newTree = _tree.value.copy(_tree.value.nodes)
+        newTree.setRoot(
             _tree.value.getRoot().copy(
                 path = _tree.value.getRoot().path.copy(centerY = windowHeight),
             ),
         )
+        _tree.value = newTree
     }
 }

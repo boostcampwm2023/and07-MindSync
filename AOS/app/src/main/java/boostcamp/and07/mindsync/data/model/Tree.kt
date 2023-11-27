@@ -4,23 +4,32 @@ import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.ui.util.Dp
 
 class Tree {
-    private val _nodes = mutableMapOf<String, Node>()
+    private var _nodes: MutableMap<String, Node>
     val nodes get() = _nodes.toMap()
 
-    init {
+    constructor() {
+        _nodes = mutableMapOf()
         _nodes[ROOT_ID] =
             CircleNode(
                 id = ROOT_ID,
                 parentId = null,
                 path =
-                    CirclePath(
-                        Dp(100f),
-                        Dp(500f),
-                        Dp(50f),
-                    ),
+                CirclePath(
+                    Dp(100f),
+                    Dp(500f),
+                    Dp(50f),
+                ),
                 "Root1",
                 listOf(),
             )
+    }
+
+    constructor(nodes: Map<String, Node>) {
+        this._nodes = nodes.toMutableMap()
+    }
+
+    fun copy(nodes: Map<String, Node>): Tree {
+        return Tree(nodes)
     }
 
     fun getRoot(): CircleNode {
