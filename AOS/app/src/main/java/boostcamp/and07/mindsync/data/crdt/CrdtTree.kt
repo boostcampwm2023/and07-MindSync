@@ -1,13 +1,5 @@
+package boostcamp.and07.mindsync.data.crdt
 
-import boostcamp.and07.mindsync.data.crdt.Clock
-import boostcamp.and07.mindsync.data.crdt.Operation
-import boostcamp.and07.mindsync.data.crdt.OperationAdd
-import boostcamp.and07.mindsync.data.crdt.OperationDelete
-import boostcamp.and07.mindsync.data.crdt.OperationInput
-import boostcamp.and07.mindsync.data.crdt.OperationLog
-import boostcamp.and07.mindsync.data.crdt.OperationMove
-import boostcamp.and07.mindsync.data.crdt.OperationUpdate
-import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.Tree
 
