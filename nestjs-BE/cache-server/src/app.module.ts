@@ -7,6 +7,7 @@ import { TemporaryDatabaseModule } from './temporary-database/temporary-database
 import { ScheduleModule } from '@nestjs/schedule';
 import { ProfilesModule } from './profiles/profiles.module';
 import { SpacesModule } from './spaces/spaces.module';
+import { BoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SpacesModule } from './spaces/spaces.module';
     ScheduleModule.forRoot(),
     ProfilesModule,
     SpacesModule,
+    BoardsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
