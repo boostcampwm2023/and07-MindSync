@@ -5,7 +5,7 @@ sealed class Node(
     open val parentId: String?,
     open val path: NodePath,
     open val description: String,
-    open val children: List<RectangleNode>,
+    open val children: List<String>,
 )
 
 data class CircleNode(
@@ -13,7 +13,7 @@ data class CircleNode(
     override val parentId: String?,
     override val path: CirclePath,
     override val description: String,
-    override val children: List<RectangleNode>,
+    override val children: List<String>,
 ) : Node(id, parentId, path, description, children)
 
 data class RectangleNode(
@@ -21,5 +21,5 @@ data class RectangleNode(
     override val parentId: String,
     override val path: RectanglePath,
     override val description: String,
-    override val children: List<RectangleNode>,
+    override val children: List<String>,
 ) : Node(id, parentId, path, description, children)

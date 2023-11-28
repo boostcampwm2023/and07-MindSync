@@ -8,6 +8,7 @@ import android.view.View
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
@@ -18,17 +19,17 @@ class LineView constructor(
 ) : View(context, attrs) {
     private val drawInfo = DrawInfo(context)
     private val path = Path()
-    private lateinit var head: Node
+    private lateinit var tree: Tree
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (head.children.isNotEmpty()) {
-            traverseLine(canvas, head, 0)
+        if (tree.getRootNode().children.isNotEmpty()) {
+            traverseLine(canvas, tree.getRootNode(), 0)
         }
     }
 
-    fun updateHead(headNode: Node) {
-        head = headNode
+    fun updateTree(tree: Tree) {
+        this.tree = tree
         invalidate()
     }
 
@@ -37,7 +38,8 @@ class LineView constructor(
         node: Node,
         depth: Int,
     ) {
-        for (toNode in node.children) {
+        for (toNodeId in node.children) {
+            val toNode = tree.getNode(toNodeId)
             drawLine(node, toNode, canvas)
             traverseLine(canvas, toNode, depth + 1)
         }

@@ -5,6 +5,7 @@ import android.graphics.Rect
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
@@ -13,22 +14,12 @@ import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 class MeasureTextSize(private val context: Context) {
     private val drawInfo = DrawInfo(context)
 
-    fun traverseTextHead(head: Node) = traverseTextNode(head)
-
-    private fun traverseTextNode(node: Node): Node {
-        val newNodes = mutableListOf<RectangleNode>()
-        node.children.forEach { child ->
-            newNodes.add(traverseTextNode(child) as RectangleNode)
-            traverseTextNode(child)
+    fun traverseTextHead(tree: Tree) {
+        tree.doPreorderTraversal { node ->
+            val newNode =
+                changeSize(node, sumWidth(node.description), sumTotalHeight(node.description))
+            tree.setNode(node.id, newNode)
         }
-        val copyNode =
-            changeSize(node, sumWidth(node.description), sumTotalHeight(node.description))
-        val newNode =
-            when (copyNode) {
-                is CircleNode -> copyNode.copy(children = newNodes)
-                is RectangleNode -> copyNode.copy(children = newNodes)
-            }
-        return newNode
     }
 
     private fun changeSize(
@@ -38,7 +29,7 @@ class MeasureTextSize(private val context: Context) {
     ): Node {
         when (node) {
             is CircleNode -> {
-                var newRadius =
+                val newRadius =
                     Dp(
                         maxOf(
                             (Dp(Px(width).toDp(context) / 2) + drawInfo.padding).dpVal,

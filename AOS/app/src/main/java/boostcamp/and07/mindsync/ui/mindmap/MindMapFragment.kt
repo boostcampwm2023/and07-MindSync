@@ -7,6 +7,7 @@ import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
@@ -16,28 +17,28 @@ import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
-import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
+import boostcamp.and07.mindsync.ui.view.listener.TreeUpdateListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MindMapFragment :
     BaseFragment<FragmentMindMapBinding>(R.layout.fragment_mind_map),
     NodeClickListener,
-    NodeUpdateListener {
+    TreeUpdateListener {
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private lateinit var mindMapContainer: MindMapContainer
 
     override fun initView() {
         setupRootNode()
         setBinding()
-        collectHead()
+        collectTree()
         collectSelectedNode()
     }
 
     private fun setupRootNode() {
         val displayMetrics = requireActivity().resources.displayMetrics
         val screenHeight = Dp(Px(displayMetrics.heightPixels.toFloat()).toDp(requireContext()))
-        mindMapViewModel.updateHead(screenHeight / 2)
+        mindMapViewModel.changeRootY(screenHeight / 2)
     }
 
     private fun setBinding() {
@@ -45,17 +46,17 @@ class MindMapFragment :
         binding.view = this
         mindMapContainer = MindMapContainer(requireContext())
         mindMapContainer.setNodeClickListener(this)
-        mindMapContainer.setNodeUpdateListener(this)
+        mindMapContainer.setTreeUpdateListener(this)
         binding.zoomLayoutMindMapRoot.mindMapContainer = mindMapContainer
         binding.zoomLayoutMindMapRoot.initializeZoomLayout()
     }
 
-    private fun collectHead() {
+    private fun collectTree() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.head.collectLatest { newHead ->
-                mindMapContainer.updateHead(newHead)
-                binding.zoomLayoutMindMapRoot.lineView.updateHead(mindMapContainer.head)
-                binding.zoomLayoutMindMapRoot.nodeView.updateHead(mindMapContainer.head)
+            mindMapViewModel.tree.collectLatest { newTree ->
+                mindMapContainer.update(newTree)
+                binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
+                binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
             }
         }
     }
@@ -104,7 +105,7 @@ class MindMapFragment :
         mindMapViewModel.setSelectedNode(node)
     }
 
-    override fun updateHead(head: Node) {
-        mindMapViewModel.updateHead(head)
+    override fun updateTree(tree: Tree) {
+        mindMapViewModel.update(tree)
     }
 }

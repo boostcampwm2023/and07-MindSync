@@ -66,7 +66,7 @@ class OperationAdd(private val input: OperationInput) : Operation("add", input.i
 
 class OperationDelete(input: OperationInput) : Operation("delete", input.id, input.clock) {
     override fun doOperation(tree: Tree): OperationLog {
-        val node = tree.get(id)
+        val node = tree.getNode(id)
         val oldParentId = node.parentId
         tree.removeNode(id)
         return OperationLog(this, oldParentId = oldParentId)
@@ -89,7 +89,7 @@ class OperationMove(private val input: OperationInput) : Operation("move", input
     val parentId = input.parentId
 
     override fun doOperation(tree: Tree): OperationLog {
-        val node = tree.get(id)
+        val node = tree.getNode(id)
         val oldParentId = node.parentId
         tree.removeNode(id)
         tree.attachNode(id, parentId)
@@ -115,7 +115,7 @@ class OperationUpdate(private val input: OperationInput) :
     val description = input.description
 
     override fun doOperation(tree: Tree): OperationLog {
-        val node = tree.get(id)
+        val node = tree.getNode(id)
         val oldDescription = node.description
         description?.let { description ->
             tree.updateNode(id, description)
