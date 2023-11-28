@@ -11,7 +11,7 @@ class MindMapRightLayoutManager {
     private val verticalSpacing = Dp(50f)
 
     fun arrangeNode(tree: Tree) {
-        val root = tree.getRoot()
+        val root = tree.getRootNode()
         val totalHeight = measureChildHeight(root, tree)
         val newHead =
             if (root.path.centerX.dpVal <= (totalHeight / 2).dpVal) {
@@ -23,7 +23,7 @@ class MindMapRightLayoutManager {
             } else {
                 root
             }
-        tree.setRoot(newHead)
+        tree.setRootNode(newHead)
         recurArrangeNode(newHead, tree)
     }
 
@@ -44,7 +44,7 @@ class MindMapRightLayoutManager {
         var startY = currentNode.path.centerY - (childHeightSum / 2)
 
         currentNode.children.forEach { childId ->
-            val child = tree.get(childId)
+            val child = tree.getNode(childId)
             val childHeight = measureChildHeight(child, tree)
             val newY = startY + (childHeight / 2)
 
@@ -66,7 +66,7 @@ class MindMapRightLayoutManager {
                     }
                 }
 
-            tree.set(childId, newChild)
+            tree.setNode(childId, newChild)
             recurArrangeNode(newChild, tree)
             startY += childHeight + verticalSpacing
         }
@@ -80,7 +80,7 @@ class MindMapRightLayoutManager {
 
         if (node.children.isNotEmpty()) {
             node.children.forEach { childId ->
-                val childNode = tree.get(childId)
+                val childNode = tree.getNode(childId)
                 heightSum += measureChildHeight(childNode, tree)
             }
             heightSum += verticalSpacing * (node.children.size - 1)

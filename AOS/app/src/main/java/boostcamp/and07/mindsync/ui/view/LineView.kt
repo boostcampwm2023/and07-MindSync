@@ -23,8 +23,8 @@ class LineView constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (tree.getRoot().children.isNotEmpty()) {
-            traverseLine(canvas, tree.getRoot(), 0)
+        if (tree.getRootNode().children.isNotEmpty()) {
+            traverseLine(canvas, tree.getRootNode(), 0)
         }
     }
 
@@ -39,7 +39,7 @@ class LineView constructor(
         depth: Int,
     ) {
         for (toNodeId in node.children) {
-            val toNode = tree.get(toNodeId)
+            val toNode = tree.getNode(toNodeId)
             drawLine(node, toNode, canvas)
             traverseLine(canvas, toNode, depth + 1)
         }

@@ -46,9 +46,9 @@ class MindMapViewModel : ViewModel() {
 
     fun changeRootY(windowHeight: Dp) {
         val newTree = _tree.value.copy(_tree.value.nodes)
-        newTree.setRoot(
-            _tree.value.getRoot().copy(
-                path = _tree.value.getRoot().path.copy(centerY = windowHeight),
+        newTree.setRootNode(
+            _tree.value.getRootNode().copy(
+                path = _tree.value.getRootNode().path.copy(centerY = windowHeight),
             ),
         )
         _tree.value = newTree

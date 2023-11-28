@@ -18,7 +18,7 @@ class MeasureTextSize(private val context: Context) {
         tree.doPreorderTraversal { node ->
             val newNode =
                 changeSize(node, sumWidth(node.description), sumTotalHeight(node.description))
-            tree.set(node.id, newNode)
+            tree.setNode(node.id, newNode)
         }
     }
 

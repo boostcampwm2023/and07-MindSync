@@ -32,23 +32,23 @@ class Tree {
         return Tree(nodes)
     }
 
-    fun getRoot(): CircleNode {
+    fun getRootNode(): CircleNode {
         _nodes[ROOT_ID] ?: throw IllegalArgumentException(ERROR_MESSAGE_ROOT_NODE_NOT_EXIST)
         return _nodes[ROOT_ID] as CircleNode
     }
 
-    fun setRoot(root: CircleNode) {
+    fun setRootNode(root: CircleNode) {
         _nodes[ROOT_ID] = root
     }
 
-    fun set(
+    fun setNode(
         id: String,
         node: Node,
     ) {
         _nodes[id] = node
     }
 
-    fun get(id: String): Node {
+    fun getNode(id: String): Node {
         return _nodes[id] ?: throw IllegalArgumentException(ERROR_MESSAGE_INVALID_NODE_ID)
     }
 
@@ -136,23 +136,23 @@ class Tree {
     }
 
     fun doPreorderTraversal(
-        node: Node = getRoot(),
+        node: Node = getRootNode(),
         action: (node: Node) -> Unit,
     ) {
         action.invoke(node)
         node.children.forEach { childId ->
-            doPreorderTraversal(get(childId), action)
+            doPreorderTraversal(getNode(childId), action)
         }
     }
 
     fun doPreorderTraversal(
-        node: Node = getRoot(),
+        node: Node = getRootNode(),
         depth: Int = 0,
         action: (node: Node, depth: Int) -> Unit,
     ) {
         action.invoke(node, depth)
         node.children.forEach { childId ->
-            doPreorderTraversal(get(childId), depth + 1, action)
+            doPreorderTraversal(getNode(childId), depth + 1, action)
         }
     }
 

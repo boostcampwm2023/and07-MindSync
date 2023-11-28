@@ -9,7 +9,7 @@ class CrdtTree(id: String) {
     var tree: Tree = Tree()
 
     fun get(id: String): Node {
-        return tree.get(id)
+        return tree.getNode(id)
     }
 
     fun addLog(log: OperationLog) {
