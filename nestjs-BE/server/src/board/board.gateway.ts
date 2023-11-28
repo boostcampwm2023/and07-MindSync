@@ -3,13 +3,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { SerializedOperation } from 'crdt/operation';
 import { Server, Socket } from 'socket.io';
-
-interface MindmapDataPayload {
-  operation: SerializedOperation<string>;
-  boardId: string;
-}
 
 @WebSocketGateway({ namespace: 'board' })
 export class BoardGateway {
@@ -17,14 +11,16 @@ export class BoardGateway {
   server: Server;
 
   @SubscribeMessage('joinBoard')
-  handleJoinBoard(client: Socket, payload: { boardId: string }): void {
-    client.join(payload.boardId);
+  handleJoinBoard(client: Socket, payload: string): void {
+    const payloadObject = JSON.parse(payload);
+    client.join(payloadObject.boardId);
   }
 
   @SubscribeMessage('updateMindmap')
-  handleUpdateMindmap(client: Socket, payload: MindmapDataPayload) {
+  handleUpdateMindmap(client: Socket, payload: string) {
+    const payloadObject = JSON.parse(payload);
     client.broadcast
-      .to(payload.boardId)
-      .emit('operationFromServer', payload.operation);
+      .to(payloadObject.boardId)
+      .emit('operationFromServer', payloadObject.operation);
   }
 }
