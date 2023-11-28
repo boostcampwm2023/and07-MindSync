@@ -4,6 +4,7 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("kotlinx-serialization")
 }
 
 android {
@@ -71,6 +72,8 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     // coil
     implementation("io.coil-kt:coil:2.5.0")
+    // kotlin serialization-json
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 val ktlintCheck by tasks.registering(JavaExec::class) {
