@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  PrismaServiceMySQL,
+  PrismaServiceMongoDB,
+} from '../prisma/prisma.service';
 import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -17,7 +20,10 @@ export class TemporaryDatabaseService {
   private entriesMap: Map<string, string[]> = new Map();
   private readonly FOLDER_NAME = 'operations';
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prismaMysql: PrismaServiceMySQL,
+    private readonly prismaMongoDB: PrismaServiceMongoDB,
+  ) {
     this.initializeDatabase();
     this.readDataFromFiles();
   }
@@ -27,7 +33,7 @@ export class TemporaryDatabaseService {
       'USER_TB',
       'PROFILE_TB',
       'SPACE_TB',
-      'BOARD_TB',
+      'BoardCollection',
       'PROFILE_SPACE_TB',
     ];
     const operations = ['insert', 'update', 'delete'];
@@ -103,51 +109,73 @@ export class TemporaryDatabaseService {
     });
   }
 
-  @Cron('0 */10 * * * *')
+  @Cron('* */10 * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
-      await this.performInsert(service, serviceMap.get('insert'));
-      await this.performUpdate(service, serviceMap.get('update'));
-      await this.performDelete(service, serviceMap.get('delete'));
+      const prisma =
+        service === 'BoardCollection' ? this.prismaMongoDB : this.prismaMysql;
+      await this.performInsert(service, serviceMap.get('insert'), prisma);
+      await this.performUpdate(service, serviceMap.get('update'), prisma);
+      await this.performDelete(service, serviceMap.get('delete'), prisma);
     }
   }
 
-  private async performInsert(service: string, dataMap: Map<string, any>) {
+  private async performInsert(
+    service: string,
+    dataMap: Map<string, any>,
+    prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
+  ) {
     const data = this.prepareData(service, 'insert', dataMap);
     this.entriesMap.clear();
     if (!data.length) return;
-    await this.prisma[service].createMany({
-      data: data,
-      skipDuplicates: true,
-    });
+    if (prisma instanceof PrismaServiceMySQL) {
+      await prisma[service].createMany({
+        data: data,
+        skipDuplicates: true,
+      });
+    } else {
+      await prisma[service].createMany({
+        data: data,
+      });
+    }
   }
 
-  private async performUpdate(service: string, dataMap: Map<string, any>) {
+  private async performUpdate(
+    service: string,
+    dataMap: Map<string, any>,
+    prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
+  ) {
     const data = this.prepareData(service, 'update', dataMap);
     if (!data.length) return;
     await Promise.all(
       data.map((item) => {
         const keyField = item.field;
         const keyValue = item.value[keyField];
-        return this.prisma[service].update({
+        const updatedValue = Object.fromEntries(
+          Object.entries(item.value).filter(([key]) => key !== 'uuid'),
+        );
+        return prisma[service].update({
           where: { [keyField]: keyValue },
-          data: item.value,
+          data: updatedValue,
         });
       }),
     );
   }
 
-  private async performDelete(service: string, dataMap: Map<string, any>) {
+  private async performDelete(
+    service: string,
+    dataMap: Map<string, any>,
+    prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
+  ) {
     const data = this.prepareData(service, 'delete', dataMap);
     if (!data.length) return;
     await Promise.all(
       data.map(async (item) => {
         try {
-          await this.prisma[service].delete({
+          await prisma[service].delete({
             where: { [item.field]: item.value },
           });
-        } catch {
         } finally {
           return;
         }
