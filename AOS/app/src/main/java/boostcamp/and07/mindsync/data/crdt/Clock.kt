@@ -1,5 +1,8 @@
 package boostcamp.and07.mindsync.data.crdt
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Clock(val id: String, var counter: Int = 0) : Comparable<Clock> {
     fun increment() {
         counter++

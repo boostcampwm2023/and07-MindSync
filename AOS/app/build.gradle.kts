@@ -1,14 +1,21 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs.kotlin")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("kotlinx-serialization")
 }
 
 android {
     namespace = "boostcamp.and07.mindsync"
     compileSdk = 34
+
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+    val url = properties["BASE_URL"] ?: ""
 
     defaultConfig {
         applicationId = "boostcamp.and07.mindsync"
@@ -18,6 +25,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "$url")
     }
     buildTypes {
         release {
@@ -31,6 +39,7 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -62,14 +71,17 @@ dependencies {
     // hilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
-    // retrofit
+    // retrofit, socket.io
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("io.socket:socket.io-client:2.1.0")
     // navigation
     val nav_version = "2.7.5"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     // coil
     implementation("io.coil-kt:coil:2.5.0")
+    // kotlin serialization-json
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 val ktlintCheck by tasks.registering(JavaExec::class) {

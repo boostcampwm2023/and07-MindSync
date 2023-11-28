@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.data.crdt
 
 import boostcamp.and07.mindsync.data.model.Tree
+import kotlinx.serialization.Serializable
 
 data class OperationLog(
     val operation: Operation,
@@ -15,6 +16,7 @@ data class OperationInput(
     val parentId: String? = null,
 )
 
+@Serializable
 data class SerializedOperation(
     val operationType: String,
     val id: String,
