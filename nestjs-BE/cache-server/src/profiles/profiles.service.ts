@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaServiceMySQL } from '../prisma/prisma.service';
 import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
 import { BaseService } from '../base/base.service';
 import { PROFILE_CACHE_SIZE } from 'src/config/magic-number';
@@ -12,7 +12,7 @@ import { ProfileSpaceDto } from './dto/profile-space.dto';
 export class ProfilesService extends BaseService<UpdateProfileDto> {
   profileSpaceTable = 'PROFILE_SPACE_TB';
   constructor(
-    protected prisma: PrismaService,
+    protected prisma: PrismaServiceMySQL,
     protected temporaryDatabaseService: TemporaryDatabaseService,
     protected spacesService: SpacesService,
   ) {

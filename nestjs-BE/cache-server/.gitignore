@@ -37,5 +37,6 @@ lerna-debug.log*
 # 환경 변수
 .env
 
-# csv
+# csv, prisma
 /operations
+/prisma/generated

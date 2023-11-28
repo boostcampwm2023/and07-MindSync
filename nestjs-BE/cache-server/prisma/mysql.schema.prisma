@@ -1,10 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  output = "./generated/mysql"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("MYSQL_DATABASE_URL")
 }
 
 model USER_TB {
