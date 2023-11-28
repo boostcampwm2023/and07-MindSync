@@ -42,7 +42,7 @@ class NodeView(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                traverseRangeHead(event.x, event.y)
+                findTouchNode(event.x, event.y)
             }
         }
         return super.onTouchEvent(event)
@@ -64,7 +64,7 @@ class NodeView(
         }
     }
 
-    private fun traverseRangeHead(
+    private fun findTouchNode(
         x: Float,
         y: Float,
     ) {
