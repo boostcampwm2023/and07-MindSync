@@ -1,10 +1,16 @@
 export class Node<T> {
+  targetId: string;
   parentId: string;
-  content: T;
-  children = new Set<string>();
+  description: T;
+  children = new Array<string>();
 
-  constructor(parentId: string = '0', content: T | null = null) {
+  constructor(
+    targetId: string,
+    parentId: string = '0',
+    description: T | null = null,
+  ) {
+    this.targetId = targetId;
     this.parentId = parentId;
-    this.content = content;
+    this.description = description;
   }
 }

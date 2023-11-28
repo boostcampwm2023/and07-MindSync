@@ -4,29 +4,20 @@ export class Tree<T> {
   nodes = new Map<string, Node<T>>();
 
   constructor() {
-    this.nodes.set('root', new Node<T>());
+    this.nodes.set('root', new Node<T>('root'));
   }
 
   get(id: string): Node<T> | undefined {
     return this.nodes.get(id);
   }
 
-  getNodeChildren(id: string): Array<string> | null {
-    const node = this.get(id);
-    if (!node) return null;
-
-    const childrenArray = Array.from(node.children);
-    childrenArray.sort();
-    return childrenArray;
-  }
-
-  addNode(targetId: string, parentId: string, content: T) {
-    const newNode = new Node<T>(parentId, content);
+  addNode(targetId: string, parentId: string, description: T) {
+    const newNode = new Node<T>(targetId, parentId, description);
 
     const parentNode = this.nodes.get(parentId);
     if (!parentNode) return;
 
-    parentNode.children.add(targetId);
+    parentNode.children.push(targetId);
     this.nodes.set(targetId, newNode);
   }
 
@@ -37,7 +28,7 @@ export class Tree<T> {
     const parentNode = this.nodes.get(parentId);
     if (!parentNode) return;
 
-    parentNode.children.add(targetId);
+    parentNode.children.push(targetId);
     targetNode.parentId = parentId;
   }
 
@@ -48,15 +39,16 @@ export class Tree<T> {
     const parentNode = this.nodes.get(targetNode.parentId);
     if (!parentNode) return;
 
-    parentNode.children.delete(targetId);
+    const targetIndex = parentNode.children.indexOf(targetId);
+    if (targetIndex !== -1) parentNode.children.splice(targetIndex, 1);
 
     return this.nodes.get(targetId);
   }
 
-  updateNode(targetId: string, content: T) {
+  updateNode(targetId: string, description: T) {
     const targetNode = this.nodes.get(targetId);
     if (!targetNode) return;
 
-    targetNode.content = content;
+    targetNode.description = description;
   }
 }

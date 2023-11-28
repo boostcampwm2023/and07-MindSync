@@ -32,14 +32,14 @@ export class CrdtTree<T> {
   generateOperationAdd(
     targetId: string,
     parentId: string,
-    content: T,
+    description: T,
   ): OperationAdd<T> {
     this.clock.increment();
     const clock = this.clock.copy();
     const input: OperationInput<T> = {
       id: targetId,
       parentId,
-      content,
+      description,
       clock,
     };
     return new OperationAdd<T>(input);
@@ -66,12 +66,15 @@ export class CrdtTree<T> {
     return new OperationMove<T>(input);
   }
 
-  generateOperationUpdate(targetId: string, content: T): OperationUpdate<T> {
+  generateOperationUpdate(
+    targetId: string,
+    description: T,
+  ): OperationUpdate<T> {
     this.clock.increment();
     const clock = this.clock.copy();
     const input: OperationInput<T> = {
       id: targetId,
-      content,
+      description,
       clock,
     };
     return new OperationUpdate<T>(input);
@@ -82,7 +85,7 @@ export class CrdtTree<T> {
       operationType: 'add',
       id: operation.id,
       clock: { id: operation.clock.id, counter: operation.clock.counter },
-      content: operation.content,
+      description: operation.description,
       parentId: operation.parentId,
     };
     return serializedOperation;
@@ -116,7 +119,7 @@ export class CrdtTree<T> {
       operationType: 'update',
       id: operation.id,
       clock: { id: operation.clock.id, counter: operation.clock.counter },
-      content: operation.content,
+      description: operation.description,
     };
     return serializedOperation;
   }
@@ -127,7 +130,7 @@ export class CrdtTree<T> {
     const input: OperationInput<T> = {
       id: serializedOperation.id,
       parentId: serializedOperation.parentId,
-      content: serializedOperation.content,
+      description: serializedOperation.description,
       clock: new Clock(
         serializedOperation.clock.id,
         serializedOperation.clock.counter,
@@ -168,7 +171,7 @@ export class CrdtTree<T> {
   ): OperationUpdate<T> {
     const input: OperationInput<T> = {
       id: serializedOperation.id,
-      content: serializedOperation.content,
+      description: serializedOperation.description,
       clock: new Clock(
         serializedOperation.clock.id,
         serializedOperation.clock.counter,
