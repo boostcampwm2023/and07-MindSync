@@ -150,22 +150,29 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     });
 
     const spaceUuidsFromTempDB = this.temporaryDatabaseService.getEntries(uuid);
-    for (const spaceUuid of spaceUuidsFromTempDB) {
-      const insertTempData = this.temporaryDatabaseService.get(
-        'PROFILE_SPACE_TB',
-        `${spaceUuid}_${uuid}`,
-        'insert',
-      );
-      if (insertTempData) {
-        const userProfile = await super.getDataFromCacheOrDB(spaceUuid);
-        if (userProfile) {
-          space.profiles.push({
-            profile_uuid: spaceUuid,
-            profile: userProfile,
-          });
+    const addedProfiles = await Promise.all(
+      spaceUuidsFromTempDB.map(async (spaceUuid) => {
+        const insertTempData = this.temporaryDatabaseService.get(
+          'PROFILE_SPACE_TB',
+          `${spaceUuid}_${uuid}`,
+          'insert',
+        );
+        if (insertTempData) {
+          const userProfile = await super.getDataFromCacheOrDB(spaceUuid);
+          if (userProfile) {
+            return {
+              profile_uuid: spaceUuid,
+              profile: userProfile,
+            };
+          }
         }
-      }
-    }
+        return null;
+      }),
+    );
+    space.profiles = [
+      ...space.profiles,
+      ...addedProfiles.filter((profile) => profile),
+    ];
     return space.profiles.map((profileSpace) => profileSpace.profile);
   }
 }
