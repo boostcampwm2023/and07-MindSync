@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
+import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import boostcamp.and07.mindsync.R
@@ -9,6 +10,8 @@ import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
+import boostcamp.and07.mindsync.network.SocketEventType
+import boostcamp.and07.mindsync.network.SocketState
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
@@ -27,12 +30,50 @@ class MindMapFragment :
     TreeUpdateListener {
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private lateinit var mindMapContainer: MindMapContainer
+    private val boardId = "testBoard"
 
     override fun initView() {
         setupRootNode()
         setBinding()
         collectTree()
         collectSelectedNode()
+        collectSocketState()
+        collectSocketEvent()
+    }
+
+    private fun collectSocketState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mindMapViewModel.socketState.collectLatest { state ->
+                when (state) {
+                    SocketState.CONNECT -> {
+                        mindMapViewModel.joinBoard(boardId)
+                        mindMapViewModel.updateMindMap(boardId)
+                    }
+
+                    SocketState.DISCONNECT -> {
+                        Log.d("MindMapFragment", "collectSocketState: disconnect")
+                    }
+
+                    SocketState.ERROR -> {
+                        Log.d("MindMapFragment", "collectSocketState: error")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun collectSocketEvent() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mindMapViewModel.socketEvent.collectLatest { event ->
+                event?.let { socketEvent ->
+                    when (socketEvent.eventType) {
+                        SocketEventType.OPERATION_FROM_SERVER -> {
+                            Log.d("MindMapFragment", "receive data: ${socketEvent.data}")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setupRootNode() {
