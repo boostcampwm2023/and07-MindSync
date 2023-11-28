@@ -9,6 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        ref: BE-develop
         sparse-checkout: nestjs-BE
     - name: Login to github Packages
       run: echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
