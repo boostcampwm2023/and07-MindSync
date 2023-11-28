@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  PrismaServiceMySQL,
+  PrismaServiceMongoDB,
+} from '../prisma/prisma.service';
 import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
 import LRUCache from '../utils/lru-cache';
 import generateUuid from '../utils/uuid';
 
 interface BaseServiceOptions {
-  prisma: PrismaService;
+  prisma: PrismaServiceMySQL | PrismaServiceMongoDB;
   temporaryDatabaseService: TemporaryDatabaseService;
   cacheSize: number;
   className: string;
@@ -21,7 +24,7 @@ export abstract class BaseService<T extends HasUuid> {
   protected cache: LRUCache;
   protected className: string;
   protected field: string;
-  protected prisma: PrismaService;
+  protected prisma: PrismaServiceMySQL | PrismaServiceMongoDB;
   protected temporaryDatabaseService: TemporaryDatabaseService;
 
   constructor(options: BaseServiceOptions) {
@@ -47,7 +50,6 @@ export abstract class BaseService<T extends HasUuid> {
 
   async findOne(key: string): Promise<T | null> {
     const data = await this.getDataFromCacheOrDB(key);
-
     const deleteCommand = this.temporaryDatabaseService.get(
       this.className,
       key,
@@ -65,7 +67,6 @@ export abstract class BaseService<T extends HasUuid> {
 
   async update(key: string, updateData: T) {
     const data = await this.getDataFromCacheOrDB(key);
-
     if (data) {
       const updatedData = {
         field: this.field,
@@ -80,7 +81,6 @@ export abstract class BaseService<T extends HasUuid> {
       } else {
         this.temporaryDatabaseService.update(this.className, key, updatedData);
       }
-
       this.cache.put(key, updatedData.value);
     }
   }
@@ -123,7 +123,7 @@ export abstract class BaseService<T extends HasUuid> {
       key,
       'update',
     );
-    if (updateCommand) return { ...data, ...updateCommand };
+    if (updateCommand) return { ...data, ...updateCommand.value };
 
     return data;
   }
