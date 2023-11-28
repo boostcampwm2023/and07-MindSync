@@ -3,10 +3,11 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { SerializedOperation } from 'crdt/operation';
 import { Server, Socket } from 'socket.io';
 
 interface MindmapDataPayload {
-  message: any;
+  operation: SerializedOperation<string>;
   boardId: string;
 }
 
@@ -22,6 +23,8 @@ export class BoardGateway {
 
   @SubscribeMessage('updateMindmap')
   handleUpdateMindmap(client: Socket, payload: MindmapDataPayload) {
-    client.broadcast.to(payload.boardId).emit('stateFromServer', payload);
+    client.broadcast
+      .to(payload.boardId)
+      .emit('operationFromServer', payload.operation);
   }
 }
