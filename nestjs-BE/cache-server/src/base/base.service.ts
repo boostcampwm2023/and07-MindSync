@@ -38,7 +38,7 @@ export abstract class BaseService<T extends HasUuid> {
     data.uuid = generateUuid();
     const key = this.generateKey(data);
     const storeData = await this.getDataFromCacheOrDB(key);
-    if (storeData) return 'data already exists.';
+    if (storeData) return 'Data already exists.';
 
     this.temporaryDatabaseService.create(this.className, key, data);
     this.cache.put(key, data);

@@ -37,6 +37,11 @@ export class UsersController {
 
   @Get('profiles/:email')
   findProfiles(@Param('email') email: string) {
-    return this.usersService.getProfiles(email);
+    return this.usersService.findProfiles(email);
+  }
+
+  @Get('rooms/:email')
+  findRooms(@Param('email') email: string) {
+    return this.usersService.findRooms(email);
   }
 }
