@@ -11,6 +11,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
@@ -19,7 +20,7 @@ class NodeView(
     context: Context,
     attrs: AttributeSet?,
 ) : View(context, attrs) {
-    lateinit var head: Node
+    lateinit var tree: Tree
     private val drawInfo = DrawInfo(context)
     private val nodeColors =
         listOf(
@@ -32,7 +33,7 @@ class NodeView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        traverseDrawHead(canvas)
+        drawTree(canvas)
         mindMapContainer.selectNode?.let { selectedNode ->
             makeStrokeNode(canvas, selectedNode)
         }
@@ -41,45 +42,40 @@ class NodeView(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                traverseRangeHead(event.x, event.y)
+                findTouchNode(event.x, event.y)
             }
         }
         return super.onTouchEvent(event)
     }
 
-    fun updateHead(headNode: Node) {
-        head = headNode
+    fun updateTree(tree: Tree) {
+        this.tree = tree
         invalidate()
     }
 
-    private fun traverseDrawHead(canvas: Canvas) {
-        traverseDrawNode(canvas, head, 0)
-    }
-
-    private fun traverseDrawNode(
-        canvas: Canvas,
-        node: Node,
-        depth: Int,
-    ) {
-        mindMapContainer.selectNode?.let { selectedNode ->
-            if (selectedNode.id == node.id) {
-                mindMapContainer.setSelectedNode(node)
+    private fun drawTree(canvas: Canvas) {
+        tree.doPreorderTraversal { node, depth ->
+            mindMapContainer.selectNode?.let { selectedNode ->
+                if (selectedNode.id == node.id) {
+                    mindMapContainer.setSelectedNode(node)
+                }
             }
-        }
-        drawNode(canvas, node, depth)
-        node.nodes.forEach { node ->
-            traverseDrawNode(canvas, node, depth + 1)
+            drawNode(canvas, node, depth)
         }
     }
 
-    private fun traverseRangeHead(
+    private fun findTouchNode(
         x: Float,
         y: Float,
     ) {
-        val rangeResult = traverseRangeNode(head, x, y, 0)
-
-        rangeResult?.let {
-            mindMapContainer.setSelectedNode(it.first)
+        var rangeResultNode: Node? = null
+        tree.doPreorderTraversal { node ->
+            if (isInsideNode(node, x, y)) {
+                rangeResultNode = node
+            }
+        }
+        rangeResultNode?.let {
+            mindMapContainer.setSelectedNode(it)
         } ?: run {
             mindMapContainer.setSelectedNode(null)
         }
@@ -110,21 +106,6 @@ class NodeView(
                 )
             }
         }
-    }
-
-    private fun traverseRangeNode(
-        node: Node,
-        x: Float,
-        y: Float,
-        depth: Int,
-    ): Pair<Node, Int>? {
-        if (isInsideNode(node, x, y)) {
-            return Pair(node, depth)
-        }
-        for (child in node.nodes) {
-            return traverseRangeNode(child, x, y, depth + 1) ?: continue
-        }
-        return null
     }
 
     private fun isInsideNode(
@@ -196,7 +177,7 @@ class NodeView(
         node: Node,
     ) {
         val lines = node.description.split("\n")
-        var bounds = Rect()
+        val bounds = Rect()
         when (node) {
             is CircleNode -> {
                 drawInfo.textPaint.color = Color.WHITE

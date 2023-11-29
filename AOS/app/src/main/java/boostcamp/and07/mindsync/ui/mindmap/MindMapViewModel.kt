@@ -1,127 +1,139 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.IdGenerator
-import boostcamp.and07.mindsync.data.model.CircleNode
-import boostcamp.and07.mindsync.data.model.CirclePath
+import boostcamp.and07.mindsync.data.crdt.CrdtTree
+import boostcamp.and07.mindsync.data.crdt.Operation
+import boostcamp.and07.mindsync.data.crdt.OperationAdd
+import boostcamp.and07.mindsync.data.crdt.OperationDelete
+import boostcamp.and07.mindsync.data.crdt.OperationMove
+import boostcamp.and07.mindsync.data.crdt.OperationType
+import boostcamp.and07.mindsync.data.crdt.OperationUpdate
+import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.network.MindMapSocketManager
+import boostcamp.and07.mindsync.network.SocketEvent
+import boostcamp.and07.mindsync.network.SocketState
 import boostcamp.and07.mindsync.ui.util.Dp
+import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class MindMapViewModel : ViewModel() {
-    private val _head =
-        MutableStateFlow<Node>(
-            CircleNode(
-                id = IdGenerator.makeRandomNodeId(),
-                path =
-                    CirclePath(
-                        Dp(100f),
-                        Dp(500f),
-                        Dp(50f),
-                    ),
-                "Root1",
-                listOf(),
-            ),
-        )
-    val head: StateFlow<Node> = _head
+    private val boardId = "testBoard"
+    val crdtTree = CrdtTree(IdGenerator.makeRandomNodeId())
     private var _selectedNode = MutableStateFlow<Node?>(null)
     val selectedNode: StateFlow<Node?> = _selectedNode
+    private val _operation = MutableStateFlow<Operation?>(null)
+    val operation: StateFlow<Operation?> = _operation
+    private val mindMapSocketManager = MindMapSocketManager()
+    private val _socketState = MutableStateFlow(SocketState.DISCONNECT)
+    val socketState: StateFlow<SocketState> = _socketState
+    private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
+    val socketEvent: StateFlow<SocketEvent?> = _socketEvent
+
+    init {
+        setSocketState()
+        setSocketEvent()
+    }
+
+    private fun setSocketState() {
+        viewModelScope.launch {
+            mindMapSocketManager.listenState().collectLatest { state ->
+                _socketState.value = state
+            }
+        }
+    }
+
+    private fun setSocketEvent() {
+        viewModelScope.launch {
+            mindMapSocketManager.listenEvent().collectLatest { event ->
+                _socketEvent.value = event
+            }
+        }
+    }
+
+    fun joinBoard(boardId: String) {
+        mindMapSocketManager.joinBoard(boardId)
+    }
 
     fun addNode(
         parent: Node,
         addNode: RectangleNode,
     ) {
-        _head.value =
-            traverseAddNode(
-                head.value,
-                parent,
-                addNode,
-            )
+        val addOperation =
+            crdtTree.generateOperationAdd(addNode.id, parent.id, addNode.description)
+        crdtTree.applyOperation(addOperation)
+        _operation.value = addOperation
+        requestUpdateMindMap(operation = addOperation)
     }
 
     fun removeNode(target: Node) {
         _selectedNode.value = null
-        _head.value = traverseRemoveNode(head.value, target as RectangleNode)
+        val removeOperation = crdtTree.generateOperationDelete(target.id)
+        crdtTree.applyOperation(removeOperation)
+        _operation.value = removeOperation
+        requestUpdateMindMap(operation = removeOperation)
     }
 
     fun setSelectedNode(selectNode: Node?) {
         _selectedNode.value = selectNode
     }
 
-    private fun traverseAddNode(
-        node: Node,
-        target: Node,
-        addNode: RectangleNode,
-    ): Node {
-        val newNodes = node.nodes.toMutableList()
-        if (node.id == target.id) {
-            newNodes.add(addNode)
-        } else {
-            newNodes.clear()
-            node.nodes.forEach { child ->
-                newNodes.add(traverseAddNode(child, target, addNode) as RectangleNode)
+    fun requestUpdateMindMap(operation: Operation) {
+        val serializedOperation =
+            when (operation) {
+                is OperationAdd -> crdtTree.serializeOperationAdd(operation)
+
+                is OperationDelete -> crdtTree.serializeOperationDelete(operation)
+
+                is OperationMove -> crdtTree.serializeOperationMove(operation)
+
+                is OperationUpdate -> crdtTree.serializeOperationUpdate(operation)
             }
-        }
-        return when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
-        }
+        mindMapSocketManager.updateMindMap(
+            serializedOperation = serializedOperation,
+            boardId = boardId,
+        )
     }
 
-    private fun traverseRemoveNode(
-        node: Node,
-        removeNode: RectangleNode,
-    ): Node {
-        val newNodes = node.nodes.toMutableList()
-        newNodes.clear()
-        node.nodes.forEach { child ->
-            if (child.id != removeNode.id) {
-                newNodes.add(traverseRemoveNode(child, removeNode) as RectangleNode)
+    fun applyOperation(operation: SerializedOperation) {
+        val operation =
+            when (operation.operationType) {
+                OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
+                OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
+                OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
+                OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
+                else -> {
+                    throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_NOT_DEFINED_OPERATION.message)
+                }
             }
-        }
-        return when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
-        }
+        crdtTree.applyOperation(operation)
+        _operation.value = operation
     }
 
     fun updateNode(updateNode: Node) {
-        _head.value = traverseUpdateNode(head.value, updateNode)
+        val updateOperation =
+            crdtTree.generateOperationUpdate(updateNode.id, updateNode.description)
+        crdtTree.applyOperation(updateOperation)
+        _operation.value = updateOperation
+        requestUpdateMindMap(updateOperation)
     }
 
-    private fun traverseUpdateNode(
-        node: Node,
-        target: Node,
-    ): Node {
-        val newNodes = node.nodes.toMutableList()
-        if (node.id == target.id) {
-            return when (node) {
-                is CircleNode -> node.copy(description = target.description)
-                is RectangleNode -> node.copy(description = target.description)
-            }
-        }
-        newNodes.clear()
-        node.nodes.forEach { child ->
-            newNodes.add(traverseUpdateNode(child, target) as RectangleNode)
-        }
-        return when (node) {
-            is RectangleNode -> node.copy(nodes = newNodes)
-            is CircleNode -> node.copy(nodes = newNodes)
-        }
+    fun update(newTree: Tree) {
+        crdtTree.tree = newTree
     }
 
-    fun updateHead(newHead: Node) {
-        _head.value = newHead
-    }
-
-    fun updateHead(windowHeight: Dp) {
-        _head.update { root ->
-            (root as CircleNode).copy(
-                path = root.path.copy(centerY = windowHeight),
-            )
-        }
+    fun changeRootY(windowHeight: Dp) {
+        crdtTree.tree.setRootNode(
+            crdtTree.tree.getRootNode().copy(
+                path = crdtTree.tree.getRootNode().path.copy(centerY = windowHeight),
+            ),
+        )
     }
 }

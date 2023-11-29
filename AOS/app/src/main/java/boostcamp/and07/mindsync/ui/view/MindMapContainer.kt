@@ -2,16 +2,17 @@ package boostcamp.and07.mindsync.ui.view
 
 import android.content.Context
 import boostcamp.and07.mindsync.data.model.Node
+import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.view.layout.MeasureTextSize
 import boostcamp.and07.mindsync.ui.view.layout.MindMapRightLayoutManager
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
-import boostcamp.and07.mindsync.ui.view.listener.NodeUpdateListener
+import boostcamp.and07.mindsync.ui.view.listener.TreeUpdateListener
 
 class MindMapContainer(context: Context) {
-    lateinit var head: Node
+    lateinit var tree: Tree
     var selectNode: Node? = null
     private var nodeClickListener: NodeClickListener? = null
-    private var nodeUpdateListener: NodeUpdateListener? = null
+    private var treeUpdateListener: TreeUpdateListener? = null
     private val rightLayoutManager = MindMapRightLayoutManager()
     private val measureTextSize = MeasureTextSize(context)
 
@@ -19,13 +20,15 @@ class MindMapContainer(context: Context) {
         this.nodeClickListener = clickListener
     }
 
-    fun setNodeUpdateListener(updateListener: NodeUpdateListener) {
-        this.nodeUpdateListener = updateListener
+    fun setTreeUpdateListener(updateListener: TreeUpdateListener) {
+        this.treeUpdateListener = updateListener
     }
 
-    fun updateHead(head: Node) {
-        this.head = rightLayoutManager.arrangeNode(measureTextSize.traverseTextHead(head))
-        nodeUpdateListener?.updateHead(head)
+    fun update(tree: Tree) {
+        this.tree = tree
+        measureTextSize.traverseTextHead(tree)
+        rightLayoutManager.arrangeNode(tree)
+        treeUpdateListener?.updateTree(tree)
     }
 
     fun setSelectedNode(selectedNode: Node?) {

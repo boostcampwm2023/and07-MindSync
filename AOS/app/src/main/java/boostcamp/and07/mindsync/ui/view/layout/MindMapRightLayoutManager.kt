@@ -1,75 +1,89 @@
 package boostcamp.and07.mindsync.ui.view.layout
 
 import boostcamp.and07.mindsync.data.model.CircleNode
-import boostcamp.and07.mindsync.data.model.CirclePath
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.Dp
 
 class MindMapRightLayoutManager {
     private val horizontalSpacing = Dp(50f)
     private val verticalSpacing = Dp(50f)
 
-    fun arrangeNode(node: Node): Node {
-        val childHeightSum = measureChildHeight(node)
-        val newNodes = mutableListOf<RectangleNode>()
-
-        val nodeWidth =
-            when (node) {
-                is RectangleNode -> node.path.width
-                is CircleNode -> node.path.radius
-            }
-
-        val criteriaX = node.path.centerX + nodeWidth + horizontalSpacing
-        var startX: Dp
-        val newCenterY =
-            if (node.path.centerY.dpVal >= (childHeightSum / 2).dpVal) node.path.centerY else childHeightSum / 2
-        var startY = newCenterY - (childHeightSum / 2)
-
-        node.nodes.forEach { childNode ->
-            startX = criteriaX + (childNode.path.width / 2)
-
-            val childHeight = measureChildHeight(childNode)
-            val newCenterY = startY + (childHeight / 2)
-            val newPath = childNode.path.copy(centerX = startX, centerY = newCenterY)
-
-            newNodes.add(
-                childNode.copy(path = newPath),
-            )
-
-            startY += childHeight + verticalSpacing
-        }
-
-        newNodes.forEachIndexed { index, childNode ->
-            newNodes[index] = arrangeNode(childNode) as RectangleNode
-        }
-        val newNode =
-            when (node) {
-                is RectangleNode -> node.copy(nodes = newNodes)
-                is CircleNode -> {
-                    node.copy(
-                        path =
-                            CirclePath(
-                                centerX = node.path.centerX,
-                                centerY = newCenterY,
-                                radius = node.path.radius,
-                            ),
-                        nodes = newNodes,
+    fun arrangeNode(tree: Tree) {
+        val root = tree.getRootNode()
+        val totalHeight = measureChildHeight(root, tree)
+        val newHead =
+            if (root.path.centerX.dpVal <= (totalHeight / 2).dpVal) {
+                val newPath =
+                    root.path.copy(
+                        centerY = totalHeight / 2 + horizontalSpacing,
                     )
-                }
+                root.copy(path = newPath)
+            } else {
+                root
             }
-
-        return newNode
+        tree.setRootNode(newHead)
+        recurArrangeNode(newHead, tree)
     }
 
-    fun measureChildHeight(node: Node): Dp {
+    private fun recurArrangeNode(
+        currentNode: Node,
+        tree: Tree,
+    ) {
+        val childHeightSum = measureChildHeight(currentNode, tree)
+
+        val nodeWidth =
+            when (currentNode) {
+                is RectangleNode -> currentNode.path.width
+                is CircleNode -> currentNode.path.radius
+            }
+
+        val criteriaX = currentNode.path.centerX + nodeWidth / 2 + horizontalSpacing
+        var startX: Dp
+        var startY = currentNode.path.centerY - (childHeightSum / 2)
+
+        currentNode.children.forEach { childId ->
+            val child = tree.getNode(childId)
+            val childHeight = measureChildHeight(child, tree)
+            val newY = startY + (childHeight / 2)
+
+            startX =
+                when (child) {
+                    is CircleNode -> criteriaX + (child.path.radius / 2)
+                    is RectangleNode -> criteriaX + (child.path.width / 2)
+                }
+            val newChild =
+                when (child) {
+                    is CircleNode -> {
+                        val newPath = child.path.copy(centerX = startX, centerY = newY)
+                        child.copy(path = newPath)
+                    }
+
+                    is RectangleNode -> {
+                        val newPath = child.path.copy(centerX = startX, centerY = newY)
+                        child.copy(path = newPath)
+                    }
+                }
+
+            tree.setNode(childId, newChild)
+            recurArrangeNode(newChild, tree)
+            startY += childHeight + verticalSpacing
+        }
+    }
+
+    fun measureChildHeight(
+        node: Node,
+        tree: Tree,
+    ): Dp {
         var heightSum = Dp(0f)
 
-        if (node.nodes.isNotEmpty()) {
-            node.nodes.forEach { childNode ->
-                heightSum += measureChildHeight(childNode)
+        if (node.children.isNotEmpty()) {
+            node.children.forEach { childId ->
+                val childNode = tree.getNode(childId)
+                heightSum += measureChildHeight(childNode, tree)
             }
-            heightSum += verticalSpacing * (node.nodes.size - 1)
+            heightSum += verticalSpacing * (node.children.size - 1)
         } else {
             heightSum =
                 when (node) {
@@ -77,7 +91,6 @@ class MindMapRightLayoutManager {
                     is RectangleNode -> node.path.height
                 }
         }
-
         return heightSum
     }
 }
