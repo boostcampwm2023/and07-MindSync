@@ -74,9 +74,10 @@ class MindMapViewModel : ViewModel() {
 
     fun removeNode(target: Node) {
         _selectedNode.value = null
-        val newTree = _tree.value.copy(_tree.value.nodes)
-        newTree.removeNode(target.id)
-        _tree.value = newTree
+        val removeOperation = crdtTree.generateOperationDelete(target.id)
+        crdtTree.applyOperation(removeOperation)
+        _operation.value = removeOperation
+        requestUpdateMindMap(operation = removeOperation)
     }
 
     fun setSelectedNode(selectNode: Node?) {
