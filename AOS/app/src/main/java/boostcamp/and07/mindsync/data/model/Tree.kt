@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.data.model
 
 import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.ui.util.Dp
+import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 
 class Tree {
     private var _nodes: MutableMap<String, Node>
@@ -33,7 +34,7 @@ class Tree {
     }
 
     fun getRootNode(): CircleNode {
-        _nodes[ROOT_ID] ?: throw IllegalArgumentException(ERROR_MESSAGE_ROOT_NODE_NOT_EXIST)
+        _nodes[ROOT_ID] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_ROOT_NODE_NOT_EXIST.message)
         return _nodes[ROOT_ID] as CircleNode
     }
 
@@ -49,7 +50,7 @@ class Tree {
     }
 
     fun getNode(id: String): Node {
-        return _nodes[id] ?: throw IllegalArgumentException(ERROR_MESSAGE_INVALID_NODE_ID)
+        return _nodes[id] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_INVALID_NODE_ID.message)
     }
 
     fun addNode(
@@ -57,13 +58,13 @@ class Tree {
         parentId: String?,
         content: String,
     ) {
-        if (_nodes[targetId] != null) throw IllegalArgumentException(ERROR_MESSAGE_DUPLICATED_NODE)
-        if (parentId == null) throw IllegalArgumentException(ERROR_MESSAGE_PARENT_NODE_NOT_EXIST)
+        if (_nodes[targetId] != null) throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_DUPLICATED_NODE.message)
+        if (parentId == null) throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_PARENT_NODE_NOT_EXIST.message)
         val newNode =
             NodeGenerator.makeNode(content, parentId).copy(id = targetId, parentId = parentId)
         val parentNode =
             _nodes[parentId] ?: throw IllegalArgumentException(
-                ERROR_MESSAGE_PARENT_NODE_NOT_EXIST,
+                ExceptionMessage.ERROR_MESSAGE_PARENT_NODE_NOT_EXIST.message,
             )
         val newChildren = parentNode.children.toMutableList()
         newChildren.add(targetId)
@@ -102,13 +103,13 @@ class Tree {
     }
 
     fun removeNode(targetId: String) {
-        if (targetId == ROOT_ID) throw IllegalArgumentException(ERROR_MESSAGE_ROOT_CANT_REMOVE)
+        if (targetId == ROOT_ID) throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_ROOT_CANT_REMOVE.message)
         val targetNode =
-            _nodes[targetId] ?: throw IllegalArgumentException(ERROR_MESSAGE_TARGET_NODE_NOT_EXIST)
+            _nodes[targetId] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_TARGET_NODE_NOT_EXIST.message)
         targetNode.parentId?.let { parentId ->
             val parentNode =
                 _nodes[parentId] ?: throw IllegalArgumentException(
-                    ERROR_MESSAGE_PARENT_NODE_NOT_EXIST,
+                    ExceptionMessage.ERROR_MESSAGE_PARENT_NODE_NOT_EXIST.message,
                 )
             val newChildren = parentNode.children.filter { id -> id != targetId }
             val newParent =
@@ -118,7 +119,7 @@ class Tree {
                     is RectangleNode -> parentNode.copy(children = newChildren)
                 }
             _nodes[parentId] = newParent
-        } ?: throw IllegalArgumentException(ERROR_MESSAGE_ROOT_CANT_REMOVE)
+        } ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_ROOT_CANT_REMOVE.message)
     }
 
     fun updateNode(
@@ -126,7 +127,7 @@ class Tree {
         description: String,
     ) {
         val targetNode =
-            _nodes[targetId] ?: throw IllegalArgumentException(ERROR_MESSAGE_TARGET_NODE_NOT_EXIST)
+            _nodes[targetId] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_TARGET_NODE_NOT_EXIST.message)
         val newTargetNode =
             when (targetNode) {
                 is CircleNode -> targetNode.copy(description = description)
@@ -158,11 +159,5 @@ class Tree {
 
     companion object {
         private const val ROOT_ID = "root"
-        private const val ERROR_MESSAGE_INVALID_NODE_ID = "Node Id is invalid"
-        private const val ERROR_MESSAGE_DUPLICATED_NODE = "Target node is duplicated"
-        private const val ERROR_MESSAGE_TARGET_NODE_NOT_EXIST = "Target Node is not exist"
-        private const val ERROR_MESSAGE_PARENT_NODE_NOT_EXIST = "Parent Node is not exist"
-        private const val ERROR_MESSAGE_ROOT_NODE_NOT_EXIST = "Root Node is not exist"
-        private const val ERROR_MESSAGE_ROOT_CANT_REMOVE = "Root can't remove"
     }
 }

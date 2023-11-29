@@ -18,6 +18,7 @@ import boostcamp.and07.mindsync.network.MindMapSocketManager
 import boostcamp.and07.mindsync.network.SocketEvent
 import boostcamp.and07.mindsync.network.SocketState
 import boostcamp.and07.mindsync.ui.util.Dp
+import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -109,7 +110,7 @@ class MindMapViewModel : ViewModel() {
                 OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
                 OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
                 else -> {
-                    throw IllegalArgumentException("Operation is not defined")
+                    throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_NOT_DEFINED_OPERATION.message)
                 }
             }
         crdtTree.applyOperation(operation)
