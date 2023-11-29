@@ -21,7 +21,7 @@ jobs:
       env:
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
       run: |
-          echo "$LOCAL_PROPERTIES" > local.properties
+          echo "$LOCAL_PROPERTIES" > AOS/local.properties
     - name: Create Keystore
       env:
         KEYSTORE_B64: ${{ secrets.KEY_STORE_BASE_64 }}
