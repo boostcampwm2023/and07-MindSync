@@ -117,9 +117,11 @@ class MindMapViewModel : ViewModel() {
     }
 
     fun updateNode(updateNode: Node) {
-        val newTree = _tree.value.copy(_tree.value.nodes)
-        newTree.updateNode(updateNode.id, updateNode.description)
-        _tree.value = newTree
+        val updateOperation =
+            crdtTree.generateOperationUpdate(updateNode.id, updateNode.description)
+        crdtTree.applyOperation(updateOperation)
+        _operation.value = updateOperation
+        requestUpdateMindMap(updateOperation)
     }
 
     fun update(newTree: Tree) {
