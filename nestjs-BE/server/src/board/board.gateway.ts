@@ -21,6 +21,6 @@ export class BoardGateway {
     const payloadObject = JSON.parse(payload);
     client.broadcast
       .to(payloadObject.boardId)
-      .emit('operationFromServer', payloadObject.operation);
+      .emit('operationFromServer', JSON.stringify(payloadObject.operation));
   }
 }
