@@ -86,12 +86,22 @@ export abstract class BaseService<T extends HasUuid> {
   }
 
   async remove(key: string) {
+    const storeData = this.getDataFromCacheOrDB(key);
+    if (!storeData) return;
     this.cache.delete(key);
     const insertTemporaryData = this.temporaryDatabaseService.get(
       this.className,
       key,
       'insert',
     );
+    const updateTemporaryData = this.temporaryDatabaseService.get(
+      this.className,
+      key,
+      'update',
+    );
+    if (updateTemporaryData) {
+      this.temporaryDatabaseService.delete(this.className, key, 'update');
+    }
     if (insertTemporaryData) {
       this.temporaryDatabaseService.delete(this.className, key, 'insert');
     } else {
