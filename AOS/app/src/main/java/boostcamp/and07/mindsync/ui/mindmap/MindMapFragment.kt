@@ -68,7 +68,7 @@ class MindMapFragment :
                 event?.let { socketEvent ->
                     when (socketEvent.eventType) {
                         SocketEventType.OPERATION_FROM_SERVER -> {
-                            Log.d("MindMapFragment", "receive data: ${socketEvent.data}")
+                            Log.d("MindMapFragment", "receive data: ${socketEvent.operation}")
                         }
                     }
                 }

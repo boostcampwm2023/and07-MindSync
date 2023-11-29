@@ -93,7 +93,7 @@ enum class SocketState {
 
 data class SocketEvent(
     val eventType: SocketEventType,
-    val data: Any,
+    val operation: Any,
 )
 
 enum class SocketEventType {
