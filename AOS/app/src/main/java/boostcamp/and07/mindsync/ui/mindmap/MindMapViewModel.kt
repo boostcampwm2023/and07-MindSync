@@ -65,9 +65,11 @@ class MindMapViewModel : ViewModel() {
         parent: Node,
         addNode: RectangleNode,
     ) {
-        val newTree = _tree.value.copy(_tree.value.nodes)
-        newTree.addNode(addNode.id, parent.id, addNode.description)
-        _tree.value = newTree
+        val addOperation =
+            crdtTree.generateOperationAdd(addNode.id, parent.id, addNode.description)
+        crdtTree.applyOperation(addOperation)
+        _operation.value = addOperation
+        requestUpdateMindMap(operation = addOperation)
     }
 
     fun removeNode(target: Node) {
