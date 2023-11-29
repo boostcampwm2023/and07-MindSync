@@ -25,7 +25,14 @@ data class SerializedOperation(
     val parentId: String? = null,
 )
 
-abstract class Operation(val operationType: String, val id: String, val clock: Clock) {
+enum class OperationType(val command: String) {
+    ADD("add"),
+    DELETE("delete"),
+    MOVE("move"),
+    UPDATE("update"),
+}
+
+sealed class Operation(val operationType: String, val id: String, val clock: Clock) {
     abstract fun doOperation(tree: Tree): OperationLog
 
     abstract fun undoOperation(
@@ -39,7 +46,8 @@ abstract class Operation(val operationType: String, val id: String, val clock: C
     ): OperationLog
 }
 
-class OperationAdd(private val input: OperationInput) : Operation("add", input.id, input.clock) {
+class OperationAdd(input: OperationInput) :
+    Operation(OperationType.ADD.command, input.id, input.clock) {
     val parentId = input.parentId
     val description = input.description
 
@@ -66,7 +74,8 @@ class OperationAdd(private val input: OperationInput) : Operation("add", input.i
     }
 }
 
-class OperationDelete(input: OperationInput) : Operation("delete", input.id, input.clock) {
+class OperationDelete(input: OperationInput) :
+    Operation(OperationType.DELETE.command, input.id, input.clock) {
     override fun doOperation(tree: Tree): OperationLog {
         val node = tree.getNode(id)
         val oldParentId = node.parentId
@@ -87,7 +96,8 @@ class OperationDelete(input: OperationInput) : Operation("delete", input.id, inp
     ) = log.operation.doOperation(tree)
 }
 
-class OperationMove(private val input: OperationInput) : Operation("move", input.id, input.clock) {
+class OperationMove(input: OperationInput) :
+    Operation(OperationType.MOVE.command, input.id, input.clock) {
     val parentId = input.parentId
 
     override fun doOperation(tree: Tree): OperationLog {
@@ -112,8 +122,8 @@ class OperationMove(private val input: OperationInput) : Operation("move", input
     ) = log.operation.doOperation(tree)
 }
 
-class OperationUpdate(private val input: OperationInput) :
-    Operation("update", input.id, input.clock) {
+class OperationUpdate(input: OperationInput) :
+    Operation(OperationType.UPDATE.command, input.id, input.clock) {
     val description = input.description
 
     override fun doOperation(tree: Tree): OperationLog {
