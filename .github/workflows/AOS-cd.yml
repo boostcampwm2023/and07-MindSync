@@ -21,13 +21,15 @@ jobs:
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
       run: |
           echo "$LOCAL_PROPERTIES" > AOS/local.properties
+          echo "$LOCAL_PROPERTIES"
+          echo $LOCAL_PROPERTIES"
     - name: Create Keystore
       env:
         KEYSTORE_B64: ${{ secrets.KEY_STORE_BASE_64 }}
       run: |
         echo $KEYSTORE_B64 > keystore_b64.txt
         base64 --decode --ignore-garbage keystore_b64.txt > keystore.jks
-      working-directory: ./AOS/app      
+      working-directory: ./AOS/app 
     - name: Build Release APK
       env:
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
