@@ -47,7 +47,6 @@ class MindMapFragment :
                 when (state) {
                     SocketState.CONNECT -> {
                         mindMapViewModel.joinBoard(boardId)
-                        mindMapViewModel.updateMindMap(boardId)
                     }
 
                     SocketState.DISCONNECT -> {
