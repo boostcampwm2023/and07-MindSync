@@ -5,6 +5,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.NodeGenerator
+import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
@@ -35,7 +36,7 @@ class MindMapFragment :
     override fun initView() {
         setupRootNode()
         setBinding()
-        collectTree()
+        collectOperation()
         collectSelectedNode()
         collectSocketState()
         collectSocketEvent()
@@ -67,10 +68,23 @@ class MindMapFragment :
                 event?.let { socketEvent ->
                     when (socketEvent.eventType) {
                         SocketEventType.OPERATION_FROM_SERVER -> {
-                            Log.d("MindMapFragment", "receive data: ${socketEvent.operation}")
+                            val operation = socketEvent.operation
+                            if (operation is SerializedOperation) {
+                                mindMapViewModel.applyOperation(operation)
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun collectOperation() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mindMapViewModel.operation.collectLatest {
+                mindMapContainer.update(mindMapViewModel.crdtTree.tree)
+                binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
+                binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
             }
         }
     }
@@ -89,16 +103,6 @@ class MindMapFragment :
         mindMapContainer.setTreeUpdateListener(this)
         binding.zoomLayoutMindMapRoot.mindMapContainer = mindMapContainer
         binding.zoomLayoutMindMapRoot.initializeZoomLayout()
-    }
-
-    private fun collectTree() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.tree.collectLatest { newTree ->
-                mindMapContainer.update(newTree)
-                binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
-                binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
-            }
-        }
     }
 
     private fun collectSelectedNode() {
