@@ -2,7 +2,15 @@ package boostcamp.and07.mindsync.ui.mindmap
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.IdGenerator
 import boostcamp.and07.mindsync.data.crdt.CrdtTree
+import boostcamp.and07.mindsync.data.crdt.Operation
+import boostcamp.and07.mindsync.data.crdt.OperationAdd
+import boostcamp.and07.mindsync.data.crdt.OperationDelete
+import boostcamp.and07.mindsync.data.crdt.OperationMove
+import boostcamp.and07.mindsync.data.crdt.OperationType
+import boostcamp.and07.mindsync.data.crdt.OperationUpdate
+import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
@@ -16,11 +24,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MindMapViewModel : ViewModel() {
-    private val _tree = MutableStateFlow(Tree())
-    val tree: StateFlow<Tree> = _tree
+    private val boardId = "testBoard"
+    val crdtTree = CrdtTree(IdGenerator.makeRandomNodeId())
     private var _selectedNode = MutableStateFlow<Node?>(null)
     val selectedNode: StateFlow<Node?> = _selectedNode
-
+    private val _operation = MutableStateFlow<Operation?>(null)
+    val operation: StateFlow<Operation?> = _operation
     private val mindMapSocketManager = MindMapSocketManager()
     private val _socketState = MutableStateFlow(SocketState.DISCONNECT)
     val socketState: StateFlow<SocketState> = _socketState
@@ -72,14 +81,36 @@ class MindMapViewModel : ViewModel() {
         _selectedNode.value = selectNode
     }
 
-    fun updateMindMap(boardId: String) {
-        val testTree = CrdtTree("1")
-        val testTargetId = "a"
-        val testParentId = "root"
-        val testDescription = "hello"
-        val operation = testTree.generateOperationAdd(testTargetId, testParentId, testDescription)
-        val serializedOperation = testTree.serializeOperationAdd(operation)
-        mindMapSocketManager.updateMindMap(serializedOperation = serializedOperation, boardId = boardId)
+    fun requestUpdateMindMap(operation: Operation) {
+        val serializedOperation =
+            when (operation) {
+                is OperationAdd -> crdtTree.serializeOperationAdd(operation)
+
+                is OperationDelete -> crdtTree.serializeOperationDelete(operation)
+
+                is OperationMove -> crdtTree.serializeOperationMove(operation)
+
+                is OperationUpdate -> crdtTree.serializeOperationUpdate(operation)
+            }
+        mindMapSocketManager.updateMindMap(
+            serializedOperation = serializedOperation,
+            boardId = boardId,
+        )
+    }
+
+    fun applyOperation(operation: SerializedOperation) {
+        val operation =
+            when (operation.operationType) {
+                OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
+                OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
+                OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
+                OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
+                else -> {
+                    throw IllegalArgumentException("Operation is not defined")
+                }
+            }
+        crdtTree.applyOperation(operation)
+        _operation.value = operation
     }
 
     fun updateNode(updateNode: Node) {
@@ -89,16 +120,14 @@ class MindMapViewModel : ViewModel() {
     }
 
     fun update(newTree: Tree) {
-        _tree.value = newTree
+        crdtTree.tree = newTree
     }
 
     fun changeRootY(windowHeight: Dp) {
-        val newTree = _tree.value.copy(_tree.value.nodes)
-        newTree.setRootNode(
-            _tree.value.getRootNode().copy(
-                path = _tree.value.getRootNode().path.copy(centerY = windowHeight),
+        crdtTree.tree.setRootNode(
+            crdtTree.tree.getRootNode().copy(
+                path = crdtTree.tree.getRootNode().path.copy(centerY = windowHeight),
             ),
         )
-        _tree.value = newTree
     }
 }
