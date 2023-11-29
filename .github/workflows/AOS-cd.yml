@@ -36,6 +36,8 @@ jobs:
         SIGNING_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: ./gradlew assembleRelease
       working-directory: ./AOS
+    - name: ls AOS
+      run: cd AOS/app/build/outputs/apk/release && ls
     - name: Create Release 
       uses: actions/create-release@v1
       env: 
@@ -44,7 +46,7 @@ jobs:
         tag_name: ${{ steps.extract_version_name.outputs.version }} 
         release_name: ${{ steps.extract_version_name.outputs.version }}     
         files: |
-            AOS/app/build/outputs/apk/release/*.apk
+            AOS/app/build/outputs/apk/release/app-release.apk
     - name: Upload to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1
       with:
@@ -52,4 +54,4 @@ jobs:
         serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
         groups: test
         releaseNotesFile: AOS/release_note.txt
-        file: AOS/app/build/outputs/apk/release/*.apk
+        file: AOS/app/build/outputs/apk/release/app-release.apk
