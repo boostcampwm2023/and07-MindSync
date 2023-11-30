@@ -41,7 +41,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
 
     fun initializeZoomLayout() {
         nodeView = NodeView(mindMapContainer, context, attrs = null)
-        lineView = LineView(mindMapContainer, context, attrs = null)
+        lineView = LineView(context, attrs = null)
         addView(lineView)
         addView(nodeView)
         applyScaleAndTranslation()
