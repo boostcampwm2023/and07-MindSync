@@ -152,7 +152,11 @@ class NodeView(
         }
     }
 
-    private fun traverseChildNode(target: Node, node: Node, childNodeSpacing: Dp) {
+    private fun traverseChildNode(
+        target: Node,
+        node: Node,
+        childNodeSpacing: Dp,
+    ) {
         tree.updateNode(
             node.id,
             node.description,
