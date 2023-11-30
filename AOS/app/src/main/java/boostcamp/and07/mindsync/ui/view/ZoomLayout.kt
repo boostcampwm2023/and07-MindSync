@@ -100,7 +100,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (mode == LayoutMode.DRAG && !mindMapContainer.isMoving) {
+                if (mode == LayoutMode.DRAG && mindMapContainer.isMoving.not()) {
                     updateTranslation(event)
                 }
             }
