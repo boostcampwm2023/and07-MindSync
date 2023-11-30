@@ -23,6 +23,7 @@ class BoardListFragment :
                 }
 
                 override fun onLongClick(board: Board) {
+                    boardListViewModel.selectBoard(board)
                 }
             },
         )

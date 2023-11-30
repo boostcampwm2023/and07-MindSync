@@ -10,6 +10,8 @@ import java.time.LocalDate
 class BoardListViewModel : ViewModel() {
     private val _boards = MutableStateFlow<List<Board>>(listOf())
     val boards: StateFlow<List<Board>> = _boards
+    private val _selectBoards = MutableStateFlow<List<Board>>(mutableListOf())
+    val selectBoards: StateFlow<List<Board>> = _selectBoards
 
     fun addBoard() {
         val board =
@@ -23,5 +25,20 @@ class BoardListViewModel : ViewModel() {
             _boards.value.toMutableList().apply {
                 add(board)
             }
+    }
+
+    fun selectBoard(selectBoard: Board) {
+        val currentSelectBoards = _selectBoards.value.find { board -> board == selectBoard }
+        if (currentSelectBoards == null) {
+            _selectBoards.value =
+                _selectBoards.value.toMutableList().apply {
+                    add(selectBoard)
+                }
+        } else {
+            _selectBoards.value =
+                _selectBoards.value.toMutableList().apply {
+                    remove(selectBoard)
+                }
+        }
     }
 }
