@@ -47,7 +47,7 @@ class MindMapContainer(context: Context) {
     ) {
         this.tree = tree
         rightLayoutManager.arrangeNode(tree)
-        nodeMoveListener?.moveTree(this.tree, target, parent)
+        nodeMoveListener?.moveNode(this.tree, target, parent)
     }
 
     fun setSelectedNode(selectedNode: Node?) {

@@ -156,7 +156,7 @@ class MindMapFragment :
         mindMapViewModel.update(tree)
     }
 
-    override fun moveTree(
+    override fun moveNode(
         tree: Tree,
         target: Node,
         parent: Node,

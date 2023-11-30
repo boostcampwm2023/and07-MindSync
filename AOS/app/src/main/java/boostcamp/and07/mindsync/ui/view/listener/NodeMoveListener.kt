@@ -4,7 +4,7 @@ import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.Tree
 
 interface NodeMoveListener {
-    fun moveTree(
+    fun moveNode(
         tree: Tree,
         target: Node,
         parent: Node,
