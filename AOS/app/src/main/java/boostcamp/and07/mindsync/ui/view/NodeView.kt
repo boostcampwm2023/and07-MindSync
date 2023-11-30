@@ -39,6 +39,7 @@ class NodeView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        draAttachedNodeNode(canvas)
         drawTree(canvas)
         mindMapContainer.selectNode?.let { selectedNode ->
             makeStrokeNode(canvas, selectedNode)
@@ -178,6 +179,23 @@ class NodeView(
             mindMapContainer.setSelectedNode(it)
         } ?: run {
             mindMapContainer.setSelectedNode(null)
+        }
+        invalidate()
+    }
+
+    private fun draAttachedNodeNode(canvas: Canvas) {
+        attachedNode?.let { attachedNode ->
+            if (attachedNode is RectangleNode) {
+                val height = attachedNode.path.height
+                val width = attachedNode.path.width
+                val radius = if (height.dpVal >= width.dpVal) height else width
+                canvas.drawCircle(
+                    attachedNode.path.centerX.toPx(context),
+                    attachedNode.path.centerY.toPx(context),
+                    radius.toPx(context),
+                    drawInfo.boundaryPaint,
+                )
+            }
         }
         invalidate()
     }
