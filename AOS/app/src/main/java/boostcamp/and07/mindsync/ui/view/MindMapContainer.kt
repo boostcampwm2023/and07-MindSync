@@ -15,6 +15,7 @@ class MindMapContainer(context: Context) {
     private var treeUpdateListener: TreeUpdateListener? = null
     private val rightLayoutManager = MindMapRightLayoutManager()
     private val measureTextSize = MeasureTextSize(context)
+    var isMoving = false
 
     fun setNodeClickListener(clickListener: NodeClickListener) {
         this.nodeClickListener = clickListener
@@ -26,9 +27,11 @@ class MindMapContainer(context: Context) {
 
     fun update(tree: Tree) {
         this.tree = tree
-        measureTextSize.traverseTextHead(tree)
-        rightLayoutManager.arrangeNode(tree)
-        treeUpdateListener?.updateTree(tree)
+        if (!isMoving) {
+            measureTextSize.traverseTextHead(tree)
+            rightLayoutManager.arrangeNode(tree)
+            treeUpdateListener?.updateTree(tree)
+        }
     }
 
     fun setSelectedNode(selectedNode: Node?) {

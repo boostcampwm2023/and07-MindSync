@@ -85,6 +85,13 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
         }
     }
 
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (mindMapContainer.selectNode == null) {
+            return false
+        }
+        return super.onInterceptTouchEvent(ev)
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -93,7 +100,7 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (mode == LayoutMode.DRAG) {
+                if (mode == LayoutMode.DRAG && !mindMapContainer.isMoving) {
                     updateTranslation(event)
                 }
             }
