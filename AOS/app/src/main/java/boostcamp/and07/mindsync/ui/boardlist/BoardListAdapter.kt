@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -10,16 +9,29 @@ import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.ItemBoardBinding
 
 class BoardListAdapter : ListAdapter<Board, BoardListAdapter.BoardListViewHolder>(DIFF_CALLBACK) {
+    private var boardClickListener: BoardClickListener? = null
+
+    fun setBoardClickListener(listener: BoardClickListener) {
+        this.boardClickListener = listener
+    }
 
     class BoardListViewHolder(
         private val binding: ItemBoardBinding,
+        private val boardClickListener: BoardClickListener?,
     ) :
         RecyclerView.ViewHolder(binding.root) {
-        private val tag = "BoardListViewHolder"
-
         fun bind(item: Board) {
-            Log.d(tag, "bind")
             binding.board = item
+            with(binding.imgbtnBoardItem) {
+                this.setOnClickListener {
+                    boardClickListener?.onClick(item)
+                    true
+                }
+                this.setOnLongClickListener {
+                    boardClickListener?.onLongClick(item)
+                    true
+                }
+            }
         }
     }
 
@@ -28,7 +40,7 @@ class BoardListAdapter : ListAdapter<Board, BoardListAdapter.BoardListViewHolder
         viewType: Int,
     ): BoardListViewHolder {
         val binding = ItemBoardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return BoardListViewHolder(binding)
+        return BoardListViewHolder(binding, boardClickListener)
     }
 
     override fun onBindViewHolder(
