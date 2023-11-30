@@ -69,9 +69,9 @@ class NodeView(
                     mindMapContainer.isMoving = false
                     mindMapContainer.selectNode?.let { selectedNode ->
                         findIncludedNode(event.x, event.y)
-                        includeNode(selectedNode)
-                        attachedNode?.let { includeNode ->
-                            mindMapContainer.update(tree, selectedNode, includeNode)
+                        attachNode(selectedNode)
+                        attachedNode?.let { attachedNode ->
+                            mindMapContainer.update(tree, selectedNode, attachedNode)
                         }
                     }
                 }
@@ -82,16 +82,16 @@ class NodeView(
         return false
     }
 
-    private fun includeNode(selectedNode: Node) {
-        attachedNode?.let { includedNode ->
+    private fun attachNode(selectedNode: Node) {
+        attachedNode?.let { attachedNode ->
             tree.doPreorderTraversal { node ->
                 if (node.id == selectedNode.id) {
                     tree.removeNode(node.id)
                 }
             }
             tree.doPreorderTraversal { node ->
-                if (node.id == includedNode.id) {
-                    tree.attachNode(selectedNode.id, includedNode.id)
+                if (node.id == attachedNode.id) {
+                    tree.attachNode(selectedNode.id, attachedNode.id)
                 }
             }
         }
@@ -102,16 +102,16 @@ class NodeView(
         dx: Float,
         dy: Float,
     ) {
-        var includedNode: Node? = null
+        var attachedNode: Node? = null
         mindMapContainer.tree.doPreorderTraversal { node ->
             mindMapContainer.selectNode?.let {
                 if (isInsideNode(node, dx, dy) && mindMapContainer.selectNode?.id != node.id) {
-                    includedNode = node
+                    attachedNode = node
                 }
             }
         }
 
-        includedNode?.let { node ->
+        attachedNode?.let { node ->
             this.attachedNode = node
         } ?: run {
             this.attachedNode = null
