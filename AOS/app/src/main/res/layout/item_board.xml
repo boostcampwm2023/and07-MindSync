@@ -13,21 +13,27 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        >
+        android:padding="5dp">
+
+        <CheckBox
+            android:id="@+id/cb_board"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/imgbtn_board_item"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/imgbtn_board_item" />
 
         <ImageButton
             android:id="@+id/imgbtn_board_item"
             android:layout_width="120dp"
             android:layout_height="100dp"
             android:background="@drawable/bg_round_dialog"
+            android:scaleType="center"
             app:imageUri="@{board.imageUrl}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cb_board"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@mipmap/ic_app_logo_round"
-            android:scaleType="center"
-            />
+            tools:src="@mipmap/ic_app_logo_round" />
 
         <TextView
             android:id="@+id/tv_board_title"
