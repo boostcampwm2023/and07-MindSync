@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.IdGenerator
@@ -79,6 +80,19 @@ class MindMapViewModel : ViewModel() {
         crdtTree.applyOperation(removeOperation)
         _operation.value = removeOperation
         requestUpdateMindMap(operation = removeOperation)
+    }
+
+    fun moveNode(
+        tree: Tree,
+        target: Node,
+        parent: Node,
+    ) {
+        this.crdtTree.tree = tree
+        _selectedNode.value = null
+        val moveOperation = crdtTree.generateOperationMove(target.id, parent.id)
+        crdtTree.applyOperation(moveOperation)
+        _operation.value = moveOperation
+        requestUpdateMindMap(operation = moveOperation)
     }
 
     fun setSelectedNode(selectNode: Node?) {
