@@ -22,7 +22,7 @@ class BoardListFragment :
                 override fun onClick(board: Board) {
                 }
 
-                override fun onLongClick(board: Board) {
+                override fun onCheckBoxClick(board: Board) {
                     boardListViewModel.selectBoard(board)
                 }
             },

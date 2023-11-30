@@ -21,15 +21,13 @@ class BoardListAdapter : ListAdapter<Board, BoardListAdapter.BoardListViewHolder
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Board) {
-            binding.board = item
-            with(binding.imgbtnBoardItem) {
-                this.setOnClickListener {
+            with(binding) {
+                board = item
+                imgbtnBoardItem.setOnClickListener {
                     boardClickListener?.onClick(item)
-                    true
                 }
-                this.setOnLongClickListener {
-                    boardClickListener?.onLongClick(item)
-                    true
+                cbBoard.setOnClickListener{
+                    boardClickListener?.onCheckBoxClick(item)
                 }
             }
         }

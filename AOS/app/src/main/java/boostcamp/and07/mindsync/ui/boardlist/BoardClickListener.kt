@@ -5,5 +5,5 @@ import boostcamp.and07.mindsync.data.model.Board
 interface BoardClickListener {
     fun onClick(board: Board)
 
-    fun onLongClick(board: Board)
+    fun onCheckBoxClick(board: Board)
 }
