@@ -15,29 +15,20 @@ jobs:
         java-version: 17
     - name: Extract Release Version
       run: echo "##[set-output name=version;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
-      id: extract_version_name       
+      id: extract_version_name
     - name: Create Properties File
       env:
-          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        RELEASE_KEYSTORE: ${{ secrets.KEY_STORE_BASE_64 }}
+        KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
+        LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
       run: |
+          echo "$RELEASE_KEYSTORE" | base64 -d > AOS/app/release.keystore
+          echo "$KEYSTORE_PROPERTIES" > AOS/keystore.properties
           echo "$LOCAL_PROPERTIES" > AOS/local.properties
-          echo "$LOCAL_PROPERTIES"
-          echo $LOCAL_PROPERTIES
-    - name: Create Keystore
-      env:
-        KEYSTORE_B64: ${{ secrets.KEY_STORE_BASE_64 }}
-      run: |
-        echo $KEYSTORE_B64 > keystore_b64.txt
-        base64 --decode --ignore-garbage keystore_b64.txt > keystore.jks
-      working-directory: ./AOS/app 
     - name: Build Release APK
-      env:
-        SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        SIGNING_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: ./gradlew assembleRelease
       working-directory: ./AOS
-    - name: ls AOS
-      run: cd AOS/app/build/outputs/apk/release && ls
+    
     - name: Create Release 
       uses: actions/create-release@v1
       env: 
@@ -52,6 +43,6 @@ jobs:
       with:
         appId: ${{ secrets.FIREBASE_APP_ID }}
         serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
-        groups: test
+        groups: android07
         releaseNotesFile: AOS/release_note.txt
         file: AOS/app/build/outputs/apk/release/app-release.apk
