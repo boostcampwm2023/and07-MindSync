@@ -28,7 +28,6 @@ jobs:
     - name: Build Release APK
       run: ./gradlew assembleRelease
       working-directory: ./AOS
-    
     - name: Create Release 
       uses: actions/create-release@v1
       env: 
