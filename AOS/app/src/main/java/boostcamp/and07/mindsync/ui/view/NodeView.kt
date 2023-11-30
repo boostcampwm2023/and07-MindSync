@@ -12,7 +12,11 @@ import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.ui.util.Dp
+import boostcamp.and07.mindsync.ui.util.Px
+import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.util.toPx
+import boostcamp.and07.mindsync.ui.view.layout.MindMapRightLayoutManager
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class NodeView(
@@ -30,6 +34,8 @@ class NodeView(
             context.getColor(R.color.mindmap4),
             context.getColor(R.color.mindmap5),
         )
+    private var attachedNode: Node? = null
+    private val rightLayoutManager = MindMapRightLayoutManager()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -42,10 +48,104 @@ class NodeView(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                mindMapContainer.isMoving = false
                 findTouchNode(event.x, event.y)
+                return mindMapContainer.selectNode != null
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                mindMapContainer.isMoving = true
+                moveNode(
+                    event.x,
+                    event.y,
+                )
+                findIncludedNode(event.x, event.y)
+                return true
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                if (mindMapContainer.isMoving) {
+                    mindMapContainer.isMoving = false
+                    mindMapContainer.selectNode?.let { selectedNode ->
+                        findIncludedNode(event.x, event.y)
+                        includeNode(selectedNode)
+                        attachedNode?.let { includeNode ->
+                            mindMapContainer.update(tree, selectedNode, includeNode)
+                        }
+                    }
+                }
+                attachedNode = null
+                invalidate()
             }
         }
-        return super.onTouchEvent(event)
+        return false
+    }
+
+    private fun includeNode(selectedNode: Node) {
+        attachedNode?.let { includedNode ->
+            tree.doPreorderTraversal { node ->
+                if (node.id == selectedNode.id) {
+                    tree.removeNode(node.id)
+                }
+            }
+            tree.doPreorderTraversal { node ->
+                if (node.id == includedNode.id) {
+                    tree.attachNode(selectedNode.id, includedNode.id)
+                }
+            }
+        }
+        rightLayoutManager.arrangeNode(tree)
+    }
+
+    private fun findIncludedNode(
+        dx: Float,
+        dy: Float,
+    ) {
+        var includedNode: Node? = null
+        mindMapContainer.tree.doPreorderTraversal { node ->
+            mindMapContainer.selectNode?.let {
+                if (isInsideNode(node, dx, dy) && mindMapContainer.selectNode?.id != node.id) {
+                    includedNode = node
+                }
+            }
+        }
+
+        includedNode?.let { node ->
+            this.attachedNode = node
+        } ?: run {
+            this.attachedNode = null
+        }
+    }
+
+    private fun moveNode(
+        dx: Float,
+        dy: Float,
+    ) {
+        mindMapContainer.selectNode?.let { selectedNode ->
+            if (selectedNode is CircleNode) return
+            traverseMovedNode(tree.getRootNode(), selectedNode, dx, dy)
+            mindMapContainer.update(tree)
+        }
+        invalidate()
+    }
+
+    private fun traverseMovedNode(
+        node: Node,
+        target: Node,
+        dx: Float,
+        dy: Float,
+    ) {
+        if (node.id == target.id) {
+            val centerX = Dp(Px(dx).toDp(context))
+            val centerY = Dp(Px(dy).toDp(context))
+            tree.updateNode(target.id, target.description, target.children, centerX, centerY)
+            mindMapContainer.tree = tree
+            return
+        }
+
+        node.children.forEach { nodeId ->
+            traverseMovedNode(tree.getNode(nodeId), target, dx, dy)
+        }
     }
 
     fun updateTree(tree: Tree) {
