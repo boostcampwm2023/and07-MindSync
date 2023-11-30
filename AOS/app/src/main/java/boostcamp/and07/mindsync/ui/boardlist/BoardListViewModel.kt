@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import boostcamp.and07.mindsync.data.IdGenerator
 import boostcamp.and07.mindsync.data.model.Board
@@ -48,6 +49,7 @@ class BoardListViewModel : ViewModel() {
                     remove(selectBoard)
                 }
         }
+        Log.d("BoardListViewModel","${selectBoards.value}")
     }
 
     private fun deleteBoard() {

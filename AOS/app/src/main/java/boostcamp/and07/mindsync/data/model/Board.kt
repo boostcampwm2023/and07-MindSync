@@ -7,4 +7,5 @@ data class Board(
     val name: String,
     val date: LocalDate,
     val imageUrl: String,
+    var isChecked:Boolean = false
 )
