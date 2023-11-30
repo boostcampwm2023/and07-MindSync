@@ -39,7 +39,7 @@ class NodeView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        draAttachedNodeNode(canvas)
+        drawAttachedNodeNode(canvas)
         drawTree(canvas)
         mindMapContainer.selectNode?.let { selectedNode ->
             makeStrokeNode(canvas, selectedNode)
@@ -183,7 +183,7 @@ class NodeView(
         invalidate()
     }
 
-    private fun draAttachedNodeNode(canvas: Canvas) {
+    private fun drawAttachedNodeNode(canvas: Canvas) {
         attachedNode?.let { attachedNode ->
             if (attachedNode is RectangleNode) {
                 val height = attachedNode.path.height
