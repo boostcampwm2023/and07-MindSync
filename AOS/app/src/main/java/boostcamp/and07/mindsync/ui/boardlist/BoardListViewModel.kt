@@ -13,7 +13,15 @@ class BoardListViewModel : ViewModel() {
     private val _selectBoards = MutableStateFlow<List<Board>>(mutableListOf())
     val selectBoards: StateFlow<List<Board>> = _selectBoards
 
-    fun addBoard() {
+    fun onFloatingButtonClick() {
+        if (_selectBoards.value.isEmpty()) {
+            addBoard()
+        } else {
+            deleteBoard()
+        }
+    }
+
+    private fun addBoard() {
         val board =
             Board(
                 IdGenerator.makeRandomNodeId(),
@@ -40,5 +48,13 @@ class BoardListViewModel : ViewModel() {
                     remove(selectBoard)
                 }
         }
+    }
+
+    private fun deleteBoard() {
+        _boards.value =
+            _boards.value.toMutableList().apply {
+                removeAll(_selectBoards.value)
+            }
+        _selectBoards.value = listOf()
     }
 }
