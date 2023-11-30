@@ -34,7 +34,8 @@ class Tree {
     }
 
     fun getRootNode(): CircleNode {
-        _nodes[ROOT_ID] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_ROOT_NODE_NOT_EXIST.message)
+        _nodes[ROOT_ID]
+            ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_ROOT_NODE_NOT_EXIST.message)
         return _nodes[ROOT_ID] as CircleNode
     }
 
@@ -50,7 +51,8 @@ class Tree {
     }
 
     fun getNode(id: String): Node {
-        return _nodes[id] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_INVALID_NODE_ID.message)
+        return _nodes[id]
+            ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_INVALID_NODE_ID.message)
     }
 
     fun addNode(
@@ -105,7 +107,8 @@ class Tree {
     fun removeNode(targetId: String) {
         if (targetId == ROOT_ID) throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_ROOT_CANT_REMOVE.message)
         val targetNode =
-            _nodes[targetId] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_TARGET_NODE_NOT_EXIST.message)
+            _nodes[targetId]
+                ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_TARGET_NODE_NOT_EXIST.message)
         targetNode.parentId?.let { parentId ->
             val parentNode =
                 _nodes[parentId] ?: throw IllegalArgumentException(
@@ -125,13 +128,26 @@ class Tree {
     fun updateNode(
         targetId: String,
         description: String,
+        children: List<String> = emptyList(),
+        dx: Dp = Dp(0f),
+        dy: Dp = Dp(0f),
     ) {
         val targetNode =
-            _nodes[targetId] ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_TARGET_NODE_NOT_EXIST.message)
+            _nodes[targetId]
+                ?: throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_TARGET_NODE_NOT_EXIST.message)
         val newTargetNode =
             when (targetNode) {
                 is CircleNode -> targetNode.copy(description = description)
-                is RectangleNode -> targetNode.copy(description = description)
+                is RectangleNode ->
+                    targetNode.copy(
+                        path =
+                            targetNode.path.copy(
+                                centerX = dx,
+                                centerY = dy,
+                            ),
+                        description = description,
+                        children = if (children.isEmpty()) targetNode.children else children,
+                    )
             }
         _nodes[targetId] = newTargetNode
     }

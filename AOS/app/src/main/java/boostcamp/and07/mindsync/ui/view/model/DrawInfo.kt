@@ -39,4 +39,10 @@ class DrawInfo(context: Context) {
             strokeWidth = Dp(5f).toPx(context)
             isAntiAlias = true
         }
+    val boundaryPaint =
+        Paint().apply {
+            style = Paint.Style.FILL
+            color = Color.BLACK
+            alpha = 50
+        }
 }

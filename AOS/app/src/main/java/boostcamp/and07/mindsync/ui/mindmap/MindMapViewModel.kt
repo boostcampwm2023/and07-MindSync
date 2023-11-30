@@ -81,6 +81,18 @@ class MindMapViewModel : ViewModel() {
         requestUpdateMindMap(operation = removeOperation)
     }
 
+    fun moveNode(
+        tree: Tree,
+        target: Node,
+        parent: Node,
+    ) {
+        this.crdtTree.tree = tree
+        val moveOperation = crdtTree.generateOperationMove(target.id, parent.id)
+        crdtTree.applyOperation(moveOperation)
+        _operation.value = moveOperation
+        requestUpdateMindMap(operation = moveOperation)
+    }
+
     fun setSelectedNode(selectNode: Node?) {
         _selectedNode.value = selectNode
     }

@@ -21,6 +21,7 @@ import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
+import boostcamp.and07.mindsync.ui.view.listener.NodeMoveListener
 import boostcamp.and07.mindsync.ui.view.listener.TreeUpdateListener
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,7 +29,8 @@ import kotlinx.coroutines.launch
 class MindMapFragment :
     BaseFragment<FragmentMindMapBinding>(R.layout.fragment_mind_map),
     NodeClickListener,
-    TreeUpdateListener {
+    TreeUpdateListener,
+    NodeMoveListener {
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private lateinit var mindMapContainer: MindMapContainer
     private val boardId = "testBoard"
@@ -101,6 +103,7 @@ class MindMapFragment :
         mindMapContainer = MindMapContainer(requireContext())
         mindMapContainer.setNodeClickListener(this)
         mindMapContainer.setTreeUpdateListener(this)
+        mindMapContainer.setNodeMoveListener(this)
         binding.zoomLayoutMindMapRoot.mindMapContainer = mindMapContainer
         binding.zoomLayoutMindMapRoot.initializeZoomLayout()
     }
@@ -151,5 +154,13 @@ class MindMapFragment :
 
     override fun updateTree(tree: Tree) {
         mindMapViewModel.update(tree)
+    }
+
+    override fun moveNode(
+        tree: Tree,
+        target: Node,
+        parent: Node,
+    ) {
+        mindMapViewModel.moveNode(tree, target, parent)
     }
 }
