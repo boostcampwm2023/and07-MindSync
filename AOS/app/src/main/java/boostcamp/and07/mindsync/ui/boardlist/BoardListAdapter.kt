@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -28,7 +27,7 @@ class BoardListAdapter : ListAdapter<Board, BoardListAdapter.BoardListViewHolder
                 imgbtnBoardItem.setOnClickListener {
                     boardClickListener?.onClick(item)
                 }
-                cbBoard.setOnClickListener{
+                cbBoard.setOnClickListener {
                     item.isChecked = !item.isChecked
                     boardClickListener?.onCheckBoxClick(item)
                 }
