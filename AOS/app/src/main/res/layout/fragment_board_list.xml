@@ -12,16 +12,27 @@
         android:layout_height="match_parent"
         tools:context=".ui.boardlist.BoardListFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_board_list_board"
-            android:layout_width="0dp"
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_board_list_add_board"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_board" />
+
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_board_list_add_board"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:src="@drawable/ic_add_board"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_board_list_board"
+            app:rippleColor="@color/mindmap2" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
