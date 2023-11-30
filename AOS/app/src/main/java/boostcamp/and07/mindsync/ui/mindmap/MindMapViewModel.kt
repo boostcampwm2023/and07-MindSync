@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.IdGenerator
