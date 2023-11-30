@@ -140,11 +140,28 @@ class NodeView(
             val centerX = Dp(Px(dx).toDp(context))
             val centerY = Dp(Px(dy).toDp(context))
             tree.updateNode(target.id, target.description, target.children, centerX, centerY)
-            return
+
+            target.children.forEach { nodeId ->
+                val childNode = tree.getNode(nodeId)
+                traverseChildNode(target, childNode, target.path.centerX + 50f)
+            }
         }
 
         node.children.forEach { nodeId ->
             traverseMovedNode(tree.getNode(nodeId), target, dx, dy)
+        }
+    }
+
+    private fun traverseChildNode(target: Node, node: Node, childNodeSpacing: Dp) {
+        tree.updateNode(
+            node.id,
+            node.description,
+            node.children,
+            childNodeSpacing,
+            target.path.centerY,
+        )
+        node.children.forEach { nodeId ->
+            traverseChildNode(node, tree.getNode(nodeId), childNodeSpacing + 7f)
         }
     }
 
@@ -232,8 +249,12 @@ class NodeView(
     ): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
+                        context,
+                    ) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
+                        context,
+                    )
                 ) {
                     return true
                 }
