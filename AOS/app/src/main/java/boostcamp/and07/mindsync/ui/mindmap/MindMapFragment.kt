@@ -162,6 +162,5 @@ class MindMapFragment :
         parent: Node,
     ) {
         mindMapViewModel.moveNode(tree, target, parent)
-        mindMapViewModel.update(tree)
     }
 }

@@ -140,7 +140,6 @@ class NodeView(
             val centerX = Dp(Px(dx).toDp(context))
             val centerY = Dp(Px(dy).toDp(context))
             tree.updateNode(target.id, target.description, target.children, centerX, centerY)
-            mindMapContainer.tree = tree
             return
         }
 
