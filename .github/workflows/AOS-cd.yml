@@ -43,6 +43,6 @@ jobs:
       with:
         appId: ${{ secrets.FIREBASE_APP_ID }}
         serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
-        groups: android07
+        groups: test
         releaseNotesFile: AOS/release_note.txt
         file: AOS/app/build/outputs/apk/release/app-release.apk
