@@ -187,11 +187,11 @@ class NodeView(
             if (attachedNode is RectangleNode) {
                 val height = attachedNode.path.height
                 val width = attachedNode.path.width
-                val radius = if (height.dpVal >= width.dpVal) height else width
+                val radius = maxOf(height.toPx(context), width.toPx(context))
                 canvas.drawCircle(
                     attachedNode.path.centerX.toPx(context),
                     attachedNode.path.centerY.toPx(context),
-                    radius.toPx(context),
+                    radius,
                     drawInfo.boundaryPaint,
                 )
             }
