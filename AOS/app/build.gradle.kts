@@ -82,6 +82,8 @@ dependencies {
     implementation("io.coil-kt:coil:2.5.0")
     // kotlin serialization-json
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    // LayoutManager flexBox
+    implementation ("com.google.android.flexbox:flexbox:3.0.0")
 }
 
 val ktlintCheck by tasks.registering(JavaExec::class) {
