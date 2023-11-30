@@ -7,4 +7,6 @@
     <string name="side_bar_leave_space">스페이스 나가기</string>
     <string name="side_bar_fold_description">사이드바 접기</string>
     <string name="main_back_pressed_message">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="board_list_board_name">보드 이름</string>
+    <string name="board_list_board_create_date">yyyy-mm-dd</string>
 </resources>
