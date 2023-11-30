@@ -5,6 +5,11 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.boardlist.BoardListViewModel" />
+
+        <import type="com.google.android.flexbox.FlexDirection"></import>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,8 +23,15 @@
             app:layout_constraintBottom_toTopOf="@id/btn_board_list_add_board"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_board" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_board_list_board"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:boards="@{vm.boards}"
+                app:flexBoxLayoutManager="@{FlexDirection.ROW}"
+                tools:listitem="@layout/item_board" />
 
         </androidx.core.widget.NestedScrollView>
 
@@ -28,6 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:onClick="@{() -> vm.addBoard()}"
             android:src="@drawable/ic_add_board"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

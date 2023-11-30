@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="board"
+            type="boostcamp.and07.mindsync.data.model.Board" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="5dp"
+        >
 
         <ImageButton
             android:id="@+id/imgbtn_board_item"
             android:layout_width="120dp"
             android:layout_height="100dp"
             android:background="@drawable/bg_round_dialog"
-            android:src="@mipmap/ic_app_logo"
+            app:imageUri="@{board.imageUrl}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@mipmap/ic_app_logo_round"
+            android:scaleType="center"
+            />
 
         <TextView
             android:id="@+id/tv_board_title"
@@ -27,11 +35,12 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/board_list_board_name"
             android:fontFamily="@font/pretendard_bold"
-            android:text="@string/board_list_board_name"
+            android:text="@{board.name}"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="@id/imgbtn_board_item"
             app:layout_constraintStart_toStartOf="@id/imgbtn_board_item"
-            app:layout_constraintTop_toBottomOf="@id/imgbtn_board_item" />
+            app:layout_constraintTop_toBottomOf="@id/imgbtn_board_item"
+            tools:text="@string/board_list_board_name" />
 
         <TextView
             android:id="@+id/tv_board_date"
@@ -39,9 +48,10 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/board_list_board_create_date"
             android:fontFamily="@font/pretendard_bold"
-            android:text="2023-11-31"
+            app:date="@{board.date}"
             app:layout_constraintEnd_toEndOf="@id/imgbtn_board_item"
             app:layout_constraintStart_toStartOf="@id/imgbtn_board_item"
-            app:layout_constraintTop_toBottomOf="@id/tv_board_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_board_title"
+            tools:text="@string/board_list_board_create_date" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
