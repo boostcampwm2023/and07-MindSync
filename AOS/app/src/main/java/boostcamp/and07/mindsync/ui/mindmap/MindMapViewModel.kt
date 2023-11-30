@@ -87,7 +87,6 @@ class MindMapViewModel : ViewModel() {
         parent: Node,
     ) {
         this.crdtTree.tree = tree
-        _selectedNode.value = null
         val moveOperation = crdtTree.generateOperationMove(target.id, parent.id)
         crdtTree.applyOperation(moveOperation)
         _operation.value = moveOperation
