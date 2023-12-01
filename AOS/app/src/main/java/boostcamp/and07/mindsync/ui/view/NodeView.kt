@@ -143,7 +143,11 @@ class NodeView(
 
             target.children.forEach { nodeId ->
                 val childNode = tree.getNode(nodeId)
-                traverseChildNode(target, childNode, target.path.centerX + 50f)
+                traverseChildNode(
+                    target,
+                    childNode,
+                    target.path.centerX + DEFAULT_SPACING_VALUE,
+                )
             }
         }
 
@@ -165,7 +169,11 @@ class NodeView(
             target.path.centerY,
         )
         node.children.forEach { nodeId ->
-            traverseChildNode(node, tree.getNode(nodeId), childNodeSpacing + 7f)
+            traverseChildNode(
+                node,
+                tree.getNode(nodeId),
+                childNodeSpacing + CHILD_NODE_SPACING_VALUE,
+            )
         }
     }
 
@@ -253,8 +261,12 @@ class NodeView(
     ): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
+                        context,
+                    ) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
+                        context,
+                    )
                 ) {
                     return true
                 }
@@ -371,5 +383,10 @@ class NodeView(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val DEFAULT_SPACING_VALUE = 50f
+        private const val CHILD_NODE_SPACING_VALUE = 7f
     }
 }
