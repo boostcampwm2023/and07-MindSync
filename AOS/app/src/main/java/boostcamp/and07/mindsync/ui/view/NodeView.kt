@@ -11,6 +11,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.RectanglePath
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
@@ -146,7 +147,7 @@ class NodeView(
                 traverseChildNode(
                     target,
                     childNode,
-                    target.path.centerX + DEFAULT_SPACING_VALUE,
+                    target.path.centerX + (target.path as RectanglePath).width / 2 + DEFAULT_SPACING_VALUE,
                 )
             }
         }
@@ -169,11 +170,7 @@ class NodeView(
             target.path.centerY,
         )
         node.children.forEach { nodeId ->
-            traverseChildNode(
-                node,
-                tree.getNode(nodeId),
-                childNodeSpacing + CHILD_NODE_SPACING_VALUE,
-            )
+            traverseChildNode(node, tree.getNode(nodeId), childNodeSpacing + CHILD_NODE_SPACING_VALUE)
         }
     }
 
