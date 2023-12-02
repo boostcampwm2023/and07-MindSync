@@ -7,4 +7,13 @@
     <string name="side_bar_leave_space">스페이스 나가기</string>
     <string name="side_bar_fold_description">사이드바 접기</string>
     <string name="main_back_pressed_message">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="add_space_dialog_title">스페이스 추가하기</string>
+    <string name="add_space_dialog_join">기존 스페이스 참여하기</string>
+    <string name="add_space_dialog_generate">새 스페이스 만들기</string>
+    <string name="generate_space_title">생성할 스페이스의 정보를\n정보를 입력해주세요!</string>
+    <string name="generate_space_menu_message">새 스페이스 만들기</string>
+    <string name="choose_image_dialog_title">스페이스 사진 선택</string>
+    <string name="choose_image_dialog_gallery">갤러리</string>
+    <string name="choose_image_dialog_drawing">드로잉</string>
+    <string name="add_space_check_message">확인</string>
 </resources>
