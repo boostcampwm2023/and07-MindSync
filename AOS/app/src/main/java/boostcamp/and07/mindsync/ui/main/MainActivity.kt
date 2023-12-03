@@ -38,10 +38,16 @@ class MainActivity :
     private fun setSideBarNavigation() {
         with(binding.includeMainInDrawer) {
             tvSideBarBoardList.setOnClickListener {
+                drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_boardListFragment)
             }
             tvSideBarRecycleBin.setOnClickListener {
+                drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_recycleBinFragment)
+            }
+            imgbtnSideBarAddSpace.setOnClickListener{
+                drawerLayout.closeDrawers()
+                navController.navigate(R.id.action_to_addSpaceDialog)
             }
         }
     }
