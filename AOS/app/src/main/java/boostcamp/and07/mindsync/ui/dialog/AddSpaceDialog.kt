@@ -38,6 +38,7 @@ class AddSpaceDialog : DialogFragment() {
                 dismiss()
             }
             btnAddSpaceJoin.setOnClickListener {
+                findNavController().navigate(R.id.action_to_addInviteSpaceFragment)
                 dismiss()
             }
         }
