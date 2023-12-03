@@ -20,6 +20,10 @@
         android:id="@+id/addSpaceFragment"
         android:name="boostcamp.and07.mindsync.ui.space.AddSpaceFragment"
         android:label="AddSpaceFragment"/>
+    <fragment
+        android:id="@+id/addInviteSpaceFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.AddInviteSpaceFragment"
+        android:label="AddInviteSpaceFragment"/>
     <dialog
         android:id="@+id/addSpaceDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.AddSpaceDialog"
@@ -50,4 +54,7 @@
     <action
         android:id="@+id/action_to_chooseSpaceImageDialog"
         app:destination="@id/chooseSpaceImageDialog"/>
+    <action
+        android:id="@+id/action_to_addInviteSpaceFragment"
+        app:destination="@+id/addInviteSpaceFragment"/>
 </navigation>
