@@ -8,7 +8,7 @@ class AddSpaceViewModel : ViewModel() {
     private val _spaceName = MutableStateFlow<String>("")
     val spaceName: StateFlow<String> = _spaceName
 
-    fun onSpaceNameChanged(spaceName: String) {
-        _spaceName.value = spaceName
+    fun onSpaceNameChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+        _spaceName.value = s.toString()
     }
 }
