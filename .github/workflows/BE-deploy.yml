@@ -21,7 +21,7 @@ jobs:
         docker build -t ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync ./nestjs-BE/server
         docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
       env:
-        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        SERVER_PORT: ${{ secrets.CONTAINER_PORT }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
 
