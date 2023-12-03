@@ -45,7 +45,7 @@ class MainActivity :
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_recycleBinFragment)
             }
-            imgbtnSideBarAddSpace.setOnClickListener{
+            imgbtnSideBarAddSpace.setOnClickListener {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
