@@ -7,6 +7,9 @@
         <variable
             name="vm"
             type="boostcamp.and07.mindsync.ui.space.AddSpaceViewModel" />
+        <variable
+            name="view"
+            type="boostcamp.and07.mindsync.ui.space.AddSpaceFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,6 +61,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_title"
             android:layout_marginTop="65dp"
+            android:onClick="@{() -> view.clickImageButton()}"
             android:src="@mipmap/ic_app_logo_round"
             />
 
