@@ -1,4 +1,4 @@
-import customEnv from 'config/env';
+import customEnv from 'src/config/env';
 
 export const jwtConstants = {
   secret: customEnv.JWT_SECRET,

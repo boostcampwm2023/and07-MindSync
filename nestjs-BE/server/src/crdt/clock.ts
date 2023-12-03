@@ -26,8 +26,9 @@ export class Clock {
 
   compare(remoteClock: Clock): COMPARE {
     if (this.counter > remoteClock.counter) return COMPARE.GREATER;
-    if (this.counter === remoteClock.counter && this.id > remoteClock.id)
+    if (this.counter === remoteClock.counter && this.id > remoteClock.id) {
       return COMPARE.GREATER;
+    }
     return COMPARE.LESS;
   }
 }

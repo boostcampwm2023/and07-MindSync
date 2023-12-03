@@ -5,14 +5,12 @@ import {
   UseGuards,
   Get,
   Body,
-  Query,
   NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { Public } from './public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
-import { stringify } from 'qs';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
@@ -29,10 +27,10 @@ export class AuthController {
       kakaoUserDto.kakaoUserId,
     );
     if (!kakaoUserAccount) throw new NotFoundException();
-    let user = await this.usersService.findOne(kakaoUserAccount.email);
+    let user = await this.usersService.findOneByEmail(kakaoUserAccount.email);
     if (!user) {
       this.usersService.createOne(kakaoUserAccount.email);
-      user = await this.usersService.findOne(kakaoUserAccount.email);
+      user = await this.usersService.findOneByEmail(kakaoUserAccount.email);
     }
     return this.authService.login(user);
   }
