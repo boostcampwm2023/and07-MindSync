@@ -23,7 +23,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     'max-depth': ['error', 3],
     'no-magic-numbers': ['error', { ignore: [-1, 0, 1] }],
-    'curly': ['error', 'multi', 'consistent'],
+    'curly': ['error', 'multi-line', 'consistent'],
     'max-params': ['error', 3],
   },
 };
