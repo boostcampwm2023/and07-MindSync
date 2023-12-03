@@ -1,14 +1,21 @@
 package boostcamp.and07.mindsync.ui.space
 
-import android.util.Log
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.FragmentAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 
 class AddSpaceFragment : BaseFragment<FragmentAddSpaceBinding>(R.layout.fragment_add_space) {
     private val addSpaceViewModel: AddSpaceViewModel by viewModels()
+    private val pickMedia =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { url ->
+            url?.let {
+                addSpaceViewModel.setSpaceThumbnail(url.toString())
+            }
+        }
+
     override fun initView() {
         setBinding()
     }
@@ -19,6 +26,6 @@ class AddSpaceFragment : BaseFragment<FragmentAddSpaceBinding>(R.layout.fragment
     }
 
     fun clickImageButton() {
-        findNavController().navigate(R.id.action_to_chooseSpaceImageDialog)
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 }

@@ -62,7 +62,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_title"
             android:layout_marginTop="65dp"
             android:onClick="@{() -> view.clickImageButton()}"
-            android:src="@mipmap/ic_app_logo_round"
+            app:imageUri="@{vm.spaceThumbnail}"
             />
 
         <com.google.android.material.textfield.TextInputLayout
