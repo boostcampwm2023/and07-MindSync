@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.space.AddSpaceViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +64,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfl_add_space_edit_space"
             android:layout_width="264dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_add_space_thumbnail"
@@ -74,6 +76,8 @@
                 android:layout_height="wrap_content"
                 android:hint="스페이스 이름"
                 android:background="@color/white"
+                android:onTextChanged="@{vm.onSpaceNameChanged}"
+                android:text="@{vm.spaceName}"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
