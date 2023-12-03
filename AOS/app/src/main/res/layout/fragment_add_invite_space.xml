@@ -5,6 +5,13 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceViewModel" />
+
+        <variable
+            name="view"
+            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,7 +70,9 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:fontFamily="@font/pretendard_medium"
-                android:hint="초대 코드" />
+                android:hint="초대 코드"
+                android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
+                android:text="@{vm.spaceInviteCode}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -73,11 +82,13 @@
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
             android:fontFamily="@font/pretendard_medium"
+            android:onClick="@{() -> view.compareInviteCode()}"
             android:text="@string/add_space_check_message"
             android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tfl_add_invite_space_invite_code" />
+
 
         <TextView
             android:id="@+id/tv_add_invite_space_info"
@@ -88,7 +99,8 @@
             android:lineSpacingExtra="5dp"
             android:text="@string/invite_space_info"
             app:layout_constraintStart_toStartOf="@id/btn_add_invite_space_ok"
-            app:layout_constraintTop_toBottomOf="@id/btn_add_invite_space_ok" />
+            app:layout_constraintTop_toBottomOf="@id/btn_add_invite_space_ok"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
