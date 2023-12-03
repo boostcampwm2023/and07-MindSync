@@ -15,7 +15,7 @@ jobs:
       run: echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
     - name: Build and push Docker image
       run: |
-        echo "SERVER_PORT=$SERVER" >> ./nestjs-BE/server/.env
+        echo "SERVER_PORT=$SERVER_PORT" >> ./nestjs-BE/server/.env
         echo "JWT_SECRET=$JWT_SECRET" >> ./nestjs-BE/server/.env
         echo "KAKAO_ADMIN_KEY=$KAKAO_ADMIN_KEY" >> ./nestjs-BE/server/.env
         docker build -t ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync ./nestjs-BE/server
