@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="@color/main3"
+        tools:context=".ui.space.AddSpaceFragment">
+
+        <ImageButton
+            android:id="@+id/imgbtn_add_space_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_add_space_menu_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:fontFamily="@font/pretendard_semi_bold"
+            android:text="@string/generate_space_menu_message"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@id/imgbtn_add_space_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_add_space_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:text="@string/generate_space_title"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:fontFamily="@font/pretendard_semi_bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_add_space_menu_message"
+            />
+
+        <ImageView
+            android:id="@+id/iv_add_space_thumbnail"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_add_space_title"
+            android:layout_marginTop="65dp"
+            android:src="@mipmap/ic_app_logo_round"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfl_add_space_edit_space"
+            android:layout_width="264dp"
+            android:layout_height="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_add_space_thumbnail"
+            android:layout_marginTop="20dp"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tfl_add_space_edit_space_input_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="스페이스 이름"
+                android:background="@color/white"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="264dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/tfl_add_space_edit_space"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/main4"
+            android:text="@string/add_space_check_message"
+            android:fontFamily="@font/pretendard_medium"
+            android:textSize="16dp"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
