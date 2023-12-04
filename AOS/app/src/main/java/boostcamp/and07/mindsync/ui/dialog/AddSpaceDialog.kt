@@ -34,11 +34,11 @@ class AddSpaceDialog : DialogFragment() {
         _binding = DialogAddSpaceBinding.inflate(inflater, container, false)
         binding.run {
             btnAddSpaceGenerate.setOnClickListener {
-                findNavController().navigate(R.id.action_to_addSpaceFragment)
+                findNavController().navigate(R.id.action_to_addSpaceActivity)
                 dismiss()
             }
             btnAddSpaceJoin.setOnClickListener {
-                findNavController().navigate(R.id.action_to_addInviteSpaceFragment)
+                findNavController().navigate(R.id.action_to_addInviteSpaceActivity)
                 dismiss()
             }
         }

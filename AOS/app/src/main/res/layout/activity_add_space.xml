@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceViewModel" />
+            type="boostcamp.and07.mindsync.ui.space.AddSpaceViewModel" />
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceFragment" />
+            type="boostcamp.and07.mindsync.ui.space.AddSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,10 +19,10 @@
         android:layout_height="match_parent"
         android:background="@color/main3"
         android:padding="10dp"
-        tools:context=".ui.space.AddSpaceFragment">
+        tools:context=".ui.space.AddSpaceActivity">
 
         <ImageButton
-            android:id="@+id/imgbtn_add_invite_space_back"
+            android:id="@+id/imgbtn_add_space_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -36,69 +36,63 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
-            android:text="@string/invite_space_menu_message"
-            app:layout_constraintStart_toEndOf="@id/imgbtn_add_invite_space_back"
+            android:text="@string/generate_space_menu_message"
+            app:layout_constraintStart_toEndOf="@id/imgbtn_add_space_back"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_add_invite_space_title"
+            android:id="@+id/tv_add_space_title"
+            style="@style/Typography.Body01.Regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="130dp"
-            android:lineSpacingExtra="5dp"
-            android:text="@string/invite_space_title"
+            android:layout_marginTop="70dp"
+            android:text="@string/generate_space_title"
             android:textAlignment="center"
-            style="@style/Typography.Body01.Regular"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_menu_message" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfl_add_invite_space_invite_code"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+        <ImageView
+            android:id="@+id/iv_add_space_thumbnail"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_marginTop="65dp"
+            android:onClick="@{() -> view.clickImageButton()}"
+            app:imageUri="@{vm.spaceThumbnail}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_add_invite_space_title">
+            app:layout_constraintTop_toBottomOf="@id/tv_add_space_title" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfl_add_space_edit_space"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_add_space_thumbnail">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tfl_add_invite_space_edit_invite_code"
+                android:id="@+id/tfl_add_space_edit_space_input_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                style="@style/Typography.Body01.Medium"
-                android:hint="초대 코드"
-                android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
-                android:text="@{vm.spaceInviteCode}" />
+                android:hint="스페이스 이름"
+                android:onTextChanged="@{vm.onSpaceNameChanged}"
+                android:text="@{vm.spaceName}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_add_invite_space_ok"
+            style="@style/Typography.Bottom02"
             android:layout_width="264dp"
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
-            android:onClick="@{() -> view.compareInviteCode()}"
             android:text="@string/check_message"
-            style="@style/Typography.Bottom02"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tfl_add_invite_space_invite_code" />
-
-
-        <TextView
-            android:id="@+id/tv_add_invite_space_info"
-            style="@style/Typography.Body01.Medium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:lineSpacingExtra="5dp"
-            android:text="@string/invite_space_info"
-            android:textColor="@color/gray5"
-            app:layout_constraintStart_toStartOf="@id/btn_add_invite_space_ok"
-            app:layout_constraintTop_toBottomOf="@id/btn_add_invite_space_ok" />
+            app:layout_constraintTop_toBottomOf="@id/tfl_add_space_edit_space" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
