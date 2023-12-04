@@ -9,3 +9,7 @@ enum class ExceptionMessage(val message: String) {
     ERROR_MESSAGE_ROOT_CANT_REMOVE("Root can't remove"),
     ERROR_MESSAGE_NOT_DEFINED_OPERATION("Operation is not defined"),
 }
+
+enum class NetworkExceptionMessage(val message: String) {
+    ERROR_MESSAGE_KAKAO_FAIL("Kakao Login result is null"),
+}
