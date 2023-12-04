@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,6 +29,7 @@ fun RecyclerView.bindLayoutManager(direction: Int) {
     this.layoutManager =
         FlexboxLayoutManager(context).apply {
             flexDirection = direction
+            justifyContent = JustifyContent.CENTER
         }
 }
 
