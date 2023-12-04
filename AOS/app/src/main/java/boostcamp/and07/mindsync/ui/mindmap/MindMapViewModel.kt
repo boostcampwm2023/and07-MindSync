@@ -14,10 +14,10 @@ import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.data.network.MindMapSocketManager
+import boostcamp.and07.mindsync.data.network.SocketEvent
+import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
-import boostcamp.and07.mindsync.network.MindMapSocketManager
-import boostcamp.and07.mindsync.network.SocketEvent
-import boostcamp.and07.mindsync.network.SocketState
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
