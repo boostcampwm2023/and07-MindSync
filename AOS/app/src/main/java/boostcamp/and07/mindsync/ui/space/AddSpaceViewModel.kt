@@ -1,10 +1,13 @@
 package boostcamp.and07.mindsync.ui.space
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class AddSpaceViewModel : ViewModel() {
+@HiltViewModel
+class AddSpaceViewModel @Inject constructor() : ViewModel() {
     private val _spaceName = MutableStateFlow<String>("")
     val spaceName: StateFlow<String> = _spaceName
     private val _spaceThumbnail = MutableStateFlow<String>("")
