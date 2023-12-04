@@ -18,7 +18,7 @@ export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
   @Public()
-  @Post()
+  @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async createBoard(@Body() createBoardDto: CreateBoardDto) {
     const document = await this.boardsService.create(createBoardDto);
@@ -27,7 +27,7 @@ export class BoardsController {
   }
 
   @Public()
-  @Get()
+  @Get('list')
   async findBySpaceId(@Query('spaceId') spaceId: string) {
     const boardList = await this.boardsService.findBySpaceId(spaceId);
     const responseData = boardList.map((board) => {
