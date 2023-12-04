@@ -11,6 +11,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.model.RectanglePath
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
@@ -140,11 +141,36 @@ class NodeView(
             val centerX = Dp(Px(dx).toDp(context))
             val centerY = Dp(Px(dy).toDp(context))
             tree.updateNode(target.id, target.description, target.children, centerX, centerY)
-            return
+
+            target.children.forEach { nodeId ->
+                val childNode = tree.getNode(nodeId)
+                traverseChildNode(
+                    target,
+                    childNode,
+                    target.path.centerX + (target.path as RectanglePath).width / 2 + DEFAULT_SPACING_VALUE,
+                )
+            }
         }
 
         node.children.forEach { nodeId ->
             traverseMovedNode(tree.getNode(nodeId), target, dx, dy)
+        }
+    }
+
+    private fun traverseChildNode(
+        target: Node,
+        node: Node,
+        childNodeSpacing: Dp,
+    ) {
+        tree.updateNode(
+            node.id,
+            node.description,
+            node.children,
+            childNodeSpacing,
+            target.path.centerY,
+        )
+        node.children.forEach { nodeId ->
+            traverseChildNode(node, tree.getNode(nodeId), childNodeSpacing + CHILD_NODE_SPACING_VALUE)
         }
     }
 
@@ -350,5 +376,10 @@ class NodeView(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val DEFAULT_SPACING_VALUE = 50f
+        private const val CHILD_NODE_SPACING_VALUE = 7f
     }
 }
