@@ -3,7 +3,10 @@ package boostcamp.and07.mindsync.ui.login
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityLoginBinding
@@ -20,8 +23,12 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login) {
+    private val loginViewModel: LoginViewModel by viewModels()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -29,7 +36,25 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
             handleGoogleSignInResult(task)
         }
 
-    override fun init() {}
+    override fun init() {
+        setObserve()
+    }
+
+    private fun setObserve() {
+        lifecycleScope.launch {
+            loginViewModel.loginEvent.collect { event ->
+                when (event) {
+                    is LoginEvent.LoginError -> {
+                        Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    LoginEvent.LoginSuccess -> {
+                        startMainActivity()
+                    }
+                }
+            }
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -94,17 +119,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
             if (error != null) {
                 Log.e("LoginActivity", "사용자 정보 요청 실패", error)
             } else if (user != null) {
-                Log.i(
-                    "LoginActivity",
-                    "사용자 정보 요청 성공" +
-                        "\n회원번호: ${user.id}" +
-                        "\n이메일: ${user.kakaoAccount?.email}" +
-                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}",
-                )
+                user.id?.let { userId ->
+                    loginViewModel.getTokenWithKakao(userId.toString())
+                }
             }
         }
-        startMainActivity()
     }
 
     fun googleSignInOnClick(view: View) {
@@ -114,7 +133,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
     private fun successGoogleLogin() {
         Log.d("LoginActivity", "successGoogleLogin: success!")
-        startMainActivity()
+        // TODO : server token 요청하기
     }
 
     private fun startMainActivity() {
@@ -131,7 +150,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
             val token = account.idToken
 
             Log.d("LoginActivity", "login success : $name $token")
-            startMainActivity()
+            // TODO : server token 요청하기
         } catch (e: ApiException) {
             Log.e(
                 "LoginActivity",
