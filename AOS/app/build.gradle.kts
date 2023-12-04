@@ -84,6 +84,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     // google login
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    // kakao login
+    implementation("com.kakao.sdk:v2-user:2.18.0") // 카카오 로그인
     // LayoutManager flexBox
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
