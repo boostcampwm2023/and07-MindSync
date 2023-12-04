@@ -11,12 +11,12 @@ class AddSpaceViewModel : ViewModel() {
     val spaceThumbnail: StateFlow<String> = _spaceThumbnail
 
     fun onSpaceNameChanged(
-        s: CharSequence,
+        inputSpaceName: CharSequence,
         start: Int,
         before: Int,
         count: Int,
     ) {
-        _spaceName.value = s.toString()
+        _spaceName.value = inputSpaceName.toString()
     }
 
     fun setSpaceThumbnail(thumbnailUrl: String) {
