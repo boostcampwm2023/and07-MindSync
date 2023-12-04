@@ -16,7 +16,7 @@ class LoginRepositoryImpl
                     response.body()?.let { loginResponse ->
                         Result.success(loginResponse.accessToken)
                     }
-                        ?: Result.failure(Throwable(NetworkExceptionMessage.ERROR_MESSAGE_KAKAO_FAIL.message))
+                        ?: Result.failure(Throwable(NetworkExceptionMessage.ERROR_MESSAGE_KAKAO_RESULT_NULL.message))
                 } else {
                     Result.failure(
                         Throwable(response.code().toString()),
