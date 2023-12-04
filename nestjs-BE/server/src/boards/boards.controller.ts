@@ -11,10 +11,20 @@ import {
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from 'src/auth/public.decorator';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
+import { BoardInSpace, CreateBoardSuccess } from './swagger/boards.type';
 
 const BOARD_EXPIRE_DAY = 7;
 
@@ -23,6 +33,16 @@ const BOARD_EXPIRE_DAY = 7;
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
+  @ApiOperation({
+    summary: '보드 생성',
+    description: '보드 이름, 스페이스 id, 이미지 url을 받아서 보드를 생성한다.',
+  })
+  @ApiBody({ type: CreateBoardDto })
+  @ApiCreatedResponse({
+    type: CreateBoardSuccess,
+    description: '보드 생성 완료',
+  })
+  @ApiConflictResponse({ description: '보드가 이미 존재함' })
   @Public()
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
@@ -32,6 +52,20 @@ export class BoardsController {
     return responseData;
   }
 
+  @ApiOperation({
+    summary: '보드 목록 불러오기',
+    description: '스페이스 id를 받아서 보드 목록을 불러온다.',
+  })
+  @ApiQuery({
+    name: 'spaceId',
+    required: true,
+    description: '보드 목록을 불러올 스페이스 id',
+  })
+  @ApiOkResponse({
+    type: BoardInSpace,
+    isArray: true,
+    description: '보드 목록 불러오기 완료',
+  })
   @Public()
   @Get('list')
   async findBySpaceId(@Query('spaceId') spaceId: string) {
@@ -61,6 +95,13 @@ export class BoardsController {
     return responseData;
   }
 
+  @ApiOperation({
+    summary: '보드 삭제',
+    description: '삭제할 보드 id를 받아서 보드를 삭제한다.',
+  })
+  @ApiBody({ type: DeleteBoardDto })
+  @ApiOkResponse({ description: '보드 삭제 완료' })
+  @ApiNotFoundResponse({ description: '보드가 존재하지 않음' })
   @Public()
   @Patch('delete')
   async deleteBoard(@Body() deleteBoardDto: DeleteBoardDto) {
@@ -71,6 +112,13 @@ export class BoardsController {
     return 'board deleted.';
   }
 
+  @ApiOperation({
+    summary: '보드 복구',
+    description: '복구할 보드 id를 받아서 보드를 복구한다.',
+  })
+  @ApiBody({ type: RestoreBoardDto })
+  @ApiOkResponse({ description: '보드 복구 완료' })
+  @ApiNotFoundResponse({ description: '보드가 존재하지 않음' })
   @Public()
   @Patch('restore')
   async restoreBoard(@Body() resotreBoardDto: RestoreBoardDto) {
