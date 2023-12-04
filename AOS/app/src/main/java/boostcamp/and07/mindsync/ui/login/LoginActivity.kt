@@ -3,10 +3,18 @@ package boostcamp.and07.mindsync.ui.login
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityLoginBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.main.MainActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
@@ -14,11 +22,19 @@ import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login) {
+    private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
+    private val googleAuthLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            handleGoogleSignInResult(task)
+        }
+
     override fun init() {}
 
     override fun onStart() {
         super.onStart()
         checkKakaoSignIn()
+        checkGoogleSignIn()
     }
 
     private fun checkKakaoSignIn() {
@@ -28,6 +44,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
                     successKakaoLoin()
                 }
             }
+        }
+    }
+
+    private fun checkGoogleSignIn() {
+        GoogleSignIn.getLastSignedInAccount(this).let { account ->
+            account?.let { successGoogleLogin() }
         }
     }
 
@@ -85,9 +107,46 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         startMainActivity()
     }
 
+    fun googleSignInOnClick(view: View) {
+        val signInIntent: Intent = googleSignInClient.signInIntent
+        googleAuthLauncher.launch(signInIntent)
+    }
+
+    private fun successGoogleLogin() {
+        Log.d("LoginActivity", "successGoogleLogin: success!")
+        startMainActivity()
+    }
+
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun handleGoogleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+
+            val name = account.displayName
+            val token = account.idToken
+
+            Log.d("LoginActivity", "login success : $name $token")
+            startMainActivity()
+        } catch (e: ApiException) {
+            Log.e(
+                "LoginActivity",
+                "google login error: ${e.message}\n${e.stackTrace}\n${e.cause}",
+            )
+        }
+    }
+
+    private fun getGoogleClient(): GoogleSignInClient {
+        val googleSignInOption =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .requestEmail()
+                .requestIdToken(BuildConfig.GOOGLE_SERVER_CLIENT_ID)
+                .build()
+        return GoogleSignIn.getClient(this, googleSignInOption)
     }
 }

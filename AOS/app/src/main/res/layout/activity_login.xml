@@ -58,6 +58,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
             android:background="@android:color/transparent"
+            android:onClick="googleSignInOnClick"
             android:scaleType="fitCenter"
             android:src="@drawable/btin_google_login_light"
             app:layout_constraintEnd_toEndOf="@id/imgbtn_login_kakao"
