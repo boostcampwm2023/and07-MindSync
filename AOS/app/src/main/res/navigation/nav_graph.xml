@@ -16,12 +16,45 @@
         android:id="@+id/recycleBinFragment"
         android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
         android:label="RecycleBinFragment" />
-
+    <fragment
+        android:id="@+id/addSpaceFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.AddSpaceFragment"
+        android:label="AddSpaceFragment"/>
+    <fragment
+        android:id="@+id/addInviteSpaceFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.AddInviteSpaceFragment"
+        android:label="AddInviteSpaceFragment"/>
+    <dialog
+        android:id="@+id/addSpaceDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.AddSpaceDialog"
+        android:label="AddSpaceDialog"/>
+    <dialog
+        android:id="@+id/editDescriptionDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog"
+        android:label="EditDescriptionDialog"/>
+    <dialog
+        android:id="@+id/chooseSpaceImageDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.ChooseSpaceImageDialog"
+        android:label="ChooseSpaceImageDialog"/>
     <action
         android:id="@+id/action_to_boardListFragment"
         app:destination="@id/boardListFragment" />
     <action
         android:id="@+id/action_to_recycleBinFragment"
         app:destination="@id/recycleBinFragment" />
-
+    <action
+        android:id="@+id/action_to_addSpaceFragment"
+        app:destination="@+id/addSpaceFragment"/>
+    <action
+        android:id="@+id/action_to_addSpaceDialog"
+        app:destination="@+id/addSpaceDialog"/>
+    <action
+        android:id="@+id/action_to_editDescriptionDialog"
+        app:destination="@id/action_to_editDescriptionDialog"/>
+    <action
+        android:id="@+id/action_to_chooseSpaceImageDialog"
+        app:destination="@id/chooseSpaceImageDialog"/>
+    <action
+        android:id="@+id/action_to_addInviteSpaceFragment"
+        app:destination="@+id/addInviteSpaceFragment"/>
 </navigation>
