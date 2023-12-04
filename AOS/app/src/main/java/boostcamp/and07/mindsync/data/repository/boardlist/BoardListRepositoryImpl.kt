@@ -1,3 +1,5 @@
 package boostcamp.and07.mindsync.data.repository.boardlist
 
-class BoardListRepositoryImpl()
+import javax.inject.Inject
+
+class BoardListRepositoryImpl @Inject constructor() : BoardListRepository

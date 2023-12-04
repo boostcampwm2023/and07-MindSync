@@ -1,3 +1,5 @@
 package boostcamp.and07.mindsync.data.repository.profile
 
-class ProfileRepositoryImpl()
+import javax.inject.Inject
+
+class ProfileRepositoryImpl @Inject constructor() : ProfileRepository

@@ -1,3 +1,5 @@
 package boostcamp.and07.mindsync.data.repository.mindmap
 
-class MindMapRepositoryImpl()
+import javax.inject.Inject
+
+class MindMapRepositoryImpl @Inject constructor() : MindMapRepository
