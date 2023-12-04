@@ -12,12 +12,14 @@ import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ProfileSpaceDto } from './dto/profile-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { Public } from 'src/auth/public.decorator';
 
 @Controller('profiles')
 @ApiTags('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
+  @Public()
   @Post()
   @ApiOperation({ summary: 'Create profile' })
   @ApiResponse({
@@ -32,6 +34,7 @@ export class ProfilesController {
     return this.profilesService.create(createProfileDto);
   }
 
+  @Public()
   @Get(':profile_uuid')
   @ApiOperation({ summary: 'Get profile by profile_uuid' })
   @ApiResponse({
@@ -46,6 +49,7 @@ export class ProfilesController {
     return this.profilesService.findOne(profileUuid);
   }
 
+  @Public()
   @Patch(':profile_uuid')
   @ApiOperation({ summary: 'Update profile by profile_uuid' })
   @ApiResponse({
@@ -63,6 +67,7 @@ export class ProfilesController {
     return this.profilesService.update(profileUuid, updateProfileDto);
   }
 
+  @Public()
   @Delete(':profile_uuid')
   @ApiOperation({ summary: 'Remove profile by profile_uuid' })
   @ApiResponse({
@@ -77,6 +82,7 @@ export class ProfilesController {
     return this.profilesService.remove(profileUuid);
   }
 
+  @Public()
   @Post('/spaces')
   @ApiOperation({ summary: 'Join space' })
   @ApiResponse({
@@ -91,6 +97,7 @@ export class ProfilesController {
     return this.profilesService.joinSpace(profileSpaceDto);
   }
 
+  @Public()
   @Delete(':profile_uuid/spaces/:space_uuid')
   @ApiOperation({ summary: 'Leave space' })
   @ApiResponse({
@@ -108,6 +115,7 @@ export class ProfilesController {
     return this.profilesService.leaveSpace(profileUuid, spaceUuid);
   }
 
+  @Public()
   @Get('users/:space_uuid')
   @ApiOperation({ summary: 'Find users in a space' })
   @ApiResponse({
