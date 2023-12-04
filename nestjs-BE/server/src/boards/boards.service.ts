@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Board } from './schemas/board.schema';
 import { Model } from 'mongoose';
@@ -11,6 +11,12 @@ export class BoardsService {
 
   async create(createBoardDto: CreateBoardDto): Promise<Board> {
     const { boardName, spaceId, imageUrl } = createBoardDto;
+
+    const existingBoard = await this.boardModel
+      .findOne({ boardName, spaceId })
+      .exec();
+    if (existingBoard) throw new ConflictException();
+
     const uuid = v4();
     const date = new Date();
     const createdBoard = new this.boardModel({
