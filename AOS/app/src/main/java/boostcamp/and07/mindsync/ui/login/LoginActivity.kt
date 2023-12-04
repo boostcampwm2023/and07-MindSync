@@ -44,11 +44,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         lifecycleScope.launch {
             loginViewModel.loginEvent.collect { event ->
                 when (event) {
-                    is LoginEvent.LoginError -> {
+                    is LoginEvent.Error -> {
                         Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT).show()
                     }
 
-                    LoginEvent.LoginSuccess -> {
+                    LoginEvent.Success -> {
                         startMainActivity()
                     }
                 }

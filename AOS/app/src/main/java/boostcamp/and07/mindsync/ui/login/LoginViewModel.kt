@@ -12,24 +12,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel
-    @Inject
-    constructor(
-        private val loginRepository: LoginRepository,
-    ) :
+@Inject
+constructor(
+    private val loginRepository: LoginRepository,
+) :
     ViewModel() {
-        private val _loginEvent = MutableSharedFlow<LoginEvent>()
-        val loginEvent = _loginEvent.asSharedFlow()
+    private val _loginEvent = MutableSharedFlow<LoginEvent>()
+    val loginEvent = _loginEvent.asSharedFlow()
 
-        fun getTokenWithKakao(kakaoUserId: String) {
-            viewModelScope.launch {
-                loginRepository.loginWithKakao(kakaoUserId)
-                    .onSuccess {
-                        _loginEvent.emit(LoginEvent.LoginSuccess)
-                    }.onFailure {
-                        _loginEvent.emit(
-                            LoginEvent.LoginError("${NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message}\n${it.message}}"),
-                        )
-                    }
-            }
+    fun getTokenWithKakao(kakaoUserId: String) {
+        viewModelScope.launch {
+            loginRepository.loginWithKakao(kakaoUserId)
+                .onSuccess {
+                    _loginEvent.emit(LoginEvent.Success)
+                }.onFailure {
+                    _loginEvent.emit(
+                        LoginEvent.Error("${NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message}\n${it.message}}"),
+                    )
+                }
         }
     }
+}
