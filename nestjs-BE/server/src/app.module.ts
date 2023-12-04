@@ -10,6 +10,8 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { SpacesModule } from './spaces/spaces.module';
 import { BoardsModule } from './boards/boards.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MongooseModule } from '@nestjs/mongoose';
+import customEnv from './config/env';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ProfilesModule,
     SpacesModule,
     BoardsModule,
+    MongooseModule.forRoot(customEnv.MONGODB_DATABASE_URI),
   ],
   controllers: [AppController],
   providers: [AppService, BoardGateway],
