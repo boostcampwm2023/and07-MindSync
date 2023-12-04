@@ -22,4 +22,8 @@ export class BoardsService {
     });
     return createdBoard.save();
   }
+
+  async findBySpaceId(spaceId: string): Promise<Board[]> {
+    return this.boardModel.find({ spaceId }).exec();
+  }
 }
