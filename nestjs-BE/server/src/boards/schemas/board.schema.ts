@@ -15,7 +15,13 @@ export class Board {
   spaceId: string;
 
   @Prop()
-  date: Date;
+  createdAt: Date;
+
+  @Prop()
+  restoredAt: Date;
+
+  @Prop()
+  deletedAt: Date;
 
   @Prop()
   imageUrl: string;

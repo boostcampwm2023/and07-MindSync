@@ -18,18 +18,33 @@ export class BoardsService {
     if (existingBoard) throw new ConflictException();
 
     const uuid = v4();
-    const date = new Date();
+    const now = new Date();
     const createdBoard = new this.boardModel({
       boardName,
       imageUrl,
       spaceId,
       uuid,
-      date,
+      createdAt: now,
+      restoredAt: now,
     });
     return createdBoard.save();
   }
 
   async findBySpaceId(spaceId: string): Promise<Board[]> {
     return this.boardModel.find({ spaceId }).exec();
+  }
+
+  async deleteBoard(boardId: string) {
+    const now = new Date();
+    return this.boardModel.updateOne({ uuid: boardId }, { deletedAt: now });
+  }
+
+  async deleteExpiredBoard(boardId: string) {
+    return this.boardModel.deleteOne({ uuid: boardId });
+  }
+
+  async restoreBoard(boardId: string) {
+    const now = new Date();
+    return this.boardModel.updateOne({ uuid: boardId }, { restoredAt: now });
   }
 }
