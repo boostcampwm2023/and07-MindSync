@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_space_dialog_title">스페이스 추가하기</string>
+    <string name="add_space_dialog_join">기존 스페이스 참여하기</string>
+    <string name="add_space_dialog_generate">새 스페이스 만들기</string>
+    <string name="generate_space_title">생성할 스페이스의 \n정보를 입력해주세요!</string>
+    <string name="generate_space_menu_message">새 스페이스 만들기</string>
+    <string name="choose_image_dialog_title">스페이스 사진 선택</string>
+    <string name="choose_image_dialog_gallery">갤러리</string>
+    <string name="choose_image_dialog_drawing">드로잉</string>
+    <string name="invite_space_menu_message">스페이스 초대 코드 입력하기</string>
+    <string name="invite_space_title">가입하려는 스페이스의\n초대코드를 입력해주세요!</string>
+    <string name="invite_space_info">초대코드는 해당 스페이스에\n참여한 멤버에게만 받을 수 있습니다.</string>
+</resources>
