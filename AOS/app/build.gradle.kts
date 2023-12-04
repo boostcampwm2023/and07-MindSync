@@ -69,8 +69,8 @@ dependencies {
     // material
     implementation("com.google.android.material:material:1.10.0")
     // hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
     // retrofit, socket.io
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("io.socket:socket.io-client:2.1.0")

@@ -1,3 +1,7 @@
 package boostcamp.and07.mindsync.data.repository.login
 
-class LoginRepositoryImpl()
+import javax.inject.Inject
+
+class LoginRepositoryImpl
+    @Inject
+    constructor() : LoginRepository

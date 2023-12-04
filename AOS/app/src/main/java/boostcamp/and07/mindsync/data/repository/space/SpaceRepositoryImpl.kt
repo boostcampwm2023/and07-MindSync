@@ -1,3 +1,7 @@
 package boostcamp.and07.mindsync.data.repository.space
 
-class SpaceRepositoryImpl()
+import javax.inject.Inject
+
+class SpaceRepositoryImpl
+    @Inject
+    constructor() : SpaceRepository
