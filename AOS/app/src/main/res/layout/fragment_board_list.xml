@@ -17,37 +17,45 @@
         android:layout_height="match_parent"
         tools:context=".ui.boardlist.BoardListFragment">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll_view_board_list"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_board_list_start"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_board_list_board"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/btn_board_list_add_board"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_gravity="center|top"
+            app:boards="@{vm.boards}"
+            app:flexBoxLayoutManager="@{FlexDirection.ROW}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/gl_board_list_end"
+            app:layout_constraintStart_toEndOf="@id/gl_board_list_start"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_board" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_board_list_board"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:boards="@{vm.boards}"
-                app:flexBoxLayoutManager="@{FlexDirection.ROW}"
-                tools:listitem="@layout/item_board" />
-
-        </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_board_list_add_board"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             app:floatingButtonImage="@{vm.selectBoards}"
-            app:onClickListener="@{() -> vm.onFloatingButtonClick()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/scroll_view_board_list"
+            app:onClickListener="@{() -> vm.onFloatingButtonClick()}"
             app:rippleColor="@color/mindmap2" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_board_list_end"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
