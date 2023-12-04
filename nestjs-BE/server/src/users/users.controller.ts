@@ -53,6 +53,7 @@ export class UsersController {
     return this.usersService.findOne(email);
   }
 
+  @Public()
   @Patch(':email')
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({
@@ -67,6 +68,7 @@ export class UsersController {
     return this.usersService.update(email, updateUserDto);
   }
 
+  @Public()
   @Delete(':email')
   @ApiOperation({ summary: 'Remove user' })
   @ApiResponse({
@@ -81,6 +83,7 @@ export class UsersController {
     return this.usersService.remove(email);
   }
 
+  @Public()
   @Get('profiles/:email')
   @ApiOperation({ summary: 'Find profiles for a user' })
   @ApiResponse({
@@ -95,6 +98,7 @@ export class UsersController {
     return this.usersService.findProfiles(email);
   }
 
+  @Public()
   @Get('rooms/:email')
   @ApiOperation({ summary: 'Find rooms for a user' })
   @ApiResponse({
