@@ -44,6 +44,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="90dp"
             android:background="@android:color/transparent"
+            android:onClick="kakaoSignInOnClick"
             android:scaleType="fitCenter"
             android:src="@drawable/kakao_login_large_wide"
             app:layout_constraintEnd_toEndOf="parent"
