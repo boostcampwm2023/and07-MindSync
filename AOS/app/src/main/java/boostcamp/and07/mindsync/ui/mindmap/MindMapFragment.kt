@@ -23,9 +23,11 @@ import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
 import boostcamp.and07.mindsync.ui.view.listener.NodeMoveListener
 import boostcamp.and07.mindsync.ui.view.listener.TreeUpdateListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MindMapFragment :
     BaseFragment<FragmentMindMapBinding>(R.layout.fragment_mind_map),
     NodeClickListener,
