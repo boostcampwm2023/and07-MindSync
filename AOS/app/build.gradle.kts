@@ -82,6 +82,8 @@ dependencies {
     implementation("io.coil-kt:coil:2.5.0")
     // kotlin serialization-json
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    // google login
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
     // LayoutManager flexBox
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
