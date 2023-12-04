@@ -87,8 +87,9 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     // coil
     implementation("io.coil-kt:coil:2.5.0")
-    // kotlin serialization-json
+    // kotlin serialization, retrofit json converter
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     // google login
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     // kakao login
