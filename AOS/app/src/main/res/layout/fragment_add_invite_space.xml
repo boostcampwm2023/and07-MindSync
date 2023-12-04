@@ -32,12 +32,11 @@
 
         <TextView
             android:id="@+id/tv_add_space_menu_message"
+            style="@style/Typography.Title03"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
-            android:fontFamily="@font/pretendard_semi_bold"
             android:text="@string/invite_space_menu_message"
-            android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@id/imgbtn_add_invite_space_back"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,11 +45,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="130dp"
-            android:fontFamily="@font/pretendard_semi_bold"
             android:lineSpacingExtra="5dp"
             android:text="@string/invite_space_title"
             android:textAlignment="center"
-            android:textSize="18sp"
+            style="@style/Typography.Body01.Regular"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_menu_message" />
@@ -69,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:fontFamily="@font/pretendard_medium"
+                style="@style/Typography.Body01.Medium"
                 android:hint="초대 코드"
                 android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
                 android:text="@{vm.spaceInviteCode}" />
@@ -81,10 +79,10 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
-            android:fontFamily="@font/pretendard_medium"
             android:onClick="@{() -> view.compareInviteCode()}"
-            android:text="@string/add_space_check_message"
-            android:textSize="16dp"
+            android:text="@string/check_message"
+            style="@style/Typography.Bottom02"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tfl_add_invite_space_invite_code" />
@@ -92,15 +90,15 @@
 
         <TextView
             android:id="@+id/tv_add_invite_space_info"
+            style="@style/Typography.Body01.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:fontFamily="@font/pretendard_medium"
             android:lineSpacingExtra="5dp"
             android:text="@string/invite_space_info"
+            android:textColor="@color/gray5"
             app:layout_constraintStart_toStartOf="@id/btn_add_invite_space_ok"
-            app:layout_constraintTop_toBottomOf="@id/btn_add_invite_space_ok"
-            />
+            app:layout_constraintTop_toBottomOf="@id/btn_add_invite_space_ok" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
