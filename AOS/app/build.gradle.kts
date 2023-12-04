@@ -16,6 +16,10 @@ android {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
     val url = properties["BASE_URL"] ?: ""
+    val googleServerClientId = properties["GOOGLE_SERVER_CLIENT_ID"] ?: ""
+    val kakaoClientId = properties["KAKAO_CLIENT_ID"] ?: ""
+    val removeQuotationKakaoClientId =
+        properties["KAKAO_CLIENT_ID"]?.let { id -> (id as String).replace("\"", "") } ?: ""
 
     defaultConfig {
         applicationId = "boostcamp.and07.mindsync"
@@ -26,6 +30,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "$url")
+        buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "$googleServerClientId")
+        buildConfigField("String", "KAKAO_CLIENT_ID", "$kakaoClientId")
+        manifestPlaceholders["KAKAO_CLIENT_ID"] = removeQuotationKakaoClientId
     }
     buildTypes {
         release {
