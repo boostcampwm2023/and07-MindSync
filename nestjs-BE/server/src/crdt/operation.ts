@@ -66,6 +66,21 @@ export class OperationAdd<T> extends Operation<T> {
     tree.attachNode(log.operation.id, this.parentId);
     return { operation: this };
   }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationAdd<T> {
+    const input: OperationInput<T> = {
+      id: serializedOperation.id,
+      parentId: serializedOperation.parentId,
+      description: serializedOperation.description,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationAdd<T>(input);
+  }
 }
 
 export class OperationDelete<T> extends Operation<T> {
@@ -87,6 +102,19 @@ export class OperationDelete<T> extends Operation<T> {
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
+  }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationDelete<T> {
+    const input: OperationInput<T> = {
+      id: serializedOperation.id,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationDelete<T>(input);
   }
 }
 
@@ -116,6 +144,20 @@ export class OperationMove<T> extends Operation<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
   }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationMove<T> {
+    const input: OperationInput<T> = {
+      id: serializedOperation.id,
+      parentId: serializedOperation.parentId,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationMove<T>(input);
+  }
 }
 
 export class OperationUpdate<T> extends Operation<T> {
@@ -140,5 +182,19 @@ export class OperationUpdate<T> extends Operation<T> {
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
+  }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationUpdate<T> {
+    const input: OperationInput<T> = {
+      id: serializedOperation.id,
+      description: serializedOperation.description,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationUpdate<T>(input);
   }
 }
