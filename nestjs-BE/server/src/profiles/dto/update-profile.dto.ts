@@ -12,7 +12,7 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
 
   @ApiProperty({
     example: 'new image.png',
-    description: 'Updated image URL for the profile',
+    description: 'Updated Profile image file',
     required: false,
   })
   image?: string;

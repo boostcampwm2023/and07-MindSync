@@ -26,6 +26,7 @@ export class TemporaryDatabaseService {
   ) {
     this.initializeDatabase();
     this.readDataFromFiles();
+    this.executeBulkOperations();
   }
 
   private initializeDatabase() {
@@ -109,7 +110,7 @@ export class TemporaryDatabaseService {
     });
   }
 
-  @Cron('* */10 * * * *')
+  @Cron('0 */10 * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);

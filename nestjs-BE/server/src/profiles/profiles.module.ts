@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { ProfilesController } from './profiles.controller';
 import { SpacesService } from '../spaces/spaces.service';
+import { UploadService } from 'src/upload/upload.service';
 @Module({
   controllers: [ProfilesController],
-  providers: [ProfilesService, SpacesService],
+  providers: [ProfilesService, SpacesService, UploadService],
 })
 export class ProfilesModule {}

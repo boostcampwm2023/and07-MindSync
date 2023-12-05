@@ -10,6 +10,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { SpacesModule } from './spaces/spaces.module';
 import { BoardsModule } from './boards/boards.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UploadModule } from './upload/upload.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import customEnv from './config/env';
 
@@ -23,6 +24,7 @@ import customEnv from './config/env';
     ProfilesModule,
     SpacesModule,
     BoardsModule,
+    UploadModule,
     MongooseModule.forRoot(customEnv.MONGODB_DATABASE_URI),
   ],
   controllers: [AppController],
