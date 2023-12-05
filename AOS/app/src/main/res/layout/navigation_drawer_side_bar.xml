@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.main.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,6 +49,18 @@
             app:layout_constraintTop_toBottomOf="@id/imgbtn_side_bar_add_space"
             tools:itemCount="5"
             tools:listitem="@layout/item_space" />
+
+        <ImageView
+            android:id="@+id/imgbtn_side_bar_profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/view_side_bar_space"
+            app:layout_constraintEnd_toEndOf="@id/view_side_bar_space"
+            android:layout_marginBottom="10dp"
+            tools:src="@mipmap/ic_launcher_round"
+            />
 
         <View
             android:id="@+id/view_side_bar_menu"
