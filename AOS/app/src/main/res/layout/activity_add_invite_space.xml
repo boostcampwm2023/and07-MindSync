@@ -79,7 +79,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
-            android:onClick="@{() -> view.compareInviteCode()}"
+            android:onClick="@{() -> vm.compareInviteCode()}"
             android:text="@string/check_message"
             style="@style/Typography.Bottom02"
             android:textColor="@color/white"
