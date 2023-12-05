@@ -42,7 +42,8 @@
 
         <TextView
             android:id="@+id/tv_add_space_title"
-            style="@style/Typography.Body01.Regular"
+            style="@style/Typography.Title02"
+            android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
