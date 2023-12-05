@@ -20,6 +20,7 @@ jobs:
           echo "KAKAO_ADMIN_KEY=$KAKAO_ADMIN_KEY" >> ./nestjs-BE/server/.env
           echo "MYSQL_DATABASE_URL=$MYSQL_DATABASE_URL" >> ./nestjs-BE/server/.env
           echo "MONGODB_DATABASE_URL=$MONGODB_DATABASE_URL" >> ./nestjs-BE/server/.env
+          echo "MONGODB_DATABASE_URI=$MONGODB_DATABASE_URI" >> ./nestjs-BE/server/.env
           echo "NCLOUD_ACCESS_KEY=$NCLOUD_ACCESS_KEY" >> ./nestjs-BE/server/.env
           echo "NCLOUD_SECRET_KEY=$NCLOUD_SECRET_KEY" >> ./nestjs-BE/server/.env
           echo "NCLOUD_REGION=$NCLOUD_REGION" >> ./nestjs-BE/server/.env
@@ -34,6 +35,7 @@ jobs:
           KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
           MYSQL_DATABASE_URL: ${{ secrets.MYSQL_DATABASE_URL }}
           MONGODB_DATABASE_URL: ${{ secrets.MONGODB_DATABASE_URL }}
+          MONGODB_DATABASE_URI: ${{ secrets.MONGODB_DATABASE_URI }}
           NCLOUD_ACCESS_KEY: ${{ secrets.NCLOUD_ACCESS_KEY }}
           NCLOUD_SECRET_KEY: ${{ secrets.NCLOUD_SECRET_KEY }}
           NCLOUD_REGION: ${{ secrets.NCLOUD_REGION }}
