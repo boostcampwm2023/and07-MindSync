@@ -48,7 +48,7 @@
             android:lineSpacingExtra="5dp"
             android:text="@string/invite_space_title"
             android:textAlignment="center"
-            style="@style/Typography.Body01.Regular"
+            style="@style/Typography.Title02"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_menu_message" />
