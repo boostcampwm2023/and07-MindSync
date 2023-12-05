@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.login
 
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,6 +44,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
                 loginViewModel.loginEvent.collect { event ->
                     when (event) {
                         is LoginEvent.Error -> {
+                            Log.e("LoginActivity", event.message)
                             Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT)
                                 .show()
                         }
