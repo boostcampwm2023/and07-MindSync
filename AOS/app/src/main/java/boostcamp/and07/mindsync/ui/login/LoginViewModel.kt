@@ -26,7 +26,7 @@ class LoginViewModel
         private val _loginEvent = MutableSharedFlow<LoginEvent>()
         val loginEvent = _loginEvent.asSharedFlow()
 
-        private fun getTokenWithKakao(kakaoUserId: String) {
+        private fun getTokenWithKakao(kakaoUserId: Long) {
             viewModelScope.launch {
                 loginRepository.loginWithKakao(kakaoUserId)
                     .onSuccess { token ->
@@ -51,7 +51,7 @@ class LoginViewModel
                     Log.e("LoginActivity", "사용자 정보 요청 실패", error)
                 } else if (user != null) {
                     user.id?.let { userId ->
-                        getTokenWithKakao(userId.toString())
+                        getTokenWithKakao(userId)
                     }
                 }
             }
