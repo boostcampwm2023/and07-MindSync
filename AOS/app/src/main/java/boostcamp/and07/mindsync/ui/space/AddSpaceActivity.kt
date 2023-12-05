@@ -14,7 +14,9 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity_add_space) {
@@ -22,7 +24,9 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
     private val pickMedia =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { url ->
             url?.let {
+                val file = File(url.toAbsolutePath(this))
                 addSpaceViewModel.setSpaceThumbnail(url.toString())
+                addSpaceViewModel.setImageFile(file)
             }
         }
     private val galleryPermissionLauncher =
