@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.ui.main
 
+import android.content.Intent
 import android.view.View
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -11,6 +12,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -54,6 +56,10 @@ class MainActivity :
             tvSideBarInviteSpace.setOnClickListener {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_inviteUserDialog)
+            }
+            imgbtnSideBarProfile.setOnClickListener {
+                val intent = Intent(this@MainActivity, ProfileActivity::class.java)
+                startActivity(intent)
             }
         }
     }
