@@ -10,8 +10,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 fun fileToMultiPart(file: File): MultipartBody.Part {
-    val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData("picture", file.name, requestFile)
+    val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData("icon", file.name, requestFile)
 }
 
 fun Uri.toAbsolutePath(context: Context): String? {
