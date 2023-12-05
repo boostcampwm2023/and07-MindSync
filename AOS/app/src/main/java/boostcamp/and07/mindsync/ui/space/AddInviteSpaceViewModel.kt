@@ -1,10 +1,12 @@
 package boostcamp.and07.mindsync.ui.space
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,5 +25,14 @@ class AddInviteSpaceViewModel
             count: Int,
         ) {
             _spaceInviteCode.value = inviteSpaceCode.toString()
+        }
+
+        fun compareInviteCode() {
+            viewModelScope.launch {
+                val response = spaceRepository.getSpace(_spaceInviteCode.value)
+                response.onSuccess {
+                }.onFailure {
+                }
+            }
         }
     }
