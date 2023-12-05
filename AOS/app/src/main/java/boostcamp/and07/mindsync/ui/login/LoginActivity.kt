@@ -5,7 +5,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityLoginBinding
@@ -37,14 +39,17 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
     private fun setObserve() {
         lifecycleScope.launch {
-            loginViewModel.loginEvent.collect { event ->
-                when (event) {
-                    is LoginEvent.Error -> {
-                        Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT).show()
-                    }
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.loginEvent.collect { event ->
+                    when (event) {
+                        is LoginEvent.Error -> {
+                            Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
-                    is LoginEvent.Success -> {
-                        startMainActivity()
+                        is LoginEvent.Success -> {
+                            startMainActivity()
+                        }
                     }
                 }
             }
