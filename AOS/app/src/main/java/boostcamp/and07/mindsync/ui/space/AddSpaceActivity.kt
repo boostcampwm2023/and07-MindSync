@@ -34,15 +34,16 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
             }
         }
 
-    private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            result.data?.data?.let { uri ->
-                createImage(uri)
+    private val imageResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    createImage(uri)
+                }
             }
         }
-    }
 
     override fun init() {
         setBinding()
@@ -122,9 +123,10 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
     }
 
     private fun launchImageSelector() {
-        val intent = Intent(Intent.ACTION_PICK).apply {
-            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-        }
+        val intent =
+            Intent(Intent.ACTION_PICK).apply {
+                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+            }
         imageResult.launch(intent)
     }
 

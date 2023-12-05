@@ -1,7 +1,6 @@
 package boostcamp.and07.mindsync.ui.space
 
 import androidx.activity.viewModels
-import androidx.fragment.app.viewModels
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddInviteSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
