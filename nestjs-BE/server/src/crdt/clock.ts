@@ -31,4 +31,10 @@ export class Clock {
     }
     return COMPARE.LESS;
   }
+
+  static parse(json: string) {
+    const parsedJson = JSON.parse(json);
+    const clock = new Clock(parsedJson.id, parsedJson.counter);
+    return clock;
+  }
 }

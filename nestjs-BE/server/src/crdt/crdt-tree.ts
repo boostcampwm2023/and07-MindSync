@@ -13,7 +13,7 @@ import { Tree } from './tree';
 import { Node } from './node';
 
 export class CrdtTree<T> {
-  operationLog: OperationLog<T>[] = [];
+  operationLogs: OperationLog<T>[] = [];
   clock: Clock;
   tree = new Tree<T>();
 
@@ -26,7 +26,7 @@ export class CrdtTree<T> {
   }
 
   addLog(log: OperationLog<T>) {
-    this.operationLog.push(log);
+    this.operationLogs.push(log);
   }
 
   generateOperationAdd(
@@ -183,16 +183,16 @@ export class CrdtTree<T> {
   applyOperation(operation: Operation<T>) {
     this.clock = this.clock.merge(operation.clock);
 
-    if (this.operationLog.length === 0) {
+    if (this.operationLogs.length === 0) {
       const log = operation.doOperation(this.tree);
       this.addLog(log);
       return;
     }
 
     const lastOperation =
-      this.operationLog[this.operationLog.length - 1].operation;
+      this.operationLogs[this.operationLogs.length - 1].operation;
     if (operation.clock.compare(lastOperation.clock) === COMPARE.LESS) {
-      const prevLog = this.operationLog.pop();
+      const prevLog = this.operationLogs.pop();
       prevLog.operation.undoOperation(this.tree, prevLog);
       this.applyOperation(operation);
       const redoLog = prevLog.operation.redoOperation(this.tree, prevLog);
@@ -205,5 +205,31 @@ export class CrdtTree<T> {
 
   applyOperations(operations: Operation<T>[]) {
     for (const operation of operations) this.applyOperation(operation);
+  }
+
+  static parse<T>(json: string) {
+    const parsedJson = JSON.parse(json);
+    const crdtTree = new CrdtTree('0');
+    crdtTree.clock = Clock.parse(JSON.stringify(parsedJson.clock));
+    crdtTree.tree = Tree.parse<T>(JSON.stringify(parsedJson.tree));
+
+    const operationTypeMap = {
+      add: crdtTree.deserializeOperationAdd,
+      delete: crdtTree.deserializeOperationDelete,
+      move: crdtTree.deserializeOperationMove,
+      update: crdtTree.deserializeOperationUpdate,
+    };
+
+    const parsedOperationLogs = parsedJson.operationLogs.map(
+      (operationLog: OperationLog<T>) => {
+        const operationType = operationLog.operation.operationType;
+        operationLog.operation = operationTypeMap[operationType](
+          operationLog.operation,
+        );
+        return operationLog;
+      },
+    );
+    crdtTree.operationLogs = parsedOperationLogs;
+    return crdtTree;
   }
 }
