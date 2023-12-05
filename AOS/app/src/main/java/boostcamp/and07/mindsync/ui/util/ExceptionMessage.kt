@@ -14,3 +14,7 @@ enum class NetworkExceptionMessage(val message: String) {
     ERROR_MESSAGE_KAKAO_RESULT_NULL("Kakao Login result is null"),
     ERROR_MESSAGE_CANT_GET_TOKEN("Can't get server access token"),
 }
+
+enum class SpaceExceptionMessage(val message: String){
+    ERROR_MESSAGE_SPACE_ADD("Space Add failed")
+}
