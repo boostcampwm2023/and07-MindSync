@@ -36,6 +36,14 @@
         android:id="@+id/chooseSpaceImageDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.ChooseSpaceImageDialog"
         android:label="ChooseSpaceImageDialog"/>
+    <dialog
+        android:id="@+id/editNickNameDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog"
+        android:label="ChooseSpaceImageDialog"/>
+    <activity
+        android:id="@+id/profileActivity"
+        android:name="boostcamp.and07.mindsync.ui.profile.ProfileActivity"
+        android:label="ProfileActivity"/>
     <action
         android:id="@+id/action_to_boardListFragment"
         app:destination="@id/boardListFragment" />
