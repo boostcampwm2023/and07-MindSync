@@ -1,7 +1,9 @@
 package boostcamp.and07.mindsync.data.di
 
 import boostcamp.and07.mindsync.BuildConfig
+import boostcamp.and07.mindsync.data.network.TokenApi
 import boostcamp.and07.mindsync.data.repository.login.AccessTokenInterceptor
+import boostcamp.and07.mindsync.data.repository.login.TokenAuthenticator
 import boostcamp.and07.mindsync.data.repository.login.TokenRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -25,9 +27,22 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(accessTokenInterceptor: AccessTokenInterceptor): OkHttpClient {
+    fun provideTokenAuthenticator(
+        tokenRepository: TokenRepository,
+        tokenApi: TokenApi,
+    ): TokenAuthenticator {
+        return TokenAuthenticator(tokenRepository, tokenApi)
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(
+        accessTokenInterceptor: AccessTokenInterceptor,
+        tokenAuthenticator: TokenAuthenticator,
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(accessTokenInterceptor)
+            .authenticator(tokenAuthenticator)
             .build()
     }
 
