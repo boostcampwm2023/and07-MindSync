@@ -41,7 +41,7 @@ class EditNickNameDialog : DialogFragment() {
                 dismiss()
             }
             btnEditProfileModify.setOnClickListener {
-                editNickNameInterface.onModifyClick(binding.etEditProfileNickname.text.toString())
+                editNickNameInterface.onModifyClick(etEditProfileNickname.text.toString())
                 dismiss()
             }
         }
