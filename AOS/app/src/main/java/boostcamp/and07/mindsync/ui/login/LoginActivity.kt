@@ -1,11 +1,14 @@
 package boostcamp.and07.mindsync.ui.login
 
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityLoginBinding
@@ -19,6 +22,7 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -37,14 +41,18 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
     private fun setObserve() {
         lifecycleScope.launch {
-            loginViewModel.loginEvent.collect { event ->
-                when (event) {
-                    is LoginEvent.Error -> {
-                        Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT).show()
-                    }
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.loginEvent.collectLatest { event ->
+                    when (event) {
+                        is LoginEvent.Error -> {
+                            Log.e("LoginActivity", event.message)
+                            Toast.makeText(this@LoginActivity, event.message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
-                    is LoginEvent.Success -> {
-                        startMainActivity()
+                        is LoginEvent.Success -> {
+                            startMainActivity()
+                        }
                     }
                 }
             }

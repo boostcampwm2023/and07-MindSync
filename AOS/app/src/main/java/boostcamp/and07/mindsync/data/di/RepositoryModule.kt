@@ -4,6 +4,8 @@ import boostcamp.and07.mindsync.data.repository.boardlist.BoardListRepository
 import boostcamp.and07.mindsync.data.repository.boardlist.BoardListRepositoryImpl
 import boostcamp.and07.mindsync.data.repository.login.LoginRepository
 import boostcamp.and07.mindsync.data.repository.login.LoginRepositoryImpl
+import boostcamp.and07.mindsync.data.repository.login.TokenRepository
+import boostcamp.and07.mindsync.data.repository.login.TokenRepositoryImpl
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepositoryImpl
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
@@ -37,4 +39,7 @@ interface RepositoryModule {
 
     @Binds
     fun provideProfileRepository(profileRepositoryImpl: ProfileRepositoryImpl): ProfileRepository
+
+    @Binds
+    fun provideTokenRepository(tokenRepositoryImpl: TokenRepositoryImpl): TokenRepository
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.login.LoginRepository
+import boostcamp.and07.mindsync.data.repository.login.TokenRepository
 import boostcamp.and07.mindsync.ui.util.NetworkExceptionMessage
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
@@ -21,6 +22,7 @@ class LoginViewModel
     @Inject
     constructor(
         private val loginRepository: LoginRepository,
+        private val tokenRepository: TokenRepository,
     ) :
     ViewModel() {
         private val _loginEvent = MutableSharedFlow<LoginEvent>()
@@ -31,6 +33,7 @@ class LoginViewModel
                 loginRepository.loginWithKakao(kakaoUserId)
                     .onSuccess { token ->
                         Log.d("LoginViewModel", "getTokenWithKakao: $token")
+                        tokenRepository.saveAccessToken(token)
                         _loginEvent.emit(LoginEvent.Success(token))
                     }.onFailure {
                         _loginEvent.emit(

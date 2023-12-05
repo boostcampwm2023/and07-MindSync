@@ -2,12 +2,14 @@ package boostcamp.and07.mindsync.data.di
 
 import boostcamp.and07.mindsync.data.network.LoginApi
 import boostcamp.and07.mindsync.data.network.SpaceApi
+import boostcamp.and07.mindsync.data.network.TokenApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.create
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -15,9 +17,19 @@ import javax.inject.Singleton
 object ApiModule {
     @Provides
     @Singleton
-    fun provideSignupApi(retrofit: Retrofit): LoginApi = retrofit.create()
+    fun provideSignupApi(
+        @Named(NetworkConst.TOKEN_RETROFIT) retrofit: Retrofit,
+    ): LoginApi = retrofit.create()
 
     @Provides
     @Singleton
-    fun provideSpaceApi(retrofit: Retrofit): SpaceApi = retrofit.create()
+    fun provideSpaceApi(
+        @Named(NetworkConst.CLIENT_RETROFIT) retrofit: Retrofit,
+    ): SpaceApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideTokenApi(
+        @Named(NetworkConst.TOKEN_RETROFIT) retrofit: Retrofit,
+    ): TokenApi = retrofit.create()
 }
