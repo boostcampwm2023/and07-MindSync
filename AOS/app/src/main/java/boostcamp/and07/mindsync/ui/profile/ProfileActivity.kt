@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
+    private val profileViewModel by viewModels<ProfileViewModel>()
     
     private val imagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -41,7 +42,19 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     }
 
     override fun init() {
+        setBinding()
+        setupImageEditBtn()
+        setupBackBtn()
+        observeEvent()
+    private fun setBinding() {
+        binding.vm = profileViewModel
+    }
 
+    private fun setupImageEditBtn() {
+        binding.btnProfileImageEdit.setOnClickListener {
+            checkPermissionsAndLaunchImagePicker()
+        }
+    }
     private fun checkPermissionsAndLaunchImagePicker() {
         when {
             checkSelfPermission(
@@ -59,6 +72,30 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
 
             else -> {
                 requestGalleryPermission()
+            }
+        }
+    }
+
+    private fun setupBackBtn() {
+        binding.imgbtnProfileBack.setOnClickListener {
+            finish()
+        }
+    }
+
+
+    private fun observeEvent() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                profileViewModel.event.collectLatest { event ->
+                    when (event) {
+                        is ProfileUiEvent.NavigateToBack -> {
+                            finish()
+                        }
+
+                        is ProfileUiEvent.ShowMessage -> {
+                        }
+                    }
+                }
             }
         }
     }
