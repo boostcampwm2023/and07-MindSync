@@ -20,6 +20,7 @@ jobs:
         echo "KAKAO_ADMIN_KEY=$KAKAO_ADMIN_KEY" >> ./nestjs-BE/server/.env
         echo "MYSQL_DATABASE_URL=$MYSQL_DATABASE_URL" >> ./nestjs-BE/server/.env
         echo "MONGODB_DATABASE_URL=$MONGODB_DATABASE_URL" >> ./nestjs-BE/server/.env
+        echo "MONGODB_DATABASE_URI=$MONGODB_DATABASE_URI" >> ./nestjs-BE/server/.env
         docker build -t ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync ./nestjs-BE/server
         docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
       env:
@@ -28,6 +29,7 @@ jobs:
         KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
         MYSQL_DATABASE_URL: ${{ secrets.MYSQL_DATABASE_URL }}
         MONGODB_DATABASE_URL: ${{ secrets.MONGODB_DATABASE_URL }}
+        MONGODB_DATABASE_URI: ${{ secrets.MONGODB_DATABASE_URI }}
 
   deploy:
     needs: build

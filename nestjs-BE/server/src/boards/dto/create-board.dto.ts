@@ -1,8 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+
 export class CreateBoardDto {
-  @ApiProperty({
-    example: { key1: 'value1', key2: 'value2' },
-    description: 'JSON data as an object',
-  })
-  data: Record<string, string>;
+  @ApiProperty({ description: '보드 이름' })
+  @IsString()
+  @IsNotEmpty()
+  boardName: string;
+
+  @ApiProperty({ description: '스페이스 id' })
+  @IsString()
+  @IsNotEmpty()
+  spaceId: string;
+
+  @ApiProperty({ description: '이미지 url' })
+  @IsUrl()
+  @IsNotEmpty()
+  imageUrl: string;
 }
