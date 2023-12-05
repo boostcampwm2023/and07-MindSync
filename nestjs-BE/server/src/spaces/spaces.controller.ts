@@ -15,7 +15,8 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from 'src/upload/upload.service';
-
+import customEnv from 'src/config/env';
+const { BASE_IMAGE_URL } = customEnv;
 @Controller('spaces')
 @ApiTags('spaces')
 export class SpacesController {
@@ -35,7 +36,9 @@ export class SpacesController {
     @UploadedFile() icon: Express.Multer.File,
     @Body() createSpaceDto: CreateSpaceDto,
   ) {
-    const iconUrl = await this.uploadService.uploadFile(icon);
+    const iconUrl = icon
+      ? await this.uploadService.uploadFile(icon)
+      : BASE_IMAGE_URL;
     createSpaceDto.icon = iconUrl;
     return this.spacesService.create(createSpaceDto);
   }
@@ -74,8 +77,9 @@ export class SpacesController {
     @Param('space_uuid') spaceUuid: string,
     @Body() updateSpaceDto: UpdateSpaceDto,
   ) {
-    const iconUrl = await this.uploadService.uploadFile(icon);
-    updateSpaceDto.icon = iconUrl;
+    if (icon) {
+      updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
+    }
     return this.spacesService.update(spaceUuid, updateSpaceDto);
   }
 
