@@ -86,7 +86,7 @@ export abstract class BaseService<T extends HasUuid> {
   }
 
   async remove(key: string) {
-    const storeData = this.getDataFromCacheOrDB(key);
+    const storeData = await this.getDataFromCacheOrDB(key);
     if (!storeData) return;
     this.cache.delete(key);
     const insertTemporaryData = this.temporaryDatabaseService.get(
@@ -122,9 +122,23 @@ export abstract class BaseService<T extends HasUuid> {
     );
     if (temporaryDatabaseData) return temporaryDatabaseData;
     const databaseData = await this.prisma[this.className].findUnique({
-      where: { [this.field]: key },
+      where: {
+        [this.field]: key.includes('+') ? this.stringToObject(key) : key,
+      },
     });
     return databaseData;
+  }
+
+  stringToObject(key: string) {
+    const obj = {};
+    const keyValuePairs = key.split('+');
+
+    keyValuePairs.forEach((keyValue) => {
+      const [key, value] = keyValue.split(':');
+      obj[key] = value;
+    });
+
+    return obj;
   }
 
   private mergeWithUpdateCommand(data: T, key: string): T {
