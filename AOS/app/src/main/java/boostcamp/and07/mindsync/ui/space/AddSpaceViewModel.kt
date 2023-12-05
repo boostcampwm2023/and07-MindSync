@@ -7,7 +7,6 @@ import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import boostcamp.and07.mindsync.ui.util.toRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +48,7 @@ class AddSpaceViewModel
 
         fun addSpace() {
             imageFile?.let { imageFile ->
-                val icon = fileToMultiPart(imageFile)
+                val icon = fileToMultiPart(imageFile, createSpaceImageName)
                 val name = _spaceName.value.toRequestBody()
                 viewModelScope.launch {
                     spaceRepository.addSpace(name, icon)
@@ -61,5 +60,8 @@ class AddSpaceViewModel
                         }
                 }
             }
+        }
+        companion object{
+            const val createSpaceImageName = "icon"
         }
     }
