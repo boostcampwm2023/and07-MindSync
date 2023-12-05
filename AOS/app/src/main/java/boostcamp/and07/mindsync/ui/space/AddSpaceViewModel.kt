@@ -46,9 +46,9 @@ class AddSpaceViewModel
             imageFile = file
         }
 
-        fun addSpace() {
+        fun addSpace(imageName: String) {
             imageFile?.let { imageFile ->
-                val icon = fileToMultiPart(imageFile, createSpaceImageName)
+                val icon = fileToMultiPart(imageFile, imageName)
                 val name = _spaceName.value.toRequestBody()
                 viewModelScope.launch {
                     spaceRepository.addSpace(name, icon)
@@ -60,9 +60,5 @@ class AddSpaceViewModel
                         }
                 }
             }
-        }
-
-        companion object {
-            const val createSpaceImageName = "icon"
         }
     }

@@ -98,7 +98,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
-            android:onClick="@{()->vm.addSpace()}"
+            android:onClick="@{()->vm.addSpace(@string/space_image_name)}"
             android:text="@string/check_message"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
