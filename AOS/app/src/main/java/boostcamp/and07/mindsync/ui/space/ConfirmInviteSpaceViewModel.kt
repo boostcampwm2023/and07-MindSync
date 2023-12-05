@@ -23,4 +23,7 @@ class ConfirmInviteSpaceViewModel
                 uiState.copy(space = space)
             }
         }
+        fun joinSpace(space: Space) {
+            //Todo Profit_Uuid가 생기면 joinSpace 구현
+        }
     }
