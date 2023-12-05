@@ -55,6 +55,7 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
 
     override fun init() {
         setBinding()
+        setBackBtn()
         collectSpaceEvent()
     }
 
@@ -89,6 +90,12 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
     private fun createImage(uri: Uri?) {
         uri?.let { uri ->
             addSpaceViewModel.setSpaceThumbnail(uri.toString())
+        }
+    }
+
+    private fun setBackBtn()  {
+        binding.imgbtnAddSpaceBack.setOnClickListener {
+            finish()
         }
     }
 

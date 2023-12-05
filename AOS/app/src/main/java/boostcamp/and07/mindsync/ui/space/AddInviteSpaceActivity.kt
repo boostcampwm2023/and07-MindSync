@@ -15,11 +15,18 @@ class AddInviteSpaceActivity :
 
     override fun init() {
         setBinding()
+        setBackBtn()
     }
 
     private fun setBinding() {
         binding.vm = addInviteSpaceViewModel
         binding.view = this
+    }
+
+    private fun setBackBtn() {
+        binding.imgbtnAddInviteSpaceBack.setOnClickListener {
+            finish()
+        }
     }
 
     fun compareInviteCode() {
