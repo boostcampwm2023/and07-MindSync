@@ -32,6 +32,10 @@
         android:id="@+id/editDescriptionDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog"
         android:label="EditDescriptionDialog"/>
+    <dialog
+        android:id="@+id/inviteUserDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"
+        android:label="InviteUserDialog"/>
     <action
         android:id="@+id/action_to_boardListFragment"
         app:destination="@id/boardListFragment" />
@@ -50,4 +54,7 @@
     <action
         android:id="@+id/action_to_addInviteSpaceActivity"
         app:destination="@+id/addInviteSpaceActivity"/>
+    <action
+        android:id="@+id/action_to_inviteUserDialog"
+        app:destination="@id/inviteUserDialog"/>
 </navigation>
