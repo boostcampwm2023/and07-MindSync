@@ -36,7 +36,6 @@ export class ProfilesController {
     private readonly uploadService: UploadService,
   ) {}
 
-  @Public()
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Create profile' })
