@@ -1,9 +1,27 @@
 package boostcamp.and07.mindsync.ui.profile
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog
+import boostcamp.and07.mindsync.ui.dialog.EditNickNameInterface
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
@@ -44,8 +62,11 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     override fun init() {
         setBinding()
         setupImageEditBtn()
+        setupShowNicknameEditBtn()
         setupBackBtn()
         observeEvent()
+    }
+
     private fun setBinding() {
         binding.vm = profileViewModel
     }
@@ -55,6 +76,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
             checkPermissionsAndLaunchImagePicker()
         }
     }
+
     private fun checkPermissionsAndLaunchImagePicker() {
         when {
             checkSelfPermission(
@@ -76,12 +98,33 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
         }
     }
 
+    private fun setupShowNicknameEditBtn() {
+        binding.imgbtnProfileNicknameEdit.setOnClickListener {
+            showDialog { nickName ->
+                profileViewModel.updateNickName(nickName)
+            }
+        }
+    }
+
     private fun setupBackBtn() {
         binding.imgbtnProfileBack.setOnClickListener {
             finish()
         }
     }
 
+    private fun showDialog(
+        action: (String) -> Unit,
+    ) {
+        val dialog = EditNickNameDialog()
+        dialog.setListener(
+            object : EditNickNameInterface {
+                override fun onModifyClick(nickname: String) {
+                    action.invoke(nickname)
+                }
+            },
+        )
+        dialog.show(this.supportFragmentManager, "EditNickNameDialog")
+    }
 
     private fun observeEvent() {
         lifecycleScope.launch {
