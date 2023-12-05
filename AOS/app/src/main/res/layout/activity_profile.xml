@@ -120,6 +120,7 @@
             android:backgroundTint="@color/main4"
             android:text="@string/profile_image_save"
             android:textColor="@color/white"
+            android:onClick="@{()->vm.addProfile(@string/profile_image_name)}"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"
             app:layout_constraintTop_toBottomOf="@id/tv_profile_nickname" />
