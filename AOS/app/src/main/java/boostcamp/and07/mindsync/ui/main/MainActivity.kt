@@ -51,6 +51,10 @@ class MainActivity :
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
+            tvSideBarInviteSpace.setOnClickListener {
+                drawerLayout.closeDrawers()
+                navController.navigate(R.id.action_to_inviteUserDialog)
+            }
         }
     }
 
