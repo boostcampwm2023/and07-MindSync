@@ -1,10 +1,10 @@
-package boostcamp.and07.mindsync.network
+package boostcamp.and07.mindsync.data.network
 
 import android.util.Log
 import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.data.crdt.SerializedOperation
-import boostcamp.and07.mindsync.network.request.JoinBoard
-import boostcamp.and07.mindsync.network.request.UpdateMindMap
+import boostcamp.and07.mindsync.data.network.request.JoinBoard
+import boostcamp.and07.mindsync.data.network.request.UpdateMindMap
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.cancel

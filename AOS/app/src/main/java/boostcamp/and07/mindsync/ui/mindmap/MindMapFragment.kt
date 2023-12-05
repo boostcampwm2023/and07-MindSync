@@ -10,9 +10,9 @@ import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.data.network.SocketEventType
+import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
-import boostcamp.and07.mindsync.network.SocketEventType
-import boostcamp.and07.mindsync.network.SocketState
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
