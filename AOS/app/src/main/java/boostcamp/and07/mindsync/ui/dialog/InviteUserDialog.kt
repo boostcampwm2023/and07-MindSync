@@ -10,12 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.databinding.DialogAddSpaceBinding
+import boostcamp.and07.mindsync.databinding.DialogInviteUserBinding
 
-class AddSpaceDialog : DialogFragment() {
-    private var _binding: DialogAddSpaceBinding? = null
+class InviteUserDialog : DialogFragment() {
+    private var _binding: DialogInviteUserBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -31,16 +30,8 @@ class AddSpaceDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = DialogAddSpaceBinding.inflate(inflater, container, false)
+        _binding = DialogInviteUserBinding.inflate(inflater, container, false)
         binding.run {
-            btnAddSpaceGenerate.setOnClickListener {
-                findNavController().navigate(R.id.action_to_addSpaceActivity)
-                dismiss()
-            }
-            btnAddSpaceJoin.setOnClickListener {
-                findNavController().navigate(R.id.action_to_addInviteSpaceActivity)
-                dismiss()
-            }
         }
         return binding.root
     }
@@ -58,7 +49,7 @@ class AddSpaceDialog : DialogFragment() {
         val deviceHeight = displayMetrics.heightPixels
 
         params?.width = (deviceWidth * 0.8).toInt()
-        params?.height = (deviceHeight * 0.3).toInt()
+        params?.height = (deviceHeight * 0.25).toInt()
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 

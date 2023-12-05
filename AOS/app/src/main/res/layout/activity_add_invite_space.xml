@@ -11,7 +11,7 @@
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceFragment" />
+            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:background="@color/main3"
         android:padding="10dp"
-        tools:context=".ui.space.AddSpaceFragment">
+        tools:context=".ui.space.AddSpaceActivity">
 
         <ImageButton
             android:id="@+id/imgbtn_add_invite_space_back"
@@ -48,7 +48,7 @@
             android:lineSpacingExtra="5dp"
             android:text="@string/invite_space_title"
             android:textAlignment="center"
-            style="@style/Typography.Body01.Regular"
+            style="@style/Typography.Title02"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_menu_message" />

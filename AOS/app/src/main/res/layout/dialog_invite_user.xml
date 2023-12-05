@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:background="@drawable/bg_round_dialog"
+        android:backgroundTint="@color/main3"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_invite_user_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/invite_user_title"
+            style="@style/Typography.Title01"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/tv_invite_user_space_code"
+            android:layout_width="0dp"
+            android:background="@drawable/bg_round_board"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_invite_user_title"
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="12341243312"
+            style="@style/Typography.Body01.Regular"
+            android:layout_marginTop="30dp"
+            android:gravity="center_vertical|center"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <ImageButton
+            android:id="@+id/imgbtn_invite_user_copy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintWidth_percent="0.2"
+            android:src="@drawable/ic_copy"
+            android:background="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_invite_user_space_code"
+            app:layout_constraintBottom_toBottomOf="@id/tv_invite_user_space_code" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

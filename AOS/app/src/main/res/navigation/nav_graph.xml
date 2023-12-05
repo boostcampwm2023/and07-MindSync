@@ -16,14 +16,14 @@
         android:id="@+id/recycleBinFragment"
         android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
         android:label="RecycleBinFragment" />
-    <fragment
-        android:id="@+id/addSpaceFragment"
-        android:name="boostcamp.and07.mindsync.ui.space.AddSpaceFragment"
-        android:label="AddSpaceFragment"/>
-    <fragment
-        android:id="@+id/addInviteSpaceFragment"
-        android:name="boostcamp.and07.mindsync.ui.space.AddInviteSpaceFragment"
-        android:label="AddInviteSpaceFragment"/>
+    <activity
+        android:id="@+id/addSpaceActivity"
+        android:name="boostcamp.and07.mindsync.ui.space.AddSpaceActivity"
+        android:label="AddSpaceActivity"/>
+    <activity
+        android:id="@+id/addInviteSpaceActivity"
+        android:name="boostcamp.and07.mindsync.ui.space.AddInviteSpaceActivity"
+        android:label="AddInviteSpaceActivity"/>
     <dialog
         android:id="@+id/addSpaceDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.AddSpaceDialog"
@@ -33,9 +33,9 @@
         android:name="boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog"
         android:label="EditDescriptionDialog"/>
     <dialog
-        android:id="@+id/chooseSpaceImageDialog"
-        android:name="boostcamp.and07.mindsync.ui.dialog.ChooseSpaceImageDialog"
-        android:label="ChooseSpaceImageDialog"/>
+        android:id="@+id/inviteUserDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"
+        android:label="InviteUserDialog"/>
     <dialog
         android:id="@+id/editNickNameDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog"
@@ -51,8 +51,8 @@
         android:id="@+id/action_to_recycleBinFragment"
         app:destination="@id/recycleBinFragment" />
     <action
-        android:id="@+id/action_to_addSpaceFragment"
-        app:destination="@+id/addSpaceFragment"/>
+        android:id="@+id/action_to_addSpaceActivity"
+        app:destination="@+id/addSpaceActivity"/>
     <action
         android:id="@+id/action_to_addSpaceDialog"
         app:destination="@+id/addSpaceDialog"/>
@@ -60,9 +60,9 @@
         android:id="@+id/action_to_editDescriptionDialog"
         app:destination="@id/action_to_editDescriptionDialog"/>
     <action
-        android:id="@+id/action_to_chooseSpaceImageDialog"
-        app:destination="@id/chooseSpaceImageDialog"/>
+        android:id="@+id/action_to_addInviteSpaceActivity"
+        app:destination="@+id/addInviteSpaceActivity"/>
     <action
-        android:id="@+id/action_to_addInviteSpaceFragment"
-        app:destination="@+id/addInviteSpaceFragment"/>
+        android:id="@+id/action_to_inviteUserDialog"
+        app:destination="@id/inviteUserDialog"/>
 </navigation>

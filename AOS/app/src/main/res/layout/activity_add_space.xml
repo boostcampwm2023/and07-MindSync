@@ -11,7 +11,7 @@
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.AddSpaceFragment" />
+            type="boostcamp.and07.mindsync.ui.space.AddSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:background="@color/main3"
         android:padding="10dp"
-        tools:context=".ui.space.AddSpaceFragment">
+        tools:context=".ui.space.AddSpaceActivity">
 
         <ImageButton
             android:id="@+id/imgbtn_add_space_back"
@@ -42,7 +42,8 @@
 
         <TextView
             android:id="@+id/tv_add_space_title"
-            style="@style/Typography.Body01.Regular"
+            style="@style/Typography.Title02"
+            android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
@@ -57,11 +58,20 @@
             android:layout_width="125dp"
             android:layout_height="125dp"
             android:layout_marginTop="65dp"
-            android:onClick="@{() -> view.clickImageButton()}"
+            android:src="@mipmap/ic_app_logo_round"
             app:imageUri="@{vm.spaceThumbnail}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_title" />
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/ic_add"
+            android:backgroundTint="@color/blue"
+            android:onClick="@{() -> view.clickImageButton()}"
+            app:layout_constraintEnd_toEndOf="@id/iv_add_space_thumbnail"
+            app:layout_constraintTop_toTopOf="@id/iv_add_space_thumbnail" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfl_add_space_edit_space"
@@ -88,6 +98,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
+            android:onClick="@{()->vm.addSpace(@string/space_image_name)}"
             android:text="@string/check_message"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"

@@ -46,6 +46,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.space.AddInviteSpaceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.space.AddSpaceActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.MainActivity"
             android:exported="false" />
         <activity

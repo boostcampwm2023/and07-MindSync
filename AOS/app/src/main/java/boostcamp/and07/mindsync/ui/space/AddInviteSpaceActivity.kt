@@ -1,23 +1,32 @@
 package boostcamp.and07.mindsync.ui.space
 
-import androidx.fragment.app.viewModels
+import androidx.activity.viewModels
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.databinding.FragmentAddInviteSpaceBinding
-import boostcamp.and07.mindsync.ui.base.BaseFragment
+import boostcamp.and07.mindsync.databinding.ActivityAddInviteSpaceBinding
+import boostcamp.and07.mindsync.ui.base.BaseActivity
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
-class AddInviteSpaceFragment :
-    BaseFragment<FragmentAddInviteSpaceBinding>(R.layout.fragment_add_invite_space) {
+@AndroidEntryPoint
+class AddInviteSpaceActivity :
+    BaseActivity<ActivityAddInviteSpaceBinding>(R.layout.activity_add_invite_space) {
     private val testInviteCode = "1234"
     private val addInviteSpaceViewModel: AddInviteSpaceViewModel by viewModels()
 
-    override fun initView() {
+    override fun init() {
         setBinding()
+        setBackBtn()
     }
 
     private fun setBinding() {
         binding.vm = addInviteSpaceViewModel
         binding.view = this
+    }
+
+    private fun setBackBtn() {
+        binding.imgbtnAddInviteSpaceBack.setOnClickListener {
+            finish()
+        }
     }
 
     fun compareInviteCode() {
