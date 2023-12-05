@@ -1,25 +1,50 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateBoardDto } from './dto/update-board.dto';
-import { PrismaServiceMongoDB } from 'src/prisma/prisma.service';
-import { BOARD_CACHE_SIZE } from 'src/config/magic-number';
-import { BaseService } from 'src/base/base.service';
-import { TemporaryDatabaseService } from 'src/temporary-database/temporary-database.service';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Board } from './schemas/board.schema';
+import { Model } from 'mongoose';
+import { CreateBoardDto } from './dto/create-board.dto';
+import { v4 } from 'uuid';
+
 @Injectable()
-export class BoardsService extends BaseService<UpdateBoardDto> {
-  constructor(
-    protected prisma: PrismaServiceMongoDB,
-    protected temporaryDatabaseService: TemporaryDatabaseService,
-  ) {
-    super({
-      prisma,
-      temporaryDatabaseService,
-      cacheSize: BOARD_CACHE_SIZE,
-      className: 'BoardCollection',
-      field: 'uuid',
+export class BoardsService {
+  constructor(@InjectModel(Board.name) private boardModel: Model<Board>) {}
+
+  async create(createBoardDto: CreateBoardDto): Promise<Board> {
+    const { boardName, spaceId, imageUrl } = createBoardDto;
+
+    const existingBoard = await this.boardModel
+      .findOne({ boardName, spaceId })
+      .exec();
+    if (existingBoard) throw new ConflictException();
+
+    const uuid = v4();
+    const now = new Date();
+    const createdBoard = new this.boardModel({
+      boardName,
+      imageUrl,
+      spaceId,
+      uuid,
+      createdAt: now,
+      restoredAt: now,
     });
+    return createdBoard.save();
   }
 
-  generateKey(data: UpdateBoardDto): string {
-    return data.uuid;
+  async findBySpaceId(spaceId: string): Promise<Board[]> {
+    return this.boardModel.find({ spaceId }).exec();
+  }
+
+  async deleteBoard(boardId: string) {
+    const now = new Date();
+    return this.boardModel.updateOne({ uuid: boardId }, { deletedAt: now });
+  }
+
+  async deleteExpiredBoard(boardId: string) {
+    return this.boardModel.deleteOne({ uuid: boardId });
+  }
+
+  async restoreBoard(boardId: string) {
+    const now = new Date();
+    return this.boardModel.updateOne({ uuid: boardId }, { restoredAt: now });
   }
 }
