@@ -2,11 +2,14 @@ import { Clock, COMPARE } from './clock';
 import {
   Operation,
   OperationAdd,
+  OperationAddInput,
   OperationDelete,
   OperationInput,
   OperationLog,
   OperationMove,
+  OperationMoveInput,
   OperationUpdate,
+  OperationUpdateInput,
 } from './operation';
 import { Tree } from './tree';
 import { Node } from './node';
@@ -35,7 +38,7 @@ export class CrdtTree<T> {
   ): OperationAdd<T> {
     this.clock.increment();
     const clock = this.clock.copy();
-    const input: OperationInput<T> = {
+    const input: OperationAddInput<T> = {
       id: targetId,
       parentId,
       description,
@@ -47,7 +50,7 @@ export class CrdtTree<T> {
   generateOperationDelete(targetId: string): OperationDelete<T> {
     this.clock.increment();
     const clock = this.clock.copy();
-    const input: OperationInput<T> = {
+    const input: OperationInput = {
       id: targetId,
       clock,
     };
@@ -57,7 +60,7 @@ export class CrdtTree<T> {
   generateOperationMove(targetId: string, parentId: string): OperationMove<T> {
     this.clock.increment();
     const clock = this.clock.copy();
-    const input: OperationInput<T> = {
+    const input: OperationMoveInput = {
       id: targetId,
       parentId,
       clock,
@@ -71,7 +74,7 @@ export class CrdtTree<T> {
   ): OperationUpdate<T> {
     this.clock.increment();
     const clock = this.clock.copy();
-    const input: OperationInput<T> = {
+    const input: OperationUpdateInput<T> = {
       id: targetId,
       description,
       clock,
