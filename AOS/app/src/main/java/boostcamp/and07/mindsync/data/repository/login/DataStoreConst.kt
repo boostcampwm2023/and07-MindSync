@@ -6,4 +6,5 @@ object DataStoreConst {
     const val REFRESH_TOKEN_KEY_NAME = "refresh_token"
     const val UNAUTHORIZED_CODE = 401
     const val BEARER_TOKEN_PREFIX = "Bearer "
+    const val REFRESH_TOKEN_EXPIRED = "Refresh token expired. Please log in again."
 }
