@@ -7,4 +7,5 @@ data class ProfileResponse(
     val uuid: String,
     val nickname: String? = null,
     val image: String? = null,
+    val user_id: String? = null,
 )
