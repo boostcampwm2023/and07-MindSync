@@ -44,7 +44,7 @@ class AddSpaceViewModel
         }
 
         fun setImageFile(file: File) {
-            imageFile =경 file
+            imageFile = file
         }
 
         fun addSpace() {

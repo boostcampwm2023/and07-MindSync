@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +79,11 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
                         }
 
                         is Error -> {
-                            Snackbar.make(binding.root, "스페이스 추가가 실패!", Snackbar.LENGTH_SHORT)
+                            Snackbar.make(
+                                binding.root,
+                                SpaceExceptionMessage.ERROR_MESSAGE_SPACE_ADD.message,
+                                Snackbar.LENGTH_SHORT,
+                            )
                                 .show()
                         }
                     }
@@ -93,7 +98,7 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
         }
     }
 
-    private fun setBackBtn()  {
+    private fun setBackBtn() {
         binding.imgbtnAddSpaceBack.setOnClickListener {
             finish()
         }
