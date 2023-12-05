@@ -18,48 +18,48 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddSpaceViewModel
-@Inject
-constructor(
-    private val spaceRepository: SpaceRepository,
-) : ViewModel() {
-    private val _spaceName = MutableStateFlow<String>("")
-    val spaceName: StateFlow<String> = _spaceName
-    private val _spaceThumbnail = MutableStateFlow<String>("")
-    val spaceThumbnail: StateFlow<String> = _spaceThumbnail
-    private val _imageFile = MutableStateFlow<File?>(null)
-    private val _spaceEvent = MutableSharedFlow<SpaceEvent>()
-    val spaceEvent = _spaceEvent.asSharedFlow()
+    @Inject
+    constructor(
+        private val spaceRepository: SpaceRepository,
+    ) : ViewModel() {
+        private val _spaceName = MutableStateFlow<String>("")
+        val spaceName: StateFlow<String> = _spaceName
+        private val _spaceThumbnail = MutableStateFlow<String>("")
+        val spaceThumbnail: StateFlow<String> = _spaceThumbnail
+        private val _imageFile = MutableStateFlow<File?>(null)
+        private val _spaceEvent = MutableSharedFlow<SpaceEvent>()
+        val spaceEvent = _spaceEvent.asSharedFlow()
 
-    fun onSpaceNameChanged(
-        inputSpaceName: CharSequence,
-        start: Int,
-        before: Int,
-        count: Int,
-    ) {
-        _spaceName.value = inputSpaceName.toString()
-    }
+        fun onSpaceNameChanged(
+            inputSpaceName: CharSequence,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
+            _spaceName.value = inputSpaceName.toString()
+        }
 
-    fun setSpaceThumbnail(thumbnailUrl: String) {
-        _spaceThumbnail.value = thumbnailUrl
-    }
+        fun setSpaceThumbnail(thumbnailUrl: String) {
+            _spaceThumbnail.value = thumbnailUrl
+        }
 
-    fun setImageFile(file: File) {
-        _imageFile.value = file
-    }
+        fun setImageFile(file: File) {
+            _imageFile.value = file
+        }
 
-    fun addSpace() {
-        _imageFile.value?.let { imageFile ->
-            val icon = fileToMultiPart(imageFile)
-            val name = _spaceName.value.toRequestBody()
-            viewModelScope.launch(Dispatchers.IO) {
-                spaceRepository.addSpace(name, icon)
-                    .onSuccess {
-                        _spaceEvent.emit(SpaceEvent.Success)
-                    }
-                    .onFailure {
-                        _spaceEvent.emit(SpaceEvent.Error(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_ADD.message))
-                    }
+        fun addSpace() {
+            _imageFile.value?.let { imageFile ->
+                val icon = fileToMultiPart(imageFile)
+                val name = _spaceName.value.toRequestBody()
+                viewModelScope.launch(Dispatchers.IO) {
+                    spaceRepository.addSpace(name, icon)
+                        .onSuccess {
+                            _spaceEvent.emit(SpaceEvent.Success)
+                        }
+                        .onFailure {
+                            _spaceEvent.emit(SpaceEvent.Error(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_ADD.message))
+                        }
+                }
             }
         }
     }
-}

@@ -7,30 +7,30 @@ import okhttp3.RequestBody
 import javax.inject.Inject
 
 class SpaceRepositoryImpl
-@Inject
-constructor(private val spaceApi: SpaceApi) : SpaceRepository {
-    override suspend fun addSpace(
-        name: RequestBody,
-        icon: MultipartBody.Part,
-    ): Result<Space> {
-        val response = spaceApi.addSpace(name, icon)
-        return try {
-            if (response.isSuccessful) {
-                response.body()?.let { spaceResponse ->
-                    return Result.success(
-                        Space(
-                            id = spaceResponse.uuid,
-                            name = spaceResponse.name ?: "",
-                            imageUrl = spaceResponse.icon ?: "",
-                        ),
-                    )
+    @Inject
+    constructor(private val spaceApi: SpaceApi) : SpaceRepository {
+        override suspend fun addSpace(
+            name: RequestBody,
+            icon: MultipartBody.Part,
+        ): Result<Space> {
+            val response = spaceApi.addSpace(name, icon)
+            return try {
+                if (response.isSuccessful) {
+                    response.body()?.let { spaceResponse ->
+                        return Result.success(
+                            Space(
+                                id = spaceResponse.uuid,
+                                name = spaceResponse.name ?: "",
+                                imageUrl = spaceResponse.icon ?: "",
+                            ),
+                        )
+                    }
+                    throw Exception("body null")
+                } else {
+                    Result.failure(Exception("response fail"))
                 }
-                throw Exception("body null")
-            } else {
-                Result.failure(Exception("response fail"))
+            } catch (e: Exception) {
+                Result.failure(Exception(e.message))
             }
-        } catch (e: Exception) {
-            Result.failure(Exception(e.message))
         }
     }
-}
