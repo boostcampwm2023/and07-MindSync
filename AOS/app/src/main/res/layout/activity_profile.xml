@@ -6,6 +6,9 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.profile.ProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,10 +63,29 @@
             android:layout_height="120dp"
             android:background="@null"
             android:scaleType="centerCrop"
+            app:imageUri="@{vm.uiState.imageUri.toString()}"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"
             app:layout_constraintTop_toTopOf="@id/gl_profile_top"
             tools:src="@mipmap/ic_launcher" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_profile_image_edit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:cardCornerRadius="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_profile_image"
+            app:layout_constraintTop_toTopOf="@id/iv_profile_image">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/iv_profile_image_edit"
+                android:background="@color/blue"
+                android:src="@drawable/ic_add_board" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/tv_profile_nickname"
@@ -71,6 +93,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:text="@{vm.uiState.nickname}"
             android:textColor="@color/gray4"
             app:layout_constraintEnd_toEndOf="@id/iv_profile_image"
             app:layout_constraintStart_toStartOf="@id/iv_profile_image"
@@ -89,13 +112,13 @@
             app:layout_constraintTop_toTopOf="@id/tv_profile_nickname" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_profile_image_edit"
+            android:id="@+id/btn_profile_image_save"
             style="@style/Typography.Title03"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/main4"
-            android:text="@string/profile_image_edit"
+            android:text="@string/profile_image_save"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"
@@ -111,7 +134,7 @@
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"
-            app:layout_constraintTop_toBottomOf="@id/btn_profile_image_edit" />
+            app:layout_constraintTop_toBottomOf="@id/btn_profile_image_save" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

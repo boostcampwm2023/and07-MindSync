@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_my_page">마이페이지</string>
-    <string name="profile_image_edit">이미지 편집</string>
+    <string name="profile_image_save">저장</string>
     <string name="profile_logout">로그아웃</string>
+    <string name="profile_nickname_modify">닉네임 수정</string>
+    <string name="profile_modify">수정</string>
 </resources>
