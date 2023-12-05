@@ -16,9 +16,16 @@ class ConfirmInviteSpaceFragment :
     override fun initView() {
         setBinding()
         confirmInviteSpaceViewModel.updateSpace(args.space)
+        setNoButton()
     }
 
     private fun setBinding() {
         binding.vm = confirmInviteSpaceViewModel
+    }
+
+    private fun setNoButton() {
+        binding.btnConfirmInviteSpaceNo.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 }
