@@ -11,11 +11,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.io.File
 
 @AndroidEntryPoint
@@ -49,6 +55,7 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
 
     override fun init() {
         setBinding()
+        collectSpaceEvent()
     }
 
     private fun setBinding() {
@@ -58,6 +65,25 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
 
     fun clickImageButton() {
         checkPermissionsAndLaunchImagePicker()
+    }
+
+    private fun collectSpaceEvent() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                addSpaceViewModel.spaceEvent.collectLatest { spaceEvent ->
+                    when (spaceEvent) {
+                        is SpaceEvent.Success -> {
+                            finish()
+                        }
+
+                        is Error -> {
+                            Snackbar.make(binding.root, "스페이스 추가가 실패!", Snackbar.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun createImage(uri: Uri?) {
@@ -107,7 +133,8 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
     }
 
     private fun checkPermissionAndLaunchImageSelector() {
-        val readPermission = checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val readPermission =
+            checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
         if (readPermission == PackageManager.PERMISSION_GRANTED) {
             launchImageSelector()
