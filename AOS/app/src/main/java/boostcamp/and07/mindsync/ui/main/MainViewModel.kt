@@ -13,24 +13,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel
-@Inject
-constructor(
-    private val profileRepository: ProfileRepository,
-) : ViewModel() {
-    private val _profileImageUrl = MutableStateFlow("")
-    val profileImageUrl: StateFlow<String> = _profileImageUrl
-    private val _event = MutableSharedFlow<MainUiEvent>()
-    val event: SharedFlow<MainUiEvent> = _event
+    @Inject
+    constructor(
+        private val profileRepository: ProfileRepository,
+    ) : ViewModel() {
+        private val _profileImageUrl = MutableStateFlow("")
+        val profileImageUrl: StateFlow<String> = _profileImageUrl
+        private val _event = MutableSharedFlow<MainUiEvent>()
+        val event: SharedFlow<MainUiEvent> = _event
 
-    fun fetchProfile() {
-        viewModelScope.launch {
-            profileRepository.getProfile()
-                .onSuccess { profile ->
-                    _profileImageUrl.value = profile.imageUrl
-                }
-                .onFailure {
-                    _event.emit(MainUiEvent.ShowMessage(it.message.toString()))
-                }
+        fun fetchProfile() {
+            viewModelScope.launch {
+                profileRepository.getProfile()
+                    .onSuccess { profile ->
+                        _profileImageUrl.value = profile.imageUrl
+                    }
+                    .onFailure {
+                        _event.emit(MainUiEvent.ShowMessage(it.message.toString()))
+                    }
+            }
         }
     }
-}
