@@ -6,6 +6,9 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.profile.ProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,6 +63,7 @@
             android:layout_height="120dp"
             android:background="@null"
             android:scaleType="centerCrop"
+            app:imageUri="@{vm.uiState.imageUri.toString()}"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"
             app:layout_constraintTop_toTopOf="@id/gl_profile_top"
@@ -71,6 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:text="@{vm.uiState.nickname}"
             android:textColor="@color/gray4"
             app:layout_constraintEnd_toEndOf="@id/iv_profile_image"
             app:layout_constraintStart_toStartOf="@id/iv_profile_image"
