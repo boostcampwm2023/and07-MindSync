@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:name=".ui.MindSyncApplication"
@@ -28,10 +33,10 @@
         </activity>
         <activity
             android:name=".ui.space.AddInviteSpaceActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ui.space.AddSpaceActivity"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>
