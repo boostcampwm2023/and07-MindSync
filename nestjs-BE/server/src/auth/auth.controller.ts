@@ -35,6 +35,17 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @Post('token')
+  @Public()
+  renewAccessToken(@Body('refresh_token') refreshToken) {
+    return this.authService.renewAccessToken(refreshToken);
+  }
+
+  @Post('logout')
+  logout(@Body('refresh_token') refreshToken) {
+    return this.authService.remove(refreshToken);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
