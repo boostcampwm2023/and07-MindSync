@@ -35,7 +35,7 @@ jobs:
           KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
           MYSQL_DATABASE_URL: ${{ secrets.MYSQL_DATABASE_URL }}
           MONGODB_DATABASE_URL: ${{ secrets.MONGODB_DATABASE_URL }}
-          MONGODB_DATABASE_URI: ${{ secrets.MONGODB_DATABASE_URL }}
+          MONGODB_DATABASE_URI: ${{ secrets.MONGODB_DATABASE_URI }}
           NCLOUD_ACCESS_KEY: ${{ secrets.NCLOUD_ACCESS_KEY }}
           NCLOUD_SECRET_KEY: ${{ secrets.NCLOUD_SECRET_KEY }}
           NCLOUD_REGION: ${{ secrets.NCLOUD_REGION }}
