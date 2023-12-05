@@ -17,7 +17,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Singleton
     @Provides
     fun provideAccessTokenInterceptor(tokenRepository: TokenRepository): AccessTokenInterceptor {
@@ -26,9 +25,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(
-        accessTokenInterceptor: AccessTokenInterceptor,
-    ): OkHttpClient {
+    fun provideOkHttpClient(accessTokenInterceptor: AccessTokenInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(accessTokenInterceptor)
             .build()
