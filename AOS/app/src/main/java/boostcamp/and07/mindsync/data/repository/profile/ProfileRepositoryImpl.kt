@@ -7,30 +7,30 @@ import okhttp3.RequestBody
 import javax.inject.Inject
 
 class ProfileRepositoryImpl
-@Inject
-constructor(private val profileApi: ProfileApi) : ProfileRepository {
-    override suspend fun addProfile(
-        nickname: RequestBody,
-        image: MultipartBody.Part,
-    ): Result<Profile> {
-        val response = profileApi.addProfile(nickname, image)
-        return try {
-            if (response.isSuccessful) {
-                response.body()?.let { profileResponse ->
-                    return Result.success(
-                        Profile(
-                            id = profileResponse.uuid,
-                            imageUrl = profileResponse.image ?: "",
-                            nickname = profileResponse.nickname ?: "",
-                        ),
-                    )
+    @Inject
+    constructor(private val profileApi: ProfileApi) : ProfileRepository {
+        override suspend fun addProfile(
+            nickname: RequestBody,
+            image: MultipartBody.Part,
+        ): Result<Profile> {
+            val response = profileApi.addProfile(nickname, image)
+            return try {
+                if (response.isSuccessful) {
+                    response.body()?.let { profileResponse ->
+                        return Result.success(
+                            Profile(
+                                id = profileResponse.uuid,
+                                imageUrl = profileResponse.image ?: "",
+                                nickname = profileResponse.nickname ?: "",
+                            ),
+                        )
+                    }
+                    throw Exception("body null")
+                } else {
+                    Result.failure(Exception("response fail"))
                 }
-                throw Exception()
-            } else {
-                Result.failure(Exception())
+            } catch (e: Exception) {
+                Result.failure(Exception(e.message))
             }
-        } catch (e: Exception) {
-            Result.failure(Exception())
         }
     }
-}
