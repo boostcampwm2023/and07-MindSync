@@ -1,8 +1,8 @@
 package boostcamp.and07.mindsync.data.di
 
 import boostcamp.and07.mindsync.BuildConfig
-import boostcamp.and07.mindsync.data.repository.login.AccessTokenInterceptor
-import boostcamp.and07.mindsync.data.repository.login.TokenAuthenticator
+import boostcamp.and07.mindsync.data.network.AccessTokenInterceptor
+import boostcamp.and07.mindsync.data.network.TokenAuthenticator
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
