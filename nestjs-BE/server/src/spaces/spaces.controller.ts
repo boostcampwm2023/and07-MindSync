@@ -6,24 +6,37 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { UploadService } from 'src/upload/upload.service';
 
 @Controller('spaces')
 @ApiTags('spaces')
 export class SpacesController {
-  constructor(private readonly spacesService: SpacesService) {}
+  constructor(
+    private readonly spacesService: SpacesService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Create space' })
   @ApiResponse({
     status: 201,
     description: 'The space has been successfully created.',
   })
-  create(@Body() createSpaceDto: CreateSpaceDto) {
+  async create(
+    @UploadedFile() icon: Express.Multer.File,
+    @Body() createSpaceDto: CreateSpaceDto,
+  ) {
+    const iconUrl = await this.uploadService.uploadFile(icon);
+    createSpaceDto.icon = iconUrl;
     return this.spacesService.create(createSpaceDto);
   }
 
@@ -42,6 +55,7 @@ export class SpacesController {
   }
 
   @Patch(':space_uuid')
+  @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Update space by space_uuid' })
   @ApiResponse({
     status: 200,
@@ -55,10 +69,13 @@ export class SpacesController {
     status: 404,
     description: 'Space not found.',
   })
-  update(
+  async update(
+    @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
     @Body() updateSpaceDto: UpdateSpaceDto,
   ) {
+    const iconUrl = await this.uploadService.uploadFile(icon);
+    updateSpaceDto.icon = iconUrl;
     return this.spacesService.update(spaceUuid, updateSpaceDto);
   }
 

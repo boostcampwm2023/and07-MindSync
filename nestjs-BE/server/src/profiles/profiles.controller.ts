@@ -6,19 +6,37 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  Request as Req,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ProfileSpaceDto } from './dto/profile-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { UploadService } from 'src/upload/upload.service';
+import customEnv from 'src/config/env';
+import { Request } from 'express';
+const { BASE_IMAGE_URL } = customEnv;
+
+interface RequestWithUser extends Request {
+  user: {
+    uuid: string;
+  };
+}
 
 @Controller('profiles')
 @ApiTags('profiles')
 export class ProfilesController {
-  constructor(private readonly profilesService: ProfilesService) {}
+  constructor(
+    private readonly profilesService: ProfilesService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Create profile' })
   @ApiResponse({
     status: 201,
@@ -28,7 +46,16 @@ export class ProfilesController {
     status: 400,
     description: 'Bad Request. Invalid input data.',
   })
-  create(@Body() createProfileDto: CreateProfileDto) {
+  async create(
+    @UploadedFile() image: Express.Multer.File,
+    @Body() createProfileDto: CreateProfileDto,
+    @Req() req: RequestWithUser,
+  ) {
+    const imageUrl = image
+      ? await this.uploadService.uploadFile(image)
+      : BASE_IMAGE_URL;
+    createProfileDto.image = imageUrl;
+    createProfileDto.user_id = req.user.uuid;
     return this.profilesService.create(createProfileDto);
   }
 
@@ -56,10 +83,14 @@ export class ProfilesController {
     status: 404,
     description: 'Profile not found.',
   })
-  update(
+  async update(
+    @UploadedFile() image: Express.Multer.File,
     @Param('profile_uuid') profileUuid: string,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
+    if (image) {
+      updateProfileDto.image = await this.uploadService.uploadFile(image);
+    }
     return this.profilesService.update(profileUuid, updateProfileDto);
   }
 

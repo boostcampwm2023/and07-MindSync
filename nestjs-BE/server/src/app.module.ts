@@ -10,6 +10,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { SpacesModule } from './spaces/spaces.module';
 import { BoardsModule } from './boards/boards.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ProfilesModule,
     SpacesModule,
     BoardsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService, BoardGateway],
