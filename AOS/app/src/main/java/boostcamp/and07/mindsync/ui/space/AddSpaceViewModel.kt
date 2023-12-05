@@ -51,7 +51,7 @@ class AddSpaceViewModel
             imageFile?.let { imageFile ->
                 val icon = fileToMultiPart(imageFile)
                 val name = _spaceName.value.toRequestBody()
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
                     spaceRepository.addSpace(name, icon)
                         .onSuccess {
                             _spaceEvent.emit(SpaceEvent.Success)
