@@ -62,7 +62,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
 
     override fun init() {
         setBinding()
-        setupImageEditBtn()
+        setupImageEdit()
         setupShowNicknameEditBtn()
         setupBackBtn()
         observeEvent()
@@ -72,8 +72,8 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
         binding.vm = profileViewModel
     }
 
-    private fun setupImageEditBtn() {
-        binding.btnProfileImageEdit.setOnClickListener {
+    private fun setupImageEdit() {
+        binding.ivProfileImage.setOnClickListener {
             checkPermissionsAndLaunchImagePicker()
         }
     }
