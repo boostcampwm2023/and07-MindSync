@@ -19,6 +19,7 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from 'src/upload/upload.service';
 import customEnv from 'src/config/env';
 import { Request } from 'express';
+import { Public } from 'src/auth/public.decorator';
 const { BASE_IMAGE_URL } = customEnv;
 
 interface RequestWithUser extends Request {
@@ -35,6 +36,7 @@ export class ProfilesController {
     private readonly uploadService: UploadService,
   ) {}
 
+  @Public()
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Create profile' })
@@ -59,6 +61,7 @@ export class ProfilesController {
     return this.profilesService.create(createProfileDto);
   }
 
+  @Public()
   @Get(':profile_uuid')
   @ApiOperation({ summary: 'Get profile by profile_uuid' })
   @ApiResponse({
@@ -73,6 +76,7 @@ export class ProfilesController {
     return this.profilesService.findOne(profileUuid);
   }
 
+  @Public()
   @Patch(':profile_uuid')
   @ApiOperation({ summary: 'Update profile by profile_uuid' })
   @ApiResponse({
@@ -94,6 +98,7 @@ export class ProfilesController {
     return this.profilesService.update(profileUuid, updateProfileDto);
   }
 
+  @Public()
   @Delete(':profile_uuid')
   @ApiOperation({ summary: 'Remove profile by profile_uuid' })
   @ApiResponse({
@@ -108,6 +113,7 @@ export class ProfilesController {
     return this.profilesService.remove(profileUuid);
   }
 
+  @Public()
   @Post('/spaces')
   @ApiOperation({ summary: 'Join space' })
   @ApiResponse({
@@ -122,6 +128,7 @@ export class ProfilesController {
     return this.profilesService.joinSpace(profileSpaceDto);
   }
 
+  @Public()
   @Delete(':profile_uuid/spaces/:space_uuid')
   @ApiOperation({ summary: 'Leave space' })
   @ApiResponse({
@@ -139,6 +146,7 @@ export class ProfilesController {
     return this.profilesService.leaveSpace(profileUuid, spaceUuid);
   }
 
+  @Public()
   @Get('users/:space_uuid')
   @ApiOperation({ summary: 'Find users in a space' })
   @ApiResponse({
