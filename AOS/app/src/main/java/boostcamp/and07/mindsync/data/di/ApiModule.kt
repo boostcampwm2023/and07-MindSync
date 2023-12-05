@@ -36,5 +36,7 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideProfileApi(retrofit: Retrofit): ProfileApi = retrofit.create()
+    fun provideProfileApi(
+        @Named(NetworkConst.CLIENT_RETROFIT) retrofit: Retrofit,
+    ): ProfileApi = retrofit.create()
 }
