@@ -17,11 +17,11 @@ class AddInviteSpaceViewModel
         val spaceInviteCode: StateFlow<String> = _spaceInviteCode
 
         fun onSpaceInviteCodeChanged(
-            s: CharSequence,
+            inviteSpaceCode: CharSequence,
             start: Int,
             before: Int,
             count: Int,
         ) {
-            _spaceInviteCode.value = s.toString()
+            _spaceInviteCode.value = inviteSpaceCode.toString()
         }
     }
