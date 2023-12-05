@@ -15,8 +15,7 @@ fun fileToMultiPart(file: File): MultipartBody.Part {
     return MultipartBody.Part.createFormData("icon", file.name, requestFile)
 }
 
-fun String.toRequestBody() =
-    requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
+fun String.toRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
 
 fun Uri.toAbsolutePath(context: Context): String? {
     val contentResolver = context.contentResolver
