@@ -9,4 +9,6 @@ interface ProfileRepository {
         nickname: RequestBody,
         image: MultipartBody.Part,
     ): Result<Profile>
+
+    suspend fun getProfile(): Result<Profile>
 }

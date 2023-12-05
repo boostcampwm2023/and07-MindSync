@@ -33,4 +33,26 @@ class ProfileRepositoryImpl
                 Result.failure(Exception(e.message))
             }
         }
+
+        override suspend fun getProfile(): Result<Profile> {
+            val response = profileApi.getProfile()
+            return try {
+                if (response.isSuccessful) {
+                    response.body()?.let { profileResponse ->
+                        return Result.success(
+                            Profile(
+                                id = profileResponse.uuid,
+                                imageUrl = profileResponse.image ?: "",
+                                nickname = profileResponse.nickname ?: "",
+                            ),
+                        )
+                    }
+                    throw Exception("body null")
+                } else {
+                    Result.failure(Exception("response fail"))
+                }
+            } catch (e: Exception) {
+                Result.failure(Exception(e.message))
+            }
+        }
     }
