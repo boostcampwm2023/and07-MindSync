@@ -12,24 +12,26 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository,
-) :
+class ProfileViewModel
+    @Inject
+    constructor(
+        private val profileRepository: ProfileRepository,
+    ) :
     ViewModel() {
-    private val _uiState = MutableStateFlow(ProfileUiState())
-    val uiState: StateFlow<ProfileUiState> = _uiState
-    private val _event = MutableSharedFlow<ProfileUiEvent>()
-    val event: SharedFlow<ProfileUiEvent> = _event
+        private val _uiState = MutableStateFlow(ProfileUiState())
+        val uiState: StateFlow<ProfileUiState> = _uiState
+        private val _event = MutableSharedFlow<ProfileUiEvent>()
+        val event: SharedFlow<ProfileUiEvent> = _event
 
-    fun updateProfileUri(uri: Uri) {
-        _uiState.update { uiState ->
-            uiState.copy(imageUri = uri)
+        fun updateProfileUri(uri: Uri) {
+            _uiState.update { uiState ->
+                uiState.copy(imageUri = uri)
+            }
+        }
+
+        fun updateNickName(nickname: String) {
+            _uiState.update { uiState ->
+                uiState.copy(nickname = nickname)
+            }
         }
     }
-
-    fun updateNickName(nickname: String) {
-        _uiState.update { uiState ->
-            uiState.copy(nickname = nickname)
-        }
-    }
-}

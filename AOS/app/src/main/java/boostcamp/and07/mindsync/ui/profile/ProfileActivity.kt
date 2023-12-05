@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
     private val profileViewModel by viewModels<ProfileViewModel>()
-    
+
     private val imagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             createImage(uri)
@@ -39,15 +39,16 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
             }
         }
 
-    private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            result.data?.data?.let { uri ->
-                createImage(uri)
+    private val imageResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    createImage(uri)
+                }
             }
         }
-    }
 
     private fun createImage(uri: Uri?) {
         uri?.let { uri ->
@@ -112,9 +113,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
         }
     }
 
-    private fun showDialog(
-        action: (String) -> Unit,
-    ) {
+    private fun showDialog(action: (String) -> Unit) {
         val dialog = EditNickNameDialog()
         dialog.setListener(
             object : EditNickNameInterface {
@@ -177,9 +176,10 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     }
 
     private fun launchImageSelector() {
-        val intent = Intent(Intent.ACTION_PICK).apply {
-            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-        }
+        val intent =
+            Intent(Intent.ACTION_PICK).apply {
+                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+            }
         imageResult.launch(intent)
     }
 
