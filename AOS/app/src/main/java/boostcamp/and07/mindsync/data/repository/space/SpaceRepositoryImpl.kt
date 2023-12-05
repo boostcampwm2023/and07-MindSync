@@ -33,4 +33,26 @@ class SpaceRepositoryImpl
                 Result.failure(Exception(e.message))
             }
         }
+
+        override suspend fun getSpace(spaceUuid: String): Result<Space> {
+            val response = spaceApi.getSpace(spaceUuid)
+            return try {
+                if (response.isSuccessful) {
+                    response.body()?.let { spaceResponse ->
+                        return Result.success(
+                            Space(
+                                id = spaceResponse.uuid,
+                                name = spaceResponse.name ?: "",
+                                imageUrl = spaceResponse.icon ?: "",
+                            ),
+                        )
+                    }
+                    throw Exception("body null")
+                } else {
+                    Result.failure(Exception("response fail"))
+                }
+            } catch (e: Exception) {
+                Result.failure(Exception(e.message))
+            }
+        }
     }
