@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.data.di
 
 import boostcamp.and07.mindsync.data.network.LoginApi
+import boostcamp.and07.mindsync.data.network.TokenApi
 import boostcamp.and07.mindsync.data.network.SpaceApi
 import dagger.Module
 import dagger.Provides
@@ -20,4 +21,8 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideSpaceApi(retrofit: Retrofit): SpaceApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideTokenApi(retrofit: Retrofit): TokenApi = retrofit.create()
 }
