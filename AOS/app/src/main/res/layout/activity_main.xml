@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.main.MainViewModel" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -42,6 +44,7 @@
 
         <include
             android:id="@+id/include_main_in_drawer"
+            profileImageUrl="@{vm.profileImageUrl}"
             layout="@layout/navigation_drawer_side_bar" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
