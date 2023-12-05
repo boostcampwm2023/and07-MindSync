@@ -61,7 +61,8 @@ class AddSpaceViewModel
                 }
             }
         }
-        companion object{
+
+        companion object {
             const val createSpaceImageName = "icon"
         }
     }

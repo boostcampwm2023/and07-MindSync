@@ -10,7 +10,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
-fun fileToMultiPart(file: File, imageName:String): MultipartBody.Part {
+fun fileToMultiPart(
+    file: File,
+    imageName: String,
+): MultipartBody.Part {
     val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData(imageName, file.name, requestFile)
 }
