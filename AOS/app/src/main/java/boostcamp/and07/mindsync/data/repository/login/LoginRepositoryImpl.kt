@@ -8,7 +8,7 @@ import javax.inject.Inject
 class LoginRepositoryImpl
     @Inject
     constructor(private val api: LoginApi) : LoginRepository {
-        override suspend fun loginWithKakao(kakaoUserId: String): Result<String> {
+        override suspend fun loginWithKakao(kakaoUserId: Long): Result<String> {
             return try {
                 val request = KakaoLoginRequest(kakaoUserId)
                 val response = api.postKakaoOAuth(request)
