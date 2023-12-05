@@ -2,9 +2,20 @@
 CREATE TABLE `USER_TB` (
     `uuid` VARCHAR(32) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
-    `password` VARCHAR(191) NOT NULL,
+    `provider` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `USER_TB_email_key`(`email`),
+    UNIQUE INDEX `USER_TB_email_provider_key`(`email`, `provider`),
+    PRIMARY KEY (`uuid`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `REFRESH_TOKEN_TB` (
+    `uuid` VARCHAR(32) NOT NULL,
+    `token` VARCHAR(191) NOT NULL,
+    `expiry_date` DATETIME(3) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `REFRESH_TOKEN_TB_token_key`(`token`),
     PRIMARY KEY (`uuid`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -35,6 +46,9 @@ CREATE TABLE `PROFILE_SPACE_TB` (
 
     PRIMARY KEY (`space_uuid`, `profile_uuid`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `REFRESH_TOKEN_TB` ADD CONSTRAINT `REFRESH_TOKEN_TB_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `USER_TB`(`uuid`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PROFILE_TB` ADD CONSTRAINT `PROFILE_TB_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `USER_TB`(`uuid`) ON DELETE RESTRICT ON UPDATE CASCADE;
