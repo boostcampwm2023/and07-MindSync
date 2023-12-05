@@ -26,7 +26,7 @@ class AddSpaceViewModel
         val spaceName: StateFlow<String> = _spaceName
         private val _spaceThumbnail = MutableStateFlow<String>("")
         val spaceThumbnail: StateFlow<String> = _spaceThumbnail
-        private val _imageFile = MutableStateFlow<File?>(null)
+        private var imageFile: File? = null
         private val _spaceEvent = MutableSharedFlow<SpaceEvent>()
         val spaceEvent = _spaceEvent.asSharedFlow()
 
@@ -44,11 +44,11 @@ class AddSpaceViewModel
         }
 
         fun setImageFile(file: File) {
-            _imageFile.value = file
+            imageFile =경 file
         }
 
         fun addSpace() {
-            _imageFile.value?.let { imageFile ->
+            imageFile?.let { imageFile ->
                 val icon = fileToMultiPart(imageFile)
                 val name = _spaceName.value.toRequestBody()
                 viewModelScope.launch(Dispatchers.IO) {
