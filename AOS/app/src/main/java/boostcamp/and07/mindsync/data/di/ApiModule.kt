@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.data.di
 
 import boostcamp.and07.mindsync.data.network.LoginApi
 import boostcamp.and07.mindsync.data.network.ProfileApi
+import boostcamp.and07.mindsync.data.network.LogoutApi
 import boostcamp.and07.mindsync.data.network.SpaceApi
 import boostcamp.and07.mindsync.data.network.TokenApi
 import dagger.Module
@@ -33,6 +34,12 @@ object ApiModule {
     fun provideTokenApi(
         @Named(NetworkConst.TOKEN_RETROFIT) retrofit: Retrofit,
     ): TokenApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideLogoutApi(
+        @Named(NetworkConst.TOKEN_RETROFIT) retrofit: Retrofit,
+    ): LogoutApi = retrofit.create()
 
     @Provides
     @Singleton
