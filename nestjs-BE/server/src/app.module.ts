@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BoardGateway } from './board/board.gateway';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -13,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { UploadModule } from './upload/upload.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { InviteCodesModule } from './invite-codes/invite-codes.module';
+import { BoardTreesModule } from './board-trees/board-trees.module';
 import customEnv from './config/env';
 
 @Module({
@@ -28,8 +28,9 @@ import customEnv from './config/env';
     UploadModule,
     MongooseModule.forRoot(customEnv.MONGODB_DATABASE_URI),
     InviteCodesModule,
+    BoardTreesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, BoardGateway],
+  providers: [AppService],
 })
 export class AppModule {}
