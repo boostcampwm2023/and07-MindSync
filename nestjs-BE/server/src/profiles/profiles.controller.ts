@@ -13,13 +13,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from 'src/upload/upload.service';
-import { Request } from 'express';
-
-interface RequestWithUser extends Request {
-  user: {
-    uuid: string;
-  };
-}
+import { RequestWithUser } from 'src/utils/interface';
 
 @Controller('profiles')
 @ApiTags('profiles')
