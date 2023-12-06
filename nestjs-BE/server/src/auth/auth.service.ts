@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
@@ -93,8 +93,12 @@ export class AuthService extends BaseService<TokenData> {
     );
     super.create(refreshTokenData);
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      statusCode: HttpStatus.OK,
+      message: 'Success',
+      data: {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      },
     };
   }
 
@@ -106,7 +110,11 @@ export class AuthService extends BaseService<TokenData> {
       const tokenData = await this.getDataFromCacheOrDB(refreshToken);
       if (!tokenData) throw new Error('No token data found');
       const accessToken = await this.createAccessToken(tokenData.user_id);
-      return accessToken;
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success',
+        data: { acecss_token: accessToken },
+      };
     } catch (error) {
       super.remove(refreshToken);
       throw new UnauthorizedException(
