@@ -12,6 +12,7 @@ import { BoardsModule } from './boards/boards.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UploadModule } from './upload/upload.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { InviteCodesModule } from './invite-codes/invite-codes.module';
 import customEnv from './config/env';
 
 @Module({
@@ -26,6 +27,7 @@ import customEnv from './config/env';
     BoardsModule,
     UploadModule,
     MongooseModule.forRoot(customEnv.MONGODB_DATABASE_URI),
+    InviteCodesModule,
   ],
   controllers: [AppController],
   providers: [AppService, BoardGateway],
