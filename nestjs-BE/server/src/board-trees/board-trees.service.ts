@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BoardTree } from './schemas/board-tree.schema';
 import { Model } from 'mongoose';
 import { CrdtTree } from 'src/crdt/crdt-tree';
+import { Operation } from 'src/crdt/operation';
 
 @Injectable()
 export class BoardTreesService {
@@ -38,6 +39,11 @@ export class BoardTreesService {
       this.create(boardId, JSON.stringify(newTree));
       this.boardTrees.set(boardId, newTree);
     }
+  }
+
+  applyOperation(boardId: string, operation: Operation<string>) {
+    const boardTree = this.boardTrees.get(boardId);
+    boardTree.applyOperation(operation);
   }
 
   hasTree(boardId: string) {
