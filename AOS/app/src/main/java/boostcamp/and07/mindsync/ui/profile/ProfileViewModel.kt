@@ -27,6 +27,14 @@ class ProfileViewModel
         val uiState: StateFlow<ProfileUiState> = _uiState
         private val _event = MutableSharedFlow<ProfileUiEvent>()
         val event: SharedFlow<ProfileUiEvent> = _event
+    private val _uiState = MutableStateFlow(ProfileUiState())
+    val uiState: StateFlow<ProfileUiState> = _uiState
+    private val _event = MutableSharedFlow<ProfileUiEvent>()
+    val event: SharedFlow<ProfileUiEvent> = _event
+    private val coroutineExceptionHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            viewModelScope.launch { _event.emit(ProfileUiEvent.ShowMessage(throwable.message.toString())) }
+        }
 
         fun updateProfileUri(uri: Uri) {
             _uiState.update { uiState ->
