@@ -4,9 +4,10 @@ import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.Tree
 
 class CrdtTree(id: String) {
-    var operationLog: MutableList<OperationLog> = mutableListOf()
-    var clock: Clock = Clock(id)
+    private var operationLog: MutableList<OperationLog> = mutableListOf()
+    private var clock: Clock = Clock(id)
     var tree: Tree = Tree()
+        private set
 
     fun get(id: String): Node {
         return tree.getNode(id)
