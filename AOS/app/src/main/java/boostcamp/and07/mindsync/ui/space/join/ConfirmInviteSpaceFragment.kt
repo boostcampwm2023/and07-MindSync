@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.ui.space
+package boostcamp.and07.mindsync.ui.space.join
 
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs

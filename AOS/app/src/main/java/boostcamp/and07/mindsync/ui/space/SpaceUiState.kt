@@ -2,4 +2,8 @@ package boostcamp.and07.mindsync.ui.space
 
 import boostcamp.and07.mindsync.data.model.Space
 
-data class SpaceUiState(val space: Space? = null)
+data class SpaceUiState(
+    val space: Space? = null,
+    val spaceName: String = "",
+    val spaceThumbnail: String = "",
+)

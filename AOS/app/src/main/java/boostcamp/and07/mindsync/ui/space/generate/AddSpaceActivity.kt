@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.ui.space
+package boostcamp.and07.mindsync.ui.space.generate
 
 import android.Manifest
 import android.content.Intent
@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import com.google.android.material.snackbar.Snackbar

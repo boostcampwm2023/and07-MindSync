@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.space.AddSpaceViewModel" />
+            type="boostcamp.and07.mindsync.ui.space.generate.AddSpaceViewModel" />
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.AddSpaceActivity" />
+            type="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:background="@color/main3"
         android:padding="10dp"
-        tools:context=".ui.space.AddSpaceActivity">
+        tools:context=".ui.space.generate.AddSpaceActivity">
 
         <ImageButton
             android:id="@+id/imgbtn_add_space_back"
@@ -59,7 +59,7 @@
             android:layout_height="125dp"
             android:layout_marginTop="65dp"
             android:src="@mipmap/ic_app_logo_round"
-            app:imageUri="@{vm.spaceThumbnail}"
+            app:imageUri="@{vm.uiState.spaceThumbnail}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_add_space_title" />
@@ -90,7 +90,7 @@
                 android:background="@color/white"
                 android:hint="스페이스 이름"
                 android:onTextChanged="@{vm.onSpaceNameChanged}"
-                android:text="@{vm.spaceName}" />
+                android:text="@{vm.uiState.spaceName}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton

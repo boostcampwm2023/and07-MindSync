@@ -1,8 +1,10 @@
-package boostcamp.and07.mindsync.ui.space
+package boostcamp.and07.mindsync.ui.space.generate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
+import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import boostcamp.and07.mindsync.ui.util.toRequestBody
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -21,10 +24,8 @@ class AddSpaceViewModel
     constructor(
         private val spaceRepository: SpaceRepository,
     ) : ViewModel() {
-        private val _spaceName = MutableStateFlow<String>("")
-        val spaceName: StateFlow<String> = _spaceName
-        private val _spaceThumbnail = MutableStateFlow<String>("")
-        val spaceThumbnail: StateFlow<String> = _spaceThumbnail
+        private val _uiState = MutableStateFlow(SpaceUiState())
+        val uiState: StateFlow<SpaceUiState> = _uiState
         private var imageFile: File? = null
         private val _spaceEvent = MutableSharedFlow<SpaceEvent>()
         val spaceEvent = _spaceEvent.asSharedFlow()
@@ -35,11 +36,15 @@ class AddSpaceViewModel
             before: Int,
             count: Int,
         ) {
-            _spaceName.value = inputSpaceName.toString()
+            _uiState.update { uiState ->
+                uiState.copy(spaceName = inputSpaceName.toString())
+            }
         }
 
         fun setSpaceThumbnail(thumbnailUrl: String) {
-            _spaceThumbnail.value = thumbnailUrl
+            _uiState.update { uiState ->
+                uiState.copy(spaceThumbnail = thumbnailUrl)
+            }
         }
 
         fun setImageFile(file: File) {
@@ -49,7 +54,7 @@ class AddSpaceViewModel
         fun addSpace(imageName: String) {
             imageFile?.let { imageFile ->
                 val icon = fileToMultiPart(imageFile, imageName)
-                val name = _spaceName.value.toRequestBody()
+                val name = _uiState.value.spaceName.toRequestBody()
                 viewModelScope.launch {
                     spaceRepository.addSpace(name, icon)
                         .onSuccess {

@@ -46,10 +46,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.space.AddInviteSpaceActivity"
+            android:name=".ui.space.join.AddInviteSpaceActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.space.AddSpaceActivity"
+            android:name=".ui.space.generate.AddSpaceActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"

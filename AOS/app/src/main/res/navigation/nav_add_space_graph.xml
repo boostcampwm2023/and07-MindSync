@@ -7,11 +7,11 @@
 
     <fragment
         android:id="@+id/inputSpaceCodeFragment"
-        android:name="boostcamp.and07.mindsync.ui.space.InputSpaceCodeFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.join.InputSpaceCodeFragment"
         android:label="InputSpaceCodeFragment"/>
     <fragment
         android:id="@+id/confirmInviteSpaceFragment"
-        android:name="boostcamp.and07.mindsync.ui.space.ConfirmInviteSpaceFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.join.ConfirmInviteSpaceFragment"
         android:label="ConfirmInviteSpaceFragment">
         <argument
             android:name="space"

@@ -1,8 +1,9 @@
-package boostcamp.and07.mindsync.ui.space
+package boostcamp.and07.mindsync.ui.space.join
 
 import androidx.lifecycle.ViewModel
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
+import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

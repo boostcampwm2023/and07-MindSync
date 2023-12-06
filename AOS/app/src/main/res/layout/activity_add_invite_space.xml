@@ -7,7 +7,7 @@
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.AddInviteSpaceActivity" />
+            type="boostcamp.and07.mindsync.ui.space.join.AddInviteSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:background="@color/main3"
         android:padding="10dp"
-        tools:context=".ui.space.AddInviteSpaceActivity">
+        tools:context=".ui.space.join.AddInviteSpaceActivity">
 
         <ImageButton
             android:id="@+id/imgbtn_add_invite_space_back"
