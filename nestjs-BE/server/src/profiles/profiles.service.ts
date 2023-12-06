@@ -29,11 +29,10 @@ export class ProfilesService extends BaseService<UpdateProfileDto> {
     return data.uuid;
   }
 
-  async create(data: CreateProfileDto): Promise<UpdateProfileDto | string> {
+  async create(data: CreateProfileDto) {
     const createdProfile = await super.create(data);
-    if (typeof createdProfile !== 'string') {
-      this.temporaryDatabaseService.addEntry(data.user_id, createdProfile.uuid);
-    }
+    const profileData = createdProfile.data;
+    this.temporaryDatabaseService.addEntry(data.user_id, profileData.uuid);
     return createdProfile;
   }
 
