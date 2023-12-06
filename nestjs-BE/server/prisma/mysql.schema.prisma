@@ -10,9 +10,19 @@ datasource db {
 
 model USER_TB {
   uuid     String      @id @db.VarChar(32)
-  email    String      @unique
-  password String
-  profiles PROFILE_TB[] 
+  email    String
+  provider String
+  profiles PROFILE_TB[]
+  refresh_tokens REFRESH_TOKEN_TB[]
+  @@unique([email, provider])
+}
+
+model REFRESH_TOKEN_TB {
+  uuid       String      @id @db.VarChar(32)
+  token      String    @unique
+  expiry_date DateTime
+  user_id    String
+  user       USER_TB   @relation(fields: [user_id], references: [uuid])
 }
 
 model PROFILE_TB {
@@ -39,3 +49,4 @@ model PROFILE_SPACE_TB {
   profile      PROFILE_TB @relation(fields: [profile_uuid], references: [uuid])
   @@id([space_uuid, profile_uuid])
 }
+

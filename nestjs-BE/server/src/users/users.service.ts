@@ -51,7 +51,7 @@ export class UsersService extends BaseService<UpdateUserDto> {
       temporaryDatabaseService,
       cacheSize: USER_CACHE_SIZE,
       className: 'USER_TB',
-      field: 'email',
+      field: 'email_provider',
     });
   }
 
@@ -65,8 +65,8 @@ export class UsersService extends BaseService<UpdateUserDto> {
     this.users.push({ uuid: v4(), email });
   }
 
-  generateKey(data: UpdateUserDto): string {
-    return data.email;
+  generateKey(data: UpdateUserDto) {
+    return `email:${data.email}+provider:${data.provider}`;
   }
 
   async findProfiles(email: string, includeSpaces = false) {

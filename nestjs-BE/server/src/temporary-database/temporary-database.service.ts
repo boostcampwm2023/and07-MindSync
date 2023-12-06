@@ -36,6 +36,7 @@ export class TemporaryDatabaseService {
       'SPACE_TB',
       'BoardCollection',
       'PROFILE_SPACE_TB',
+      'REFRESH_TOKEN_TB',
     ];
     const operations = ['insert', 'update', 'delete'];
 

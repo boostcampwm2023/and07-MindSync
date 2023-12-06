@@ -4,6 +4,6 @@ export class CreateUserDto {
   @ApiProperty({ example: 'test@gmail.com', description: 'email adress' })
   readonly email: string;
 
-  @ApiProperty({ example: 'qwerasdf@!123', description: 'password' })
-  readonly password: string;
+  @ApiProperty({ example: 'kakao', description: 'social site name' })
+  readonly provider: string;
 }
