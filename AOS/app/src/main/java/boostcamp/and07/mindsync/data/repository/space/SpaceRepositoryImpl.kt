@@ -2,7 +2,6 @@ package boostcamp.and07.mindsync.data.repository.space
 
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.network.SpaceApi
-import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
 import boostcamp.and07.mindsync.ui.util.ResponseErrorMessage
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
