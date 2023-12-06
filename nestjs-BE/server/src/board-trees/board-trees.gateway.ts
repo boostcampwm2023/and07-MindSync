@@ -6,7 +6,7 @@ import {
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ namespace: 'board' })
-export class BoardGateway {
+export class BoardTreesGateway {
   @WebSocketServer()
   server: Server;
 

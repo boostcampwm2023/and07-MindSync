@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BoardGateway } from './board/board.gateway';
+import { BoardTreesGateway } from './board-trees/board-trees.gateway';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -28,6 +28,6 @@ import customEnv from './config/env';
     MongooseModule.forRoot(customEnv.MONGODB_DATABASE_URI),
   ],
   controllers: [AppController],
-  providers: [AppService, BoardGateway],
+  providers: [AppService, BoardTreesGateway],
 })
 export class AppModule {}
