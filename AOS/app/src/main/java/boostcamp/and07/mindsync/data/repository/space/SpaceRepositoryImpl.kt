@@ -18,13 +18,15 @@ class SpaceRepositoryImpl
             return try {
                 if (response.isSuccessful) {
                     response.body()?.let { spaceResponse ->
-                        return Result.success(
-                            Space(
-                                id = spaceResponse.uuid,
-                                name = spaceResponse.name ?: "",
-                                imageUrl = spaceResponse.icon ?: "",
-                            ),
-                        )
+                        spaceResponse.data?.let { spaceData ->
+                            return Result.success(
+                                Space(
+                                    id = spaceData.uuid,
+                                    name = spaceData.name ?: "",
+                                    imageUrl = spaceData.icon ?: "",
+                                ),
+                            )
+                        }
                     }
                     throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
                 } else {
@@ -40,13 +42,15 @@ class SpaceRepositoryImpl
             return try {
                 if (response.isSuccessful) {
                     response.body()?.let { spaceResponse ->
-                        return Result.success(
-                            Space(
-                                id = spaceResponse.uuid,
-                                name = spaceResponse.name ?: "",
-                                imageUrl = spaceResponse.icon ?: "",
-                            ),
-                        )
+                        spaceResponse.data?.let { spaceData ->
+                            return Result.success(
+                                Space(
+                                    id = spaceData.uuid,
+                                    name = spaceData.name ?: "",
+                                    imageUrl = spaceData.icon ?: "",
+                                ),
+                            )
+                        }
                     }
                     throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
                 } else {
