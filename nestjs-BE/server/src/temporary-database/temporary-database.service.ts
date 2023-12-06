@@ -37,6 +37,7 @@ export class TemporaryDatabaseService {
       'BoardCollection',
       'PROFILE_SPACE_TB',
       'REFRESH_TOKEN_TB',
+      'INVITE_CODE_TB',
     ];
     const operations = ['insert', 'update', 'delete'];
 
@@ -111,7 +112,7 @@ export class TemporaryDatabaseService {
     });
   }
 
-  @Cron('0 */10 * * * *')
+  @Cron('* * * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);

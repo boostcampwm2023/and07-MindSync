@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import {
   PrismaServiceMySQL,
   PrismaServiceMongoDB,
@@ -37,15 +37,21 @@ export abstract class BaseService<T extends HasUuid> {
 
   abstract generateKey(data: T): string;
 
-  async create(data: T): Promise<T | string> {
+  async create(data: T) {
     data.uuid = generateUuid();
     const key = this.generateKey(data);
     const storeData = await this.getDataFromCacheOrDB(key);
-    if (storeData) return 'Data already exists.';
+    if (storeData) {
+      throw new HttpException('Data already exists.', HttpStatus.CONFLICT);
+    }
 
     this.temporaryDatabaseService.create(this.className, key, data);
     this.cache.put(key, data);
-    return data;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Created',
+      data,
+    };
   }
 
   async findOne(key: string): Promise<T | null> {

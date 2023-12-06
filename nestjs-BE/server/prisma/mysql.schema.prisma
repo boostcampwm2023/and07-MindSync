@@ -18,11 +18,11 @@ model USER_TB {
 }
 
 model REFRESH_TOKEN_TB {
-  uuid       String      @id @db.VarChar(32)
-  token      String    @unique
+  uuid        String      @id @db.VarChar(32)
+  token       String    @unique
   expiry_date DateTime
-  user_id    String
-  user       USER_TB   @relation(fields: [user_id], references: [uuid])
+  user_id     String
+  user        USER_TB   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
 }
 
 model PROFILE_TB {
@@ -30,7 +30,7 @@ model PROFILE_TB {
   user_id  String @db.VarChar(32)
   image    String
   nickname String
-  user     USER_TB @relation(fields: [user_id], references: [uuid])
+  user     USER_TB @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
   spaces   PROFILE_SPACE_TB[]
   @@index([user_id])
 }
@@ -40,13 +40,22 @@ model SPACE_TB {
   name     String
   icon     String
   profiles PROFILE_SPACE_TB[]
+  invite_codes INVITE_CODE_TB[]
 }
 
 model PROFILE_SPACE_TB {
   space_uuid   String     @db.VarChar(32)
   profile_uuid String     @db.VarChar(32)
-  space        SPACE_TB   @relation(fields: [space_uuid], references: [uuid])
-  profile      PROFILE_TB @relation(fields: [profile_uuid], references: [uuid])
+  space        SPACE_TB   @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
+  profile      PROFILE_TB @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
   @@id([space_uuid, profile_uuid])
+}
+
+model INVITE_CODE_TB {
+  uuid        String   @id     @db.VarChar(32)
+  invite_code String   @unique @db.VarChar(10)
+  space_uuid  String   @db.VarChar(32)
+  expiry_date DateTime
+  space       SPACE_TB @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
 }
 

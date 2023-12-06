@@ -56,14 +56,17 @@ export class AuthService extends BaseService<TokenData> {
 
   async createAccessToken(userUuid: string): Promise<string> {
     const payload = { sub: userUuid };
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: jwtConstants.accessSecret,
+      expiresIn: '5m',
+    });
     return accessToken;
   }
 
   async createRefreshToken(): Promise<string> {
     const refreshTokenPayload = { uuid: generateUuid() };
     const refreshToken = await this.jwtService.signAsync(refreshTokenPayload, {
-      secret: jwtConstants.secret,
+      secret: jwtConstants.refreshSecret,
       expiresIn: '14d',
     });
     return refreshToken;
@@ -98,7 +101,7 @@ export class AuthService extends BaseService<TokenData> {
   async renewAccessToken(refreshToken: string) {
     try {
       this.jwtService.verify(refreshToken, {
-        secret: jwtConstants.secret,
+        secret: jwtConstants.refreshSecret,
       });
       const tokenData = await this.getDataFromCacheOrDB(refreshToken);
       if (!tokenData) throw new Error('No token data found');

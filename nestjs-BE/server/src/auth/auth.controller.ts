@@ -12,6 +12,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { Public } from './public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
 import { UsersService } from 'src/users/users.service';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -37,12 +38,15 @@ export class AuthController {
 
   @Post('token')
   @Public()
-  renewAccessToken(@Body('refresh_token') refreshToken) {
+  renewAccessToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    const refreshToken = refreshTokenDto.refresh_token;
     return this.authService.renewAccessToken(refreshToken);
   }
 
   @Post('logout')
-  logout(@Body('refresh_token') refreshToken) {
+  @Public()
+  logout(@Body() refreshTokenDto: RefreshTokenDto) {
+    const refreshToken = refreshTokenDto.refresh_token;
     return this.authService.remove(refreshToken);
   }
 
