@@ -13,4 +13,6 @@ interface SpaceRepository {
     suspend fun getSpace(spaceUuid: String): Result<Space>
 
     suspend fun getInviteSpaceCode(spaceUuid: String): Result<String>
+
+    suspend fun joinInviteCode(inviteCode: String): Result<Space>
 }

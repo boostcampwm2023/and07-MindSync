@@ -81,4 +81,28 @@ class SpaceRepositoryImpl
                 Result.failure(Exception(e.message))
             }
         }
+
+        override suspend fun joinInviteCode(inviteCode: String): Result<Space> {
+            val response = spaceApi.inviteSpaceCode(inviteCode)
+            return try {
+                if (response.isSuccessful) {
+                    response.body()?.let { joinInviteCodeResponse ->
+                        joinInviteCodeResponse.data?.let { spaceData ->
+                            return Result.success(
+                                Space(
+                                    id = spaceData.uuid,
+                                    name = spaceData.name ?: "",
+                                    imageUrl = spaceData.icon ?: "",
+                                ),
+                            )
+                        }
+                    }
+                    throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
+                } else {
+                    Result.failure(Exception(ResponseErrorMessage.ERROR_MESSAGE_RESPONSE_FAIL.message))
+                }
+            } catch (e: Exception) {
+                Result.failure(Exception(e.message))
+            }
+        }
     }
