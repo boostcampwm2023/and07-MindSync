@@ -1,6 +1,9 @@
 package boostcamp.and07.mindsync.ui.dialog
 
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -44,6 +47,7 @@ class InviteUserDialog : DialogFragment() {
         binding.run {
         }
         getInviteCode()
+        setCopyButton()
         return binding.root
     }
 
@@ -60,6 +64,15 @@ class InviteUserDialog : DialogFragment() {
             }.onFailure {
                 Toast.makeText(requireContext(), "실패!", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun setCopyButton() {
+        binding.imgbtnInviteUserCopy.setOnClickListener {
+            val context = requireContext()
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("", binding.tvInviteUserSpaceCode.text.toString())
+            clipboard.setPrimaryClip(clip)
         }
     }
 
