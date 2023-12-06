@@ -4,10 +4,11 @@ import boostcamp.and07.mindsync.data.network.request.NewAccessTokenRequest
 import boostcamp.and07.mindsync.data.network.response.NewAccessTokenResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface TokenApi {
-    // TODO : 서버 명세서 받으면 수정
-    suspend fun getNewAccessToken(
+    @POST("auth/token")
+    suspend fun postNewAccessToken(
         @Body newAccessTokenRequest: NewAccessTokenRequest,
     ): Response<NewAccessTokenResponse>
 }

@@ -18,77 +18,74 @@ import okhttp3.Route
 import javax.inject.Inject
 
 class TokenAuthenticator
-    @Inject
-    constructor(
-        private val tokenRepository: TokenRepository,
-        private val logoutEventRepository: LogoutEventRepository,
-        private val tokenApi: TokenApi,
-    ) : Authenticator {
-        override fun authenticate(
-            route: Route?,
-            response: Response,
-        ): Request? {
-            if (response.message == DataStoreConst.REFRESH_TOKEN_EXPIRED) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    logoutEventRepository.logoutRequest()
-                }
-                return null
+@Inject
+constructor(
+    private val tokenRepository: TokenRepository,
+    private val logoutEventRepository: LogoutEventRepository,
+    private val tokenApi: TokenApi,
+) : Authenticator {
+    override fun authenticate(
+        route: Route?,
+        response: Response,
+    ): Request? {
+        if (response.message == DataStoreConst.REFRESH_TOKEN_EXPIRED) {
+            CoroutineScope(Dispatchers.IO).launch {
+                logoutEventRepository.logoutRequest()
             }
-            // 무조건 토큰을 받아온 후 진행시키기 위해 runBlocking
-            val refreshToken =
-                runBlocking {
-                    tokenRepository.getRefreshToken().first()
-                }
-            val accessToken =
-                runBlocking {
-                    tokenRepository.getRefreshToken().first()
-                }
-
-            if (refreshToken == null || accessToken == null) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    logoutEventRepository.logoutRequest()
-                }
-                return null
-            }
-            // 무조건 새 토큰을 받아온 후 진행시키기 위해 runBlocking
+            return null
+        }
+        // 무조건 토큰을 받아온 후 진행시키기 위해 runBlocking
+        val refreshToken =
             runBlocking {
-                getNewAccessToken(accessToken, refreshToken)
-                    .onSuccess { newAccessToken ->
-                        tokenRepository.saveAccessToken(newAccessToken)
-                    }
-                    .onFailure { e ->
-                        throw e
-                    }
+                tokenRepository.getRefreshToken().first()
+            }
+        val accessToken =
+            runBlocking {
+                tokenRepository.getRefreshToken().first()
             }
 
-            return newRequestWithToken(refreshToken, response.request)
+        if (refreshToken == null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                logoutEventRepository.logoutRequest()
+            }
+            return null
         }
-
-        private suspend fun getNewAccessToken(
-            accessToken: String,
-            refreshToken: String,
-        ): Result<String> {
-            return try {
-                val request = NewAccessTokenRequest(accessToken, refreshToken)
-                val response = tokenApi.getNewAccessToken(request)
-                if (response.isSuccessful) {
-                    response.body()?.let { tokenResponse ->
-                        Result.success(tokenResponse.accessToken)
-                    }
-                        ?: Result.failure(Exception(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message))
-                } else {
-                    Result.failure(Exception(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message))
+        // 무조건 새 토큰을 받아온 후 진행시키기 위해 runBlocking
+        runBlocking {
+            getNewAccessToken(refreshToken)
+                .onSuccess { newAccessToken ->
+                    tokenRepository.saveAccessToken(newAccessToken)
                 }
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+                .onFailure { e ->
+                    throw e
+                }
         }
 
-        private fun newRequestWithToken(
-            accessToken: String,
-            request: Request,
-        ): Request =
-            request.newBuilder()
-                .header(AUTHORIZATION, DataStoreConst.BEARER_TOKEN_PREFIX + accessToken)
-                .build()
+        return newRequestWithToken(refreshToken, response.request)
     }
+
+    private suspend fun getNewAccessToken(refreshToken: String): Result<String> {
+        return try {
+            val request = NewAccessTokenRequest(refreshToken)
+            val response = tokenApi.postNewAccessToken(request)
+            if (response.isSuccessful) {
+                response.body()?.let { tokenResponse ->
+                    Result.success(tokenResponse.accessToken)
+                }
+                    ?: Result.failure(Exception(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message))
+            } else {
+                Result.failure(Exception(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private fun newRequestWithToken(
+        accessToken: String,
+        request: Request,
+    ): Request =
+        request.newBuilder()
+            .header(AUTHORIZATION, DataStoreConst.BEARER_TOKEN_PREFIX + accessToken)
+            .build()
+}
