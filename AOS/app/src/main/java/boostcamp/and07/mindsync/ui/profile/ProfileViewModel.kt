@@ -20,60 +20,60 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel
-@Inject
-constructor(
-    private val profileRepository: ProfileRepository,
-) :
+    @Inject
+    constructor(
+        private val profileRepository: ProfileRepository,
+    ) :
     ViewModel() {
-    private val _uiState = MutableStateFlow(ProfileUiState())
-    val uiState: StateFlow<ProfileUiState> = _uiState
-    private val _event = MutableSharedFlow<ProfileUiEvent>()
-    val event: SharedFlow<ProfileUiEvent> = _event
-    private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { _, throwable ->
-            viewModelScope.launch { _event.emit(ProfileUiEvent.ShowMessage(throwable.message.toString())) }
+        private val _uiState = MutableStateFlow(ProfileUiState())
+        val uiState: StateFlow<ProfileUiState> = _uiState
+        private val _event = MutableSharedFlow<ProfileUiEvent>()
+        val event: SharedFlow<ProfileUiEvent> = _event
+        private val coroutineExceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                viewModelScope.launch { _event.emit(ProfileUiEvent.ShowMessage(throwable.message.toString())) }
+            }
+
+        fun updateProfileUri(uri: Uri) {
+            _uiState.update { uiState ->
+                uiState.copy(imageUri = uri)
+            }
         }
 
-    fun updateProfileUri(uri: Uri) {
-        _uiState.update { uiState ->
-            uiState.copy(imageUri = uri)
+        fun updateNickName(nickname: String) {
+            _uiState.update { uiState ->
+                uiState.copy(nickname = nickname)
+            }
         }
-    }
 
-    fun updateNickName(nickname: String) {
-        _uiState.update { uiState ->
-            uiState.copy(nickname = nickname)
+        fun setProfileImageFile(file: File) {
+            _uiState.update { uiState ->
+                uiState.copy(imageFile = file)
+            }
         }
-    }
 
-    fun setProfileImageFile(file: File) {
-        _uiState.update { uiState ->
-            uiState.copy(imageFile = file)
+        fun updateProfile(imageName: String) {
+            _uiState.value.imageFile?.let { file ->
+                val image = fileToMultiPart(file, imageName)
+                val nickname = _uiState.value.nickname.toRequestBody()
+                viewModelScope.launch(coroutineExceptionHandler) {
+                    profileRepository.patchProfile(nickname, image).collectLatest {
+                        _event.emit(ProfileUiEvent.NavigateToBack)
+                    }
+                }
+            }
         }
-    }
 
-    fun updateProfile(imageName: String) {
-        _uiState.value.imageFile?.let { file ->
-            val image = fileToMultiPart(file, imageName)
-            val nickname = _uiState.value.nickname.toRequestBody()
+        fun fetchProfile() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                profileRepository.patchProfile(nickname, image).collectLatest {
-                    _event.emit(ProfileUiEvent.NavigateToBack)
+                profileRepository.getProfile().collectLatest { profile ->
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            nickname = profile.nickname,
+                            imageUri = Uri.parse(profile.imageUrl),
+                        )
+                    }
                 }
             }
         }
     }
-
-    fun fetchProfile() {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            profileRepository.getProfile().collectLatest { profile ->
-                _uiState.update { uiState ->
-                    uiState.copy(
-                        nickname = profile.nickname,
-                        imageUri = Uri.parse(profile.imageUrl),
-                    )
-                }
-            }
-        }
-    }
-}
