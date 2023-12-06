@@ -111,7 +111,7 @@ export class CrdtTree<T> {
 
   static parse<T>(json: string) {
     const parsedJson = JSON.parse(json);
-    const crdtTree = new CrdtTree('0');
+    const crdtTree = new CrdtTree<T>('0');
     crdtTree.clock = Clock.parse(JSON.stringify(parsedJson.clock));
     crdtTree.tree = Tree.parse<T>(JSON.stringify(parsedJson.tree));
 
