@@ -54,18 +54,6 @@ class ProfileViewModel
             }
         }
 
-        fun addProfile(imageName: String) {
-            _uiState.value.imageFile?.let { file ->
-                val icon = fileToMultiPart(file, imageName)
-                val nickname = _uiState.value.nickname.toRequestBody()
-                viewModelScope.launch {
-                    profileRepository.addProfile(nickname, icon)
-                        .onSuccess {
-                            _event.emit(ProfileUiEvent.NavigateToBack)
-                        }
-                        .onFailure {
-                            _event.emit(ProfileUiEvent.ShowMessage(it.message.toString()))
-                        }
                 }
             }
         }
