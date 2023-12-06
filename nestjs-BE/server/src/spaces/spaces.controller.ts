@@ -15,7 +15,6 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from 'src/upload/upload.service';
-import { Public } from 'src/auth/public.decorator';
 import customEnv from 'src/config/env';
 const { BASE_IMAGE_URL } = customEnv;
 
@@ -27,7 +26,6 @@ export class SpacesController {
     private readonly uploadService: UploadService,
   ) {}
 
-  @Public()
   @Post()
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Create space' })
@@ -46,7 +44,6 @@ export class SpacesController {
     return this.spacesService.create(createSpaceDto);
   }
 
-  @Public()
   @Get(':space_uuid')
   @ApiOperation({ summary: 'Get space by space_uuid' })
   @ApiResponse({
@@ -61,7 +58,6 @@ export class SpacesController {
     return this.spacesService.findOne(spaceUuid);
   }
 
-  @Public()
   @Patch(':space_uuid')
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Update space by space_uuid' })
@@ -88,7 +84,6 @@ export class SpacesController {
     return this.spacesService.update(spaceUuid, updateSpaceDto);
   }
 
-  @Public()
   @Delete(':space_uuid')
   @ApiOperation({ summary: 'Remove space by space_uuid' })
   @ApiResponse({
