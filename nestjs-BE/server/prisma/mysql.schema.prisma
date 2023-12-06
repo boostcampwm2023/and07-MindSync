@@ -27,12 +27,11 @@ model REFRESH_TOKEN_TB {
 
 model PROFILE_TB {
   uuid     String @id @db.VarChar(32)
-  user_id  String @db.VarChar(32)
+  user_id  String @unique @db.VarChar(32)
   image    String
   nickname String
   user     USER_TB @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
   spaces   PROFILE_SPACE_TB[]
-  @@index([user_id])
 }
 
 model SPACE_TB {

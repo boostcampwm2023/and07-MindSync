@@ -54,7 +54,7 @@ export abstract class BaseService<T extends HasUuid> {
     };
   }
 
-  async findOne(key: string): Promise<T | null> {
+  async findOne(key: string) {
     const data = await this.getDataFromCacheOrDB(key);
     const deleteCommand = this.temporaryDatabaseService.get(
       this.className,
@@ -65,10 +65,17 @@ export abstract class BaseService<T extends HasUuid> {
     if (data) {
       const mergedData = this.mergeWithUpdateCommand(data, key);
       this.cache.put(key, mergedData);
-      return mergedData;
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success',
+        data: mergedData,
+      };
     }
 
-    return data;
+    return {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'Not Found',
+    };
   }
 
   async update(key: string, updateData: T) {
@@ -88,7 +95,16 @@ export abstract class BaseService<T extends HasUuid> {
         this.temporaryDatabaseService.update(this.className, key, updatedData);
       }
       this.cache.put(key, updatedData.value);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success',
+        data: updatedData.value,
+      };
     }
+    return {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'Not Found',
+    };
   }
 
   async remove(key: string) {

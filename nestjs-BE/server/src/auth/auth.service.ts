@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
@@ -10,6 +10,11 @@ import {
   REFRESH_TOKEN_EXPIRY_DAYS,
 } from 'src/config/magic-number';
 import generateUuid from 'src/utils/uuid';
+import { UsersService } from 'src/users/users.service';
+import { ProfilesService } from 'src/profiles/profiles.service';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import customEnv from 'src/config/env';
+const { BASE_IMAGE_URL } = customEnv;
 
 interface TokenData {
   uuid?: string;
@@ -84,17 +89,21 @@ export class AuthService extends BaseService<TokenData> {
     return refreshTokenData;
   }
 
-  async login(user: any) {
+  async login(userUuid: string) {
     const refreshToken = await this.createRefreshToken();
-    const accessToken = await this.createAccessToken(user.uuid);
+    const accessToken = await this.createAccessToken(userUuid);
     const refreshTokenData = this.createRefreshTokenData(
       refreshToken,
-      user.uuid,
+      userUuid,
     );
     super.create(refreshTokenData);
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      statusCode: HttpStatus.OK,
+      message: 'Success',
+      data: {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      },
     };
   }
 
@@ -106,12 +115,38 @@ export class AuthService extends BaseService<TokenData> {
       const tokenData = await this.getDataFromCacheOrDB(refreshToken);
       if (!tokenData) throw new Error('No token data found');
       const accessToken = await this.createAccessToken(tokenData.user_id);
-      return accessToken;
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success',
+        data: { acecss_token: accessToken },
+      };
     } catch (error) {
       super.remove(refreshToken);
       throw new UnauthorizedException(
         'Refresh token expired. Please log in again.',
       );
     }
+  }
+
+  async findUser(usersService: UsersService, email: string, provider: string) {
+    const key = `email:${email}+provider:${provider}`;
+    const findUserData = await usersService.findOne(key);
+    return findUserData.data?.uuid;
+  }
+
+  async createUser(
+    data: CreateUserDto,
+    usersService: UsersService,
+    profilesService: ProfilesService,
+  ) {
+    const createdData = await usersService.create(data);
+    const userUuid = createdData.data.uuid;
+    const profileData = {
+      user_id: userUuid,
+      image: BASE_IMAGE_URL,
+      nickname: '익명의 사용자',
+    };
+    profilesService.create(profileData);
+    return userUuid;
   }
 }
