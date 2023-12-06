@@ -39,7 +39,3 @@ class LogoutEventRepository
             tokenRepository.deleteRefreshToken()
         }
     }
-
-sealed interface LogoutEvent {
-    data object Logout : LogoutEvent
-}
