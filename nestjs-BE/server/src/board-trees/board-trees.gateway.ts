@@ -5,6 +5,12 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { BoardTreesService } from './board-trees.service';
+import {
+  OperationAdd,
+  OperationDelete,
+  OperationMove,
+  OperationUpdate,
+} from 'src/crdt/operation';
 
 @WebSocketGateway({ namespace: 'board' })
 export class BoardTreesGateway {
@@ -29,8 +35,22 @@ export class BoardTreesGateway {
   @SubscribeMessage('updateMindmap')
   handleUpdateMindmap(client: Socket, payload: string) {
     const payloadObject = JSON.parse(payload);
+    const { boardId, operation: serializedOperation } = payloadObject;
+
+    const operationObject = JSON.parse(serializedOperation);
+    const operationTypeMap = {
+      add: OperationAdd.parse<string>,
+      delete: OperationDelete.parse<string>,
+      move: OperationMove.parse<string>,
+      update: OperationUpdate.parse<string>,
+    };
+
+    const operation =
+      operationTypeMap[operationObject.operationType](operationObject);
+    this.boardTreesService.applyOperation(boardId, operation);
+
     client.broadcast
-      .to(payloadObject.boardId)
-      .emit('operationFromServer', JSON.stringify(payloadObject.operation));
+      .to(boardId)
+      .emit('operationFromServer', serializedOperation);
   }
 }
