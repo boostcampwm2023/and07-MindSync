@@ -7,7 +7,6 @@ class CrdtTree(id: String) {
     private var operationLog: MutableList<OperationLog> = mutableListOf()
     private var clock: Clock = Clock(id)
     var tree: Tree = Tree()
-        private set
 
     fun get(id: String): Node {
         return tree.getNode(id)
