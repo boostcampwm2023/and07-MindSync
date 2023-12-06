@@ -16,7 +16,8 @@ jobs:
       - name: Build and push Docker image
         run: |
           echo "SERVER_PORT=$SERVER_PORT" >> ./nestjs-BE/server/.env
-          echo "JWT_SECRET=$JWT_SECRET" >> ./nestjs-BE/server/.env
+          echo "JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET" >> ./nestjs-BE/server/.env
+          echo "JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET" >> ./nestjs-BE/server/.env
           echo "KAKAO_ADMIN_KEY=$KAKAO_ADMIN_KEY" >> ./nestjs-BE/server/.env
           echo "MYSQL_DATABASE_URL=$MYSQL_DATABASE_URL" >> ./nestjs-BE/server/.env
           echo "MONGODB_DATABASE_URL=$MONGODB_DATABASE_URL" >> ./nestjs-BE/server/.env
@@ -31,7 +32,8 @@ jobs:
           docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
         env:
           SERVER_PORT: ${{ secrets.CONTAINER_PORT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
           KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY }}
           MYSQL_DATABASE_URL: ${{ secrets.MYSQL_DATABASE_URL }}
           MONGODB_DATABASE_URL: ${{ secrets.MONGODB_DATABASE_URL }}
