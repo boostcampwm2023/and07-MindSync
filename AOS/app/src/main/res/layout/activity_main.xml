@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="boostcamp.and07.mindsync.ui.main.MainViewModel" />
@@ -25,8 +26,8 @@
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@id/imgbtn_main_menu"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgbtn_main_menu"
                 app:navGraph="@navigation/nav_graph" />
 
             <ImageButton
@@ -36,16 +37,16 @@
                 android:layout_margin="20dp"
                 android:background="@android:color/transparent"
                 android:onClick="openDrawerButtonOnClick"
-                app:layout_constraintBottom_toTopOf="@id/fcv_main_nav_host"
                 android:src="@drawable/ic_menu"
+                app:layout_constraintBottom_toTopOf="@id/fcv_main_nav_host"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
             android:id="@+id/include_main_in_drawer"
-            profileImageUrl="@{vm.profileImageUrl}"
-            layout="@layout/navigation_drawer_side_bar" />
+            layout="@layout/navigation_drawer_side_bar"
+            profileImageUrl="@{ vm.profileImageUrl}" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
