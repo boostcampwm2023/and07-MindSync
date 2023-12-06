@@ -49,7 +49,9 @@ object NetworkModule {
     @Singleton
     @Provides
     @Named(NetworkConst.TOKEN_RETROFIT)
-    fun provideTokenRetrofit(@Named(NetworkConst.TOKEN_CLIENT) okHttpClient: OkHttpClient): Retrofit {
+    fun provideTokenRetrofit(
+        @Named(NetworkConst.TOKEN_CLIENT) okHttpClient: OkHttpClient,
+    ): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(Json.asConverterFactory(NetworkConst.APPLICATION_JSON.toMediaType()))
             .client(okHttpClient)
@@ -60,7 +62,9 @@ object NetworkModule {
     @Singleton
     @Provides
     @Named(NetworkConst.CLIENT_RETROFIT)
-    fun provideClientRetrofit(@Named(NetworkConst.CLIENT) okHttpClient: OkHttpClient): Retrofit {
+    fun provideClientRetrofit(
+        @Named(NetworkConst.CLIENT) okHttpClient: OkHttpClient,
+    ): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(Json.asConverterFactory(NetworkConst.APPLICATION_JSON.toMediaType()))
             .client(okHttpClient)

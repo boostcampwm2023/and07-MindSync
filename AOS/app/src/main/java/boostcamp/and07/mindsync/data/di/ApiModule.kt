@@ -1,8 +1,8 @@
 package boostcamp.and07.mindsync.data.di
 
 import boostcamp.and07.mindsync.data.network.LoginApi
-import boostcamp.and07.mindsync.data.network.ProfileApi
 import boostcamp.and07.mindsync.data.network.LogoutApi
+import boostcamp.and07.mindsync.data.network.ProfileApi
 import boostcamp.and07.mindsync.data.network.SpaceApi
 import boostcamp.and07.mindsync.data.network.TokenApi
 import dagger.Module

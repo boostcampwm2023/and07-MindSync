@@ -23,5 +23,4 @@ abstract class BaseActivity<T : ViewDataBinding>(private val layoutResId: Int) :
         super.onDestroy()
         _binding = null
     }
-
 }
