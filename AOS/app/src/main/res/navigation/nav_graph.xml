@@ -18,11 +18,11 @@
         android:label="RecycleBinFragment" />
     <activity
         android:id="@+id/addSpaceActivity"
-        android:name="boostcamp.and07.mindsync.ui.space.AddSpaceActivity"
+        android:name="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity"
         android:label="AddSpaceActivity"/>
     <activity
         android:id="@+id/addInviteSpaceActivity"
-        android:name="boostcamp.and07.mindsync.ui.space.AddInviteSpaceActivity"
+        android:name="boostcamp.and07.mindsync.ui.space.join.AddInviteSpaceActivity"
         android:label="AddInviteSpaceActivity"/>
     <dialog
         android:id="@+id/addSpaceDialog"

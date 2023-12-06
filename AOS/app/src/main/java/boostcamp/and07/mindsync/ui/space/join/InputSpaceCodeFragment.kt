@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.ui.space
+package boostcamp.and07.mindsync.ui.space.join
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.FragmentInputSpaceCodeBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
+import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.space.ConfirmInviteSpaceViewModel" />
+            type="boostcamp.and07.mindsync.ui.space.join.ConfirmInviteSpaceViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

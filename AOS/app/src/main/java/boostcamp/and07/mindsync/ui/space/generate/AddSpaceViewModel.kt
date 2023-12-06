@@ -1,8 +1,9 @@
-package boostcamp.and07.mindsync.ui.space
+package boostcamp.and07.mindsync.ui.space.generate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
+import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import boostcamp.and07.mindsync.ui.util.toRequestBody

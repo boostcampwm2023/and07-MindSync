@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.space.InputSpaceCodeViewModel" />
+            type="boostcamp.and07.mindsync.ui.space.join.InputSpaceCodeViewModel" />
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.InputSpaceCodeFragment" />
+            type="boostcamp.and07.mindsync.ui.space.join.InputSpaceCodeFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

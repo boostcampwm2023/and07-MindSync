@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.space.AddSpaceViewModel" />
+            type="boostcamp.and07.mindsync.ui.space.generate.AddSpaceViewModel" />
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.space.AddSpaceActivity" />
+            type="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:background="@color/main3"
         android:padding="10dp"
-        tools:context=".ui.space.AddSpaceActivity">
+        tools:context=".ui.space.generate.AddSpaceActivity">
 
         <ImageButton
             android:id="@+id/imgbtn_add_space_back"
