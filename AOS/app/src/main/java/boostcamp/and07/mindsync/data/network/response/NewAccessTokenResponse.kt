@@ -5,6 +5,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NewAccessTokenResponse(
+    val statusCode: Int,
+    val message: String,
+    val data: NewAccessTokenData?
+)
+
+@Serializable
+data class NewAccessTokenData(
     @SerialName("access_token")
     val accessToken: String,
 )
