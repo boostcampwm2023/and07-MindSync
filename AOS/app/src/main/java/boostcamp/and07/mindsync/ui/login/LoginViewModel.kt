@@ -31,10 +31,11 @@ class LoginViewModel
         private fun getTokenWithKakao(kakaoUserId: Long) {
             viewModelScope.launch {
                 loginRepository.loginWithKakao(kakaoUserId)
-                    .onSuccess { token ->
-                        Log.d("LoginViewModel", "getTokenWithKakao: $token")
-                        tokenRepository.saveAccessToken(token)
-                        _loginEvent.emit(LoginEvent.Success(token))
+                    .onSuccess { result ->
+                        Log.d("LoginViewModel", "getTokenWithKakao: ${result.accessToken}")
+                        tokenRepository.saveAccessToken(result.accessToken)
+                        tokenRepository.saveRefreshToken(result.refreshToken)
+                        _loginEvent.emit(LoginEvent.Success)
                     }.onFailure {
                         _loginEvent.emit(
                             LoginEvent.Error("${NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message}\n${it.message}}"),
