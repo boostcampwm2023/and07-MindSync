@@ -4,15 +4,12 @@ import { TemporaryDatabaseService } from '../temporary-database/temporary-databa
 import { BaseService } from '../base/base.service';
 import { PROFILE_CACHE_SIZE } from 'src/config/magic-number';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { SpacesService } from '../spaces/spaces.service';
 
 @Injectable()
 export class ProfilesService extends BaseService<UpdateProfileDto> {
-  profileSpaceTable = 'PROFILE_SPACE_TB';
   constructor(
     protected prisma: PrismaServiceMySQL,
     protected temporaryDatabaseService: TemporaryDatabaseService,
-    protected spacesService: SpacesService,
   ) {
     super({
       prisma,
