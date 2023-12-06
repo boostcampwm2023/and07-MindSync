@@ -39,10 +39,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         setObserve()
     }
 
-    override fun setLogoutObserve() {
-        return
-    }
-
     private fun setObserve() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
