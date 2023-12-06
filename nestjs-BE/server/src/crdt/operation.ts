@@ -7,11 +7,22 @@ export interface OperationLog<T> {
   oldDescription?: T;
 }
 
-export interface OperationInput<T> {
+export interface OperationInput {
   id: string;
   clock: Clock;
-  description?: T;
-  parentId?: string;
+}
+
+export interface OperationAddInput<T> extends OperationInput {
+  description: T;
+  parentId: string;
+}
+
+export interface OperationMoveInput extends OperationInput {
+  parentId: string;
+}
+
+export interface OperationUpdateInput<T> extends OperationInput {
+  description: T;
 }
 
 interface ClockInterface {
@@ -47,7 +58,7 @@ export class OperationAdd<T> extends Operation<T> {
   description: T;
   parentId: string;
 
-  constructor(input: OperationInput<T>) {
+  constructor(input: OperationAddInput<T>) {
     super('add', input.id, input.clock);
     this.description = input.description;
     this.parentId = input.parentId;
@@ -66,10 +77,25 @@ export class OperationAdd<T> extends Operation<T> {
     tree.attachNode(log.operation.id, this.parentId);
     return { operation: this };
   }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationAdd<T> {
+    const input: OperationAddInput<T> = {
+      id: serializedOperation.id,
+      parentId: serializedOperation.parentId,
+      description: serializedOperation.description,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationAdd<T>(input);
+  }
 }
 
 export class OperationDelete<T> extends Operation<T> {
-  constructor(input: OperationInput<T>) {
+  constructor(input: OperationInput) {
     super('delete', input.id, input.clock);
   }
 
@@ -88,12 +114,25 @@ export class OperationDelete<T> extends Operation<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
   }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationDelete<T> {
+    const input: OperationInput = {
+      id: serializedOperation.id,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationDelete<T>(input);
+  }
 }
 
 export class OperationMove<T> extends Operation<T> {
   parentId: string;
 
-  constructor(input: OperationInput<T>) {
+  constructor(input: OperationMoveInput) {
     super('move', input.id, input.clock);
     this.parentId = input.parentId;
   }
@@ -116,12 +155,26 @@ export class OperationMove<T> extends Operation<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
   }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationMove<T> {
+    const input: OperationMoveInput = {
+      id: serializedOperation.id,
+      parentId: serializedOperation.parentId,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationMove<T>(input);
+  }
 }
 
 export class OperationUpdate<T> extends Operation<T> {
   description: T;
 
-  constructor(input: OperationInput<T>) {
+  constructor(input: OperationUpdateInput<T>) {
     super('update', input.id, input.clock);
     this.description = input.description;
   }
@@ -140,5 +193,19 @@ export class OperationUpdate<T> extends Operation<T> {
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
     const redoLog = log.operation.doOperation(tree);
     return redoLog;
+  }
+
+  static parse<T>(
+    serializedOperation: SerializedOperation<T>,
+  ): OperationUpdate<T> {
+    const input: OperationUpdateInput<T> = {
+      id: serializedOperation.id,
+      description: serializedOperation.description,
+      clock: new Clock(
+        serializedOperation.clock.id,
+        serializedOperation.clock.counter,
+      ),
+    };
+    return new OperationUpdate<T>(input);
   }
 }

@@ -51,4 +51,19 @@ export class Tree<T> {
 
     targetNode.description = description;
   }
+
+  toJSON() {
+    return { nodes: Array.from(this.nodes) };
+  }
+
+  static parse<T>(json: string) {
+    const { nodes } = JSON.parse(json);
+    const tree = new Tree<T>();
+    tree.nodes = new Map<string, Node<T>>();
+    nodes.forEach(([nodeId, nodeJson]) => {
+      const node = Node.parse<T>(JSON.stringify(nodeJson));
+      tree.nodes.set(nodeId, node);
+    });
+    return tree;
+  }
 }

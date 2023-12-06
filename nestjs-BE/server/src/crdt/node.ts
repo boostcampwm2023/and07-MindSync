@@ -13,4 +13,15 @@ export class Node<T> {
     this.parentId = parentId;
     this.description = description;
   }
+
+  static parse<T>(json: string) {
+    const parsedJson = JSON.parse(json);
+    const node = new Node<T>(
+      parsedJson.targetId,
+      parsedJson.parentId,
+      parsedJson.description,
+    );
+    node.children = parsedJson.children;
+    return node;
+  }
 }
