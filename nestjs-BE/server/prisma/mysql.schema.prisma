@@ -47,7 +47,7 @@ model PROFILE_SPACE_TB {
   profile_uuid String     @db.VarChar(32)
   space        SPACE_TB   @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
   profile      PROFILE_TB @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
-  @@id([space_uuid, profile_uuid])
+  @@unique([space_uuid, profile_uuid])
 }
 
 model INVITE_CODE_TB {
