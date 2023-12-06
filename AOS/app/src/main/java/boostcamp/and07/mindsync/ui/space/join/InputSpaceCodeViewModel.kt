@@ -35,7 +35,7 @@ class InputSpaceCodeViewModel
 
         fun compareInviteCode() {
             viewModelScope.launch {
-                spaceRepository.getSpace(_spaceInviteCode.value)
+                spaceRepository.joinInviteCode(_spaceInviteCode.value)
                     .onSuccess { getSpace ->
                         _spaceEvent.emit(SpaceEvent.GetSuccess(getSpace))
                     }
