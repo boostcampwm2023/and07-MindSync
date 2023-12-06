@@ -6,5 +6,6 @@ import { UploadService } from 'src/upload/upload.service';
 @Module({
   controllers: [ProfilesController],
   providers: [ProfilesService, SpacesService, UploadService],
+  exports: [ProfilesService],
 })
 export class ProfilesModule {}
