@@ -23,9 +23,10 @@ import java.io.File
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
     private val profileViewModel by viewModels<ProfileViewModel>()
-    private val imagePickerHandler = ImagePickerHandler(this) { uri ->
-        createImage(uri)
-    }
+    private val imagePickerHandler =
+        ImagePickerHandler(this) { uri ->
+            createImage(uri)
+        }
 
     private fun createImage(uri: Uri?) {
         uri?.let { imageUri ->
