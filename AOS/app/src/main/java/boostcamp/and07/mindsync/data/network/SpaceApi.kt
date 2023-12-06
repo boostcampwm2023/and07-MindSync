@@ -30,4 +30,9 @@ interface SpaceApi {
     suspend fun getInviteCode(
         @Body inviteCodeRequest: InviteCodeRequest,
     ): Response<InviteCodeResponse>
+
+    @GET("inviteCodes/{inviteCode}")
+    suspend fun inviteSpaceCode(
+        @Path("inviteCode") inviteCode: String,
+    ): Response<SpaceResponse>
 }
