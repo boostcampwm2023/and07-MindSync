@@ -53,7 +53,7 @@ export class Tree<T> {
   }
 
   toJSON() {
-    return { nodes: Array.from(this.nodes) };
+    return { nodes: Array.from(this.nodes.values()) };
   }
 
   static parse<T>(json: string) {
