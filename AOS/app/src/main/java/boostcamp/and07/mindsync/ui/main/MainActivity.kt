@@ -1,17 +1,25 @@
 package boostcamp.and07.mindsync.ui.main
 
+import android.content.Intent
 import android.view.View
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity :
@@ -21,6 +29,12 @@ class MainActivity :
     private var backPressedToast: Toast? = null
     private lateinit var spaceAdapter: SideBarSpaceAdapter
     private lateinit var navController: NavController
+    private val mainViewModel: MainViewModel by viewModels()
+
+    override fun onStart() {
+        super.onStart()
+        mainViewModel.fetchProfile()
+    }
 
     override fun init() {
         drawerLayout = binding.drawerLayoutMainSideBar
@@ -29,6 +43,24 @@ class MainActivity :
         setBackPressed()
         setSideBar()
         setSideBarNavigation()
+        setBinding()
+        observeEvent()
+    }
+
+    private fun setBinding() {
+        binding.vm = mainViewModel
+    }
+
+    private fun observeEvent() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.event.collectLatest { event ->
+                    if (event is MainUiEvent.ShowMessage) {
+                        Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun setNavController() {
@@ -54,6 +86,10 @@ class MainActivity :
             tvSideBarInviteSpace.setOnClickListener {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_inviteUserDialog)
+            }
+            imgbtnSideBarProfile.setOnClickListener {
+                val intent = Intent(this@MainActivity, ProfileActivity::class.java)
+                startActivity(intent)
             }
         }
     }

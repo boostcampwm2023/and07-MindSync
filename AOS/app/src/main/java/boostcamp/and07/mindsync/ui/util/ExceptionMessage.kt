@@ -18,7 +18,6 @@ enum class NetworkExceptionMessage(val message: String) {
 enum class SpaceExceptionMessage(val message: String) {
     ERROR_MESSAGE_SPACE_ADD("Space Add failed"),
     ERROR_MESSAGE_SPACE_GET("Space Get failed"),
-}
 
 enum class ResponseErrorMessage(val message: String) {
     ERROR_MESSAGE_BODY_NULL("Body is empty"),

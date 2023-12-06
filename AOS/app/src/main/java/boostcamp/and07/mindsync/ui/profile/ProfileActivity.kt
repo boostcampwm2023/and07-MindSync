@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -19,9 +20,11 @@ import boostcamp.and07.mindsync.databinding.ActivityProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog
 import boostcamp.and07.mindsync.ui.dialog.EditNickNameInterface
+import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
 
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
@@ -53,6 +56,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     private fun createImage(uri: Uri?) {
         uri?.let { uri ->
             profileViewModel.updateProfileUri(uri)
+            profileViewModel.setProfileImageFile(File(uri.toAbsolutePath(this)))
         }
     }
 
@@ -135,6 +139,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
                         }
 
                         is ProfileUiEvent.ShowMessage -> {
+                            Toast.makeText(this@ProfileActivity, "${event.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
