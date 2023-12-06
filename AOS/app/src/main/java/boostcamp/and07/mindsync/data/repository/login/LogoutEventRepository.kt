@@ -28,8 +28,9 @@ class LogoutEventRepository
 
         private suspend fun logoutRequest() {
             val refreshToken = tokenRepository.getRefreshToken().first()
-            refreshToken?.let { token ->
-                val request = LogoutRequest(token)
+            val accessToken = tokenRepository.getRefreshToken().first()
+            if (refreshToken != null && accessToken != null) {
+                val request = LogoutRequest(refreshToken, accessToken)
                 val response = api.postLogout(request)
             }
         }
