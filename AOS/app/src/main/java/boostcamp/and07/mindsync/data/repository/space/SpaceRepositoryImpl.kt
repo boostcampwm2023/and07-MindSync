@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.data.repository.space
 
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.network.SpaceApi
+import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
 import boostcamp.and07.mindsync.ui.util.ResponseErrorMessage
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -49,6 +50,26 @@ class SpaceRepositoryImpl
                                     name = spaceData.name ?: "",
                                     imageUrl = spaceData.icon ?: "",
                                 ),
+                            )
+                        }
+                    }
+                    throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
+                } else {
+                    Result.failure(Exception(ResponseErrorMessage.ERROR_MESSAGE_RESPONSE_FAIL.message))
+                }
+            } catch (e: Exception) {
+                Result.failure(Exception(e.message))
+            }
+        }
+
+        override suspend fun getInviteSpaceCode(spaceUuid: String): Result<String> {
+            val response = spaceApi.getInviteCode(InviteCodeRequest(spaceUuid))
+            return try {
+                if (response.isSuccessful) {
+                    response.body()?.let { inviteCodeResponse ->
+                        inviteCodeResponse.data?.let { inviteCodeData ->
+                            return Result.success(
+                                inviteCodeData.inviteCode,
                             )
                         }
                     }
