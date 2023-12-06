@@ -21,6 +21,7 @@ import javax.inject.Singleton
 object NetworkModule {
     @Singleton
     @Provides
+    @Named(NetworkConst.CLIENT)
     fun provideOkHttpClient(
         accessTokenInterceptor: AccessTokenInterceptor,
         tokenAuthenticator: TokenAuthenticator,
@@ -36,10 +37,22 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    @Named(NetworkConst.TOKEN_CLIENT)
+    fun provideOkHttpTokenClient(): OkHttpClient {
+        val headerLogging = HttpLoggingInterceptor()
+        headerLogging.level = HttpLoggingInterceptor.Level.HEADERS
+        return OkHttpClient.Builder()
+            .addInterceptor(headerLogging)
+            .build()
+    }
+
+    @Singleton
+    @Provides
     @Named(NetworkConst.TOKEN_RETROFIT)
-    fun provideSimpleRetrofit(): Retrofit {
+    fun provideTokenRetrofit(@Named(NetworkConst.TOKEN_CLIENT) okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(Json.asConverterFactory(NetworkConst.APPLICATION_JSON.toMediaType()))
+            .client(okHttpClient)
             .baseUrl(BuildConfig.BASE_URL)
             .build()
     }
@@ -47,7 +60,7 @@ object NetworkModule {
     @Singleton
     @Provides
     @Named(NetworkConst.CLIENT_RETROFIT)
-    fun provideInterceptorRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    fun provideClientRetrofit(@Named(NetworkConst.CLIENT) okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(Json.asConverterFactory(NetworkConst.APPLICATION_JSON.toMediaType()))
             .client(okHttpClient)
