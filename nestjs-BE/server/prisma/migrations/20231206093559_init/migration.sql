@@ -26,7 +26,7 @@ CREATE TABLE `PROFILE_TB` (
     `image` VARCHAR(191) NOT NULL,
     `nickname` VARCHAR(191) NOT NULL,
 
-    INDEX `PROFILE_TB_user_id_idx`(`user_id`),
+    UNIQUE INDEX `PROFILE_TB_user_id_key`(`user_id`),
     PRIMARY KEY (`uuid`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
