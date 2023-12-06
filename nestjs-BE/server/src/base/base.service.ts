@@ -37,8 +37,8 @@ export abstract class BaseService<T extends HasUuid> {
 
   abstract generateKey(data: T): string;
 
-  async create(data: T) {
-    data.uuid = generateUuid();
+  async create(data: T, generateUuidFlag: boolean = true) {
+    if (generateUuidFlag) data.uuid = generateUuid();
     const key = this.generateKey(data);
     const storeData = await this.getDataFromCacheOrDB(key);
     if (storeData) {
