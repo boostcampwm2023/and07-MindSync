@@ -1,17 +1,9 @@
 package boostcamp.and07.mindsync.ui.profile
 
-import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.widget.Toast
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,6 +12,8 @@ import boostcamp.and07.mindsync.databinding.ActivityProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog
 import boostcamp.and07.mindsync.ui.dialog.EditNickNameInterface
+import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
+import boostcamp.and07.mindsync.ui.util.ImagePickerHandler.Companion.REQUEST_CODE_PERMISSIONS
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -29,39 +23,16 @@ import java.io.File
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
     private val profileViewModel by viewModels<ProfileViewModel>()
-
-    private val imagePickerLauncher =
-        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    private val imagePickerHandler =
+        ImagePickerHandler(this) { uri ->
             createImage(uri)
         }
 
-    private val galleryPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                launchImagePicker()
-            }
-        }
-
-    private val imageResult =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    createImage(uri)
-                }
-            }
-        }
-
     private fun createImage(uri: Uri?) {
-        uri?.let { uri ->
-            profileViewModel.updateProfileUri(uri)
-            profileViewModel.setProfileImageFile(File(uri.toAbsolutePath(this)))
+        uri?.let { imageUri ->
+            profileViewModel.updateProfileUri(imageUri)
+            profileViewModel.setProfileImageFile(File(imageUri.toAbsolutePath(this)))
         }
-    }
-
-    private fun launchImagePicker() {
-        imagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     override fun init() {
@@ -78,28 +49,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
 
     private fun setupImageEdit() {
         binding.ivProfileImage.setOnClickListener {
-            checkPermissionsAndLaunchImagePicker()
-        }
-    }
-
-    private fun checkPermissionsAndLaunchImagePicker() {
-        when {
-            checkSelfPermission(
-                this,
-                getPermissionReadMediaImagesOrReadExternalStorage(),
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                launchImagePicker()
-            }
-
-            shouldShowRequestPermissionRationale(
-                getPermissionReadMediaImagesOrReadExternalStorage(),
-            ) -> {
-                requestGalleryPermission()
-            }
-
-            else -> {
-                requestGalleryPermission()
-            }
+            imagePickerHandler.checkPermissionsAndLaunchImagePicker()
         }
     }
 
@@ -139,53 +89,16 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
                         }
 
                         is ProfileUiEvent.ShowMessage -> {
-                            Toast.makeText(this@ProfileActivity, "${event.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@ProfileActivity,
+                                "${event.message}",
+                                Toast.LENGTH_SHORT,
+                            ).show()
                         }
                     }
                 }
             }
         }
-    }
-
-    private fun getPermissionReadMediaImagesOrReadExternalStorage() =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-
-    private fun requestGalleryPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            galleryPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            checkPermissionAndLaunchImageSelector()
-        }
-    }
-
-    private fun checkPermissionAndLaunchImageSelector() {
-        val readPermission = checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-
-        if (readPermission == PackageManager.PERMISSION_GRANTED) {
-            launchImageSelector()
-        } else {
-            requestExternalStoragePermission()
-        }
-    }
-
-    private fun requestExternalStoragePermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            REQUEST_CODE_PERMISSIONS,
-        )
-    }
-
-    private fun launchImageSelector() {
-        val intent =
-            Intent(Intent.ACTION_PICK).apply {
-                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-            }
-        imageResult.launch(intent)
     }
 
     override fun onRequestPermissionsResult(
@@ -195,11 +108,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            launchImagePicker()
+            imagePickerHandler.launchImagePicker()
         }
-    }
-
-    companion object {
-        private const val REQUEST_CODE_PERMISSIONS = 1
     }
 }
