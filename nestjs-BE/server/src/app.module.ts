@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BoardTreesGateway } from './board-trees/board-trees.gateway';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -30,6 +29,6 @@ import customEnv from './config/env';
     BoardTreesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, BoardTreesGateway],
+  providers: [AppService],
 })
 export class AppModule {}
