@@ -1,12 +1,12 @@
-package boostcamp.and07.mindsync.data.network.response
+package boostcamp.and07.mindsync.data.network.request
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginResponse(
-    @SerialName("access_token")
-    val accessToken: String,
+data class LogoutRequest(
     @SerialName("refresh_token")
     val refreshToken: String,
+    @SerialName("access_token")
+    val accessToken: String,
 )

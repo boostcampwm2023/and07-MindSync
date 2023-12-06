@@ -2,10 +2,14 @@ package boostcamp.and07.mindsync.data.network
 
 import boostcamp.and07.mindsync.data.network.request.NewAccessTokenRequest
 import boostcamp.and07.mindsync.data.repository.login.DataStoreConst
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.login.TokenRepository
 import boostcamp.and07.mindsync.ui.util.NetworkExceptionMessage
 import com.kakao.sdk.common.Constants.AUTHORIZATION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Request
@@ -17,6 +21,7 @@ class TokenAuthenticator
     @Inject
     constructor(
         private val tokenRepository: TokenRepository,
+        private val logoutEventRepository: LogoutEventRepository,
         private val tokenApi: TokenApi,
     ) : Authenticator {
         override fun authenticate(
@@ -24,8 +29,9 @@ class TokenAuthenticator
             response: Response,
         ): Request? {
             if (response.message == DataStoreConst.REFRESH_TOKEN_EXPIRED) {
-                // TODO : Refresh 토큰 만료 => 로그인 화면으로 이동
-                response.close()
+                CoroutineScope(Dispatchers.IO).launch {
+                    logoutEventRepository.logout()
+                }
                 return null
             }
             // 무조건 토큰을 받아온 후 진행시키기 위해 runBlocking
@@ -38,14 +44,15 @@ class TokenAuthenticator
                     tokenRepository.getRefreshToken().first()
                 }
 
-            if (refreshToken == null || accessToken == null) {
-                // TODO : Refresh 토큰 만료 => 로그인 화면으로 이동
-                response.close()
+            if (refreshToken == null) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    logoutEventRepository.logout()
+                }
                 return null
             }
             // 무조건 새 토큰을 받아온 후 진행시키기 위해 runBlocking
             runBlocking {
-                getNewAccessToken(accessToken, refreshToken)
+                getNewAccessToken(refreshToken)
                     .onSuccess { newAccessToken ->
                         tokenRepository.saveAccessToken(newAccessToken)
                     }
@@ -57,13 +64,10 @@ class TokenAuthenticator
             return newRequestWithToken(refreshToken, response.request)
         }
 
-        private suspend fun getNewAccessToken(
-            accessToken: String,
-            refreshToken: String,
-        ): Result<String> {
+        private suspend fun getNewAccessToken(refreshToken: String): Result<String> {
             return try {
-                val request = NewAccessTokenRequest(accessToken, refreshToken)
-                val response = tokenApi.getNewAccessToken(request)
+                val request = NewAccessTokenRequest(refreshToken)
+                val response = tokenApi.postNewAccessToken(request)
                 if (response.isSuccessful) {
                     response.body()?.let { tokenResponse ->
                         Result.success(tokenResponse.accessToken)
