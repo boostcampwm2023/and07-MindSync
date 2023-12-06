@@ -1,7 +1,8 @@
 import customEnv from 'src/config/env';
 
 export const jwtConstants = {
-  secret: customEnv.JWT_SECRET,
+  accessSecret: customEnv.JWT_ACCESS_SECRET,
+  refreshSecret: customEnv.JWT_REFRESH_SECRET,
 };
 
 export const kakaoOauthConstants = {
