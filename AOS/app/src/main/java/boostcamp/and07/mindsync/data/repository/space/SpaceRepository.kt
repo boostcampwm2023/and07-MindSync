@@ -9,4 +9,6 @@ interface SpaceRepository {
         name: RequestBody,
         icon: MultipartBody.Part,
     ): Result<Space>
+
+    suspend fun getSpace(spaceUuid: String): Result<Space>
 }

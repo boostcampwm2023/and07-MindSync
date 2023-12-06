@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.space.ConfirmInviteSpaceViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/main3"
+        android:padding="10dp"
+        tools:context=".ui.space.ConFirmInviteSpaceFragment">
+
+
+        <TextView
+            android:id="@+id/tv_confirm_invite_space_message"
+            style="@style/Typography.Title02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:padding="10dp"
+            android:text="@string/confirm_invite_space_fragment_title"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_confirm_invite_space_thumbnail"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_marginTop="65dp"
+            android:src="@mipmap/ic_app_logo_round"
+            app:imageUri="@{vm.uiState.space.imageUrl}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_confirm_invite_space_message" />
+
+        <TextView
+            android:id="@+id/tv_confirm_invite_space_title"
+            style="@style/Typography.Title03"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:textAlignment="center"
+            android:text="@{vm.uiState.space.name}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_confirm_invite_space_thumbnail"
+            tools:text="스페이스이름" />
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_invite_space_yes"
+            style="@style/Typography.Bottom02"
+            android:layout_width="115dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/main4"
+            android:text="@string/confirm_invite_space_fragment_sign_in"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_confirm_invite_space_no"
+            app:layout_constraintTop_toBottomOf="@id/tv_confirm_invite_space_title" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_invite_space_no"
+            style="@style/Typography.Bottom02"
+            android:layout_width="115dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/white"
+            android:text="@string/confirm_invite_space_fragment_no"
+            android:textColor="@color/main4"
+            app:layout_constraintEnd_toStartOf="@id/btn_confirm_invite_space_yes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_confirm_invite_space_title"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

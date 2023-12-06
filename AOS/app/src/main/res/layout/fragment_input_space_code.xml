@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.space.InputSpaceCodeViewModel" />
+
+        <variable
+            name="view"
+            type="boostcamp.and07.mindsync.ui.space.InputSpaceCodeFragment" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/main3"
+        android:padding="10dp"
+        tools:context=".ui.space.InputSpaceFragment">
+
+        <TextView
+            android:id="@+id/tv_input_space_code_title"
+            style="@style/Typography.Title02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="130dp"
+            android:lineSpacingExtra="5dp"
+            android:text="@string/input_space_code_title"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfl_input_space_code"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_input_space_code_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tfl_input_space_edit_code"
+                style="@style/Typography.Body01.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:hint="초대 코드"
+                android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
+                android:text="@{vm.spaceInviteCode}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_input_space_code_ok"
+            style="@style/Typography.Bottom02"
+            android:layout_width="264dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/main4"
+            android:onClick="@{() -> vm.compareInviteCode()}"
+            android:text="@string/check_message"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tfl_input_space_code" />
+
+
+        <TextView
+            android:id="@+id/tv_add_invite_space_info"
+            style="@style/Typography.Body01.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="5dp"
+            android:text="@string/input_space_code_info"
+            android:textColor="@color/gray5"
+            app:layout_constraintEnd_toEndOf="@id/btn_input_space_code_ok"
+            app:layout_constraintStart_toStartOf="@id/btn_input_space_code_ok"
+            app:layout_constraintTop_toBottomOf="@id/btn_input_space_code_ok" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
