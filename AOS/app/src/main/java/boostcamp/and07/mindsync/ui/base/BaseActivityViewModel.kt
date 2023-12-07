@@ -19,10 +19,6 @@ open class BaseActivityViewModel
         private val _events = MutableSharedFlow<ViewEvent>()
         val events: SharedFlow<ViewEvent> = _events.asSharedFlow()
 
-        init {
-            sendLogoutEvent()
-        }
-
         private fun sendLogoutEvent() {
             viewModelScope.launch {
                 logoutEventRepository.logout().collect { logoutEvent ->

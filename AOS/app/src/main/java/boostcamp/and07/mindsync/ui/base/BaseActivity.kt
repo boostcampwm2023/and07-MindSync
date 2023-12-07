@@ -33,7 +33,7 @@ abstract class BaseActivity<T : ViewDataBinding>(private val layoutResId: Int) :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 getViewModel().events.collectLatest { event ->
                     when (event) {
-                        ViewEvent.Logout -> navigateToLoginActivity()
+                        ViewEvent.Logout -> logout()
                     }
                 }
             }
