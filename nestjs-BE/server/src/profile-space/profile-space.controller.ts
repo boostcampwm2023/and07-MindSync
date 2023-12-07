@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   Delete,
@@ -69,5 +70,30 @@ export class ProfileSpaceController {
     if (isSpaceEmpty) this.spacesService.remove(spaceUuid);
     const key = this.profileSpaceService.generateKey(joinData);
     return this.profileSpaceService.remove(key);
+  }
+
+  @Get('spaces')
+  @ApiOperation({ summary: 'Get user’s spaces' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of spaces.',
+  })
+  getSpaces(@Req() req: RequestWithUser) {
+    const userUuid = req.user.uuid;
+    return this.profileSpaceService.getSpaces(userUuid);
+  }
+
+  @Get('users/:space_uuid')
+  @ApiOperation({ summary: 'Get users in the space' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of users.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Space not found.',
+  })
+  getUsers(@Param('space_uuid') spaceUuid: string) {
+    return this.profileSpaceService.getUsers(spaceUuid);
   }
 }

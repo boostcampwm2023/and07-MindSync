@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UpdateProfileSpaceDto } from './dto/update-profile-space.dto';
 import { BaseService } from 'src/base/base.service';
 import { PrismaServiceMySQL } from 'src/prisma/prisma.service';
@@ -107,7 +107,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
       },
     });
     const storeUserSpaces =
-      profileResponse?.spaces.map((profileSpace) => profileSpace.space) || [];
+      profileResponse.spaces.map((profileSpace) => profileSpace.space) || [];
     return storeUserSpaces;
   }
 
@@ -125,8 +125,32 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
         },
       },
     });
+    if (!spaceResponse) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     const storeSpaceProfiles =
-      spaceResponse?.profiles.map((profileSpace) => profileSpace.profile) || [];
+      spaceResponse.profiles.map((profileSpace) => profileSpace.profile) || [];
     return storeSpaceProfiles;
+  }
+
+  async getSpaces(userUuid: string) {
+    const profileResponse = await this.profilesService.findOne(userUuid);
+    const profileUuid = profileResponse.data?.uuid;
+    const spaces = await this.getUserSpaces(userUuid, profileUuid);
+    this.userCache.put(userUuid, spaces);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Success',
+      data: spaces,
+    };
+  }
+
+  async getUsers(spaceUuid: string) {
+    const users = await this.getSpaceUsers(spaceUuid);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Success',
+      data: users,
+    };
   }
 }

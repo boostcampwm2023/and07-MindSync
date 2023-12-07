@@ -6,8 +6,8 @@ export class CreateProfileSpaceDto {
     example: 'space uuid',
     description: 'Space UUID',
   })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   space_uuid: string;
 
   profile_uuid: string;
