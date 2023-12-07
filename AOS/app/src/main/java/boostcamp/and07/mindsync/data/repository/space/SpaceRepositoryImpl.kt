@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.data.repository.space
 
-import android.util.Log
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.network.SpaceApi
 import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
@@ -19,7 +18,6 @@ class SpaceRepositoryImpl
         ): Flow<Space> =
             flow {
                 val response = spaceApi.addSpace(name, icon)
-                Log.d("Jaehan", "response: $response")
                 response.data?.let { spaceData ->
                     emit(
                         Space(
