@@ -5,6 +5,7 @@ import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.network.request.JoinBoard
 import boostcamp.and07.mindsync.data.network.request.UpdateMindMap
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.cancel
@@ -46,6 +47,16 @@ class MindMapSocketManager {
                         objectSerializedOperation,
                     ),
                 )
+            }.on(EVENT_INIT_TREE) { args ->
+                val serializedCrdtTree = args[0].toString()
+                val objectSerializedCrdtTree =
+                    Json.decodeFromString<SerializedCrdtTree>(serializedCrdtTree)
+                trySend(
+                    SocketEvent(
+                        SocketEventType.OPERATION_FROM_SERVER,
+                        objectSerializedCrdtTree,
+                    ),
+                )
             }
             awaitClose { cancel() }
         }
@@ -82,6 +93,7 @@ class MindMapSocketManager {
         const val EVENT_OPERATION_FROM_SERVER = "operationFromServer"
         const val EVENT_UPDATE_MIND_MAP = "updateMindmap"
         const val EVENT_JOIN_BOARD = "joinBoard"
+        const val EVENT_INIT_TREE = "initTree"
     }
 }
 

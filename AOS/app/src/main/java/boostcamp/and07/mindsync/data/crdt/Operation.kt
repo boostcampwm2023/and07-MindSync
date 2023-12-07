@@ -3,6 +3,7 @@ package boostcamp.and07.mindsync.data.crdt
 import boostcamp.and07.mindsync.data.model.Tree
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class OperationLog(
     val operation: Operation,
     val oldDescription: String? = null,
@@ -32,6 +33,7 @@ enum class OperationType(val command: String) {
     UPDATE("update"),
 }
 
+@Serializable
 sealed class Operation(val operationType: String, val id: String, val clock: Clock) {
     abstract fun doOperation(tree: Tree): OperationLog
 

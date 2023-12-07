@@ -9,4 +9,5 @@
     <string name="main_back_pressed_message">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="check_message">확인</string>
     <string name="cancel_message">취소</string>
+    <string name="create_board_introduce">생성할 보드의\n정보를 입력해주세요!</string>
 </resources>
