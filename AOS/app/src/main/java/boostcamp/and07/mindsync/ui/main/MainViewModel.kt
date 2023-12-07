@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.main
 
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.data.repository.profilespace.ProfileSpaceRepository
