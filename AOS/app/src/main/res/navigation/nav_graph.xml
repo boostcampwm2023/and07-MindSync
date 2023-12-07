@@ -2,8 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mindMapFragment">
+    app:startDestination="@id/spaceListFragment">
 
+    <fragment
+        android:id="@+id/spaceListFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.list.SpaceListFragment"
+        android:label="SpaceListFragment"/>
     <fragment
         android:id="@+id/mindMapFragment"
         android:name="boostcamp.and07.mindsync.ui.mindmap.MindMapFragment"
