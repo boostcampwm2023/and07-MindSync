@@ -132,6 +132,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/main4"
             android:text="@string/profile_logout"
+            android:visibility="gone"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"

@@ -1,5 +1,5 @@
 import java.util.Properties
-
+import java.io.FileInputStream
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -29,7 +29,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "0.2.0"
+        versionName = "0.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "$url")
         buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "$googleServerClientId")
