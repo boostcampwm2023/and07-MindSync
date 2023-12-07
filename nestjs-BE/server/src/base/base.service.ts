@@ -61,7 +61,9 @@ export abstract class BaseService<T extends HasUuid> {
       key,
       'delete',
     );
-    if (deleteCommand) return null;
+    if (deleteCommand) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     if (data) {
       const mergedData = this.mergeWithUpdateCommand(data, key);
       this.cache.put(key, mergedData);
@@ -72,7 +74,7 @@ export abstract class BaseService<T extends HasUuid> {
       };
     }
 
-    return null;
+    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
   }
 
   async update(key: string, updateData: T) {

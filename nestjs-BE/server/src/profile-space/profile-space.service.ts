@@ -125,11 +125,9 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
         },
       },
     });
-    if (!spaceResponse) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    }
+
     const storeSpaceProfiles =
-      spaceResponse.profiles.map((profileSpace) => profileSpace.profile) || [];
+      spaceResponse?.profiles.map((profileSpace) => profileSpace.profile) || [];
     return storeSpaceProfiles;
   }
 

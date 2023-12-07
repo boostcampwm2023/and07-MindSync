@@ -130,8 +130,8 @@ export class AuthService extends BaseService<TokenData> {
 
   async findUser(usersService: UsersService, email: string, provider: string) {
     const key = `email:${email}+provider:${provider}`;
-    const findUserData = await usersService.findOne(key);
-    return findUserData?.data?.uuid;
+    const findUserData = await usersService.getDataFromCacheOrDB(key);
+    return findUserData?.uuid;
   }
 
   async createUser(
