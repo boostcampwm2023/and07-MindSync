@@ -46,6 +46,9 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
       invite_code: inviteCode,
       expiry_date: expiryDate,
     };
+    const { space_uuid: spaceUuid } = createInviteCodeDto;
+    const space = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
+    if (!space) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     super.create(data);
     return {
       statusCode: HttpStatus.CREATED,
@@ -57,7 +60,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
   async findSpace(inviteCode: string) {
     const inviteCodeData = await super.getDataFromCacheOrDB(inviteCode);
     if (!inviteCodeData) {
-      throw new HttpException('Invalid invite code.', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Invalid invite code.', HttpStatus.NOT_FOUND);
     }
     const currentTimestamp = new Date().getTime();
     const expiryTimestamp = new Date(inviteCodeData.expiry_date).getTime();
