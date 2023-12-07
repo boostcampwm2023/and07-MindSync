@@ -9,6 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.databinding.FragmentProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
@@ -25,8 +26,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
     @Inject
     lateinit var profileRepository: ProfileRepository
 
+    @Inject
+    lateinit var loginEveRepository: LogoutEventRepository
+
     private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.nav_profile) {
-        ProfileViewModelFactory(profileRepository)
+        ProfileViewModelFactory(profileRepository, loginEveRepository)
     }
     private lateinit var imagePickerHandler: ImagePickerHandler
 
