@@ -54,7 +54,7 @@ export class SpacesController {
     this.profileSpaceService.create(joinData);
     const spaceData = response.data;
     const data = { profileData, spaceData };
-    this.profileSpaceService.put(userUuid, spaceUuid, data);
+    await this.profileSpaceService.put(userUuid, spaceUuid, data);
     return response;
   }
 
