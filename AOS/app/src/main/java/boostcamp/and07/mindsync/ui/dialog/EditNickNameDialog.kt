@@ -10,17 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogEditProfileBinding
+import boostcamp.and07.mindsync.ui.profile.ProfileViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditNickNameDialog : DialogFragment() {
     private var _binding: DialogEditProfileBinding? = null
     private val binding get() = _binding!!
-    private lateinit var editNickNameInterface: EditNickNameInterface
-
-    fun setListener(listener: EditNickNameInterface) {
-        editNickNameInterface = listener
-    }
+    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.nav_profile)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -36,16 +36,14 @@ class EditNickNameDialog : DialogFragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = DialogEditProfileBinding.inflate(inflater, container, false)
-        with(binding) {
-            btnEditProfileCancel.setOnClickListener {
-                dismiss()
-            }
-            btnEditProfileModify.setOnClickListener {
-                editNickNameInterface.onModifyClick(etEditProfileNickname.text.toString())
-                dismiss()
-            }
-        }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setBinding()
+        setupCancelBtn()
+        setupModifyBtn()
     }
 
     override fun onStart() {
@@ -53,15 +51,34 @@ class EditNickNameDialog : DialogFragment() {
         resizeDialog()
     }
 
+    private fun setBinding() {
+        with(binding) {
+            vm = profileViewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
+    }
+
+    private fun setupCancelBtn() {
+        binding.btnEditProfileCancel.setOnClickListener {
+            dismiss()
+        }
+    }
+
+    private fun setupModifyBtn() {
+        binding.btnEditProfileModify.setOnClickListener {
+            profileViewModel.updateNickName(binding.etEditProfileNickname.text)
+            dismiss()
+        }
+    }
+
     private fun resizeDialog() {
         val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
 
         val displayMetrics = requireActivity().resources.displayMetrics
         val deviceWidth = displayMetrics.widthPixels
-        val deviceHeight = displayMetrics.heightPixels
 
         params?.width = (deviceWidth * 0.8).toInt()
-        params?.height = (deviceHeight * 0.2).toInt()
+        params?.height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 
