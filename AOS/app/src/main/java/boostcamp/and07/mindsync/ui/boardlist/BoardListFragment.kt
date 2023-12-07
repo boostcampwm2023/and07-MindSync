@@ -8,7 +8,6 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -21,8 +20,13 @@ class BoardListFragment :
 
     override fun initView() {
         setBinding()
+//        setRefreshButton()
         collectBoardEvent()
+        onFloatingButtonClick()
     }
+
+//    private fun setRefreshButton() {
+//    }
 
     private fun setBinding() {
         binding.vm = boardListViewModel
@@ -45,26 +49,40 @@ class BoardListFragment :
                 boardListViewModel.boardUiEvent.collectLatest { boardEvent ->
                     when (boardEvent) {
                         is BoardUiEvent.Success -> {
-                            Snackbar.make(
-                                binding.root,
-                                "성공",
-                                Snackbar.LENGTH_SHORT,
-                            )
-                                .show()
+//                            Snackbar.make(
+//                                binding.root,
+//                                "성공",
+//                                Snackbar.LENGTH_SHORT,
+//                            )
+//                                .show()
                         }
 
                         is BoardUiEvent.Error -> {
-                            Snackbar.make(
-                                binding.root,
-                                "실패",
-                                Snackbar.LENGTH_SHORT,
-                            )
-                                .show()
+//                            Snackbar.make(
+//                                binding.root,
+//                                "실패",
+//                                Snackbar.LENGTH_SHORT,
+//                            )
+//                                .show()
                         }
 
                         else -> {}
                     }
                 }
+            }
+        }
+    }
+
+    private fun onFloatingButtonClick() {
+        binding.btnBoardListAddBoard.setOnClickListener {
+            if (boardListViewModel.boardUiState.value.selectBoards.isEmpty()) {
+//                findNavController().navigate(BoardListFragmentDirections.actionBoardListFragment2ToCreateBoardDialog())
+                CreateBoardDialog().show(
+                    requireActivity().supportFragmentManager,
+                    "CreateBoardDialog"
+                )
+            } else {
+                boardListViewModel.deleteBoard()
             }
         }
     }
