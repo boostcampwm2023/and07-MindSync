@@ -39,7 +39,11 @@
     <dialog
         android:id="@+id/inviteUserDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"
-        android:label="InviteUserDialog"/>
+        android:label="InviteUserDialog">
+        <argument
+            android:name="spaceId"
+            app:argType="String" />
+    </dialog>
     <dialog
         android:id="@+id/editNickNameDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog"
