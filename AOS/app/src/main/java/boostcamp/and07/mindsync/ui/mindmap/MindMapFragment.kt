@@ -2,18 +2,17 @@ package boostcamp.and07.mindsync.ui.mindmap
 
 import android.util.Log
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.NodeGenerator
-import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
-import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
-import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
@@ -45,45 +44,23 @@ class MindMapFragment :
         collectOperation()
         collectSelectedNode()
         collectSocketState()
-        collectSocketEvent()
         mindMapViewModel.setBoardId(args.boardId)
     }
 
     private fun collectSocketState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.socketState.collectLatest { state ->
-                when (state) {
-                    SocketState.CONNECT -> {
-                        mindMapViewModel.joinBoard(args.boardId)
-                    }
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mindMapViewModel.socketState.collectLatest { state ->
+                    when (state) {
+                        SocketState.CONNECT -> {
+                        }
 
-                    SocketState.DISCONNECT -> {
-                        Log.d("MindMapFragment", "collectSocketState: disconnect")
-                    }
+                        SocketState.DISCONNECT -> {
+                            Log.d("MindMapFragment", "collectSocketState: disconnect")
+                        }
 
-                    SocketState.ERROR -> {
-                        Log.d("MindMapFragment", "collectSocketState: error")
-                    }
-                }
-            }
-        }
-    }
-
-    private fun collectSocketEvent() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.socketEvent.collectLatest { event ->
-                event?.let { socketEvent ->
-                    when (socketEvent.eventType) {
-                        SocketEventType.OPERATION_FROM_SERVER -> {
-                            when (val operation = socketEvent.operation) {
-                                is SerializedOperation -> {
-                                    mindMapViewModel.applyOperation(operation)
-                                }
-
-                                is SerializedCrdtTree -> {
-                                    mindMapViewModel.applyOperation(operation)
-                                }
-                            }
+                        SocketState.ERROR -> {
+                            Log.d("MindMapFragment", "collectSocketState: error")
                         }
                     }
                 }
@@ -93,10 +70,12 @@ class MindMapFragment :
 
     private fun collectOperation() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.operation.collectLatest {
-                mindMapContainer.update(mindMapViewModel.crdtTree.tree)
-                binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
-                binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mindMapViewModel.operation.collectLatest {
+                    mindMapContainer.update(mindMapViewModel.crdtTree.tree)
+                    binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
+                    binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
+                }
             }
         }
     }
@@ -120,8 +99,10 @@ class MindMapFragment :
 
     private fun collectSelectedNode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.selectedNode.collectLatest { selectNode ->
-                mindMapContainer.setSelectedNode(selectNode)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mindMapViewModel.selectedNode.collectLatest { selectNode ->
+                    mindMapContainer.setSelectedNode(selectNode)
+                }
             }
         }
     }

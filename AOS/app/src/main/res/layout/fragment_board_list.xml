@@ -31,6 +31,7 @@
             android:layout_height="0dp"
             android:layout_gravity="center|top"
             app:boards="@{vm.boardUiState.boards}"
+            android:background="@android:color/transparent"
             app:flexBoxLayoutManager="@{FlexDirection.ROW}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/gl_board_list_end"

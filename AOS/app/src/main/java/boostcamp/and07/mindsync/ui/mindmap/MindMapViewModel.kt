@@ -16,6 +16,7 @@ import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.data.network.MindMapSocketManager
 import boostcamp.and07.mindsync.data.network.SocketEvent
+import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
@@ -46,10 +47,16 @@ class MindMapViewModel
         private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
         val socketEvent: StateFlow<SocketEvent?> = _socketEvent
 
-        fun setBoardId(boardId: String) {
-            this.boardId = boardId
+        init {
             setSocketState()
             setSocketEvent()
+        }
+
+        fun setBoardId(boardId: String) {
+            if (this.boardId != boardId) {
+                this.boardId = boardId
+                joinBoard(boardId)
+            }
         }
 
         private fun setSocketState() {
@@ -64,6 +71,19 @@ class MindMapViewModel
             viewModelScope.launch {
                 mindMapSocketManager.listenEvent().collectLatest { event ->
                     _socketEvent.value = event
+                    when (event.eventType) {
+                        SocketEventType.OPERATION_FROM_SERVER -> {
+                            when (val operation = event.operation) {
+                                is SerializedOperation -> {
+                                    applyOperation(operation)
+                                }
+
+                                is SerializedCrdtTree -> {
+                                    applyOperation(operation)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
