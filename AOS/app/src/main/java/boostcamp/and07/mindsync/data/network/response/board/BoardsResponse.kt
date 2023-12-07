@@ -4,6 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BoardsResponse(
+    val statusCode: Int,
+    val message: String,
+    val data: List<BoardsData>,
+)
+
+@Serializable
+data class BoardsData(
     val boardId: String,
     val boardName: String,
     val createdAt: String,

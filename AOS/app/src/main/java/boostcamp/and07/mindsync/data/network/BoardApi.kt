@@ -17,5 +17,5 @@ interface BoardApi {
     @GET("boards/list")
     suspend fun getBoards(
         @Query("spaceId") spaceId: String,
-    ): List<BoardsResponse>
+    ): BoardsResponse
 }
