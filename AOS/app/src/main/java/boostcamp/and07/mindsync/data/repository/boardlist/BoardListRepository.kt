@@ -9,4 +9,6 @@ interface BoardListRepository {
         spaceId: String,
         imageUrl: String,
     ): Flow<Board>
+
+    fun getBoard(spaceId: String): Flow<List<Board>>
 }
