@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseInterceptors,
   UploadedFile,
   Request as Req,
@@ -96,19 +95,5 @@ export class SpacesController {
       updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
     }
     return this.spacesService.update(spaceUuid, updateSpaceDto);
-  }
-
-  @Delete(':space_uuid')
-  @ApiOperation({ summary: 'Remove space by space_uuid' })
-  @ApiResponse({
-    status: 200,
-    description: 'Space has been successfully removed.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Space not found.',
-  })
-  remove(@Param('space_uuid') spaceUuid: string) {
-    return this.spacesService.remove(spaceUuid);
   }
 }

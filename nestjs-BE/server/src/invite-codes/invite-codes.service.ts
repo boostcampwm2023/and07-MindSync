@@ -66,10 +66,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     const expiryTimestamp = new Date(inviteCodeData.expiry_date).getTime();
     if (expiryTimestamp < currentTimestamp) {
       super.remove(inviteCode);
-      throw new HttpException(
-        'Invite code has expired.',
-        HttpStatus.GONE,
-      );
+      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
     const spaceUuid = inviteCodeData.space_uuid;
     const spaceData = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
