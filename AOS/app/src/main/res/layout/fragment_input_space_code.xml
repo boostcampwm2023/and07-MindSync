@@ -51,7 +51,7 @@
                 android:background="@color/white"
                 android:hint="초대 코드"
                 android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
-                android:text="@{vm.spaceInviteCode}" />
+                android:text="@{vm.uiState.spaceInviteCode}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
