@@ -6,7 +6,10 @@ import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.login.TokenRepository
 import boostcamp.and07.mindsync.ui.util.NetworkExceptionMessage
 import com.kakao.sdk.common.Constants.AUTHORIZATION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Request
@@ -26,7 +29,9 @@ class TokenAuthenticator
             response: Response,
         ): Request? {
             if (response.message == DataStoreConst.REFRESH_TOKEN_EXPIRED) {
-                logoutEventRepository.logout()
+                CoroutineScope(Dispatchers.IO).launch {
+                    logoutEventRepository.logout()
+                }
                 return null
             }
             // 무조건 토큰을 받아온 후 진행시키기 위해 runBlocking

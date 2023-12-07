@@ -33,7 +33,7 @@ class InputSpaceCodeFragment :
     private fun collectSpaceEvent() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                inputSpaceCodeViewModel.spaceEvent.collectLatest { spaceEvent ->
+                inputSpaceCodeViewModel.event.collectLatest { spaceEvent ->
                     when (spaceEvent) {
                         is SpaceEvent.GetSuccess -> {
                             findNavController().navigate(

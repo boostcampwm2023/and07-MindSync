@@ -18,6 +18,7 @@ import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
+import boostcamp.and07.mindsync.ui.space.list.SpaceListFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -35,6 +36,7 @@ class MainActivity :
     override fun onStart() {
         super.onStart()
         mainViewModel.fetchProfile()
+        mainViewModel.getSpaces()
     }
 
     override fun init() {
@@ -77,8 +79,16 @@ class MainActivity :
     private fun setSideBarNavigation() {
         with(binding.includeMainInDrawer) {
             tvSideBarBoardList.setOnClickListener {
-                drawerLayout.closeDrawers()
-                navController.navigate(R.id.action_to_boardListFragment)
+                mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
+                    drawerLayout.closeDrawers()
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToBoardListFragment(
+                            nowSpace.id,
+                        ),
+                    )
+                } ?: run {
+                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
+                }
             }
             tvSideBarRecycleBin.setOnClickListener {
                 drawerLayout.closeDrawers()
@@ -89,8 +99,16 @@ class MainActivity :
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
             tvSideBarInviteSpace.setOnClickListener {
-                drawerLayout.closeDrawers()
-                navController.navigate(R.id.action_to_inviteUserDialog)
+                mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
+                    drawerLayout.closeDrawers()
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToInviteUserDialog(
+                            nowSpace.id,
+                        ),
+                    )
+                } ?: run {
+                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
+                }
             }
             imgbtnSideBarProfile.setOnClickListener {
                 val intent = Intent(this@MainActivity, ProfileActivity::class.java)
@@ -126,32 +144,19 @@ class MainActivity :
 
     private fun setSideBar() {
         spaceAdapter = SideBarSpaceAdapter()
+        spaceAdapter.setSideBarClickListener(
+            object : SpaceClickListener {
+                override fun onClickSpace(space: Space) {
+                    mainViewModel.updateCurrentSpace(space)
+                }
+            },
+        )
         binding.includeMainInDrawer.rvSideBarSpace.adapter = spaceAdapter
-        spaceAdapter.submitList(getSampleSpace())
-    }
-
-    private fun getSampleSpace(): List<Space> {
-        val sampleSpace =
-            mutableListOf(
-                Space(
-                    "0",
-                    "space1",
-                    "error",
-                ),
-                Space(
-                    "1",
-                    "space3",
-                    "https://img.freepik.com/premium-vector/" +
-                        "cute-kawaii-shiba-inu-dog-cartoon-style" +
-                        "-character-mascot-corgi-dog_945253-162.jpg",
-                ),
-                Space(
-                    "2",
-                    "space3",
-                    "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg",
-                ),
-            )
-        return sampleSpace.toList()
+        lifecycleScope.launch {
+            mainViewModel.uiState.collectLatest { uiState ->
+                spaceAdapter.submitList(uiState.spaces.toMutableList())
+            }
+        }
     }
 
     fun openDrawerButtonOnClick(view: View) {

@@ -19,6 +19,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.databinding.DialogInviteUserBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -58,12 +59,11 @@ class InviteUserDialog : DialogFragment() {
 
     private fun getInviteCode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            spaceRepository.getInviteSpaceCode("11ee9430df67b1c086cf137f14539c56").onSuccess { inviteCode ->
-                binding.tvInviteUserSpaceCode.text = inviteCode
-                Toast.makeText(requireContext(), "성공!", Toast.LENGTH_SHORT).show()
-            }.onFailure {
-                Toast.makeText(requireContext(), "실패!", Toast.LENGTH_SHORT).show()
-            }
+            spaceRepository.getInviteSpaceCode("11ee94cb588902308d61176844e12449")
+                .collectLatest { inviteCode ->
+                    binding.tvInviteUserSpaceCode.text = inviteCode
+                    Toast.makeText(requireContext(), "성공!", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 

@@ -44,7 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="@id/view_side_bar_space"
+            app:layout_constraintBottom_toTopOf="@id/cv_side_bar_profile"
             app:layout_constraintEnd_toStartOf="@id/view_side_bar_menu"
             app:layout_constraintStart_toStartOf="@id/view_side_bar_space"
             app:layout_constraintTop_toBottomOf="@id/imgbtn_side_bar_add_space"

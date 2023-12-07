@@ -2,8 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mindMapFragment">
+    app:startDestination="@id/spaceListFragment">
 
+    <fragment
+        android:id="@+id/spaceListFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.list.SpaceListFragment"
+        android:label="SpaceListFragment"/>
     <fragment
         android:id="@+id/mindMapFragment"
         android:name="boostcamp.and07.mindsync.ui.mindmap.MindMapFragment"
@@ -15,7 +19,10 @@
     <fragment
         android:id="@+id/boardListFragment"
         android:name="boostcamp.and07.mindsync.ui.boardlist.BoardListFragment"
-        android:label="BoardListFragment">
+        android:label="BoardListFragment" >
+        <argument
+            android:name="spaceId"
+            app:argType="string"/>
         <action
             android:id="@+id/action_boardListFragment_to_mindMapFragment"
             app:destination="@id/mindMapFragment" />
@@ -43,7 +50,11 @@
     <dialog
         android:id="@+id/inviteUserDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"
-        android:label="InviteUserDialog" />
+        android:label="InviteUserDialog">
+        <argument
+            android:name="spaceId"
+            app:argType="string" />
+    </dialog>
     <dialog
         android:id="@+id/editNickNameDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog"

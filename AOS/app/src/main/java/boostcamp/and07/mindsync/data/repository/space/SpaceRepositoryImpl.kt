@@ -3,7 +3,8 @@ package boostcamp.and07.mindsync.data.repository.space
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.network.SpaceApi
 import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
-import boostcamp.and07.mindsync.ui.util.ResponseErrorMessage
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -11,98 +12,58 @@ import javax.inject.Inject
 class SpaceRepositoryImpl
     @Inject
     constructor(private val spaceApi: SpaceApi) : SpaceRepository {
-        override suspend fun addSpace(
+        override fun addSpace(
             name: RequestBody,
             icon: MultipartBody.Part,
-        ): Result<Space> {
-            val response = spaceApi.addSpace(name, icon)
-            return try {
-                if (response.isSuccessful) {
-                    response.body()?.let { spaceResponse ->
-                        spaceResponse.data?.let { spaceData ->
-                            return Result.success(
-                                Space(
-                                    id = spaceData.uuid,
-                                    name = spaceData.name ?: "",
-                                    imageUrl = spaceData.icon ?: "",
-                                ),
-                            )
-                        }
-                    }
-                    throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
-                } else {
-                    Result.failure(Exception(ResponseErrorMessage.ERROR_MESSAGE_RESPONSE_FAIL.message))
+        ): Flow<Space> =
+            flow {
+                val response = spaceApi.addSpace(name, icon)
+                response.data?.let { spaceData ->
+                    emit(
+                        Space(
+                            id = spaceData.uuid,
+                            name = spaceData.name ?: "",
+                            imageUrl = spaceData.icon ?: "",
+                        ),
+                    )
                 }
-            } catch (e: Exception) {
-                Result.failure(Exception(e.message))
             }
-        }
 
-        override suspend fun getSpace(spaceUuid: String): Result<Space> {
-            val response = spaceApi.getSpace(spaceUuid)
-            return try {
-                if (response.isSuccessful) {
-                    response.body()?.let { spaceResponse ->
-                        spaceResponse.data?.let { spaceData ->
-                            return Result.success(
-                                Space(
-                                    id = spaceData.uuid,
-                                    name = spaceData.name ?: "",
-                                    imageUrl = spaceData.icon ?: "",
-                                ),
-                            )
-                        }
-                    }
-                    throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
-                } else {
-                    Result.failure(Exception(ResponseErrorMessage.ERROR_MESSAGE_RESPONSE_FAIL.message))
+        override fun getSpace(spaceUuid: String): Flow<Space> =
+            flow {
+                val response = spaceApi.getSpace(spaceUuid)
+                response.data?.let { spaceData ->
+                    emit(
+                        Space(
+                            id = spaceData.uuid,
+                            name = spaceData.name ?: "",
+                            imageUrl = spaceData.icon ?: "",
+                        ),
+                    )
                 }
-            } catch (e: Exception) {
-                Result.failure(Exception(e.message))
             }
-        }
 
-        override suspend fun getInviteSpaceCode(spaceUuid: String): Result<String> {
-            val response = spaceApi.getInviteCode(InviteCodeRequest(spaceUuid))
-            return try {
-                if (response.isSuccessful) {
-                    response.body()?.let { inviteCodeResponse ->
-                        inviteCodeResponse.data?.let { inviteCodeData ->
-                            return Result.success(
-                                inviteCodeData.inviteCode,
-                            )
-                        }
-                    }
-                    throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
-                } else {
-                    Result.failure(Exception(ResponseErrorMessage.ERROR_MESSAGE_RESPONSE_FAIL.message))
+        override fun getInviteSpaceCode(spaceUuid: String): Flow<String> =
+            flow {
+                val response = spaceApi.getInviteCode(InviteCodeRequest(spaceUuid))
+                response.data?.let { inviteCodeData ->
+                    emit(
+                        inviteCodeData.inviteCode,
+                    )
                 }
-            } catch (e: Exception) {
-                Result.failure(Exception(e.message))
             }
-        }
 
-        override suspend fun joinInviteCode(inviteCode: String): Result<Space> {
-            val response = spaceApi.inviteSpaceCode(inviteCode)
-            return try {
-                if (response.isSuccessful) {
-                    response.body()?.let { joinInviteCodeResponse ->
-                        joinInviteCodeResponse.data?.let { spaceData ->
-                            return Result.success(
-                                Space(
-                                    id = spaceData.uuid,
-                                    name = spaceData.name ?: "",
-                                    imageUrl = spaceData.icon ?: "",
-                                ),
-                            )
-                        }
-                    }
-                    throw Exception(ResponseErrorMessage.ERROR_MESSAGE_BODY_NULL.message)
-                } else {
-                    Result.failure(Exception(ResponseErrorMessage.ERROR_MESSAGE_RESPONSE_FAIL.message))
+        override fun joinInviteCode(inviteCode: String): Flow<Space> =
+            flow {
+                val response = spaceApi.inviteSpaceCode(inviteCode)
+                response.data?.let { spaceData ->
+                    emit(
+                        Space(
+                            id = spaceData.uuid,
+                            name = spaceData.name ?: "",
+                            imageUrl = spaceData.icon ?: "",
+                        ),
+                    )
                 }
-            } catch (e: Exception) {
-                Result.failure(Exception(e.message))
             }
-        }
     }
