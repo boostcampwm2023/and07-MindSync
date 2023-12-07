@@ -13,7 +13,6 @@ import { ProfilesService } from 'src/profiles/profiles.service';
 import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
 import { UpdateSpaceDto } from 'src/spaces/dto/update-space.dto';
 import LRUCache from 'src/utils/lru-cache';
-import { SpacesService } from 'src/spaces/spaces.service';
 
 interface UpdateProfileAndSpaceDto {
   profileData: UpdateProfileDto;
@@ -28,7 +27,6 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     protected prisma: PrismaServiceMySQL,
     protected temporaryDatabaseService: TemporaryDatabaseService,
     private readonly profilesService: ProfilesService,
-    private readonly spacesService: SpacesService,
   ) {
     super({
       prisma,
@@ -60,11 +58,75 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return { joinData, profileData: profileResponse.data };
   }
 
-  put(userUuid: string, spaceUuid: string, data: UpdateProfileAndSpaceDto) {
+  async put(
+    userUuid: string,
+    spaceUuid: string,
+    data: UpdateProfileAndSpaceDto,
+  ) {
     const { spaceData, profileData } = data;
+    const userSpaces = await this.getUserSpaces(userUuid, profileData.uuid);
+    userSpaces.push(spaceData);
+    this.userCache.put(userUuid, userSpaces);
+    const spaceProfiles = await this.getSpaceUsers(spaceUuid);
+    spaceProfiles.push(profileData);
+    this.spaceCache.put(spaceUuid, spaceProfiles);
   }
 
-  delete(userUuid: string, spaceUuid: string, data: UpdateProfileAndSpaceDto) {
-    const { spaceData, profileData } = data;
+  async delete(
+    userUuid: string,
+    spaceUuid: string,
+    profileData: UpdateProfileDto,
+  ) {
+    const userSpaces = await this.getUserSpaces(userUuid, profileData.uuid);
+    const filterUserSpaces = userSpaces.filter(
+      (space) => space.uuid !== spaceUuid,
+    );
+    this.userCache.put(userUuid, filterUserSpaces);
+    const spaceUsers = await this.getSpaceUsers(spaceUuid);
+    const filterSpaceUsers = spaceUsers.filter(
+      (profile) => profile.uuid !== profileData.uuid,
+    );
+    this.userCache.put(spaceUuid, filterSpaceUsers);
+    return filterSpaceUsers.length === 0;
+  }
+
+  async getUserSpaces(
+    userUuid: string,
+    profileUuid: string,
+  ): Promise<UpdateProfileDto[]> {
+    const cacheUserSpaces = this.userCache.get(userUuid);
+    if (cacheUserSpaces) return cacheUserSpaces;
+    const profileResponse = await this.prisma['PROFILE_TB'].findUnique({
+      where: { uuid: profileUuid },
+      include: {
+        spaces: {
+          include: {
+            space: true,
+          },
+        },
+      },
+    });
+    const storeUserSpaces =
+      profileResponse?.spaces.map((profileSpace) => profileSpace.space) || [];
+    return storeUserSpaces;
+  }
+
+  async getSpaceUsers(spaceUuid: string): Promise<UpdateSpaceDto[]> {
+    const cacheSpaceProfiles = this.spaceCache.get(spaceUuid);
+    if (cacheSpaceProfiles) return cacheSpaceProfiles;
+
+    const spaceResponse = await this.prisma['SPACE_TB'].findUnique({
+      where: { uuid: spaceUuid },
+      include: {
+        profiles: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    });
+    const storeSpaceProfiles =
+      spaceResponse?.profiles.map((profileSpace) => profileSpace.profile) || [];
+    return storeSpaceProfiles;
   }
 }
