@@ -1,8 +1,10 @@
 package boostcamp.and07.mindsync.data.network
 
 import boostcamp.and07.mindsync.data.network.request.ProfileSpaceJoinRequest
+import boostcamp.and07.mindsync.data.network.response.space.GetSpacesResponse
 import boostcamp.and07.mindsync.data.network.response.space.ProfileSpaceJoinResponse
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ProfileSpaceApi {
@@ -10,4 +12,7 @@ interface ProfileSpaceApi {
     suspend fun joinSpace(
         @Body profileSpaceJoinRequest: ProfileSpaceJoinRequest,
     ): ProfileSpaceJoinResponse
+
+    @GET("profileSpace/spaces")
+    suspend fun getSpaces(): GetSpacesResponse
 }
