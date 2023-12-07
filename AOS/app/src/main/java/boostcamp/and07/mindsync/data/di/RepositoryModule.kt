@@ -10,6 +10,8 @@ import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepositoryImpl
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepositoryImpl
+import boostcamp.and07.mindsync.data.repository.profilespace.ProfileSpaceRepository
+import boostcamp.and07.mindsync.data.repository.profilespace.ProfileSpaceRepositoryImpl
 import boostcamp.and07.mindsync.data.repository.recyclerbin.RecyclerBinRepository
 import boostcamp.and07.mindsync.data.repository.recyclerbin.RecyclerBinRepositoryImpl
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
@@ -42,4 +44,7 @@ interface RepositoryModule {
 
     @Binds
     fun provideTokenRepository(tokenRepositoryImpl: TokenRepositoryImpl): TokenRepository
+
+    @Binds
+    fun provideProfileSpaceRepository(profileSpaceRepositoryImpl: ProfileSpaceRepositoryImpl): ProfileSpaceRepository
 }
