@@ -1,7 +1,6 @@
 package boostcamp.and07.mindsync.ui.dialog
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
