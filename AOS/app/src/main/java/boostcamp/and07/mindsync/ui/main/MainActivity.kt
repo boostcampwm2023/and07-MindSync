@@ -67,10 +67,9 @@ class MainActivity :
                     if (event is MainUiEvent.ShowMessage) {
                         Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_SHORT).show()
                     }
-                    if (event is MainUiEvent.GetUsers)
-                        {
-                            mainViewModel.getSpaceUsers()
-                        }
+                    if (event is MainUiEvent.GetUsers) {
+                        mainViewModel.getSpaceUsers()
+                    }
                 }
             }
         }
