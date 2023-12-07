@@ -2,17 +2,18 @@ package boostcamp.and07.mindsync.ui.mindmap
 
 import android.util.Log
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.NodeGenerator
-import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
-import boostcamp.and07.mindsync.network.SocketEventType
-import boostcamp.and07.mindsync.network.SocketState
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
@@ -21,17 +22,21 @@ import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
+import boostcamp.and07.mindsync.ui.view.listener.NodeMoveListener
 import boostcamp.and07.mindsync.ui.view.listener.TreeUpdateListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MindMapFragment :
     BaseFragment<FragmentMindMapBinding>(R.layout.fragment_mind_map),
     NodeClickListener,
-    TreeUpdateListener {
+    TreeUpdateListener,
+    NodeMoveListener {
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private lateinit var mindMapContainer: MindMapContainer
-    private val boardId = "testBoard"
+    private val args: MindMapFragmentArgs by navArgs()
 
     override fun initView() {
         setupRootNode()
@@ -39,39 +44,23 @@ class MindMapFragment :
         collectOperation()
         collectSelectedNode()
         collectSocketState()
-        collectSocketEvent()
+        mindMapViewModel.setBoardId(args.boardId)
     }
 
     private fun collectSocketState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.socketState.collectLatest { state ->
-                when (state) {
-                    SocketState.CONNECT -> {
-                        mindMapViewModel.joinBoard(boardId)
-                    }
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mindMapViewModel.socketState.collectLatest { state ->
+                    when (state) {
+                        SocketState.CONNECT -> {
+                        }
 
-                    SocketState.DISCONNECT -> {
-                        Log.d("MindMapFragment", "collectSocketState: disconnect")
-                    }
+                        SocketState.DISCONNECT -> {
+                            Log.d("MindMapFragment", "collectSocketState: disconnect")
+                        }
 
-                    SocketState.ERROR -> {
-                        Log.d("MindMapFragment", "collectSocketState: error")
-                    }
-                }
-            }
-        }
-    }
-
-    private fun collectSocketEvent() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.socketEvent.collectLatest { event ->
-                event?.let { socketEvent ->
-                    when (socketEvent.eventType) {
-                        SocketEventType.OPERATION_FROM_SERVER -> {
-                            val operation = socketEvent.operation
-                            if (operation is SerializedOperation) {
-                                mindMapViewModel.applyOperation(operation)
-                            }
+                        SocketState.ERROR -> {
+                            Log.d("MindMapFragment", "collectSocketState: error")
                         }
                     }
                 }
@@ -81,10 +70,12 @@ class MindMapFragment :
 
     private fun collectOperation() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.operation.collectLatest {
-                mindMapContainer.update(mindMapViewModel.crdtTree.tree)
-                binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
-                binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mindMapViewModel.operation.collectLatest {
+                    mindMapContainer.update(mindMapViewModel.crdtTree.tree)
+                    binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
+                    binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
+                }
             }
         }
     }
@@ -101,14 +92,17 @@ class MindMapFragment :
         mindMapContainer = MindMapContainer(requireContext())
         mindMapContainer.setNodeClickListener(this)
         mindMapContainer.setTreeUpdateListener(this)
+        mindMapContainer.setNodeMoveListener(this)
         binding.zoomLayoutMindMapRoot.mindMapContainer = mindMapContainer
         binding.zoomLayoutMindMapRoot.initializeZoomLayout()
     }
 
     private fun collectSelectedNode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            mindMapViewModel.selectedNode.collectLatest { selectNode ->
-                mindMapContainer.setSelectedNode(selectNode)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mindMapViewModel.selectedNode.collectLatest { selectNode ->
+                    mindMapContainer.setSelectedNode(selectNode)
+                }
             }
         }
     }
@@ -151,5 +145,13 @@ class MindMapFragment :
 
     override fun updateTree(tree: Tree) {
         mindMapViewModel.update(tree)
+    }
+
+    override fun moveNode(
+        tree: Tree,
+        target: Node,
+        parent: Node,
+    ) {
+        mindMapViewModel.moveNode(tree, target, parent)
     }
 }

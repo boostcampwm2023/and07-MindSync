@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_add_space_graph"
+    app:startDestination="@id/inputSpaceCodeFragment"
+    >
+
+    <fragment
+        android:id="@+id/inputSpaceCodeFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.join.InputSpaceCodeFragment"
+        android:label="InputSpaceCodeFragment"/>
+    <fragment
+        android:id="@+id/confirmInviteSpaceFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.join.ConfirmInviteSpaceFragment"
+        android:label="ConfirmInviteSpaceFragment">
+        <argument
+            android:name="space"
+            app:argType="boostcamp.and07.mindsync.data.model.Space"
+        />
+    </fragment>
+
+    <activity
+        android:id='@+id/mainActivity'
+        android:name="boostcamp.and07.mindsync.ui.main.MainActivity"
+        android:label="MainActivity"/>
+
+    <action
+        android:id="@+id/action_to_ConfirmInviteSpaceFragment"
+        app:destination="@id/confirmInviteSpaceFragment"/>
+    <action
+        android:id="@+id/action_to_mainActitivty"
+        app:destination="@id/mainActivity"/>
+
+</navigation>

@@ -5,6 +5,11 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.boardlist.BoardListViewModel" />
+
+        <import type="com.google.android.flexbox.FlexDirection"></import>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,14 +17,45 @@
         android:layout_height="match_parent"
         tools:context=".ui.boardlist.BoardListFragment">
 
-        <TextView
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_board_list_start"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_board_list_board"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center|top"
+            app:boards="@{vm.boardUiState.boards}"
+            android:background="@android:color/transparent"
+            app:flexBoxLayoutManager="@{FlexDirection.ROW}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/gl_board_list_end"
+            app:layout_constraintStart_toEndOf="@id/gl_board_list_start"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_board" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_board_list_add_board"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Board List Fragment"
+            android:layout_margin="10dp"
+            app:floatingButtonImage="@{vm.boardUiState.selectBoards}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:rippleColor="@color/mindmap2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_board_list_end"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

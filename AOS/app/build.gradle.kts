@@ -1,4 +1,3 @@
-import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -20,6 +19,10 @@ android {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
     val url = properties["BASE_URL"] ?: ""
+    val googleServerClientId = properties["GOOGLE_SERVER_CLIENT_ID"] ?: ""
+    val kakaoClientId = properties["KAKAO_CLIENT_ID"] ?: ""
+    val removeQuotationKakaoClientId =
+        properties["KAKAO_CLIENT_ID"]?.let { id -> (id as String).replace("\"", "") } ?: ""
 
     defaultConfig {
         applicationId = "boostcamp.and07.mindsync"
@@ -29,6 +32,9 @@ android {
         versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "$url")
+        buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "$googleServerClientId")
+        buildConfigField("String", "KAKAO_CLIENT_ID", "$kakaoClientId")
+        manifestPlaceholders["KAKAO_CLIENT_ID"] = removeQuotationKakaoClientId
     }
 
     signingConfigs {
@@ -75,6 +81,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     // test
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -82,8 +89,8 @@ dependencies {
     // material
     implementation("com.google.android.material:material:1.10.0")
     // hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
     // retrofit, socket.io
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("io.socket:socket.io-client:2.1.0")
@@ -93,8 +100,15 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     // coil
     implementation("io.coil-kt:coil:2.5.0")
-    // kotlin serialization-json
+    // kotlin serialization, retrofit json converter
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    // google login
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    // kakao login
+    implementation("com.kakao.sdk:v2-user:2.18.0") // 카카오 로그인
+    // LayoutManager flexBox
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-analytics")
