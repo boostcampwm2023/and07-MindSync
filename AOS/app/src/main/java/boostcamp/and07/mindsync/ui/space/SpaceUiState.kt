@@ -8,4 +8,5 @@ data class SpaceUiState(
     val spaceName: String = "",
     val spaceThumbnail: String = "",
     val spaceThumbnailFile: File? = null,
+    val spaceInviteCode: String = "",
 )
