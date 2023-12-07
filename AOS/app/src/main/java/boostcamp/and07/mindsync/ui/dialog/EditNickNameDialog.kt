@@ -85,8 +85,8 @@ class EditNickNameDialog : DialogFragment() {
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDismiss(dialog)
     }
 }
