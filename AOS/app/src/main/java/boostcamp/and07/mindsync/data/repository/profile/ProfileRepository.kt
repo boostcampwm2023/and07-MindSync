@@ -10,6 +10,6 @@ interface ProfileRepository {
 
     fun patchProfile(
         nickname: RequestBody,
-        image: MultipartBody.Part,
+        image: MultipartBody.Part?,
     ): Flow<Profile>
 }
