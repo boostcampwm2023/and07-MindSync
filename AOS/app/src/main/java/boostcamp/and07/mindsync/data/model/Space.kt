@@ -7,4 +7,5 @@ data class Space(
     val id: String,
     val name: String,
     val imageUrl: String,
+    var isSelected: Boolean = false,
 ) : java.io.Serializable
