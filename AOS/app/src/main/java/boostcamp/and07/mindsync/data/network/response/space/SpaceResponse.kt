@@ -13,5 +13,6 @@ data class SpaceData(
 data class SpaceResponse(
     val statusCode: Int,
     val message: String,
+    val error: String?,
     val data: SpaceData?,
 )

@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class NewAccessTokenResponse(
     val statusCode: Int,
     val message: String,
+    val error: String?,
     val data: NewAccessTokenData?,
 )
 

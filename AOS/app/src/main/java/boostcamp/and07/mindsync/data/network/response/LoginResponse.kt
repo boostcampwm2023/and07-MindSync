@@ -15,5 +15,6 @@ data class LoginData(
 data class LoginResponse(
     val statusCode: Int,
     val message: String,
+    val error: String?,
     val data: LoginData?,
 )
