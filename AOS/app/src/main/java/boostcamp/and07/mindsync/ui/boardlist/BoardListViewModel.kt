@@ -32,7 +32,10 @@ class BoardListViewModel
                 viewModelScope.launch { _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString())) }
             }
 
-        init {
+        fun setSpaceId(spaceId: String) {
+            _boardUiState.update { boardUiState ->
+                boardUiState.copy(spaceId = spaceId)
+            }
             getBoards()
         }
 
@@ -43,7 +46,7 @@ class BoardListViewModel
             viewModelScope.launch(coroutineExceptionHandler) {
                 boardListRepository.createBoard(
                     boardName = name,
-                    spaceId = TEST_SPACE_ID,
+                    spaceId = _boardUiState.value.spaceId,
                     imageUrl = TEST_IMAGE_URL,
                 ).collectLatest { board ->
                     _boardUiState.update { boardUiState ->
@@ -57,7 +60,7 @@ class BoardListViewModel
 
         private fun getBoards() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                boardListRepository.getBoard(TEST_SPACE_ID).collectLatest { list ->
+                boardListRepository.getBoard(_boardUiState.value.spaceId).collectLatest { list ->
                     _boardUiState.update { it ->
                         it.copy(boards = list)
                     }
@@ -88,7 +91,6 @@ class BoardListViewModel
         }
 
         companion object {
-            private const val TEST_SPACE_ID = "11ee94cb588902308d61176844e12449"
             private const val TEST_IMAGE_URL =
                 "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
         }
