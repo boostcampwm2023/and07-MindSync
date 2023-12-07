@@ -68,7 +68,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
       super.remove(inviteCode);
       throw new HttpException(
         'Invite code has expired.',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.GONE,
       );
     }
     const spaceUuid = inviteCodeData.space_uuid;
