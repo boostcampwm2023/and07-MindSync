@@ -87,7 +87,7 @@ class MainActivity :
                         ),
                     )
                 } ?: run {
-                    Toast.makeText(this@MainActivity, "스페이스를 선택해주세요!!!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
                 }
             }
             tvSideBarRecycleBin.setOnClickListener {
@@ -107,7 +107,7 @@ class MainActivity :
                         ),
                     )
                 } ?: run {
-                    Toast.makeText(this@MainActivity, "스페이스를 선택해주세요!!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
                 }
             }
             imgbtnSideBarProfile.setOnClickListener {

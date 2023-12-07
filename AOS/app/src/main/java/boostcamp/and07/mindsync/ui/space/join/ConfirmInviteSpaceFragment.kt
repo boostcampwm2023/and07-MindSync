@@ -50,7 +50,7 @@ class ConfirmInviteSpaceFragment :
                         is SpaceEvent.Error -> {
                             Snackbar.make(
                                 binding.root,
-                                "이미 가입한 스페이스입니다.!!",
+                                resources.getString(R.string.space_already_join),
                                 Snackbar.LENGTH_SHORT,
                             )
                                 .show()
