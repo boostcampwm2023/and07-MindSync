@@ -35,6 +35,7 @@ class MainActivity :
     override fun onStart() {
         super.onStart()
         mainViewModel.fetchProfile()
+        mainViewModel.getSpaces()
     }
 
     override fun init() {
@@ -127,7 +128,11 @@ class MainActivity :
     private fun setSideBar() {
         spaceAdapter = SideBarSpaceAdapter()
         binding.includeMainInDrawer.rvSideBarSpace.adapter = spaceAdapter
-        spaceAdapter.submitList(getSampleSpace())
+        lifecycleScope.launch {
+            mainViewModel.spaces.collectLatest { spaces ->
+                spaceAdapter.submitList(spaces.toMutableList())
+            }
+        }
     }
 
     private fun getSampleSpace(): List<Space> {
