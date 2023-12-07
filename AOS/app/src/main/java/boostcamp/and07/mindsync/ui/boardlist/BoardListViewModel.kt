@@ -46,15 +46,10 @@ constructor(
     private fun addBoard() {
         viewModelScope.launch(coroutineExceptionHandler) {
             boardListRepository.createBoard(
-                boardName = "test1",
+                boardName = "success",
                 spaceId = testSpaceId,
                 imageUrl = testImageUrl,
             ).collectLatest { board ->
-                _boardUiState.update { it ->
-                    val list = it.boards.toMutableList()
-                    list.add(board)
-                    it.copy(boards = list.toList())
-                }
                 val newBoards = _boardUiState.value.boards.toMutableList().apply { add(board) }
                 _boardUiState.value = _boardUiState.value.copy(boards = newBoards)
                 _boardUiEvent.emit(BoardUiEvent.Success)
@@ -78,7 +73,7 @@ constructor(
             _boardUiState.value.boards.toMutableList().filter { board -> board.isChecked }
         _boardUiState.value =
             _boardUiState.value.copy(
-                selectBoards = newSelectBoards
+                selectBoards = newSelectBoards,
             )
     }
 
@@ -88,7 +83,7 @@ constructor(
         _boardUiState.value =
             _boardUiState.value.copy(
                 boards = newBoards,
-                selectBoards = listOf()
+                selectBoards = listOf(),
             )
     }
 
@@ -97,5 +92,4 @@ constructor(
         private const val testImageUrl =
             "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
     }
-
 }
