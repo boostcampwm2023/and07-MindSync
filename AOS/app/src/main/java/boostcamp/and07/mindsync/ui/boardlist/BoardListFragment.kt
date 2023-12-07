@@ -42,7 +42,7 @@ class BoardListFragment :
     private fun collectBoardEvent() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                boardListViewModel.event.collectLatest { boardEvent ->
+                boardListViewModel.boardUiEvent.collectLatest { boardEvent ->
                     when (boardEvent) {
                         is BoardUiEvent.Success -> {
                             Snackbar.make(
