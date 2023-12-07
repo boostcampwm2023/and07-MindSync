@@ -6,22 +6,22 @@
     <data>
 
         <variable
-            name="imageUri"
-            type="String" />
+            name="space"
+            type="boostcamp.and07.mindsync.data.model.Space" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_layout_item_space_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/main3">
+        android:background="@{space.isSelected ? @color/main1 : @color/main3}">
 
         <ImageView
             android:layout_width="@dimen/item_space_width"
             android:layout_height="@dimen/item_space_height"
             android:layout_marginHorizontal="@dimen/item_space_margin_horizontal"
             android:layout_marginVertical="@dimen/item_space_margin_vertical"
-            app:imageUri="@{imageUri}"
+            app:imageUri="@{space.imageUrl}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

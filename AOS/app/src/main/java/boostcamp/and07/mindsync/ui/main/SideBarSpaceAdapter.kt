@@ -22,7 +22,7 @@ class SideBarSpaceAdapter :
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Space) {
-            binding.imageUri = item.imageUrl
+            binding.space = item
             itemView.setOnClickListener {
                 spaceClickListener?.onClickSpace(item)
             }
