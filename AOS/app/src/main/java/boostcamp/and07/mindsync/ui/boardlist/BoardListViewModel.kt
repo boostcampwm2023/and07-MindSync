@@ -44,8 +44,8 @@ class BoardListViewModel
             viewModelScope.launch(coroutineExceptionHandler) {
                 boardListRepository.createBoard(
                     boardName = name,
-                    spaceId = testSpaceId,
-                    imageUrl = testImageUrl,
+                    spaceId = TEST_SPACE_ID,
+                    imageUrl = TEST_IMAGE_URL,
                 ).collectLatest { board ->
                     Log.d("BoardListViewModel", "addBoard: success")
                     val newBoards = _boardUiState.value.boards.toMutableList().apply { add(board) }
@@ -57,7 +57,7 @@ class BoardListViewModel
 
         private fun getBoards() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                boardListRepository.getBoard(testSpaceId).collectLatest { list ->
+                boardListRepository.getBoard(TEST_SPACE_ID).collectLatest { list ->
                     _boardUiState.update { it ->
                         it.copy(boards = list)
                     }
@@ -86,8 +86,8 @@ class BoardListViewModel
         }
 
         companion object {
-            private const val testSpaceId = "11ee94cb588902308d61176844e12449"
-            private const val testImageUrl =
+            private const val TEST_SPACE_ID = "11ee94cb588902308d61176844e12449"
+            private const val TEST_IMAGE_URL =
                 "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
         }
     }
