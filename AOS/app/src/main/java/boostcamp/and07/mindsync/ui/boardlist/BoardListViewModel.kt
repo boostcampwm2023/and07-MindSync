@@ -40,7 +40,7 @@ class BoardListViewModel
         }
 
         fun addBoard(
-            part: MultipartBody.Part,
+            part: MultipartBody.Part?,
             name: String,
         ) {
             viewModelScope.launch(coroutineExceptionHandler) {

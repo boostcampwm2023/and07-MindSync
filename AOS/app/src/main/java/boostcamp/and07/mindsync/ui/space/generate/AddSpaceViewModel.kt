@@ -1,5 +1,7 @@
 package boostcamp.and07.mindsync.ui.space.generate
 
+import android.util.Log
+import android.widget.Space
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
@@ -67,6 +69,10 @@ class AddSpaceViewModel
                     spaceRepository.addSpace(name, icon).collectLatest { space ->
                         _event.emit(SpaceEvent.Success)
                     }
+                }
+            } ?: run{
+                viewModelScope.launch(coroutineExceptionHandler){
+                    _event.emit(SpaceEvent.Error("사진을 입력해주세요"))
                 }
             }
         }

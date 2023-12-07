@@ -12,7 +12,6 @@ import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
-import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,10 +55,10 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
                             finish()
                         }
 
-                        is Error -> {
+                        is SpaceEvent.Error -> {
                             Snackbar.make(
                                 binding.root,
-                                SpaceExceptionMessage.ERROR_MESSAGE_SPACE_ADD.message,
+                                spaceEvent.message,
                                 Snackbar.LENGTH_SHORT,
                             )
                                 .show()

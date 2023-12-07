@@ -38,7 +38,7 @@ class CreateBoardDialog : DialogFragment() {
 
     private val createBoardViewModel: CreateBoardViewModel by viewModels()
 
-    private var completeListener: ((MultipartBody.Part, String) -> (Unit))? = null
+    private var completeListener: ((MultipartBody.Part?, String) -> (Unit))? = null
 
     private val pickMedia =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { url ->
@@ -59,7 +59,6 @@ class CreateBoardDialog : DialogFragment() {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
         ) { result ->
-            Log.d("CreateBoardDialog", "result: ${result.resultCode}")
             if (result.resultCode == RESULT_OK) {
                 result.data?.data?.let { uri ->
                     createImage(uri)
@@ -96,7 +95,7 @@ class CreateBoardDialog : DialogFragment() {
         resizeDialog()
     }
 
-    fun setCompleteListener(listener: (MultipartBody.Part, String) -> (Unit)) {
+    fun setCompleteListener(listener: (MultipartBody.Part?, String) -> (Unit)) {
         this.completeListener = listener
     }
 
