@@ -6,14 +6,15 @@ import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
-import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import boostcamp.and07.mindsync.ui.util.toRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
@@ -28,9 +29,12 @@ class AddSpaceViewModel
     ) : BaseActivityViewModel(logoutEventRepository) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
-        private var imageFile: File? = null
-        private val _spaceEvent = MutableSharedFlow<SpaceEvent>()
-        val spaceEvent = _spaceEvent.asSharedFlow()
+        private val _event = MutableSharedFlow<SpaceEvent>()
+        val event = _event.asSharedFlow()
+        private val coroutineExceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                viewModelScope.launch { _event.emit(SpaceEvent.Error(throwable.message.toString())) }
+            }
 
         fun onSpaceNameChanged(
             inputSpaceName: CharSequence,
@@ -50,21 +54,19 @@ class AddSpaceViewModel
         }
 
         fun setImageFile(file: File) {
-            imageFile = file
+            _uiState.update { uiState ->
+                uiState.copy(spaceThumbnailFile = file)
+            }
         }
 
         fun addSpace(imageName: String) {
-            imageFile?.let { imageFile ->
+            _uiState.value.spaceThumbnailFile?.let { imageFile ->
                 val icon = fileToMultiPart(imageFile, imageName)
                 val name = _uiState.value.spaceName.toRequestBody()
-                viewModelScope.launch {
-                    spaceRepository.addSpace(name, icon)
-                        .onSuccess {
-                            _spaceEvent.emit(SpaceEvent.Success)
-                        }
-                        .onFailure {
-                            _spaceEvent.emit(SpaceEvent.Error(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_ADD.message))
-                        }
+                viewModelScope.launch(coroutineExceptionHandler) {
+                    spaceRepository.addSpace(name, icon).collectLatest { space ->
+                        _event.emit(SpaceEvent.Success)
+                    }
                 }
             }
         }
