@@ -86,6 +86,62 @@ class CrdtTree(id: String) {
         )
     }
 
+    fun deserializeOperationAdd(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationAdd {
+        val input =
+            OperationInput(
+                id = serializedOperation.id,
+                parentId = serializedOperation.parentId,
+                description = serializedOperation.description,
+                clock =
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
+            )
+        return OperationAdd(input)
+    }
+
+    fun deserializeOperationDelete(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationDelete {
+        val input =
+            OperationInput(
+                id = serializedOperation.id,
+                clock =
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
+            )
+        return OperationDelete(input)
+    }
+
+    fun deserializeOperationMove(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationMove {
+        val input =
+            OperationInput(
+                id = serializedOperation.id,
+                parentId = serializedOperation.parentId,
+                clock =
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
+            )
+        return OperationMove(input)
+    }
+
+    fun deserializeOperationUpdate(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationUpdate {
+        val input =
+            OperationInput(
+                id = serializedOperation.id,
+                description = serializedOperation.description,
+                clock =
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
+            )
+        return OperationUpdate(input)
+    }
+
     fun deserializeOperationAdd(serializedOperation: SerializedOperation): OperationAdd {
         val input =
             OperationInput(
@@ -93,10 +149,10 @@ class CrdtTree(id: String) {
                 parentId = serializedOperation.parentId,
                 description = serializedOperation.description,
                 clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
             )
         return OperationAdd(input)
     }
@@ -106,10 +162,10 @@ class CrdtTree(id: String) {
             OperationInput(
                 id = serializedOperation.id,
                 clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
             )
         return OperationDelete(input)
     }
@@ -120,10 +176,10 @@ class CrdtTree(id: String) {
                 id = serializedOperation.id,
                 parentId = serializedOperation.parentId,
                 clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
             )
         return OperationMove(input)
     }
@@ -134,10 +190,10 @@ class CrdtTree(id: String) {
                 id = serializedOperation.id,
                 description = serializedOperation.description,
                 clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
+                Clock(
+                    serializedOperation.clock.id,
+                    serializedOperation.clock.counter,
+                ),
             )
         return OperationUpdate(input)
     }
