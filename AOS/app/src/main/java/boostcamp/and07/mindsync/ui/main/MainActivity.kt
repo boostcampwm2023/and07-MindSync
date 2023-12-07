@@ -13,10 +13,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
+import boostcamp.and07.mindsync.ui.space.list.SpaceListFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -77,8 +79,16 @@ class MainActivity :
     private fun setSideBarNavigation() {
         with(binding.includeMainInDrawer) {
             tvSideBarBoardList.setOnClickListener {
-                drawerLayout.closeDrawers()
-                navController.navigate(R.id.action_to_boardListFragment)
+                mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
+                    drawerLayout.closeDrawers()
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToBoardListFragment(
+                            nowSpace.id,
+                        ),
+                    )
+                } ?: run {
+                    Toast.makeText(this@MainActivity, "스페이스를 선택해주세요!!!", Toast.LENGTH_SHORT).show()
+                }
             }
             tvSideBarRecycleBin.setOnClickListener {
                 drawerLayout.closeDrawers()
@@ -89,8 +99,16 @@ class MainActivity :
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
             tvSideBarInviteSpace.setOnClickListener {
-                drawerLayout.closeDrawers()
-                navController.navigate(R.id.action_to_inviteUserDialog)
+                mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
+                    drawerLayout.closeDrawers()
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToInviteUserDialog(
+                            nowSpace.id,
+                        ),
+                    )
+                } ?: run {
+                    Toast.makeText(this@MainActivity, "스페이스를 선택해주세요!!", Toast.LENGTH_SHORT).show()
+                }
             }
             imgbtnSideBarProfile.setOnClickListener {
                 val intent = Intent(this@MainActivity, ProfileActivity::class.java)
@@ -126,6 +144,13 @@ class MainActivity :
 
     private fun setSideBar() {
         spaceAdapter = SideBarSpaceAdapter()
+        spaceAdapter.setSideBarClickListener(
+            object : SpaceClickListener {
+                override fun onClickSpace(space: Space) {
+                    mainViewModel.updateCurrentSpace(space)
+                }
+            },
+        )
         binding.includeMainInDrawer.rvSideBarSpace.adapter = spaceAdapter
         lifecycleScope.launch {
             mainViewModel.uiState.collectLatest { uiState ->
