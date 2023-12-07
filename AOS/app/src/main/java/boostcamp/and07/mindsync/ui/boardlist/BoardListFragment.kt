@@ -1,9 +1,11 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
+import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
@@ -20,13 +22,9 @@ class BoardListFragment :
 
     override fun initView() {
         setBinding()
-//        setRefreshButton()
         collectBoardEvent()
         onFloatingButtonClick()
     }
-
-//    private fun setRefreshButton() {
-//    }
 
     private fun setBinding() {
         binding.vm = boardListViewModel
@@ -34,6 +32,11 @@ class BoardListFragment :
         boardListAdapter.setBoardClickListener(
             object : BoardClickListener {
                 override fun onClick(board: Board) {
+                    findNavController().navigate(
+                        BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
+                            board.id
+                        )
+                    )
                 }
 
                 override fun onCheckBoxClick(board: Board) {
