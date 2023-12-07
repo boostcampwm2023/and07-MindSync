@@ -37,8 +37,8 @@ export abstract class BaseService<T extends HasUuid> {
 
   abstract generateKey(data: T): string;
 
-  async create(data: T) {
-    data.uuid = generateUuid();
+  async create(data: T, generateUuidFlag: boolean = true) {
+    if (generateUuidFlag) data.uuid = generateUuid();
     const key = this.generateKey(data);
     const storeData = await this.getDataFromCacheOrDB(key);
     if (storeData) {
@@ -61,7 +61,9 @@ export abstract class BaseService<T extends HasUuid> {
       key,
       'delete',
     );
-    if (deleteCommand) return null;
+    if (deleteCommand) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     if (data) {
       const mergedData = this.mergeWithUpdateCommand(data, key);
       this.cache.put(key, mergedData);
@@ -72,10 +74,7 @@ export abstract class BaseService<T extends HasUuid> {
       };
     }
 
-    return {
-      statusCode: HttpStatus.NOT_FOUND,
-      message: 'Not Found',
-    };
+    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
   }
 
   async update(key: string, updateData: T) {
@@ -132,6 +131,10 @@ export abstract class BaseService<T extends HasUuid> {
         value: key,
       });
     }
+    return {
+      statusCode: HttpStatus.NO_CONTENT,
+      message: 'No Content',
+    };
   }
 
   async getDataFromCacheOrDB(key: string): Promise<T | null> {

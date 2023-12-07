@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Request as Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
@@ -15,6 +16,8 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from 'src/upload/upload.service';
+import { ProfileSpaceService } from 'src/profile-space/profile-space.service';
+import { RequestWithUser } from 'src/utils/interface';
 import customEnv from 'src/config/env';
 const { BASE_IMAGE_URL } = customEnv;
 
@@ -24,6 +27,7 @@ export class SpacesController {
   constructor(
     private readonly spacesService: SpacesService,
     private readonly uploadService: UploadService,
+    private readonly profileSpaceService: ProfileSpaceService,
   ) {}
 
   @Post()
@@ -36,12 +40,22 @@ export class SpacesController {
   async create(
     @UploadedFile() icon: Express.Multer.File,
     @Body() createSpaceDto: CreateSpaceDto,
+    @Req() req: RequestWithUser,
   ) {
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : BASE_IMAGE_URL;
     createSpaceDto.icon = iconUrl;
-    return this.spacesService.create(createSpaceDto);
+    const response = await this.spacesService.create(createSpaceDto);
+    const { uuid: spaceUuid } = response.data;
+    const userUuid = req.user.uuid;
+    const { joinData, profileData } =
+      await this.profileSpaceService.processData(userUuid, spaceUuid);
+    this.profileSpaceService.create(joinData);
+    const spaceData = response.data;
+    const data = { profileData, spaceData };
+    this.profileSpaceService.put(userUuid, spaceUuid, data);
+    return response;
   }
 
   @Get(':space_uuid')

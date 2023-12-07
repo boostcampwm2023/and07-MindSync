@@ -4,6 +4,7 @@ import { TemporaryDatabaseService } from '../temporary-database/temporary-databa
 import { BaseService } from '../base/base.service';
 import { SPACE_CACHE_SIZE } from 'src/config/magic-number';
 import { UpdateSpaceDto } from './dto/update-space.dto';
+import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
 
 @Injectable()
 export class SpacesService extends BaseService<UpdateSpaceDto> {
@@ -22,5 +23,12 @@ export class SpacesService extends BaseService<UpdateSpaceDto> {
 
   generateKey(data: UpdateSpaceDto): string {
     return data.uuid;
+  }
+
+  async processData(spaceUuid: string, profileData: UpdateProfileDto) {
+    const spaceResponseData = await super.findOne(spaceUuid);
+    const spaceData = spaceResponseData.data;
+    const data = { profileData, spaceData };
+    return data;
   }
 }
