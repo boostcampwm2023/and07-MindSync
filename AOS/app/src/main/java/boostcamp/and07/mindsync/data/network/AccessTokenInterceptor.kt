@@ -7,8 +7,10 @@ import com.kakao.sdk.common.Constants.AUTHORIZATION
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import javax.inject.Inject
 
 class AccessTokenInterceptor
@@ -34,7 +36,10 @@ class AccessTokenInterceptor
 
         private fun errorResponse(request: Request): Response =
             Response.Builder()
+                .request(request)
+                .protocol(Protocol.HTTP_2)
                 .code(DataStoreConst.UNAUTHORIZED_CODE)
+                .body("".toResponseBody())
                 .message(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message)
                 .build()
     }
