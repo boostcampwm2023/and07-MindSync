@@ -46,7 +46,7 @@
         <include
             android:id="@+id/include_main_in_drawer"
             layout="@layout/navigation_drawer_side_bar"
-            profileImageUrl="@{ vm.profileImageUrl}" />
+            profileImageUrl="@{ vm.uiState.profileImageUrl}" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

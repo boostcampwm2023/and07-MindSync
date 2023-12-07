@@ -13,7 +13,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
@@ -129,34 +128,10 @@ class MainActivity :
         spaceAdapter = SideBarSpaceAdapter()
         binding.includeMainInDrawer.rvSideBarSpace.adapter = spaceAdapter
         lifecycleScope.launch {
-            mainViewModel.spaces.collectLatest { spaces ->
-                spaceAdapter.submitList(spaces.toMutableList())
+            mainViewModel.uiState.collectLatest { uiState ->
+                spaceAdapter.submitList(uiState.spaces.toMutableList())
             }
         }
-    }
-
-    private fun getSampleSpace(): List<Space> {
-        val sampleSpace =
-            mutableListOf(
-                Space(
-                    "0",
-                    "space1",
-                    "error",
-                ),
-                Space(
-                    "1",
-                    "space3",
-                    "https://img.freepik.com/premium-vector/" +
-                        "cute-kawaii-shiba-inu-dog-cartoon-style" +
-                        "-character-mascot-corgi-dog_945253-162.jpg",
-                ),
-                Space(
-                    "2",
-                    "space3",
-                    "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg",
-                ),
-            )
-        return sampleSpace.toList()
     }
 
     fun openDrawerButtonOnClick(view: View) {
