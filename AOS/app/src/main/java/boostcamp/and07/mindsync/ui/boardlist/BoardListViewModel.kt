@@ -1,60 +1,95 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
 import androidx.lifecycle.ViewModel
-import boostcamp.and07.mindsync.data.IdGenerator
+import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.model.Board
+import boostcamp.and07.mindsync.data.repository.boardlist.BoardListRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.time.LocalDate
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import javax.inject.Inject
 
-class BoardListViewModel : ViewModel() {
-    private val _boards = MutableStateFlow<List<Board>>(listOf())
-    val boards: StateFlow<List<Board>> = _boards
-    private val _selectBoards = MutableStateFlow<List<Board>>(mutableListOf())
-    val selectBoards: StateFlow<List<Board>> = _selectBoards
+@HiltViewModel
+class BoardListViewModel
+    @Inject
+    constructor(
+        private val boardListRepository: BoardListRepository,
+    ) : ViewModel() {
+        private val _boardUiState = MutableStateFlow(BoardUiState())
+        val boardUiState: StateFlow<BoardUiState> = _boardUiState
+        private val _boardUiEvent = MutableSharedFlow<BoardUiEvent>()
+        val boardUiEvent: SharedFlow<BoardUiEvent> = _boardUiEvent
 
-    fun onFloatingButtonClick() {
-        if (_selectBoards.value.isEmpty()) {
-            addBoard()
-        } else {
-            deleteBoard()
+        private val coroutineExceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                viewModelScope.launch { _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString())) }
+            }
+
+        init {
+            getBoards()
+        }
+
+        fun addBoard(
+            part: MultipartBody.Part,
+            name: String,
+        ) {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                boardListRepository.createBoard(
+                    boardName = name,
+                    spaceId = TEST_SPACE_ID,
+                    imageUrl = TEST_IMAGE_URL,
+                ).collectLatest { board ->
+                    _boardUiState.update { boardUiState ->
+                        val newBoards = boardUiState.boards.toMutableList().apply { add(board) }
+                        boardUiState.copy(boards = newBoards)
+                    }
+                    _boardUiEvent.emit(BoardUiEvent.Success)
+                }
+            }
+        }
+
+        private fun getBoards() {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                boardListRepository.getBoard(TEST_SPACE_ID).collectLatest { list ->
+                    _boardUiState.update { it ->
+                        it.copy(boards = list)
+                    }
+                    _boardUiEvent.emit(BoardUiEvent.Success)
+                }
+            }
+        }
+
+        fun selectBoard(selectBoard: Board) {
+            _boardUiState.update { boardUiState ->
+                val newSelectBoards =
+                    boardUiState.boards.toMutableList().filter { board -> board.isChecked }
+                boardUiState.copy(
+                    selectBoards = newSelectBoards,
+                )
+            }
+        }
+
+        fun deleteBoard() {
+            _boardUiState.update { boardUiState ->
+                val newBoards =
+                    boardUiState.boards.toMutableList().filter { board -> !board.isChecked }
+                boardUiState.copy(
+                    boards = newBoards,
+                    selectBoards = listOf(),
+                )
+            }
+        }
+
+        companion object {
+            private const val TEST_SPACE_ID = "11ee94cb588902308d61176844e12449"
+            private const val TEST_IMAGE_URL =
+                "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
         }
     }
-
-    private fun addBoard() {
-        val board =
-            Board(
-                IdGenerator.makeRandomNodeId(),
-                "test1",
-                LocalDate.now(),
-                "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg",
-            )
-        _boards.value =
-            _boards.value.toMutableList().apply {
-                add(board)
-            }
-    }
-
-    fun selectBoard(selectBoard: Board) {
-        val currentSelectBoards = _selectBoards.value.find { board -> board == selectBoard }
-        if (currentSelectBoards == null) {
-            _selectBoards.value =
-                _selectBoards.value.toMutableList().apply {
-                    add(selectBoard)
-                }
-        } else {
-            _selectBoards.value =
-                _selectBoards.value.toMutableList().apply {
-                    remove(selectBoard)
-                }
-        }
-    }
-
-    private fun deleteBoard() {
-        _boards.value =
-            _boards.value.toMutableList().apply {
-                removeAll(_selectBoards.value)
-            }
-        _selectBoards.value = listOf()
-    }
-}
