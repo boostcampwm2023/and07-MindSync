@@ -10,10 +10,22 @@ import boostcamp.and07.mindsync.databinding.ItemSpaceBinding
 
 class SideBarSpaceAdapter :
     ListAdapter<Space, SideBarSpaceAdapter.SideBarSpaceViewHolder>(DIFF_CALLBACK) {
-    class SideBarSpaceViewHolder(private val binding: ItemSpaceBinding) :
+
+    private var sideBarClickListener: SideBarClickListener? = null
+    fun setSideBarClickListener(sideBarClickListener: SideBarClickListener) {
+        this.sideBarClickListener = sideBarClickListener
+    }
+
+    class SideBarSpaceViewHolder(
+        private val binding: ItemSpaceBinding,
+        private val sideBarClickListener: SideBarClickListener?,
+    ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Space) {
             binding.imageUri = item.imageUrl
+            itemView.setOnClickListener {
+                sideBarClickListener?.onClickSpace(item)
+            }
         }
     }
 
@@ -22,7 +34,7 @@ class SideBarSpaceAdapter :
         viewType: Int,
     ): SideBarSpaceViewHolder {
         val binding = ItemSpaceBinding.inflate(LayoutInflater.from(parent.context))
-        return SideBarSpaceViewHolder(binding)
+        return SideBarSpaceViewHolder(binding, sideBarClickListener)
     }
 
     override fun onBindViewHolder(
