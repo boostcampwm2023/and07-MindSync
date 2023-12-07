@@ -12,27 +12,29 @@ class ProfileRepositoryImpl
     constructor(private val profileApi: ProfileApi) : ProfileRepository {
         override fun getProfile() =
             flow {
-                val response = profileApi.getProfile().data
-                emit(
-                    Profile(
-                        id = response.uuid,
-                        nickname = response.nickname ?: "",
-                        imageUrl = response.image ?: "",
-                    ),
-                )
+                profileApi.getProfile().data?.let { responseData ->
+                    emit(
+                        Profile(
+                            id = responseData.uuid,
+                            nickname = responseData.nickname ?: "",
+                            imageUrl = responseData.image ?: "",
+                        ),
+                    )
+                }
             }
 
         override fun patchProfile(
             nickname: RequestBody,
             image: MultipartBody.Part?,
         ) = flow {
-            val response = profileApi.patchProfile(nickname, image)
-            emit(
-                Profile(
-                    id = response.data.uuid,
-                    nickname = response.data.nickname ?: "",
-                    imageUrl = response.data.image ?: "",
-                ),
-            )
+            profileApi.patchProfile(nickname, image).data?.let { responseData ->
+                emit(
+                    Profile(
+                        id = responseData.uuid,
+                        nickname = responseData.nickname ?: "",
+                        imageUrl = responseData.image ?: "",
+                    ),
+                )
+            }
         }
     }

@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class ProfileData(
     val statusCode: Int,
     val message: String,
-    val data: ProfileResponse,
+    val error: String? = null,
+    val data: ProfileResponse? = null,
 )
