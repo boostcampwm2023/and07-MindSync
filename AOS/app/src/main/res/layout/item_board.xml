@@ -29,8 +29,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:scaleType="center"
-                android:src="@mipmap/ic_app_logo"
-                app:imageUri="@{board.imageUrl}" />
+                android:src="@mipmap/ic_app_logo" />
 
             <CheckBox
                 android:id="@+id/cb_board"

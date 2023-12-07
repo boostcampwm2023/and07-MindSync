@@ -38,18 +38,18 @@ class BoardListRepositoryImpl
                 }
             }
 
-    override fun getBoard(spaceId: String): Flow<List<Board>> =
-        flow {
-            val response = boardApi.getBoards(spaceId)
-            emit(
-                response.data.map { board ->
-                    Board(
-                        id = board.boardId,
-                        name = board.boardName,
-                        date = board.createdAt,
-                        imageUrl = board.imageUrl,
-                    )
-                },
-            )
-        }
-}
+        override fun getBoard(spaceId: String): Flow<List<Board>> =
+            flow {
+                val response = boardApi.getBoards(spaceId)
+                emit(
+                    response.data.map { board ->
+                        Board(
+                            id = board.boardId,
+                            name = board.boardName,
+                            date = board.createdAt,
+                            imageUrl = board.imageUrl,
+                        )
+                    },
+                )
+            }
+    }
