@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.profile.ProfileViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_round_dialog">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_edit_profile_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_edit_profile_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
+
+        <TextView
+            android:id="@+id/tv_edit_profile_title"
+            style="@style/Typography.Title03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/profile_nickname_modify"
+            app:layout_constraintStart_toStartOf="@id/gl_edit_profile_start"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_edit_profile_nickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/btn_edit_profile_cancel"
+            app:layout_constraintEnd_toEndOf="@id/gl_edit_profile_end"
+            app:layout_constraintStart_toStartOf="@id/gl_edit_profile_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_edit_profile_title" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_edit_profile_cancel"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:text="@string/cancel_message"
+            app:layout_constraintEnd_toStartOf="@id/btn_edit_profile_modify"
+            app:layout_constraintTop_toTopOf="@id/btn_edit_profile_modify" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_edit_profile_modify"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:padding="0dp"
+            android:text="@string/profile_modify"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/gl_edit_profile_end" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

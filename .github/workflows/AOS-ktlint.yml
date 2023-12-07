@@ -2,8 +2,8 @@ name: AOS-ktlint
 on:
   pull_request:
     branches:
-      - main
       - AOS-develop
+      - AOS-*/**
   push:
     paths:
       - '**.kt'

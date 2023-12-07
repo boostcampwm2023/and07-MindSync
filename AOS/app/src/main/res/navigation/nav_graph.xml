@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/spaceListFragment">
+
+    <fragment
+        android:id="@+id/spaceListFragment"
+        android:name="boostcamp.and07.mindsync.ui.space.list.SpaceListFragment"
+        android:label="SpaceListFragment"/>
+    <fragment
+        android:id="@+id/mindMapFragment"
+        android:name="boostcamp.and07.mindsync.ui.mindmap.MindMapFragment"
+        android:label="MindMapFragment">
+        <argument
+            android:name="boardId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/boardListFragment"
+        android:name="boostcamp.and07.mindsync.ui.boardlist.BoardListFragment"
+        android:label="BoardListFragment" >
+        <argument
+            android:name="spaceId"
+            app:argType="string"/>
+        <action
+            android:id="@+id/action_boardListFragment_to_mindMapFragment"
+            app:destination="@id/mindMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recycleBinFragment"
+        android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
+        android:label="RecycleBinFragment" />
+    <activity
+        android:id="@+id/addSpaceActivity"
+        android:name="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity"
+        android:label="AddSpaceActivity" />
+    <activity
+        android:id="@+id/addInviteSpaceActivity"
+        android:name="boostcamp.and07.mindsync.ui.space.join.AddInviteSpaceActivity"
+        android:label="AddInviteSpaceActivity" />
+    <dialog
+        android:id="@+id/addSpaceDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.AddSpaceDialog"
+        android:label="AddSpaceDialog" />
+    <dialog
+        android:id="@+id/editDescriptionDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog"
+        android:label="EditDescriptionDialog" />
+    <dialog
+        android:id="@+id/inviteUserDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"
+        android:label="InviteUserDialog">
+        <argument
+            android:name="spaceId"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/editNickNameDialog"
+        android:name="boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog"
+        android:label="ChooseSpaceImageDialog" />
+    <activity
+        android:id="@+id/profileActivity"
+        android:name="boostcamp.and07.mindsync.ui.profile.ProfileActivity"
+        android:label="ProfileActivity" />
+    <action
+        android:id="@+id/action_to_boardListFragment"
+        app:destination="@id/boardListFragment" />
+    <action
+        android:id="@+id/action_to_recycleBinFragment"
+        app:destination="@id/recycleBinFragment" />
+    <action
+        android:id="@+id/action_to_addSpaceActivity"
+        app:destination="@+id/addSpaceActivity" />
+    <action
+        android:id="@+id/action_to_addSpaceDialog"
+        app:destination="@+id/addSpaceDialog" />
+    <action
+        android:id="@+id/action_to_editDescriptionDialog"
+        app:destination="@id/action_to_editDescriptionDialog" />
+    <action
+        android:id="@+id/action_to_addInviteSpaceActivity"
+        app:destination="@+id/addInviteSpaceActivity" />
+    <action
+        android:id="@+id/action_to_inviteUserDialog"
+        app:destination="@id/inviteUserDialog" />
+</navigation>
