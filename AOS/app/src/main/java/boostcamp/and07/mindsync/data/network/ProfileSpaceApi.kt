@@ -6,7 +6,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface ProfileSpaceApi {
-
     @POST("profileSpace/join")
     suspend fun joinSpace(
         @Body profileSpaceJoinRequest: ProfileSpaceJoinRequest,

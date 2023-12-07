@@ -52,5 +52,5 @@ object ApiModule {
     @Singleton
     fun provideProfileSpaceApi(
         @Named(NetworkConst.CLIENT_RETROFIT) retrofit: Retrofit,
-    ) : ProfileSpaceApi = retrofit.create()
+    ): ProfileSpaceApi = retrofit.create()
 }
