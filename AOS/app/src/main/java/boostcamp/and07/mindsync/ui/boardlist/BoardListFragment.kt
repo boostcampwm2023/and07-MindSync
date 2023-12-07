@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
-import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -10,6 +9,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -51,22 +51,15 @@ class BoardListFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 boardListViewModel.boardUiEvent.collectLatest { boardEvent ->
                     when (boardEvent) {
-                        is BoardUiEvent.Success -> {
-//                            Snackbar.make(
-//                                binding.root,
-//                                "성공",
-//                                Snackbar.LENGTH_SHORT,
-//                            )
-//                                .show()
-                        }
+                        is BoardUiEvent.Success -> {}
 
                         is BoardUiEvent.Error -> {
-//                            Snackbar.make(
-//                                binding.root,
-//                                "실패",
-//                                Snackbar.LENGTH_SHORT,
-//                            )
-//                                .show()
+                            Snackbar.make(
+                                binding.root,
+                                boardEvent.message,
+                                Snackbar.LENGTH_SHORT,
+                            )
+                                .show()
                         }
 
                         else -> {}
@@ -81,7 +74,6 @@ class BoardListFragment :
             if (boardListViewModel.boardUiState.value.selectBoards.isEmpty()) {
                 val createBoardDialog = CreateBoardDialog()
                 createBoardDialog.setCompleteListener { part, name ->
-                    Log.d("BoardListFragment", "onFloatingButtonClick: success")
                     boardListViewModel.addBoard(part, name)
                 }
                 createBoardDialog.show(
