@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_profile) {
     private lateinit var navController: NavController
     private val profileViewModel by viewModels<ProfileViewModel>()
+
     override fun init() {
         setNavController()
     }

@@ -93,10 +93,10 @@ class CrdtTree(id: String) {
                 parentId = serializedOperation.parentId,
                 description = serializedOperation.description,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationAdd(input)
     }
@@ -106,10 +106,10 @@ class CrdtTree(id: String) {
             OperationInput(
                 id = serializedOperation.id,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationDelete(input)
     }
@@ -120,10 +120,10 @@ class CrdtTree(id: String) {
                 id = serializedOperation.id,
                 parentId = serializedOperation.parentId,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationMove(input)
     }
@@ -134,10 +134,10 @@ class CrdtTree(id: String) {
                 id = serializedOperation.id,
                 description = serializedOperation.description,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationUpdate(input)
     }
@@ -149,10 +149,10 @@ class CrdtTree(id: String) {
                 parentId = serializedOperation.parentId,
                 description = serializedOperation.description,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationAdd(input)
     }
@@ -162,10 +162,10 @@ class CrdtTree(id: String) {
             OperationInput(
                 id = serializedOperation.id,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationDelete(input)
     }
@@ -176,10 +176,10 @@ class CrdtTree(id: String) {
                 id = serializedOperation.id,
                 parentId = serializedOperation.parentId,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationMove(input)
     }
@@ -190,10 +190,10 @@ class CrdtTree(id: String) {
                 id = serializedOperation.id,
                 description = serializedOperation.description,
                 clock =
-                Clock(
-                    serializedOperation.clock.id,
-                    serializedOperation.clock.counter,
-                ),
+                    Clock(
+                        serializedOperation.clock.id,
+                        serializedOperation.clock.counter,
+                    ),
             )
         return OperationUpdate(input)
     }
