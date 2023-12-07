@@ -37,7 +37,6 @@ export class BoardTreesGateway {
     const payloadObject = JSON.parse(payload);
     const { boardId, operation: serializedOperation } = payloadObject;
 
-    const operationObject = JSON.parse(serializedOperation);
     const operationTypeMap = {
       add: OperationAdd.parse<string>,
       delete: OperationDelete.parse<string>,
@@ -46,7 +45,7 @@ export class BoardTreesGateway {
     };
 
     const operation =
-      operationTypeMap[operationObject.operationType](operationObject);
+      operationTypeMap[serializedOperation.operationType](serializedOperation);
     this.boardTreesService.applyOperation(boardId, operation);
 
     client.broadcast
