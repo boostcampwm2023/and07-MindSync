@@ -47,7 +47,6 @@
             app:floatingButtonImage="@{vm.boardUiState.selectBoards}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:onClickListener="@{() -> vm.onFloatingButtonClick()}"
             app:rippleColor="@color/mindmap2" />
 
         <androidx.constraintlayout.widget.Guideline

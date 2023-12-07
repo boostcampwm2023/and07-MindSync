@@ -35,15 +35,7 @@ constructor(
         getBoards()
     }
 
-    fun onFloatingButtonClick() {
-        if (_boardUiState.value.selectBoards.isEmpty()) {
-            addBoard()
-        } else {
-            deleteBoard()
-        }
-    }
-
-    private fun addBoard() {
+    fun addBoard() {
         viewModelScope.launch(coroutineExceptionHandler) {
             boardListRepository.createBoard(
                 boardName = "success",
@@ -77,7 +69,7 @@ constructor(
             )
     }
 
-    private fun deleteBoard() {
+    fun deleteBoard() {
         val newBoards =
             _boardUiState.value.boards.toMutableList().filter { board -> !board.isChecked }
         _boardUiState.value =
