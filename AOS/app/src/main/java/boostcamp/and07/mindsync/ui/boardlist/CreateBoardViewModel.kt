@@ -3,11 +3,11 @@ package boostcamp.and07.mindsync.ui.boardlist
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
-import boostcamp.and07.mindsync.ui.util.toRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import okhttp3.MultipartBody
 import java.io.File
 import javax.inject.Inject
 
@@ -39,11 +39,17 @@ constructor(
         }
     }
 
-    fun addBoard(imageName: String) {
+    fun changeImageToFile(imageName: String): Pair<MultipartBody.Part, String>? {
         imageFile?.let { imageFile ->
             val icon = fileToMultiPart(imageFile, imageName)
-            val name = _uiState.value.boardName.toRequestBody()
+            val name = _uiState.value.boardName
+            return Pair(icon, name)
         }
+        return null
+    }
+
+    fun setImageFile(file: File) {
+        imageFile = file
     }
 }
 

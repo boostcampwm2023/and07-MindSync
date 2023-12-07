@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.model.Board
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,13 +37,14 @@ constructor(
         getBoards()
     }
 
-    fun addBoard() {
+    fun addBoard(part: MultipartBody.Part, name: String) {
         viewModelScope.launch(coroutineExceptionHandler) {
             boardListRepository.createBoard(
-                boardName = "success",
+                boardName = name,
                 spaceId = testSpaceId,
                 imageUrl = testImageUrl,
             ).collectLatest { board ->
+                Log.d("BoardListViewModel", "addBoard: success")
                 val newBoards = _boardUiState.value.boards.toMutableList().apply { add(board) }
                 _boardUiState.value = _boardUiState.value.copy(boards = newBoards)
                 _boardUiEvent.emit(BoardUiEvent.Success)

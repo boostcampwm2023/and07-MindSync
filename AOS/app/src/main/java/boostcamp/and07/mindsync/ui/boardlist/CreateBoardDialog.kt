@@ -28,6 +28,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogCreateBoardBinding
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.MultipartBody
 import java.io.File
 
 @AndroidEntryPoint
@@ -37,11 +38,14 @@ class CreateBoardDialog : DialogFragment() {
 
     private val createBoardViewModel: CreateBoardViewModel by viewModels()
 
+    private var completeListener: ((MultipartBody.Part, String) -> (Unit))? = null
+
     private val pickMedia =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { url ->
             url?.let {
                 val file = File(url.toAbsolutePath(requireContext()))
                 createBoardViewModel.setSpaceImage(url.toString())
+                createBoardViewModel.setImageFile(file)
             }
         }
     private val galleryPermissionLauncher =
@@ -93,6 +97,10 @@ class CreateBoardDialog : DialogFragment() {
         resizeDialog()
     }
 
+    fun setCompleteListener(listener: (MultipartBody.Part, String) -> (Unit)) {
+        this.completeListener = listener
+    }
+
     private fun resizeDialog() {
         val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
 
@@ -108,6 +116,15 @@ class CreateBoardDialog : DialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         _binding = null
         super.onDismiss(dialog)
+    }
+
+    fun onClickCompleteButton(imageName: String) {
+        val result = createBoardViewModel.changeImageToFile(imageName)
+        result?.let {
+            Log.d("CreateBoardDialog", "onClickCompleteButton: click")
+            completeListener?.invoke(result.first, result.second)
+        }
+        dismiss()
     }
 
     fun clickImageButton() {

@@ -76,8 +76,12 @@ class BoardListFragment :
     private fun onFloatingButtonClick() {
         binding.btnBoardListAddBoard.setOnClickListener {
             if (boardListViewModel.boardUiState.value.selectBoards.isEmpty()) {
-//                findNavController().navigate(BoardListFragmentDirections.actionBoardListFragment2ToCreateBoardDialog())
-                CreateBoardDialog().show(
+                val createBoardDialog = CreateBoardDialog()
+                createBoardDialog.setCompleteListener { part, name ->
+                    Log.d("BoardListFragment", "onFloatingButtonClick: success")
+                    boardListViewModel.addBoard(part, name)
+                }
+                createBoardDialog.show(
                     requireActivity().supportFragmentManager,
                     "CreateBoardDialog"
                 )
