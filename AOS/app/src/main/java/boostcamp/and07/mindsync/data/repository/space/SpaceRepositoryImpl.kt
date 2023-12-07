@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.data.repository.space
 
+import android.util.Log
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.network.SpaceApi
 import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
@@ -12,12 +13,13 @@ import javax.inject.Inject
 class SpaceRepositoryImpl
     @Inject
     constructor(private val spaceApi: SpaceApi) : SpaceRepository {
-        override suspend fun addSpace(
+        override fun addSpace(
             name: RequestBody,
             icon: MultipartBody.Part,
         ): Flow<Space> =
             flow {
                 val response = spaceApi.addSpace(name, icon)
+                Log.d("Jaehan", "response: $response")
                 response.data?.let { spaceData ->
                     emit(
                         Space(
@@ -29,7 +31,7 @@ class SpaceRepositoryImpl
                 }
             }
 
-        override suspend fun getSpace(spaceUuid: String): Flow<Space> =
+        override fun getSpace(spaceUuid: String): Flow<Space> =
             flow {
                 val response = spaceApi.getSpace(spaceUuid)
                 response.data?.let { spaceData ->
@@ -43,7 +45,7 @@ class SpaceRepositoryImpl
                 }
             }
 
-        override suspend fun getInviteSpaceCode(spaceUuid: String): Flow<String> =
+        override fun getInviteSpaceCode(spaceUuid: String): Flow<String> =
             flow {
                 val response = spaceApi.getInviteCode(InviteCodeRequest(spaceUuid))
                 response.data?.let { inviteCodeData ->
@@ -53,7 +55,7 @@ class SpaceRepositoryImpl
                 }
             }
 
-        override suspend fun joinInviteCode(inviteCode: String): Flow<Space> =
+        override fun joinInviteCode(inviteCode: String): Flow<Space> =
             flow {
                 val response = spaceApi.inviteSpaceCode(inviteCode)
                 response.data?.let { spaceData ->

@@ -6,14 +6,14 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 interface SpaceRepository {
-    suspend fun addSpace(
+    fun addSpace(
         name: RequestBody,
         icon: MultipartBody.Part,
     ): Flow<Space>
 
-    suspend fun getSpace(spaceUuid: String): Flow<Space>
+    fun getSpace(spaceUuid: String): Flow<Space>
 
-    suspend fun getInviteSpaceCode(spaceUuid: String): Flow<String>
+    fun getInviteSpaceCode(spaceUuid: String): Flow<String>
 
-    suspend fun joinInviteCode(inviteCode: String): Flow<Space>
+    fun joinInviteCode(inviteCode: String): Flow<Space>
 }
