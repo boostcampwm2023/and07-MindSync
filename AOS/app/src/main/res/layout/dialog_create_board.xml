@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.boardlist.CreateBoardViewModel" />
+
+        <variable
+            name="view"
+            type="boostcamp.and07.mindsync.ui.boardlist.CreateBoardDialog" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main3"
+        android:padding="10dp"
+        tools:context=".ui.space.generate.AddSpaceActivity">
+
+
+        <TextView
+            android:id="@+id/tv_add_space_title"
+            style="@style/Typography.Title02"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:text="@string/create_board_introduce"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/iv_add_space_thumbnail" />
+
+        <ImageView
+            android:id="@+id/iv_add_space_thumbnail"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_marginTop="65dp"
+            android:src="@mipmap/ic_app_logo_round"
+            app:imageUri="@{vm.uiState.boardImage}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_add_space_title" />
+
+        <ImageView
+            android:id="@+id/imgbtn_update_space_thumbnail"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/ic_add"
+            android:backgroundTint="@color/blue"
+            android:onClick="@{() -> view.clickImageButton()}"
+            app:layout_constraintEnd_toEndOf="@id/iv_add_space_thumbnail"
+            app:layout_constraintTop_toTopOf="@id/iv_add_space_thumbnail" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfl_add_space_edit_space"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_add_space_thumbnail">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tfl_add_space_edit_space_input_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:hint="스페이스 이름"
+                android:onTextChanged="@{vm.onBoardNameChanged}"
+                android:text="@{vm.uiState.boardName}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Typography.Bottom02"
+            android:layout_width="264dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/main4"
+            android:onClick="@{()->view.onClickCompleteButton(@string/space_image_name)}"
+            android:text="@string/check_message"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tfl_add_space_edit_space" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

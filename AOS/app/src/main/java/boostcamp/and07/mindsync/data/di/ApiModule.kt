@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.data.di
 
+import boostcamp.and07.mindsync.data.network.BoardApi
 import boostcamp.and07.mindsync.data.network.LoginApi
 import boostcamp.and07.mindsync.data.network.LogoutApi
 import boostcamp.and07.mindsync.data.network.ProfileApi
@@ -53,4 +54,10 @@ object ApiModule {
     fun provideProfileSpaceApi(
         @Named(NetworkConst.CLIENT_RETROFIT) retrofit: Retrofit,
     ): ProfileSpaceApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideBoardApi(
+        @Named(NetworkConst.CLIENT_RETROFIT) retrofit: Retrofit,
+    ): BoardApi = retrofit.create()
 }
