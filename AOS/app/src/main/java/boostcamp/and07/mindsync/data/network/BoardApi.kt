@@ -24,6 +24,6 @@ interface BoardApi {
 
     @PATCH("boards/delete")
     suspend fun deleteBoard(
-        @Body deleteBoardRequest: DeleteBoardRequest
+        @Body deleteBoardRequest: DeleteBoardRequest,
     ): DeleteBoardResponse
 }
