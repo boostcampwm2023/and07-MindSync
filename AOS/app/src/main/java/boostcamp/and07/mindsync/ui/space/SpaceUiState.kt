@@ -9,4 +9,5 @@ data class SpaceUiState(
     val spaceThumbnail: String = "",
     val spaceThumbnailFile: File? = null,
     val spaceInviteCode: String = "",
+    val spaces: List<Space> = listOf(),
 )
