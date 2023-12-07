@@ -31,9 +31,10 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
     private lateinit var imagePickerHandler: ImagePickerHandler
 
     override fun initView() {
-        imagePickerHandler = ImagePickerHandler(requireActivity()) { uri ->
-            createImage(uri)
-        }
+        imagePickerHandler =
+            ImagePickerHandler(requireActivity()) { uri ->
+                createImage(uri)
+            }
         setBinding()
         setupImageEdit()
         setupShowNicknameEditBtn()
