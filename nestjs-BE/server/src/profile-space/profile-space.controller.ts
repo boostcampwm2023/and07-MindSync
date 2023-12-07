@@ -10,15 +10,26 @@ import { ProfileSpaceService } from './profile-space.service';
 import { CreateProfileSpaceDto } from './dto/create-profile-space.dto';
 import { RequestWithUser } from 'src/utils/interface';
 import { SpacesService } from 'src/spaces/spaces.service';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 
 @Controller('profileSpace')
+@ApiTags('profileSpace')
 export class ProfileSpaceController {
   constructor(
     private readonly profileSpaceService: ProfileSpaceService,
     private readonly spacesService: SpacesService,
   ) {}
 
-  @Post()
+  @Post('join')
+  @ApiOperation({ summary: 'Join space' })
+  @ApiResponse({
+    status: 201,
+    description: 'Join data has been successfully created.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict. You have already joined the space.',
+  })
   async create(
     @Body() createProfileSpaceDto: CreateProfileSpaceDto,
     @Req() req: RequestWithUser,
@@ -33,7 +44,15 @@ export class ProfileSpaceController {
     return responseData;
   }
 
-  @Delete(':space_uuid')
+  @Delete('leave/:space_uuid')
+  @ApiResponse({
+    status: 204,
+    description: 'Successfully left the space.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Space not found.',
+  })
   async delete(
     @Param('space_uuid') spaceUuid: string,
     @Req() req: RequestWithUser,
@@ -41,8 +60,13 @@ export class ProfileSpaceController {
     const userUuid = req.user.uuid;
     const { joinData, profileData } =
       await this.profileSpaceService.processData(userUuid, spaceUuid);
-    const data = await this.spacesService.processData(spaceUuid, profileData);
-    this.profileSpaceService.delete(userUuid, spaceUuid, data);
+    await this.spacesService.processData(spaceUuid, profileData);
+    const isSpaceEmpty = await this.profileSpaceService.delete(
+      userUuid,
+      spaceUuid,
+      profileData,
+    );
+    if (isSpaceEmpty) this.spacesService.remove(spaceUuid);
     const key = this.profileSpaceService.generateKey(joinData);
     return this.profileSpaceService.remove(key);
   }
