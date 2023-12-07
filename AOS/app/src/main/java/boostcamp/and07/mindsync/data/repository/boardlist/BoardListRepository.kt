@@ -11,4 +11,6 @@ interface BoardListRepository {
     ): Flow<Board>
 
     fun getBoard(spaceId: String): Flow<List<Board>>
+
+    fun deleteBoard(boardId: String): Flow<Unit>
 }

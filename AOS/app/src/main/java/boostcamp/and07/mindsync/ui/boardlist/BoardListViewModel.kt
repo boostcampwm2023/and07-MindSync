@@ -80,13 +80,20 @@ class BoardListViewModel
         }
 
         fun deleteBoard() {
-            _boardUiState.update { boardUiState ->
-                val newBoards =
-                    boardUiState.boards.toMutableList().filter { board -> !board.isChecked }
-                boardUiState.copy(
-                    boards = newBoards,
-                    selectBoards = listOf(),
-                )
+            viewModelScope.launch(coroutineExceptionHandler) {
+                val newBoards = boardUiState.value.boards.toMutableList()
+                val newSelectBoards = boardUiState.value.selectBoards.toMutableList()
+                _boardUiState.value.selectBoards.map { board ->
+                    boardListRepository.deleteBoard(board.id)
+                    newBoards.remove(board)
+                    newSelectBoards.remove(board)
+                }
+                _boardUiState.update { boardUiState ->
+                    boardUiState.copy(
+                        boards = newBoards,
+                        selectBoards = newSelectBoards,
+                    )
+                }
             }
         }
 

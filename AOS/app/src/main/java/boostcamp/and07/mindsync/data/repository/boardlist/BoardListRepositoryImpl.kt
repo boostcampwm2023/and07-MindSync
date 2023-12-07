@@ -3,6 +3,7 @@ package boostcamp.and07.mindsync.data.repository.boardlist
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.data.network.BoardApi
 import boostcamp.and07.mindsync.data.network.request.board.CreateBoardRequest
+import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -51,5 +52,11 @@ class BoardListRepositoryImpl
                         )
                     },
                 )
+            }
+
+        override fun deleteBoard(boardId: String): Flow<Unit> =
+            flow {
+                val response = boardApi.deleteBoard(DeleteBoardRequest(boardId))
+                emit(Unit)
             }
     }
