@@ -56,4 +56,10 @@ class MainViewModel
                 }
             }
         }
+
+        fun updateCurrentSpace(space: Space) {
+            viewModelScope.launch {
+                _event.emit(MainUiEvent.ShowMessage("${space.name}방에 참가했습니다."))
+            }
+        }
     }
