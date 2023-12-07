@@ -16,4 +16,6 @@
     <string name="confirm_invite_space_fragment_title">가입하려는\n스페이스가 맞나요?</string>
     <string name="confirm_invite_space_fragment_no">아니오</string>
     <string name="confirm_invite_space_fragment_sign_in">가입하기</string>
+    <string name="space_name">스페이스 이름</string>
+    <string name="space_list_title">스페이스 목록</string>
 </resources>
