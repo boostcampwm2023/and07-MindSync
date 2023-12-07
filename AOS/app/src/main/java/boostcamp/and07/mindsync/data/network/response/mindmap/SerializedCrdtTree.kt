@@ -17,6 +17,7 @@ data class SerializedCrdtTree(
 @Serializable
 data class OperationLog(
     val operation: Operation,
+    val oldDescription: String? = null,
     val oldParentId: String? = null,
 )
 
