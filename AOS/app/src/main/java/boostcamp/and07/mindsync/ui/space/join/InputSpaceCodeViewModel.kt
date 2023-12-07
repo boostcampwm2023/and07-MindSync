@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
-import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
+import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,10 +22,14 @@ class InputSpaceCodeViewModel
     constructor(
         private val spaceRepository: SpaceRepository,
     ) : ViewModel() {
-        private val _spaceInviteCode = MutableStateFlow("")
-        val spaceInviteCode: StateFlow<String> = _spaceInviteCode
-        private val _spaceEvent = MutableSharedFlow<SpaceEvent>()
-        val spaceEvent = _spaceEvent.asSharedFlow()
+        private val _uiState = MutableStateFlow(SpaceUiState())
+        val uiState: StateFlow<SpaceUiState> = _uiState
+        private val _event = MutableSharedFlow<SpaceEvent>()
+        val event = _event.asSharedFlow()
+        private val coroutineExceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                viewModelScope.launch { _event.emit(SpaceEvent.Error(throwable.message.toString())) }
+            }
 
         fun onSpaceInviteCodeChanged(
             inviteSpaceCode: CharSequence,
@@ -30,18 +37,18 @@ class InputSpaceCodeViewModel
             before: Int,
             count: Int,
         ) {
-            _spaceInviteCode.value = inviteSpaceCode.toString()
+            _uiState.update { uiState ->
+                uiState.copy(
+                    spaceInviteCode = inviteSpaceCode.toString(),
+                )
+            }
         }
 
         fun compareInviteCode() {
-            viewModelScope.launch {
-                spaceRepository.joinInviteCode(_spaceInviteCode.value)
-                    .onSuccess { getSpace ->
-                        _spaceEvent.emit(SpaceEvent.GetSuccess(getSpace))
-                    }
-                    .onFailure {
-                        _spaceEvent.emit(SpaceEvent.Error(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_GET.message))
-                    }
+            viewModelScope.launch(coroutineExceptionHandler) {
+                spaceRepository.joinInviteCode(_uiState.value.spaceInviteCode).collectLatest { space ->
+                    _event.emit(SpaceEvent.GetSuccess(space))
+                }
             }
         }
     }
