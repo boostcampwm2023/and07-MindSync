@@ -29,9 +29,7 @@ class TokenAuthenticator
             response: Response,
         ): Request? {
             if (response.message == DataStoreConst.REFRESH_TOKEN_EXPIRED) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    logoutEventRepository.logout()
-                }
+                logoutEventRepository.logout()
                 return null
             }
             // 무조건 토큰을 받아온 후 진행시키기 위해 runBlocking
@@ -69,8 +67,11 @@ class TokenAuthenticator
                 val request = NewAccessTokenRequest(refreshToken)
                 val response = tokenApi.postNewAccessToken(request)
                 if (response.isSuccessful) {
-                    response.body()?.let { tokenResponse ->
-                        Result.success(tokenResponse.accessToken)
+                    response.body()?.let { accessTokenResponse ->
+                        accessTokenResponse.data?.let { tokenData ->
+                            Result.success(tokenData.accessToken)
+                        }
+                            ?: Result.failure(Exception(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message))
                     }
                         ?: Result.failure(Exception(NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message))
                 } else {
