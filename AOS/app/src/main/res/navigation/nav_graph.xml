@@ -14,7 +14,7 @@
         android:label="BoardListFragment" >
         <argument
             android:name="spaceId"
-            app:argType="String"/>
+            app:argType="string"/>
     </fragment>
     <fragment
         android:id="@+id/recycleBinFragment"
@@ -42,7 +42,7 @@
         android:label="InviteUserDialog">
         <argument
             android:name="spaceId"
-            app:argType="String" />
+            app:argType="string" />
     </dialog>
     <dialog
         android:id="@+id/editNickNameDialog"
