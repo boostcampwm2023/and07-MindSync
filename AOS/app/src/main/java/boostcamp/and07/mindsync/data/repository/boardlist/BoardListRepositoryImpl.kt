@@ -3,7 +3,6 @@ package boostcamp.and07.mindsync.data.repository.boardlist
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.data.network.BoardApi
 import boostcamp.and07.mindsync.data.network.request.board.CreateBoardRequest
-import boostcamp.and07.mindsync.data.network.request.board.GetBoardsRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -27,14 +26,16 @@ class BoardListRepositoryImpl
                             imageUrl,
                         ),
                     )
-                emit(
-                    Board(
-                        id = response.boardId,
-                        name = boardName,
-                        date = response.date,
-                        imageUrl = imageUrl,
-                    ),
-                )
+                response.data?.let { data ->
+                    emit(
+                        Board(
+                            id = data.boardId,
+                            name = boardName,
+                            date = data.date,
+                            imageUrl = imageUrl,
+                        ),
+                    )
+                }
             }
 
         override fun getBoard(spaceId: String): Flow<List<Board>> =
