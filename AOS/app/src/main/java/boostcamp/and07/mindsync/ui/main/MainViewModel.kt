@@ -64,6 +64,21 @@ class MainViewModel
             }
             viewModelScope.launch {
                 _event.emit(MainUiEvent.ShowMessage("${space.name}방에 참가했습니다."))
+                _event.emit(MainUiEvent.GetUsers)
+            }
+        }
+
+        fun getSpaceUsers() {
+            uiState.value.nowSpace?.let { nowSpace ->
+                viewModelScope.launch(coroutineExceptionHandler) {
+                    profileSpaceRepository.getSpaceUsers(nowSpace.id).collectLatest { list ->
+                        _uiState.update { uiState ->
+                            uiState.copy(
+                                users = list,
+                            )
+                        }
+                    }
+                }
             }
         }
     }

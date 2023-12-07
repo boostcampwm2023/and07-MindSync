@@ -17,6 +17,7 @@ import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
+import boostcamp.and07.mindsync.ui.boardlist.UsersAdapter
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import boostcamp.and07.mindsync.ui.space.list.SpaceListFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,7 @@ class MainActivity :
     private lateinit var spaceAdapter: SideBarSpaceAdapter
     private lateinit var navController: NavController
     private val mainViewModel: MainViewModel by viewModels()
+    private val usersAdapter = UsersAdapter()
 
     override fun onStart() {
         super.onStart()
@@ -64,6 +66,9 @@ class MainActivity :
                 mainViewModel.event.collectLatest { event ->
                     if (event is MainUiEvent.ShowMessage) {
                         Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_SHORT).show()
+                    }
+                    if (event is MainUiEvent.GetUsers) {
+                        mainViewModel.getSpaceUsers()
                     }
                 }
             }
@@ -157,6 +162,7 @@ class MainActivity :
                 spaceAdapter.submitList(uiState.spaces.toMutableList())
             }
         }
+        binding.includeMainInDrawer.rcvSideBarUsers.adapter = usersAdapter
     }
 
     fun openDrawerButtonOnClick(view: View) {

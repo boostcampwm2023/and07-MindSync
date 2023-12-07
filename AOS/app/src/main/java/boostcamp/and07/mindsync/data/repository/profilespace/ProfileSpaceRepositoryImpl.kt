@@ -4,6 +4,7 @@ import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.network.ProfileSpaceApi
 import boostcamp.and07.mindsync.data.network.request.ProfileSpaceJoinRequest
 import boostcamp.and07.mindsync.data.network.response.space.ProfileSpaceJoinData
+import boostcamp.and07.mindsync.data.network.response.user.UserData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -35,6 +36,16 @@ class ProfileSpaceRepositoryImpl
                                 imageUrl = spaceData.icon ?: "",
                             )
                         },
+                    )
+                }
+            }
+
+        override fun getSpaceUsers(spaceId: String): Flow<List<UserData>> =
+            flow {
+                val response = profileSpaceApi.getSpaceUsers(spaceId)
+                response.data?.let { users ->
+                    emit(
+                        users,
                     )
                 }
             }
