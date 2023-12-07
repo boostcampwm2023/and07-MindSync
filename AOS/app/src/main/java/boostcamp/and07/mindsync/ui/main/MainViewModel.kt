@@ -58,6 +58,9 @@ class MainViewModel
         }
 
         fun updateCurrentSpace(space: Space) {
+            _uiState.update { uiState ->
+                uiState.copy(nowSpace = space)
+            }
             viewModelScope.launch {
                 _event.emit(MainUiEvent.ShowMessage("${space.name}방에 참가했습니다."))
             }
