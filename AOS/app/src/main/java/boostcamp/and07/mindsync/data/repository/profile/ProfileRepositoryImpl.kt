@@ -24,7 +24,7 @@ class ProfileRepositoryImpl
 
         override fun patchProfile(
             nickname: RequestBody,
-            image: MultipartBody.Part,
+            image: MultipartBody.Part?,
         ) = flow {
             val response = profileApi.patchProfile(nickname, image)
             emit(
