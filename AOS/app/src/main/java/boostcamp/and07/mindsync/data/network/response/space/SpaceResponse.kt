@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 data class SpaceResponse(
     val statusCode: Int,
     val message: String,
-    val error: String?,
-    val data: SpaceData?,
+    val error: String? = null,
+    val data: SpaceData? = null,
 )
 
 @Serializable

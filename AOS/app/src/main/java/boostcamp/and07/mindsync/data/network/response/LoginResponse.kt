@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class LoginResponse(
     val statusCode: Int,
     val message: String,
-    val error: String?,
-    val data: LoginData?,
+    val error: String? = null,
+    val data: LoginData? = null,
 )
 
 @Serializable

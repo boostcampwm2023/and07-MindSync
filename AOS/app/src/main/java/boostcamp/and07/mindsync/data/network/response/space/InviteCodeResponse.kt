@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class InviteCodeResponse(
     val statusCode: Int,
     val message: String,
-    val error: String?,
-    val data: InviteCodeData?,
+    val error: String? = null,
+    val data: InviteCodeData? = null,
 )
 
 @Serializable

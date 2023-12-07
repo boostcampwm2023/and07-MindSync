@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProfileResponse(
     @SerialName("uuid") val uuid: String,
-    @SerialName("nickname") val nickname: String?,
+    @SerialName("nickname") val nickname: String? = null,
     @SerialName(
         "image",
     ) val image: String? = null,
