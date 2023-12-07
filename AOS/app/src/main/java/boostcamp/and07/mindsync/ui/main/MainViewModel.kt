@@ -1,8 +1,9 @@
 package boostcamp.and07.mindsync.ui.main
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +19,8 @@ class MainViewModel
     @Inject
     constructor(
         private val profileRepository: ProfileRepository,
-    ) : ViewModel() {
+        private val logoutEventRepository: LogoutEventRepository,
+    ) : BaseActivityViewModel(logoutEventRepository) {
         private val _profileImageUrl = MutableStateFlow("")
         val profileImageUrl: StateFlow<String> = _profileImageUrl
         private val _event = MutableSharedFlow<MainUiEvent>()

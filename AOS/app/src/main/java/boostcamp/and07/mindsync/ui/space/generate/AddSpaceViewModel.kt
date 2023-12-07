@@ -1,8 +1,9 @@
 package boostcamp.and07.mindsync.ui.space.generate
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
@@ -23,7 +24,8 @@ class AddSpaceViewModel
     @Inject
     constructor(
         private val spaceRepository: SpaceRepository,
-    ) : ViewModel() {
+        logoutEventRepository: LogoutEventRepository,
+    ) : BaseActivityViewModel(logoutEventRepository) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
         private var imageFile: File? = null

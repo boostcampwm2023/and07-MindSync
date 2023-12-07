@@ -13,6 +13,7 @@ import boostcamp.and07.mindsync.BuildConfig
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityLoginBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.main.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -37,6 +38,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
 
     override fun init() {
         setObserve()
+    }
+
+    override fun getViewModel(): BaseActivityViewModel {
+        return loginViewModel
     }
 
     private fun setObserve() {

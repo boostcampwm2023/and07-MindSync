@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
@@ -59,6 +60,10 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
         setBinding()
         setBackBtn()
         collectSpaceEvent()
+    }
+
+    override fun getViewModel(): BaseActivityViewModel {
+        return addSpaceViewModel
     }
 
     private fun setBinding() {

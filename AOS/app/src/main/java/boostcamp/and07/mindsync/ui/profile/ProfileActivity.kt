@@ -5,6 +5,7 @@ import androidx.navigation.fragment.NavHostFragment
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -12,11 +13,9 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     private lateinit var navController: NavController
     override fun init() {
         setNavController()
-        setBinding()
     }
 
-    private fun setBinding() {
-        binding.view = this
+    override fun getViewModel(): BaseActivityViewModel {
     }
 
     private fun setNavController() {
