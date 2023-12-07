@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
@@ -19,11 +20,13 @@ class BoardListFragment :
     BaseFragment<FragmentBoardListBinding>(R.layout.fragment_board_list) {
     private val boardListViewModel: BoardListViewModel by viewModels()
     private val boardListAdapter = BoardListAdapter()
+    private val args: BoardListFragmentArgs by navArgs()
 
     override fun initView() {
         setBinding()
         collectBoardEvent()
         onFloatingButtonClick()
+        boardListViewModel.setSpaceId(args.spaceId)
     }
 
     private fun setBinding() {
