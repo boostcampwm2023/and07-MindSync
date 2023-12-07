@@ -34,8 +34,8 @@ class BoardListFragment :
                 override fun onClick(board: Board) {
                     findNavController().navigate(
                         BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
-                            board.id
-                        )
+                            board.id,
+                        ),
                     )
                 }
 
@@ -86,7 +86,7 @@ class BoardListFragment :
                 }
                 createBoardDialog.show(
                     requireActivity().supportFragmentManager,
-                    "CreateBoardDialog"
+                    "CreateBoardDialog",
                 )
             } else {
                 boardListViewModel.deleteBoard()

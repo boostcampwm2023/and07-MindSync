@@ -19,72 +19,75 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BoardListViewModel
-@Inject
-constructor(
-    private val boardListRepository: BoardListRepository,
-) : ViewModel() {
-    private val _boardUiState = MutableStateFlow(BoardUiState())
-    val boardUiState: StateFlow<BoardUiState> = _boardUiState
-    private val _boardUiEvent = MutableSharedFlow<BoardUiEvent>()
-    val boardUiEvent: SharedFlow<BoardUiEvent> = _boardUiEvent
+    @Inject
+    constructor(
+        private val boardListRepository: BoardListRepository,
+    ) : ViewModel() {
+        private val _boardUiState = MutableStateFlow(BoardUiState())
+        val boardUiState: StateFlow<BoardUiState> = _boardUiState
+        private val _boardUiEvent = MutableSharedFlow<BoardUiEvent>()
+        val boardUiEvent: SharedFlow<BoardUiEvent> = _boardUiEvent
 
-    private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { _, throwable ->
-            viewModelScope.launch { _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString())) }
-        }
-
-    init {
-        getBoards()
-    }
-
-    fun addBoard(part: MultipartBody.Part, name: String) {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            boardListRepository.createBoard(
-                boardName = name,
-                spaceId = testSpaceId,
-                imageUrl = testImageUrl,
-            ).collectLatest { board ->
-                Log.d("BoardListViewModel", "addBoard: success")
-                val newBoards = _boardUiState.value.boards.toMutableList().apply { add(board) }
-                _boardUiState.value = _boardUiState.value.copy(boards = newBoards)
-                _boardUiEvent.emit(BoardUiEvent.Success)
+        private val coroutineExceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                viewModelScope.launch { _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString())) }
             }
-        }
-    }
 
-    private fun getBoards() {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            boardListRepository.getBoard(testSpaceId).collectLatest { list ->
-                _boardUiState.update { it ->
-                    it.copy(boards = list)
+        init {
+            getBoards()
+        }
+
+        fun addBoard(
+            part: MultipartBody.Part,
+            name: String,
+        ) {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                boardListRepository.createBoard(
+                    boardName = name,
+                    spaceId = testSpaceId,
+                    imageUrl = testImageUrl,
+                ).collectLatest { board ->
+                    Log.d("BoardListViewModel", "addBoard: success")
+                    val newBoards = _boardUiState.value.boards.toMutableList().apply { add(board) }
+                    _boardUiState.value = _boardUiState.value.copy(boards = newBoards)
+                    _boardUiEvent.emit(BoardUiEvent.Success)
                 }
-                _boardUiEvent.emit(BoardUiEvent.Success)
             }
         }
-    }
 
-    fun selectBoard(selectBoard: Board) {
-        val newSelectBoards =
-            _boardUiState.value.boards.toMutableList().filter { board -> board.isChecked }
-        _boardUiState.value =
-            _boardUiState.value.copy(
-                selectBoards = newSelectBoards,
-            )
-    }
+        private fun getBoards() {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                boardListRepository.getBoard(testSpaceId).collectLatest { list ->
+                    _boardUiState.update { it ->
+                        it.copy(boards = list)
+                    }
+                    _boardUiEvent.emit(BoardUiEvent.Success)
+                }
+            }
+        }
 
-    fun deleteBoard() {
-        val newBoards =
-            _boardUiState.value.boards.toMutableList().filter { board -> !board.isChecked }
-        _boardUiState.value =
-            _boardUiState.value.copy(
-                boards = newBoards,
-                selectBoards = listOf(),
-            )
-    }
+        fun selectBoard(selectBoard: Board) {
+            val newSelectBoards =
+                _boardUiState.value.boards.toMutableList().filter { board -> board.isChecked }
+            _boardUiState.value =
+                _boardUiState.value.copy(
+                    selectBoards = newSelectBoards,
+                )
+        }
 
-    companion object {
-        private const val testSpaceId = "11ee94cb588902308d61176844e12449"
-        private const val testImageUrl =
-            "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
+        fun deleteBoard() {
+            val newBoards =
+                _boardUiState.value.boards.toMutableList().filter { board -> !board.isChecked }
+            _boardUiState.value =
+                _boardUiState.value.copy(
+                    boards = newBoards,
+                    selectBoards = listOf(),
+                )
+        }
+
+        companion object {
+            private const val testSpaceId = "11ee94cb588902308d61176844e12449"
+            private const val testImageUrl =
+                "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
+        }
     }
-}

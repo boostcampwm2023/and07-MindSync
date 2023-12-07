@@ -13,48 +13,47 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateBoardViewModel
-@Inject
-constructor(
-    logoutEventRepository: LogoutEventRepository,
-) : BaseActivityViewModel(logoutEventRepository) {
-    private val _uiState = MutableStateFlow(CreateBoardUiState())
-    val uiState: StateFlow<CreateBoardUiState> = _uiState
+    @Inject
+    constructor(
+        logoutEventRepository: LogoutEventRepository,
+    ) : BaseActivityViewModel(logoutEventRepository) {
+        private val _uiState = MutableStateFlow(CreateBoardUiState())
+        val uiState: StateFlow<CreateBoardUiState> = _uiState
 
-    private var imageFile: File? = null
+        private var imageFile: File? = null
 
-    fun onBoardNameChanged(
-        inputSpaceName: CharSequence,
-        start: Int,
-        before: Int,
-        count: Int,
-    ) {
-        _uiState.update { uiState ->
-            uiState.copy(boardName = inputSpaceName.toString())
+        fun onBoardNameChanged(
+            inputSpaceName: CharSequence,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
+            _uiState.update { uiState ->
+                uiState.copy(boardName = inputSpaceName.toString())
+            }
+        }
+
+        fun setSpaceImage(boardImage: String) {
+            _uiState.update { uiState ->
+                uiState.copy(boardImage = boardImage)
+            }
+        }
+
+        fun changeImageToFile(imageName: String): Pair<MultipartBody.Part, String>? {
+            imageFile?.let { imageFile ->
+                val icon = fileToMultiPart(imageFile, imageName)
+                val name = _uiState.value.boardName
+                return Pair(icon, name)
+            }
+            return null
+        }
+
+        fun setImageFile(file: File) {
+            imageFile = file
         }
     }
-
-    fun setSpaceImage(boardImage: String) {
-        _uiState.update { uiState ->
-            uiState.copy(boardImage = boardImage)
-        }
-    }
-
-    fun changeImageToFile(imageName: String): Pair<MultipartBody.Part, String>? {
-        imageFile?.let { imageFile ->
-            val icon = fileToMultiPart(imageFile, imageName)
-            val name = _uiState.value.boardName
-            return Pair(icon, name)
-        }
-        return null
-    }
-
-    fun setImageFile(file: File) {
-        imageFile = file
-    }
-}
 
 data class CreateBoardUiState(
     val boardName: String = "",
     val boardImage: String = "",
 )
-

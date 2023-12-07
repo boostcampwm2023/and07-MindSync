@@ -67,7 +67,6 @@ class CreateBoardDialog : DialogFragment() {
             }
         }
 
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
