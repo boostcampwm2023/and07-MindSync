@@ -3,6 +3,7 @@ package boostcamp.and07.mindsync.ui.mindmap
 import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.data.crdt.SerializedOperation
@@ -36,7 +37,7 @@ class MindMapFragment :
     NodeMoveListener {
     private val mindMapViewModel: MindMapViewModel by viewModels()
     private lateinit var mindMapContainer: MindMapContainer
-    private val boardId = "testBoard"
+    private val args: MindMapFragmentArgs by navArgs()
 
     override fun initView() {
         setupRootNode()
@@ -52,7 +53,7 @@ class MindMapFragment :
             mindMapViewModel.socketState.collectLatest { state ->
                 when (state) {
                     SocketState.CONNECT -> {
-                        mindMapViewModel.joinBoard(boardId)
+                        mindMapViewModel.joinBoard(args.boardId)
                     }
 
                     SocketState.DISCONNECT -> {
@@ -77,6 +78,7 @@ class MindMapFragment :
                                 is SerializedOperation -> {
                                     mindMapViewModel.applyOperation(operation)
                                 }
+
                                 is SerializedCrdtTree -> {
                                     mindMapViewModel.applyOperation(operation)
                                 }
