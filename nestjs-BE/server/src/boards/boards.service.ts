@@ -9,14 +9,11 @@ import { v4 } from 'uuid';
 export class BoardsService {
   constructor(@InjectModel(Board.name) private boardModel: Model<Board>) {}
 
-  async create(createBoardDto: CreateBoardDto): Promise<Board> {
-    const { boardName, spaceId, imageUrl } = createBoardDto;
-
-    const existingBoard = await this.boardModel
-      .findOne({ boardName, spaceId })
-      .exec();
-    if (existingBoard) throw new ConflictException('Board already exist.');
-
+  async create(
+    createBoardDto: CreateBoardDto,
+    imageUrl: string | null,
+  ): Promise<Board> {
+    const { boardName, spaceId } = createBoardDto;
     const uuid = v4();
     const now = new Date();
     const createdBoard = new this.boardModel({
@@ -28,6 +25,13 @@ export class BoardsService {
       restoredAt: now,
     });
     return createdBoard.save();
+  }
+
+  async findByNameAndSpaceId(boardName: string, spaceId: string) {
+    const existingBoard = await this.boardModel
+      .findOne({ boardName, spaceId })
+      .exec();
+    if (existingBoard) throw new ConflictException('Board already exist.');
   }
 
   async findBySpaceId(spaceId: string): Promise<Board[]> {
