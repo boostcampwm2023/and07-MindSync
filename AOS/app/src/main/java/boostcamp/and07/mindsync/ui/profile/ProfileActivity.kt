@@ -10,6 +10,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.dialog.EditNickNameDialog
 import boostcamp.and07.mindsync.ui.dialog.EditNickNameInterface
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
@@ -41,6 +42,10 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
         setupShowNicknameEditBtn()
         setupBackBtn()
         observeEvent()
+    }
+
+    override fun getViewModel(): BaseActivityViewModel {
+        return profileViewModel
     }
 
     override fun onStart() {

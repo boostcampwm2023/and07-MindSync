@@ -1,9 +1,10 @@
 package boostcamp.and07.mindsync.ui.profile
 
 import android.net.Uri
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import boostcamp.and07.mindsync.ui.util.toRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,8 +24,9 @@ class ProfileViewModel
     @Inject
     constructor(
         private val profileRepository: ProfileRepository,
+        logoutEventRepository: LogoutEventRepository,
     ) :
-    ViewModel() {
+    BaseActivityViewModel(logoutEventRepository) {
         private val _uiState = MutableStateFlow(ProfileUiState())
         val uiState: StateFlow<ProfileUiState> = _uiState
         private val _event = MutableSharedFlow<ProfileUiEvent>()
