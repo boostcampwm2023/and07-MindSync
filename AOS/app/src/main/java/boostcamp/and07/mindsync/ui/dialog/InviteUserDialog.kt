@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.databinding.DialogInviteUserBinding
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class InviteUserDialog : DialogFragment() {
     private var _binding: DialogInviteUserBinding? = null
     private val binding get() = _binding!!
+    private val args: InviteUserDialogArgs by navArgs()
 
     @Inject
     lateinit var spaceRepository: SpaceRepository
@@ -59,7 +61,7 @@ class InviteUserDialog : DialogFragment() {
 
     private fun getInviteCode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            spaceRepository.getInviteSpaceCode("11ee94cb588902308d61176844e12449")
+            spaceRepository.getInviteSpaceCode(args.spaceId)
                 .collectLatest { inviteCode ->
                     binding.tvInviteUserSpaceCode.text = inviteCode
                     Toast.makeText(requireContext(), "성공!", Toast.LENGTH_SHORT).show()
