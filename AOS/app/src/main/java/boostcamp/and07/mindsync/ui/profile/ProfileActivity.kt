@@ -43,6 +43,11 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
         observeEvent()
     }
 
+    override fun onStart() {
+        super.onStart()
+        profileViewModel.fetchProfile()
+    }
+
     private fun setBinding() {
         binding.vm = profileViewModel
     }
