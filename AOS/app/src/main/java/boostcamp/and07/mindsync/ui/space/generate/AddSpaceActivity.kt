@@ -1,16 +1,8 @@
 package boostcamp.and07.mindsync.ui.space.generate
 
-import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -19,6 +11,7 @@ import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import com.google.android.material.snackbar.Snackbar
@@ -30,30 +23,9 @@ import java.io.File
 @AndroidEntryPoint
 class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity_add_space) {
     private val addSpaceViewModel: AddSpaceViewModel by viewModels()
-    private val pickMedia =
-        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { url ->
-            url?.let {
-                val file = File(url.toAbsolutePath(this))
-                addSpaceViewModel.setSpaceThumbnail(url.toString())
-                addSpaceViewModel.setImageFile(file)
-            }
-        }
-    private val galleryPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                launchImagePicker()
-            }
-        }
-
-    private val imageResult =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                result.data?.data?.let { uri ->
-                    createImage(uri)
-                }
-            }
+    private val imagePickerHandler =
+        ImagePickerHandler(this) { uri ->
+            createImage(uri)
         }
 
     override fun init() {
@@ -72,13 +44,13 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
     }
 
     fun clickImageButton() {
-        checkPermissionsAndLaunchImagePicker()
+        imagePickerHandler.checkPermissionsAndLaunchImagePicker()
     }
 
     private fun collectSpaceEvent() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                addSpaceViewModel.spaceEvent.collectLatest { spaceEvent ->
+                addSpaceViewModel.event.collectLatest { spaceEvent ->
                     when (spaceEvent) {
                         is SpaceEvent.Success -> {
                             finish()
@@ -100,7 +72,9 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
 
     private fun createImage(uri: Uri?) {
         uri?.let { uri ->
+            val file = File(uri.toAbsolutePath(this))
             addSpaceViewModel.setSpaceThumbnail(uri.toString())
+            addSpaceViewModel.setImageFile(file)
         }
     }
 
@@ -110,85 +84,14 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
         }
     }
 
-    private fun checkPermissionsAndLaunchImagePicker() {
-        when {
-            checkSelfPermission(
-                this,
-                getPermissionReadMediaImagesOrReadExternalStorage(),
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                launchImagePicker()
-            }
-
-            shouldShowRequestPermissionRationale(
-                getPermissionReadMediaImagesOrReadExternalStorage(),
-            ) -> {
-                requestGalleryPermission()
-            }
-
-            else -> {
-                requestGalleryPermission()
-            }
-        }
-    }
-
-    private fun launchImagePicker() {
-        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }
-
-    private fun getPermissionReadMediaImagesOrReadExternalStorage() =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-
-    private fun requestGalleryPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            galleryPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            checkPermissionAndLaunchImageSelector()
-        }
-    }
-
-    private fun checkPermissionAndLaunchImageSelector() {
-        val readPermission =
-            checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-
-        if (readPermission == PackageManager.PERMISSION_GRANTED) {
-            launchImageSelector()
-        } else {
-            requestExternalStoragePermission()
-        }
-    }
-
-    private fun requestExternalStoragePermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            REQUEST_CODE_PERMISSIONS,
-        )
-    }
-
-    private fun launchImageSelector() {
-        val intent =
-            Intent(Intent.ACTION_PICK).apply {
-                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-            }
-        imageResult.launch(intent)
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            launchImagePicker()
+        if (requestCode == ImagePickerHandler.REQUEST_CODE_PERMISSIONS && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            imagePickerHandler.launchImagePicker()
         }
-    }
-
-    companion object {
-        private const val REQUEST_CODE_PERMISSIONS = 1
     }
 }
