@@ -15,7 +15,7 @@ export class BoardsService {
     const existingBoard = await this.boardModel
       .findOne({ boardName, spaceId })
       .exec();
-    if (existingBoard) throw new ConflictException();
+    if (existingBoard) throw new ConflictException('Board already exist.');
 
     const uuid = v4();
     const now = new Date();

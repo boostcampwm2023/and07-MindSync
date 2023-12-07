@@ -24,7 +24,15 @@ import {
 import { Public } from 'src/auth/public.decorator';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
-import { BoardInSpace, CreateBoardSuccess } from './swagger/boards.type';
+import {
+  BoardListSuccess,
+  CreateBoardFailure,
+  CreateBoardSuccess,
+  DeleteBoardFailure,
+  DeleteBoardSuccess,
+  RestoreBoardFailure,
+  RestoreBoardSuccess,
+} from './swagger/boards.type';
 
 const BOARD_EXPIRE_DAY = 7;
 
@@ -42,14 +50,21 @@ export class BoardsController {
     type: CreateBoardSuccess,
     description: '보드 생성 완료',
   })
-  @ApiConflictResponse({ description: '보드가 이미 존재함' })
+  @ApiConflictResponse({
+    type: CreateBoardFailure,
+    description: '보드가 이미 존재함',
+  })
   @Public()
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async createBoard(@Body() createBoardDto: CreateBoardDto) {
     const document = await this.boardsService.create(createBoardDto);
     const responseData = { boardId: document.uuid, date: document.createdAt };
-    return responseData;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Board created.',
+      data: responseData,
+    };
   }
 
   @ApiOperation({
@@ -62,8 +77,7 @@ export class BoardsController {
     description: '보드 목록을 불러올 스페이스 id',
   })
   @ApiOkResponse({
-    type: BoardInSpace,
-    isArray: true,
+    type: BoardListSuccess,
     description: '보드 목록 불러오기 완료',
   })
   @Public()
@@ -92,7 +106,11 @@ export class BoardsController {
       });
       return list;
     }, []);
-    return responseData;
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Retrieved board list.',
+      data: responseData,
+    };
   }
 
   @ApiOperation({
@@ -100,16 +118,21 @@ export class BoardsController {
     description: '삭제할 보드 id를 받아서 보드를 삭제한다.',
   })
   @ApiBody({ type: DeleteBoardDto })
-  @ApiOkResponse({ description: '보드 삭제 완료' })
-  @ApiNotFoundResponse({ description: '보드가 존재하지 않음' })
+  @ApiOkResponse({ type: DeleteBoardSuccess, description: '보드 삭제 완료' })
+  @ApiNotFoundResponse({
+    type: DeleteBoardFailure,
+    description: '보드가 존재하지 않음',
+  })
   @Public()
   @Patch('delete')
   async deleteBoard(@Body() deleteBoardDto: DeleteBoardDto) {
     const updateResult = await this.boardsService.deleteBoard(
       deleteBoardDto.boardId,
     );
-    if (!updateResult.matchedCount) throw new NotFoundException();
-    return 'board deleted.';
+    if (!updateResult.matchedCount) {
+      throw new NotFoundException('Target board not found.');
+    }
+    return { statusCode: HttpStatus.OK, message: 'Board deleted.' };
   }
 
   @ApiOperation({
@@ -117,15 +140,20 @@ export class BoardsController {
     description: '복구할 보드 id를 받아서 보드를 복구한다.',
   })
   @ApiBody({ type: RestoreBoardDto })
-  @ApiOkResponse({ description: '보드 복구 완료' })
-  @ApiNotFoundResponse({ description: '보드가 존재하지 않음' })
+  @ApiOkResponse({ type: RestoreBoardSuccess, description: '보드 복구 완료' })
+  @ApiNotFoundResponse({
+    type: RestoreBoardFailure,
+    description: '보드가 존재하지 않음',
+  })
   @Public()
   @Patch('restore')
   async restoreBoard(@Body() resotreBoardDto: RestoreBoardDto) {
     const updateResult = await this.boardsService.restoreBoard(
       resotreBoardDto.boardId,
     );
-    if (!updateResult.matchedCount) throw new NotFoundException();
-    return 'board restored.';
+    if (!updateResult.matchedCount) {
+      throw new NotFoundException('Target board not found.');
+    }
+    return { statusCode: HttpStatus.OK, message: 'Board restored.' };
   }
 }
