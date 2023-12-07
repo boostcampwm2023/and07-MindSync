@@ -34,7 +34,7 @@ class MindMapViewModel
     constructor(
         private val mindMapRepository: MindMapRepository,
     ) : ViewModel() {
-        private val boardId = "testBoard"
+        private var boardId: String = ""
         val crdtTree = CrdtTree(IdGenerator.makeRandomNodeId())
         private var _selectedNode = MutableStateFlow<Node?>(null)
         val selectedNode: StateFlow<Node?> = _selectedNode
@@ -46,7 +46,8 @@ class MindMapViewModel
         private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
         val socketEvent: StateFlow<SocketEvent?> = _socketEvent
 
-        init {
+        fun setBoardId(boardId: String) {
+            this.boardId = boardId
             setSocketState()
             setSocketEvent()
         }

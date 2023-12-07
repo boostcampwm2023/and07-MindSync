@@ -46,6 +46,7 @@ class MindMapFragment :
         collectSelectedNode()
         collectSocketState()
         collectSocketEvent()
+        mindMapViewModel.setBoardId(args.boardId)
     }
 
     private fun collectSocketState() {
