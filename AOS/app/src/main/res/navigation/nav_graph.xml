@@ -11,7 +11,11 @@
     <fragment
         android:id="@+id/boardListFragment"
         android:name="boostcamp.and07.mindsync.ui.boardlist.BoardListFragment"
-        android:label="BoardListFragment" />
+        android:label="BoardListFragment" >
+        <argument
+            android:name="spaceId"
+            app:argType="String"/>
+    </fragment>
     <fragment
         android:id="@+id/recycleBinFragment"
         android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
