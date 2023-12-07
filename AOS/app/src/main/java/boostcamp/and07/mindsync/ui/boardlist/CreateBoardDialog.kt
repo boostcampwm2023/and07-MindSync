@@ -85,6 +85,7 @@ class CreateBoardDialog : DialogFragment() {
     private fun setBinding() {
         binding.view = this
         binding.vm = createBoardViewModel
+        binding.lifecycleOwner = this
     }
 
     override fun onStart() {
