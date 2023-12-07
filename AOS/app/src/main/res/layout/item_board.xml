@@ -27,18 +27,17 @@
                 android:id="@+id/imgbtn_board_item"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@null"
                 android:scaleType="center"
                 android:src="@mipmap/ic_app_logo"
-                android:background="@null"
                 app:imageUri="@{board.imageUrl}" />
 
             <CheckBox
                 android:id="@+id/cb_board"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_margin="5dp"
                 android:layout_gravity="right"
-                 />
+                android:layout_margin="5dp" />
         </androidx.cardview.widget.CardView>
 
 
@@ -61,7 +60,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/board_list_board_create_date"
             android:fontFamily="@font/pretendard_bold"
-            app:date="@{board.date}"
+            android:text="@{board.date}"
             app:layout_constraintEnd_toEndOf="@id/cv_board_thumbnail"
             app:layout_constraintStart_toStartOf="@id/cv_board_thumbnail"
             app:layout_constraintTop_toBottomOf="@id/tv_board_title"
