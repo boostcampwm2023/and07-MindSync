@@ -40,11 +40,11 @@ class ProfileViewModel
             }
         }
 
-        fun updateNickName(nickname: String) {
-            _uiState.update { uiState ->
-                uiState.copy(nickname = nickname)
-            }
+    fun updateNickName(nickname: CharSequence) {
+        _uiState.update { uiState ->
+            uiState.copy(nickname = nickname.toString())
         }
+    }
 
         fun setProfileImageFile(file: File) {
             _uiState.update { uiState ->
