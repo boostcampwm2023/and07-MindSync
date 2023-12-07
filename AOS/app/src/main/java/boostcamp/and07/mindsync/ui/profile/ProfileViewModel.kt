@@ -52,17 +52,18 @@ class ProfileViewModel
             }
         }
 
-        fun updateProfile(imageName: String) {
-            _uiState.value.imageFile?.let { file ->
-                val image = fileToMultiPart(file, imageName)
-                val nickname = _uiState.value.nickname.toRequestBody()
-                viewModelScope.launch(coroutineExceptionHandler) {
-                    profileRepository.patchProfile(nickname, image).collectLatest {
-                        _event.emit(ProfileUiEvent.NavigateToBack)
-                    }
-                }
+    fun updateProfile(imageName: String) {
+        val image = _uiState.value.imageFile?.let { file ->
+            fileToMultiPart(file, imageName)
+        }
+        val nickname = _uiState.value.nickname.toRequestBody()
+
+        viewModelScope.launch(coroutineExceptionHandler) {
+            profileRepository.patchProfile(nickname, image).collectLatest {
+                _event.emit(ProfileUiEvent.NavigateToBack)
             }
         }
+    }
 
         fun fetchProfile() {
             viewModelScope.launch(coroutineExceptionHandler) {
