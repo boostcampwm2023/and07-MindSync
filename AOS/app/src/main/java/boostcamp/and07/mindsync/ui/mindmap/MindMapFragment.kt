@@ -53,7 +53,6 @@ class MindMapFragment :
                 mindMapViewModel.socketState.collectLatest { state ->
                     when (state) {
                         SocketState.CONNECT -> {
-
                         }
 
                         SocketState.DISCONNECT -> {
