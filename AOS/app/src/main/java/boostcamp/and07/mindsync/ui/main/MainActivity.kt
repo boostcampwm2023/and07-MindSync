@@ -16,6 +16,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -45,6 +46,10 @@ class MainActivity :
         setSideBarNavigation()
         setBinding()
         observeEvent()
+    }
+
+    override fun getViewModel(): BaseActivityViewModel {
+        return mainViewModel
     }
 
     private fun setBinding() {
