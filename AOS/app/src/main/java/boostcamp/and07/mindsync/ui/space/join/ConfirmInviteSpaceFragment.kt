@@ -1,11 +1,19 @@
 package boostcamp.and07.mindsync.ui.space.join
 
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.FragmentConfirmInviteSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
+import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ConfirmInviteSpaceFragment :
@@ -17,6 +25,7 @@ class ConfirmInviteSpaceFragment :
         setBinding()
         confirmInviteSpaceViewModel.updateSpace(args.space)
         setNoButton()
+        collectSpaceEvent()
     }
 
     private fun setBinding() {
@@ -26,6 +35,29 @@ class ConfirmInviteSpaceFragment :
     private fun setNoButton() {
         binding.btnConfirmInviteSpaceNo.setOnClickListener {
             parentFragmentManager.popBackStack()
+        }
+    }
+
+    private fun collectSpaceEvent() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                confirmInviteSpaceViewModel.event.collectLatest { spaceEvent ->
+                    when (spaceEvent) {
+                        is SpaceEvent.Success -> {
+                            findNavController().navigate(R.id.action_to_mainActitivty)
+                        }
+
+                        is SpaceEvent.Error -> {
+                            Snackbar.make(
+                                binding.root,
+                                "이미 가입한 스페이스입니다.!!",
+                                Snackbar.LENGTH_SHORT,
+                            )
+                                .show()
+                        }
+                    }
+                }
+            }
         }
     }
 }
