@@ -12,6 +12,7 @@ import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
@@ -72,9 +73,13 @@ class MindMapFragment :
                 event?.let { socketEvent ->
                     when (socketEvent.eventType) {
                         SocketEventType.OPERATION_FROM_SERVER -> {
-                            val operation = socketEvent.operation
-                            if (operation is SerializedOperation) {
-                                mindMapViewModel.applyOperation(operation)
+                            when (val operation = socketEvent.operation) {
+                                is SerializedOperation -> {
+                                    mindMapViewModel.applyOperation(operation)
+                                }
+                                is SerializedCrdtTree -> {
+                                    mindMapViewModel.applyOperation(operation)
+                                }
                             }
                         }
                     }

@@ -17,6 +17,7 @@ import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.data.network.MindMapSocketManager
 import boostcamp.and07.mindsync.data.network.SocketEvent
 import boostcamp.and07.mindsync.data.network.SocketState
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
@@ -135,6 +136,23 @@ class MindMapViewModel
                 }
             crdtTree.applyOperation(operation)
             _operation.value = operation
+        }
+
+        fun applyOperation(operation: SerializedCrdtTree) {
+            operation.operationLogs?.forEach { operationLog ->
+                val operation =
+                    when (operationLog.operation.operationType) {
+                        OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operationLog.operation)
+                        OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operationLog.operation)
+                        OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operationLog.operation)
+                        OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operationLog.operation)
+                        else -> {
+                            throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_NOT_DEFINED_OPERATION.message)
+                        }
+                    }
+                crdtTree.applyOperation(operation)
+                _operation.value = operation
+            }
         }
 
         fun updateNode(updateNode: Node) {
