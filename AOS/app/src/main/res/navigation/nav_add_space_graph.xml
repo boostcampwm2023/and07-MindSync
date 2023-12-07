@@ -19,8 +19,16 @@
         />
     </fragment>
 
+    <activity
+        android:id='@+id/mainActivity'
+        android:name="boostcamp.and07.mindsync.ui.main.MainActivity"
+        android:label="MainActivity"/>
+
     <action
         android:id="@+id/action_to_ConfirmInviteSpaceFragment"
         app:destination="@id/confirmInviteSpaceFragment"/>
+    <action
+        android:id="@+id/action_to_mainActitivty"
+        app:destination="@id/mainActivity"/>
 
 </navigation>
