@@ -20,7 +20,7 @@
             android:layout_width="120dp"
             android:layout_height="100dp"
             android:background="@null"
-            android:scaleType="center"
+            android:scaleType="centerCrop"
             android:src="@mipmap/ic_app_logo"
             app:imageUri="@{space.imageUrl}" />
 
