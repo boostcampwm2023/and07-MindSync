@@ -72,9 +72,9 @@ export abstract class BaseService<T extends HasUuid> {
         message: 'Success',
         data: mergedData,
       };
+    } else {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
-
-    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
   }
 
   async update(key: string, updateData: T) {
@@ -99,11 +99,12 @@ export abstract class BaseService<T extends HasUuid> {
         message: 'Success',
         data: updatedData.value,
       };
+    } else {
+      return {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Not Found',
+      };
     }
-    return {
-      statusCode: HttpStatus.NOT_FOUND,
-      message: 'Not Found',
-    };
   }
 
   async remove(key: string) {

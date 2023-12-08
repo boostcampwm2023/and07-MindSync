@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { UpdateProfileSpaceDto } from './dto/update-profile-space.dto';
 import { BaseService } from 'src/base/base.service';
 import { PrismaServiceMySQL } from 'src/prisma/prisma.service';
@@ -93,7 +93,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
   async getUserSpaces(
     userUuid: string,
     profileUuid: string,
-  ): Promise<UpdateProfileDto[]> {
+  ): Promise<UpdateSpaceDto[]> {
     const cacheUserSpaces = this.userCache.get(userUuid);
     if (cacheUserSpaces) return cacheUserSpaces;
     const profileResponse = await this.prisma['PROFILE_TB'].findUnique({
@@ -111,7 +111,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return storeUserSpaces;
   }
 
-  async getSpaceUsers(spaceUuid: string): Promise<UpdateSpaceDto[]> {
+  async getSpaceUsers(spaceUuid: string): Promise<UpdateProfileDto[]> {
     const cacheSpaceProfiles = this.spaceCache.get(spaceUuid);
     if (cacheSpaceProfiles) return cacheSpaceProfiles;
 
@@ -145,10 +145,16 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
 
   async getUsers(spaceUuid: string) {
     const users = await this.getSpaceUsers(spaceUuid);
+    const usersData = await Promise.all(
+      users.map(async (user) => {
+        return await this.profilesService.getDataFromCacheOrDB(user.user_id);
+      }),
+    );
+    this.spaceCache.put(spaceUuid, usersData);
     return {
       statusCode: HttpStatus.OK,
       message: 'Success',
-      data: users,
+      data: usersData,
     };
   }
 }
