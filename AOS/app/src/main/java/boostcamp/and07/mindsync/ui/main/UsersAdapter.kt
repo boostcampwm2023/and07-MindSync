@@ -49,7 +49,7 @@ class UsersAdapter : ListAdapter<UserData, UsersAdapter.UsersViewHolder>(DIFF_CA
                     oldItem: UserData,
                     newItem: UserData,
                 ): Boolean {
-                    return oldItem.userId == newItem.userId
+                    return oldItem == newItem
                 }
             }
     }
