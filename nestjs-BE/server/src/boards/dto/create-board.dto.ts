@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBoardDto {
   @ApiProperty({ description: '보드 이름' })
@@ -12,8 +12,6 @@ export class CreateBoardDto {
   @IsNotEmpty()
   spaceId: string;
 
-  @ApiProperty({ description: '이미지 url' })
-  @IsUrl()
-  @IsNotEmpty()
-  imageUrl: string;
+  @ApiProperty({ format: 'binary', description: '이미지' })
+  image: string;
 }

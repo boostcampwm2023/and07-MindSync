@@ -7,6 +7,9 @@ export class CreatedBoard {
 
   @ApiProperty({ description: '보드를 생성한 UTC 시각' })
   date: Date;
+
+  @ApiProperty({ description: '보드 이미지 url' })
+  imageUrl: string;
 }
 
 export class CreateBoardSuccess {

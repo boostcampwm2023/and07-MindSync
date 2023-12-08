@@ -8,12 +8,15 @@ import {
   Query,
   Patch,
   NotFoundException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import {
   ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -33,13 +36,18 @@ import {
   RestoreBoardFailure,
   RestoreBoardSuccess,
 } from './swagger/boards.type';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
 
 const BOARD_EXPIRE_DAY = 7;
 
 @Controller('boards')
 @ApiTags('boards')
 export class BoardsController {
-  constructor(private readonly boardsService: BoardsService) {}
+  constructor(
+    private boardsService: BoardsService,
+    private uploadService: UploadService,
+  ) {}
 
   @ApiOperation({
     summary: '보드 생성',
@@ -56,10 +64,24 @@ export class BoardsController {
   })
   @Public()
   @Post('create')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
   @HttpCode(HttpStatus.CREATED)
-  async createBoard(@Body() createBoardDto: CreateBoardDto) {
-    const document = await this.boardsService.create(createBoardDto);
-    const responseData = { boardId: document.uuid, date: document.createdAt };
+  async createBoard(
+    @Body() createBoardDto: CreateBoardDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    await this.boardsService.findByNameAndSpaceId(
+      createBoardDto.boardName,
+      createBoardDto.spaceId,
+    );
+    const imageUrl = image ? await this.uploadService.uploadFile(image) : null;
+    const document = await this.boardsService.create(createBoardDto, imageUrl);
+    const responseData = {
+      boardId: document.uuid,
+      date: document.createdAt,
+      imageUrl,
+    };
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Board created.',
@@ -101,7 +123,7 @@ export class BoardsController {
         boardId: board.uuid,
         boardName: board.boardName,
         createdAt: board.createdAt,
-        imageUrl: board.imageUrl,
+        imageUrl: board.imageUrl ? board.imageUrl : null,
         isDeleted,
       });
       return list;
