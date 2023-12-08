@@ -107,7 +107,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
       },
     });
     const storeUserSpaces =
-      profileResponse.spaces.map((profileSpace) => profileSpace.space) || [];
+      profileResponse?.spaces.map((profileSpace) => profileSpace.space) || [];
     return storeUserSpaces;
   }
 
