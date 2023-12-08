@@ -118,7 +118,7 @@ export class AuthService extends BaseService<TokenData> {
       return {
         statusCode: HttpStatus.OK,
         message: 'Success',
-        data: { acecss_token: accessToken },
+        data: { access_token: accessToken },
       };
     } catch (error) {
       super.remove(refreshToken);
