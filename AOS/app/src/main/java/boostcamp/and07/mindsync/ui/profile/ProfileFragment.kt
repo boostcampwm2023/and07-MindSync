@@ -3,6 +3,7 @@ package boostcamp.and07.mindsync.ui.profile
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -94,6 +95,9 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
                                 "${event.message}",
                                 Toast.LENGTH_SHORT,
                             ).show()
+                        }
+                        is ProfileUiEvent.UpdateProfileNickName ->{
+                            binding.tvProfileNickname.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
                         }
                     }
                 }
