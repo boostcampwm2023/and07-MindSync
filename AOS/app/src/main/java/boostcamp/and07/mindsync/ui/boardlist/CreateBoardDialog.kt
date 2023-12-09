@@ -120,7 +120,6 @@ class CreateBoardDialog : DialogFragment() {
     fun onClickCompleteButton(imageName: String) {
         val result = createBoardViewModel.changeImageToFile(imageName)
         result?.let {
-            Log.d("CreateBoardDialog", "onClickCompleteButton: click")
             completeListener?.invoke(result.first, result.second)
         }
         dismiss()
@@ -134,7 +133,6 @@ class CreateBoardDialog : DialogFragment() {
         uri?.let { uri ->
             createBoardViewModel.setSpaceImage(uri.toString())
         }
-        Log.d("CreateBoardDialog", "createImage: $uri")
     }
 
     private fun checkPermissionsAndLaunchImagePicker() {

@@ -29,7 +29,9 @@ class BoardListViewModel
 
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString())) }
+                viewModelScope.launch {
+                    _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString()))
+                }
             }
 
         fun setSpaceId(spaceId: String) {
@@ -95,10 +97,5 @@ class BoardListViewModel
                     )
                 }
             }
-        }
-
-        companion object {
-            private const val TEST_IMAGE_URL =
-                "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
         }
     }

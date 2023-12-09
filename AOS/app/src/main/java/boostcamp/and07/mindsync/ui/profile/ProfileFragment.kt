@@ -96,7 +96,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
                                 Toast.LENGTH_SHORT,
                             ).show()
                         }
-                        is ProfileUiEvent.UpdateProfileNickName ->{
+                        is ProfileUiEvent.UpdateProfileNickName -> {
                             binding.tvProfileNickname.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
                         }
                     }

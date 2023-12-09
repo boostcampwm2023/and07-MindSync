@@ -5,5 +5,5 @@ sealed class ProfileUiEvent {
 
     data class ShowMessage(val message: String) : ProfileUiEvent()
 
-    data object UpdateProfileNickName: ProfileUiEvent()
+    data object UpdateProfileNickName : ProfileUiEvent()
 }
