@@ -13,4 +13,5 @@ data class CreateBoardResponse(
 data class CreateBoardData(
     val boardId: String,
     val date: String,
+    val imageUrl: String,
 )
