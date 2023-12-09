@@ -40,14 +40,14 @@ class BoardListViewModel
         }
 
         fun addBoard(
-            part: MultipartBody.Part,
+            imageFile: MultipartBody.Part,
             name: String,
         ) {
             viewModelScope.launch(coroutineExceptionHandler) {
                 boardListRepository.createBoard(
                     boardName = name,
                     spaceId = _boardUiState.value.spaceId,
-                    imageUrl = TEST_IMAGE_URL,
+                    imageUrl = imageFile,
                 ).collectLatest { board ->
                     _boardUiState.update { boardUiState ->
                         val newBoards = boardUiState.boards.toMutableList().apply { add(board) }
