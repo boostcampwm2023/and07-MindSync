@@ -19,6 +19,14 @@ fun ImageView.loadImage(uri: String) {
     }
 }
 
+@BindingAdapter("app:boardImageUri")
+fun ImageView.loadBoardImage(uri: String) {
+    load(Uri.parse(uri)) {
+        placeholder(R.mipmap.ic_app_logo_round)
+        error(R.mipmap.ic_app_logo_round)
+    }
+}
+
 @BindingAdapter("app:date")
 fun TextView.bindDate(date: String) {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
