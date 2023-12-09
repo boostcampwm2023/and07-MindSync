@@ -128,9 +128,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcv_side_bar_users"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             app:users="@{vm.uiState.users}"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:flexBoxLayoutManager="@{FlexDirection.ROW}"
             app:layout_constraintStart_toStartOf="@id/view_side_bar_menu"
             app:layout_constraintEnd_toEndOf="@id/view_side_bar_menu"
