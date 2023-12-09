@@ -29,6 +29,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:scaleType="center"
+                app:imageUri="@{board.imageUrl}"
                 android:src="@mipmap/ic_app_logo" />
 
             <CheckBox
@@ -59,7 +60,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/board_list_board_create_date"
             android:fontFamily="@font/pretendard_bold"
-            android:text="@{board.date}"
+            app:date="@{board.date}"
             app:layout_constraintEnd_toEndOf="@id/cv_board_thumbnail"
             app:layout_constraintStart_toStartOf="@id/cv_board_thumbnail"
             app:layout_constraintTop_toBottomOf="@id/tv_board_title"
