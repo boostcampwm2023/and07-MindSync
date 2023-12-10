@@ -14,9 +14,8 @@ fun RecyclerView.bindUsers(users: List<UserData>) {
 }
 
 @BindingAdapter("app:sideBarSpaces")
-fun RecyclerView.bindSpaces(spaces: List<Space>)  {
-    if (this.adapter != null)
-        {
-            (this.adapter as SideBarSpaceAdapter).submitList(spaces.toMutableList())
-        }
+fun RecyclerView.bindSpaces(spaces: List<Space>) {
+    if (this.adapter != null) {
+        (this.adapter as SideBarSpaceAdapter).submitList(spaces.toMutableList())
+    }
 }
