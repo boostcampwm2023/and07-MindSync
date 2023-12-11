@@ -143,7 +143,8 @@ class MainActivity :
 
             tvSideBarLeaveSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 mainViewModel.leaveSpace()
-                // TODO : 보드 목록 화면으로 이동시키기
+                drawerLayout.closeDrawers()
+                navController.popBackStack()
             }
         }
     }
