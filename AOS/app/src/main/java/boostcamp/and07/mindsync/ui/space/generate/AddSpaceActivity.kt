@@ -13,6 +13,7 @@ import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,7 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
         setBinding()
         setBackBtn()
         collectSpaceEvent()
+        setClickEventThrottle()
     }
 
     override fun getViewModel(): BaseActivityViewModel {
@@ -40,11 +42,12 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
 
     private fun setBinding() {
         binding.vm = addSpaceViewModel
-        binding.view = this
     }
 
-    fun clickImageButton() {
-        imagePickerHandler.checkPermissionsAndLaunchImagePicker()
+    private fun setClickEventThrottle() {
+        binding.imgbtnUpdateSpaceThumbnail.setClickEvent(lifecycleScope) {
+            imagePickerHandler.checkPermissionsAndLaunchImagePicker()
+        }
     }
 
     private fun collectSpaceEvent() {
