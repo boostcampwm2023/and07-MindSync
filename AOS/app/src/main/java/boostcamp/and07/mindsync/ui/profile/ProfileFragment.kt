@@ -15,6 +15,7 @@ import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.databinding.FragmentProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -41,7 +42,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
                 createImage(uri)
             }
         setBinding()
-        setupImageEdit()
+        setClickEventThrottle()
         setupShowNicknameEditBtn()
         setupBackBtn()
         observeEvent()
@@ -58,8 +59,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         binding.vm = profileViewModel
     }
 
-    private fun setupImageEdit() {
-        binding.ivProfileImage.setOnClickListener {
+    private fun setClickEventThrottle() {
+        binding.ivProfileImage.setClickEvent(lifecycleScope) {
             imagePickerHandler.checkPermissionsAndLaunchImagePicker()
         }
     }
