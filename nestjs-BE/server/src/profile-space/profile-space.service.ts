@@ -13,6 +13,7 @@ import { ProfilesService } from 'src/profiles/profiles.service';
 import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
 import { UpdateSpaceDto } from 'src/spaces/dto/update-space.dto';
 import LRUCache from 'src/utils/lru-cache';
+import { ResponseUtils } from 'src/utils/response';
 
 interface UpdateProfileAndSpaceDto {
   profileData: UpdateProfileDto;
@@ -147,11 +148,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
       profileUuid,
     );
     this.userCache.put(userUuid, spaces);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: spaces,
-    };
+    return ResponseUtils.createResponse(HttpStatus.OK, spaces);
   }
 
   async retrieveSpaceUsers(spaceUuid: string) {
@@ -162,10 +159,6 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
       }),
     );
     this.spaceCache.put(spaceUuid, usersData);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: usersData,
-    };
+    return ResponseUtils.createResponse(HttpStatus.OK, usersData);
   }
 }

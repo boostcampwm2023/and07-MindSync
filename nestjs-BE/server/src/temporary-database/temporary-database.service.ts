@@ -20,7 +20,7 @@ type DeleteDataType = {
   value: string;
 };
 
-type InsertDataType =
+export type InsertDataType =
   | TokenData
   | InviteCodeData
   | CreateProfileSpaceDto

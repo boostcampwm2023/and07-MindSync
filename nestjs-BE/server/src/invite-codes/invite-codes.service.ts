@@ -9,6 +9,7 @@ import {
   INVITE_CODE_LENGTH,
 } from 'src/config/magic-number';
 import { SpacesService } from 'src/spaces/spaces.service';
+import { ResponseUtils } from 'src/utils/response';
 
 export interface InviteCodeData extends CreateInviteCodeDto {
   uuid?: string;
@@ -38,11 +39,11 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
 
   async createCode(createInviteCodeDto: CreateInviteCodeDto) {
     const { space_uuid: spaceUuid } = createInviteCodeDto;
-    const spaceResponse = await this.spacesService.findOne(spaceUuid);
+    await this.spacesService.findOne(spaceUuid);
     const inviteCodeData = await this.generateInviteCode(createInviteCodeDto);
     super.create(inviteCodeData);
-    this.cache.put(inviteCodeData.invite_code, spaceResponse);
-    return this.createResponse(inviteCodeData.invite_code);
+    const { invite_code } = inviteCodeData;
+    return ResponseUtils.createResponse(HttpStatus.CREATED, { invite_code });
   }
 
   async findSpace(inviteCode: string) {
@@ -110,13 +111,5 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     } while (inviteCodeData !== null);
 
     return inviteCode;
-  }
-
-  private createResponse(inviteCode: string) {
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data: { invite_code: inviteCode },
-    };
   }
 }

@@ -6,6 +6,7 @@ import {
 import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
 import LRUCache from '../utils/lru-cache';
 import generateUuid from '../utils/uuid';
+import { ResponseUtils } from 'src/utils/response';
 
 interface BaseServiceOptions {
   prisma: PrismaServiceMySQL | PrismaServiceMongoDB;
@@ -47,11 +48,7 @@ export abstract class BaseService<T extends HasUuid> {
 
     this.temporaryDatabaseService.create(this.className, key, data);
     this.cache.put(key, data);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data,
-    };
+    return ResponseUtils.createResponse(HttpStatus.CREATED, data);
   }
 
   async findOne(key: string) {
@@ -67,11 +64,7 @@ export abstract class BaseService<T extends HasUuid> {
     if (data) {
       const mergedData = this.mergeWithUpdateCommand(data, key);
       this.cache.put(key, mergedData);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Success',
-        data: mergedData,
-      };
+      return ResponseUtils.createResponse(HttpStatus.OK, mergedData);
     } else {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
@@ -94,16 +87,9 @@ export abstract class BaseService<T extends HasUuid> {
         this.temporaryDatabaseService.update(this.className, key, updatedData);
       }
       this.cache.put(key, updatedData.value);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Success',
-        data: updatedData.value,
-      };
+      return ResponseUtils.createResponse(HttpStatus.OK, updatedData.value);
     } else {
-      return {
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'Not Found',
-      };
+      return ResponseUtils.createResponse(HttpStatus.NOT_FOUND);
     }
   }
 
@@ -132,10 +118,7 @@ export abstract class BaseService<T extends HasUuid> {
         value: key,
       });
     }
-    return {
-      statusCode: HttpStatus.NO_CONTENT,
-      message: 'No Content',
-    };
+    return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);
   }
 
   async getDataFromCacheOrDB(key: string): Promise<T | null> {
