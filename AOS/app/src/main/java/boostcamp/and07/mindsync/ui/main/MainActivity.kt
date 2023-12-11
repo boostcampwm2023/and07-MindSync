@@ -171,10 +171,9 @@ class MainActivity :
                         backPressedTime = System.currentTimeMillis()
                         backPressedToast?.show()
                     }
-                } else
-                    {
-                        navController.popBackStack()
-                    }
+                } else {
+                    navController.popBackStack()
+                }
             }
         }
     }
