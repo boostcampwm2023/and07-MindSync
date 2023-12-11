@@ -37,6 +37,8 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
   }
 
   async createCode(createInviteCodeDto: CreateInviteCodeDto) {
+    const { space_uuid: spaceUuid } = createInviteCodeDto;
+    await this.spacesService.findOne(spaceUuid);
     const inviteCode = await this.generateUniqueInviteCode(INVITE_CODE_LENGTH);
     const currentDate = new Date();
     const expiryDate = new Date(currentDate);
@@ -46,9 +48,6 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
       invite_code: inviteCode,
       expiry_date: expiryDate,
     };
-    const { space_uuid: spaceUuid } = createInviteCodeDto;
-    const space = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
-    if (!space) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     super.create(data);
     return {
       statusCode: HttpStatus.CREATED,
@@ -58,10 +57,8 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
   }
 
   async findSpace(inviteCode: string) {
-    const inviteCodeData = await super.getDataFromCacheOrDB(inviteCode);
-    if (!inviteCodeData) {
-      throw new HttpException('Invalid invite code.', HttpStatus.NOT_FOUND);
-    }
+    const inviteCodeResponse = await super.findOne(inviteCode);
+    const { data: inviteCodeData } = inviteCodeResponse;
     const currentTimestamp = new Date().getTime();
     const expiryTimestamp = new Date(inviteCodeData.expiry_date).getTime();
     if (expiryTimestamp < currentTimestamp) {
@@ -69,12 +66,8 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
     const spaceUuid = inviteCodeData.space_uuid;
-    const spaceData = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: spaceData,
-    };
+    const spaceResponse = await this.spacesService.findOne(spaceUuid);
+    return spaceResponse;
   }
 
   generateShortInviteCode(length: number) {
