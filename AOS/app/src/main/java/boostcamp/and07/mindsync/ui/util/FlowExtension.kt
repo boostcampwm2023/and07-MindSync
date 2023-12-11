@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-const val THROTTLE_DURATION = 200L
+const val THROTTLE_DURATION = 1000L
 
 fun View.setClickEvent(
     uiScope: CoroutineScope,
