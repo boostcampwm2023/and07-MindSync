@@ -85,4 +85,17 @@ class MainViewModel
                 }
             }
         }
+
+        fun leaveSpace() {
+            uiState.value.nowSpace?.let { nowSpace ->
+                viewModelScope.launch(coroutineExceptionHandler) {
+                    profileSpaceRepository.leaveSpace(nowSpace.id).collectLatest {
+                        _uiState.update {
+                            MainUiState()
+                        }
+                        _event.emit(MainUiEvent.LeaveSpace(nowSpace.name))
+                    }
+                }
+            }
+        }
     }
