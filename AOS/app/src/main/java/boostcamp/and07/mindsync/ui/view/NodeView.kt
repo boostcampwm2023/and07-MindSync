@@ -56,7 +56,7 @@ class NodeView(
             }
 
             MotionEvent.ACTION_MOVE -> {
-                mindMapContainer.isMoving = true
+                mindMapContainer.isMoving = mindMapContainer.selectNode is RectangleNode
                 moveNode(
                     event.x,
                     event.y,
@@ -104,6 +104,7 @@ class NodeView(
         dy: Float,
     ) {
         var attachedNode: Node? = null
+        if (mindMapContainer.selectNode is CircleNode) return
         mindMapContainer.tree.doPreorderTraversal { node ->
             mindMapContainer.selectNode?.let {
                 if (isInsideNode(node, dx, dy) && mindMapContainer.selectNode?.id != node.id) {
@@ -170,7 +171,11 @@ class NodeView(
             target.path.centerY,
         )
         node.children.forEach { nodeId ->
-            traverseChildNode(node, tree.getNode(nodeId), childNodeSpacing + CHILD_NODE_SPACING_VALUE)
+            traverseChildNode(
+                node,
+                tree.getNode(nodeId),
+                childNodeSpacing + CHILD_NODE_SPACING_VALUE,
+            )
         }
     }
 
@@ -220,9 +225,9 @@ class NodeView(
                     radius,
                     drawInfo.boundaryPaint,
                 )
+                invalidate()
             }
         }
-        invalidate()
     }
 
     private fun makeStrokeNode(
@@ -258,8 +263,12 @@ class NodeView(
     ): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
+                        context,
+                    ) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
+                        context,
+                    )
                 ) {
                     return true
                 }
