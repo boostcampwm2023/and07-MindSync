@@ -52,16 +52,18 @@ class LineView constructor(
         toNode: Node,
         canvas: Canvas,
     ) {
-        val linePaint = when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_YES -> {
-                drawInfo.darkModeLinePaint
-            }
-            Configuration.UI_MODE_NIGHT_NO -> {
-                drawInfo.linePaint
-            }
+        val linePaint =
+            when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    drawInfo.darkModeLinePaint
+                }
 
-            else -> drawInfo.linePaint
-        }
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    drawInfo.linePaint
+                }
+
+                else -> drawInfo.linePaint
+            }
         val startX = getNodeEdgeX(fromNode, true)
         val startY = fromNode.path.centerY.toPx(context)
         val endX = getNodeEdgeX(toNode, false)
