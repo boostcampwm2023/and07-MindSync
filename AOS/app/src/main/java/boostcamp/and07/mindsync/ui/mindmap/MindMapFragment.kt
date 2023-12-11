@@ -19,6 +19,7 @@ import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
+import boostcamp.and07.mindsync.ui.util.ThrottleDuration
 import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindMapContainer
@@ -125,14 +126,14 @@ class MindMapFragment :
 
     private fun setClickEventThrottle() {
         with(binding) {
-            imgbtnMindMapAdd.setClickEvent(lifecycleScope) {
+            imgbtnMindMapAdd.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
                 mindMapViewModel.selectedNode.value?.let { selectNode ->
                     showDialog(selectNode) { parent, description ->
                         mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description, parent.id))
                     }
                 }
             }
-            imgbtnMindMapEdit.setClickEvent(lifecycleScope) {
+            imgbtnMindMapEdit.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
                 mindMapViewModel.selectedNode.value?.let { selectNode ->
                     showDialog(selectNode) { node, description ->
                         val newNode =
@@ -144,7 +145,7 @@ class MindMapFragment :
                     }
                 }
             }
-            imgbtnMindMapRemove.setClickEvent(lifecycleScope) {
+            imgbtnMindMapRemove.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
                 mindMapViewModel.selectedNode.value?.let { selectNode ->
                     mindMapViewModel.removeNode(selectNode)
                 }
