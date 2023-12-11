@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="초대 코드"
+                android:hint="@string/space_invite_code"
                 android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
                 android:text="@{vm.uiState.spaceInviteCode}" />
         </com.google.android.material.textfield.TextInputLayout>
