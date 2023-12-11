@@ -27,6 +27,7 @@ class SpaceListFragment : BaseFragment<FragmentSpaceListBinding>(R.layout.fragme
         spaceListAdapter.setSpaceClickListener(
             object : SpaceClickListener {
                 override fun onClickSpace(space: Space) {
+                    spaceListViewModel.updateCurrentSpace(space)
                     findNavController().navigate(
                         SpaceListFragmentDirections.actionToBoardListFragment(
                             spaceId = space.id,
