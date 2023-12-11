@@ -156,13 +156,18 @@ class MainActivity :
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawers()
             } else {
-                if (System.currentTimeMillis() - backPressedTime <= 2000L) {
-                    backPressedToast?.cancel()
-                    finish()
-                } else {
-                    backPressedTime = System.currentTimeMillis()
-                    backPressedToast?.show()
-                }
+                if (navController.currentDestination!!.id == R.id.spaceListFragment) {
+                    if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                        backPressedToast?.cancel()
+                        finish()
+                    } else {
+                        backPressedTime = System.currentTimeMillis()
+                        backPressedToast?.show()
+                    }
+                } else
+                    {
+                        navController.popBackStack()
+                    }
             }
         }
     }
