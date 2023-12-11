@@ -8,10 +8,10 @@ interface BoardListRepository {
     fun createBoard(
         boardName: String,
         spaceId: String,
-        imageUrl: MultipartBody.Part,
+        imageUrl: MultipartBody.Part?,
     ): Flow<Board>
 
     fun getBoard(spaceId: String): Flow<List<Board>>
 
-    fun deleteBoard(boardId: String): Flow<Unit>
+    fun deleteBoard(boardId: String): Flow<Boolean>
 }
