@@ -157,11 +157,6 @@ class MainActivity :
             },
         )
         binding.includeMainInDrawer.rvSideBarSpace.adapter = spaceAdapter
-        lifecycleScope.launch {
-            mainViewModel.uiState.collectLatest { uiState ->
-                spaceAdapter.submitList(uiState.spaces.toMutableList())
-            }
-        }
         binding.includeMainInDrawer.rcvSideBarUsers.adapter = usersAdapter
     }
 

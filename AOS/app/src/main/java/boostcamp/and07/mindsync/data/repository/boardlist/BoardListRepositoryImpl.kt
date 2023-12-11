@@ -2,10 +2,11 @@ package boostcamp.and07.mindsync.data.repository.boardlist
 
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.data.network.BoardApi
-import boostcamp.and07.mindsync.data.network.request.board.CreateBoardRequest
 import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
+import boostcamp.and07.mindsync.ui.util.toRequestBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class BoardListRepositoryImpl
@@ -16,16 +17,14 @@ class BoardListRepositoryImpl
         override fun createBoard(
             boardName: String,
             spaceId: String,
-            imageUrl: String,
+            imageUrl: MultipartBody.Part,
         ): Flow<Board> =
             flow {
                 val response =
                     boardApi.createBoard(
-                        CreateBoardRequest(
-                            boardName,
-                            spaceId,
-                            imageUrl,
-                        ),
+                        boardName.toRequestBody(),
+                        spaceId.toRequestBody(),
+                        imageUrl,
                     )
                 response.data?.let { data ->
                     emit(
@@ -33,7 +32,7 @@ class BoardListRepositoryImpl
                             id = data.boardId,
                             name = boardName,
                             date = data.date,
-                            imageUrl = imageUrl,
+                            imageUrl = data.imageUrl,
                         ),
                     )
                 }

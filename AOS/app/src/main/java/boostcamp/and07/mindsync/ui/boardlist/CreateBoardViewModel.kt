@@ -41,7 +41,7 @@ class CreateBoardViewModel
 
         fun changeImageToFile(imageName: String): Pair<MultipartBody.Part, String>? {
             imageFile?.let { imageFile ->
-                val icon = fileToMultiPart(imageFile, imageName)
+                val icon = fileToMultiPart(imageFile, "image")
                 val name = _uiState.value.boardName
                 return Pair(icon, name)
             }

@@ -50,6 +50,9 @@ class ProfileViewModel
             _uiState.update { uiState ->
                 uiState.copy(nickname = nickname.toString())
             }
+            viewModelScope.launch {
+                _event.emit(ProfileUiEvent.UpdateProfileNickName)
+            }
         }
 
         fun setProfileImageFile(file: File) {

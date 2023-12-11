@@ -14,7 +14,7 @@
         android:id="@+id/constraint_layout_item_space_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@{space.isSelected ? @color/main1 : @color/main3}">
+        android:background="@{space.isSelected ? @color/main4 : @color/main3}">
 
         <ImageView
             android:layout_width="@dimen/item_space_width"

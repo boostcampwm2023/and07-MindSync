@@ -59,8 +59,12 @@ class MainViewModel
         }
 
         fun updateCurrentSpace(space: Space) {
+            val updatedSpaces = _uiState.value.spaces.map { it.copy(isSelected = it == space) }
             _uiState.update { uiState ->
-                uiState.copy(nowSpace = space)
+                uiState.copy(
+                    nowSpace = space,
+                    spaces = updatedSpaces,
+                )
             }
             viewModelScope.launch {
                 _event.emit(MainUiEvent.ShowMessage("${space.name}방에 참가했습니다."))
