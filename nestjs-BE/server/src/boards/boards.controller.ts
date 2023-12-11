@@ -38,6 +38,7 @@ import {
 } from './swagger/boards.type';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/upload/upload.service';
+import customEnv from 'src/config/env';
 
 const BOARD_EXPIRE_DAY = 7;
 
@@ -75,7 +76,9 @@ export class BoardsController {
       createBoardDto.boardName,
       createBoardDto.spaceId,
     );
-    const imageUrl = image ? await this.uploadService.uploadFile(image) : null;
+    const imageUrl = image
+      ? await this.uploadService.uploadFile(image)
+      : customEnv.APP_ICON_URL;
     const document = await this.boardsService.create(createBoardDto, imageUrl);
     const responseData = {
       boardId: document.uuid,
@@ -123,7 +126,7 @@ export class BoardsController {
         boardId: board.uuid,
         boardName: board.boardName,
         createdAt: board.createdAt,
-        imageUrl: board.imageUrl ? board.imageUrl : null,
+        imageUrl: board.imageUrl,
         isDeleted,
       });
       return list;
