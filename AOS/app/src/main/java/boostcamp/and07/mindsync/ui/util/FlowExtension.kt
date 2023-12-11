@@ -9,11 +9,15 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-const val THROTTLE_DURATION = 1000L
+enum class ThrottleDuration(val duration: Long) {
+    SHORT_DURATION(250L),
+    MIDDLE_DURATION(500L),
+    LONG_DURATION(1000L),
+}
 
 fun View.setClickEvent(
     uiScope: CoroutineScope,
-    windowDuration: Long = THROTTLE_DURATION,
+    windowDuration: Long = ThrottleDuration.MIDDLE_DURATION.duration,
     onClick: () -> Unit,
 ) {
     clicks()
@@ -22,7 +26,7 @@ fun View.setClickEvent(
         .launchIn(uiScope)
 }
 
-fun <T> Flow<T>.throttleFirst(windowDuration: Long = THROTTLE_DURATION): Flow<T> =
+fun <T> Flow<T>.throttleFirst(windowDuration: Long = ThrottleDuration.MIDDLE_DURATION.duration): Flow<T> =
     flow {
         var lastEmissionTime = 0L
         collect { upstream ->
