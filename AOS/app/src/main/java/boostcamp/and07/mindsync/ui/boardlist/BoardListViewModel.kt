@@ -86,9 +86,10 @@ class BoardListViewModel
                 val newBoards = boardUiState.value.boards.toMutableList()
                 val newSelectBoards = boardUiState.value.selectBoards.toMutableList()
                 _boardUiState.value.selectBoards.map { board ->
-                    boardListRepository.deleteBoard(board.id)
-                    newBoards.remove(board)
-                    newSelectBoards.remove(board)
+                    boardListRepository.deleteBoard(board.id).collectLatest {
+                        newBoards.remove(board)
+                        newSelectBoards.remove(board)
+                    }
                 }
                 _boardUiState.update { boardUiState ->
                     boardUiState.copy(
