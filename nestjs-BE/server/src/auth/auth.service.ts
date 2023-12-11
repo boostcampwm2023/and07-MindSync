@@ -14,6 +14,7 @@ import { UsersService } from 'src/users/users.service';
 import { ProfilesService } from 'src/profiles/profiles.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import customEnv from 'src/config/env';
+import { ResponseUtils } from 'src/utils/response';
 const { BASE_IMAGE_URL } = customEnv;
 
 export interface TokenData {
@@ -97,14 +98,11 @@ export class AuthService extends BaseService<TokenData> {
       userUuid,
     );
     super.create(refreshTokenData);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      },
+    const tokenData = {
+      access_token: accessToken,
+      refresh_token: refreshToken,
     };
+    return ResponseUtils.createResponse(HttpStatus.OK, tokenData);
   }
 
   async renewAccessToken(refreshToken: string) {
@@ -112,14 +110,11 @@ export class AuthService extends BaseService<TokenData> {
       this.jwtService.verify(refreshToken, {
         secret: jwtConstants.refreshSecret,
       });
-      const tokenData = await this.getDataFromCacheOrDB(refreshToken);
-      if (!tokenData) throw new Error('No token data found');
+      const { data: tokenData } = await this.findOne(refreshToken);
       const accessToken = await this.createAccessToken(tokenData.user_id);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Success',
-        data: { access_token: accessToken },
-      };
+      return ResponseUtils.createResponse(HttpStatus.OK, {
+        access_token: accessToken,
+      });
     } catch (error) {
       super.remove(refreshToken);
       throw new UnauthorizedException(

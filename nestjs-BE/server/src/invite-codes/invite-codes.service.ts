@@ -9,6 +9,7 @@ import {
   INVITE_CODE_LENGTH,
 } from 'src/config/magic-number';
 import { SpacesService } from 'src/spaces/spaces.service';
+import { ResponseUtils } from 'src/utils/response';
 
 export interface InviteCodeData extends CreateInviteCodeDto {
   uuid?: string;
@@ -37,47 +38,58 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
   }
 
   async createCode(createInviteCodeDto: CreateInviteCodeDto) {
-    const inviteCode = await this.generateUniqueInviteCode(INVITE_CODE_LENGTH);
-    const currentDate = new Date();
-    const expiryDate = new Date(currentDate);
-    expiryDate.setHours(currentDate.getHours() + INVITE_CODE_EXPIRY_HOURS);
-    const data: InviteCodeData = {
-      ...createInviteCodeDto,
-      invite_code: inviteCode,
-      expiry_date: expiryDate,
-    };
     const { space_uuid: spaceUuid } = createInviteCodeDto;
-    const space = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
-    if (!space) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    super.create(data);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data: { invite_code: inviteCode },
-    };
+    await this.spacesService.findOne(spaceUuid);
+    const inviteCodeData = await this.generateInviteCode(createInviteCodeDto);
+    super.create(inviteCodeData);
+    const { invite_code } = inviteCodeData;
+    return ResponseUtils.createResponse(HttpStatus.CREATED, { invite_code });
   }
 
   async findSpace(inviteCode: string) {
-    const inviteCodeData = await super.getDataFromCacheOrDB(inviteCode);
-    if (!inviteCodeData) {
-      throw new HttpException('Invalid invite code.', HttpStatus.NOT_FOUND);
-    }
+    const inviteCodeData = await this.getInviteCodeData(inviteCode);
+    this.checkExpiry(inviteCode, inviteCodeData.expiry_date);
+    const spaceResponse = await this.spacesService.findOne(
+      inviteCodeData.space_uuid,
+    );
+    return spaceResponse;
+  }
+
+  private async generateInviteCode(createInviteCodeDto: CreateInviteCodeDto) {
+    const uniqueInviteCode =
+      await this.generateUniqueInviteCode(INVITE_CODE_LENGTH);
+    const expiryDate = this.calculateExpiryDate();
+
+    return {
+      ...createInviteCodeDto,
+      invite_code: uniqueInviteCode,
+      expiry_date: expiryDate,
+    };
+  }
+
+  private calculateExpiryDate(): Date {
+    const currentDate = new Date();
+    const expiryDate = new Date(currentDate);
+    expiryDate.setHours(currentDate.getHours() + INVITE_CODE_EXPIRY_HOURS);
+    return expiryDate;
+  }
+
+  private async getInviteCodeData(inviteCode: string) {
+    const inviteCodeResponse = await super.findOne(inviteCode);
+    const { data: inviteCodeData } = inviteCodeResponse;
+    return inviteCodeData;
+  }
+
+  private checkExpiry(inviteCode: string, expiryDate: Date) {
     const currentTimestamp = new Date().getTime();
-    const expiryTimestamp = new Date(inviteCodeData.expiry_date).getTime();
+    const expiryTimestamp = new Date(expiryDate).getTime();
     if (expiryTimestamp < currentTimestamp) {
       super.remove(inviteCode);
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
-    const spaceUuid = inviteCodeData.space_uuid;
-    const spaceData = await this.spacesService.getDataFromCacheOrDB(spaceUuid);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: spaceData,
-    };
   }
 
-  generateShortInviteCode(length: number) {
+  private generateShortInviteCode(length: number) {
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let inviteCode = '';
@@ -89,7 +101,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     return inviteCode;
   }
 
-  async generateUniqueInviteCode(length: number): Promise<string> {
+  private async generateUniqueInviteCode(length: number): Promise<string> {
     let inviteCode: string;
     let inviteCodeData: InviteCodeData;
 

@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Post,
-  Request,
-  UseGuards,
-  Get,
-  Body,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Post, Body, NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { Public } from './public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -79,11 +70,5 @@ export class AuthController {
   logout(@Body() refreshTokenDto: RefreshTokenDto) {
     const refreshToken = refreshTokenDto.refresh_token;
     return this.authService.remove(refreshToken);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
   }
 }

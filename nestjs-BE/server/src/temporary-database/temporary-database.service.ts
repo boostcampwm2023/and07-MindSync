@@ -20,7 +20,7 @@ type DeleteDataType = {
   value: string;
 };
 
-type InsertDataType =
+export type InsertDataType =
   | TokenData
   | InviteCodeData
   | CreateProfileSpaceDto
@@ -136,6 +136,7 @@ export class TemporaryDatabaseService {
   operation({ service, uniqueKey, command, data }: OperationData) {
     const filePath = join(this.FOLDER_NAME, `${service}-${command}.csv`);
     fs.appendFile(filePath, `${uniqueKey},${JSON.stringify(data)}\n`, 'utf8');
+    this.database.get(service).get(command).set(uniqueKey, data);
   }
 
   @Cron('0 */10 * * * *')

@@ -13,6 +13,7 @@ import { ProfilesService } from 'src/profiles/profiles.service';
 import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
 import { UpdateSpaceDto } from 'src/spaces/dto/update-space.dto';
 import LRUCache from 'src/utils/lru-cache';
+import { ResponseUtils } from 'src/utils/response';
 
 interface UpdateProfileAndSpaceDto {
   profileData: UpdateProfileDto;
@@ -64,10 +65,13 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     data: UpdateProfileAndSpaceDto,
   ) {
     const { spaceData, profileData } = data;
-    const userSpaces = await this.getUserSpaces(userUuid, profileData.uuid);
+    const userSpaces = await this.fetchUserSpacesFromCacheOrDB(
+      userUuid,
+      profileData.uuid,
+    );
     userSpaces.push(spaceData);
     this.userCache.put(userUuid, userSpaces);
-    const spaceProfiles = await this.getSpaceUsers(spaceUuid);
+    const spaceProfiles = await this.fetchSpaceUsersFromCacheOrDB(spaceUuid);
     spaceProfiles.push(profileData);
     this.spaceCache.put(spaceUuid, spaceProfiles);
   }
@@ -77,20 +81,23 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     spaceUuid: string,
     profileData: UpdateProfileDto,
   ) {
-    const userSpaces = await this.getUserSpaces(userUuid, profileData.uuid);
+    const userSpaces = await this.fetchUserSpacesFromCacheOrDB(
+      userUuid,
+      profileData.uuid,
+    );
     const filterUserSpaces = userSpaces.filter(
       (space) => space.uuid !== spaceUuid,
     );
     this.userCache.put(userUuid, filterUserSpaces);
-    const spaceUsers = await this.getSpaceUsers(spaceUuid);
+    const spaceUsers = await this.fetchSpaceUsersFromCacheOrDB(spaceUuid);
     const filterSpaceUsers = spaceUsers.filter(
       (profile) => profile.uuid !== profileData.uuid,
     );
-    this.userCache.put(spaceUuid, filterSpaceUsers);
+    this.spaceCache.put(spaceUuid, filterSpaceUsers);
     return filterSpaceUsers.length === 0;
   }
 
-  async getUserSpaces(
+  async fetchUserSpacesFromCacheOrDB(
     userUuid: string,
     profileUuid: string,
   ): Promise<UpdateSpaceDto[]> {
@@ -111,7 +118,9 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return storeUserSpaces;
   }
 
-  async getSpaceUsers(spaceUuid: string): Promise<UpdateProfileDto[]> {
+  async fetchSpaceUsersFromCacheOrDB(
+    spaceUuid: string,
+  ): Promise<UpdateProfileDto[]> {
     const cacheSpaceProfiles = this.spaceCache.get(spaceUuid);
     if (cacheSpaceProfiles) return cacheSpaceProfiles;
 
@@ -131,30 +140,25 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return storeSpaceProfiles;
   }
 
-  async getSpaces(userUuid: string) {
+  async retrieveUserSpaces(userUuid: string) {
     const profileResponse = await this.profilesService.findOne(userUuid);
     const profileUuid = profileResponse.data?.uuid;
-    const spaces = await this.getUserSpaces(userUuid, profileUuid);
+    const spaces = await this.fetchUserSpacesFromCacheOrDB(
+      userUuid,
+      profileUuid,
+    );
     this.userCache.put(userUuid, spaces);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: spaces,
-    };
+    return ResponseUtils.createResponse(HttpStatus.OK, spaces);
   }
 
-  async getUsers(spaceUuid: string) {
-    const users = await this.getSpaceUsers(spaceUuid);
+  async retrieveSpaceUsers(spaceUuid: string) {
+    const users = await this.fetchSpaceUsersFromCacheOrDB(spaceUuid);
     const usersData = await Promise.all(
       users.map(async (user) => {
         return await this.profilesService.findOne(user.user_id);
       }),
     );
     this.spaceCache.put(spaceUuid, usersData);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: usersData,
-    };
+    return ResponseUtils.createResponse(HttpStatus.OK, usersData);
   }
 }
