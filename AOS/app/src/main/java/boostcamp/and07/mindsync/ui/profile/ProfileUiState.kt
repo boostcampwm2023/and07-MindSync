@@ -6,6 +6,7 @@ import java.io.File
 data class ProfileUiState(
     val serverFetchedImage: Uri = Uri.EMPTY,
     val serverFetchedNickName: String = "",
+    val editingNickname: String = "",
     val imageUri: Uri = Uri.EMPTY,
     val nickname: String = "",
     val imageFile: File? = null,
