@@ -73,7 +73,6 @@ class MainActivity :
                         mainViewModel.getSpaceUsers()
                     }
                     if (event is MainUiEvent.LeaveSpace) {
-                        mainViewModel.getSpaces()
                         Toast.makeText(
                             this@MainActivity,
                             getString(R.string.space_leave_room_message, event.spaceName),
