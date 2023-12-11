@@ -6,27 +6,57 @@ import {
 import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { join } from 'path';
+import { TokenData } from 'src/auth/auth.service';
+import { InviteCodeData } from 'src/invite-codes/invite-codes.service';
+import { CreateProfileSpaceDto } from 'src/profile-space/dto/create-profile-space.dto';
+import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
+import { UpdateSpaceDto } from 'src/spaces/dto/update-space.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import costomEnv from 'src/config/env';
+const { CSV_FOLDER } = costomEnv;
+
+type DeleteDataType = {
+  field: string;
+  value: string;
+};
+
+type InsertDataType =
+  | TokenData
+  | InviteCodeData
+  | CreateProfileSpaceDto
+  | UpdateProfileDto
+  | UpdateSpaceDto
+  | UpdateUserDto;
+
+type UpdateDataType = {
+  field: string;
+  value: InsertDataType;
+};
+type DataType = InsertDataType | UpdateDataType | DeleteDataType;
 
 interface OperationData {
   service: string;
   uniqueKey: string;
   command: string;
-  data: any;
+  data: DataType;
 }
 
 @Injectable()
 export class TemporaryDatabaseService {
-  private database: Map<string, Map<string, Map<string, any>>> = new Map();
-  private entriesMap: Map<string, string[]> = new Map();
-  private readonly FOLDER_NAME = 'operations';
+  private database: Map<string, Map<string, Map<string, DataType>>> = new Map();
+  private readonly FOLDER_NAME = CSV_FOLDER;
 
   constructor(
     private readonly prismaMysql: PrismaServiceMySQL,
     private readonly prismaMongoDB: PrismaServiceMongoDB,
   ) {
+    this.init();
+  }
+
+  async init() {
     this.initializeDatabase();
-    this.readDataFromFiles();
-    this.executeBulkOperations();
+    await this.readDataFromFiles();
+    await this.executeBulkOperations();
   }
 
   private initializeDatabase() {
@@ -52,11 +82,11 @@ export class TemporaryDatabaseService {
 
   private async readDataFromFiles() {
     const files = await fs.readdir(this.FOLDER_NAME);
-    files.forEach((file) => {
-      if (file.endsWith('.csv')) {
-        this.readDataFromFile(file);
-      }
-    });
+    return Promise.all(
+      files
+        .filter((file) => file.endsWith('.csv'))
+        .map((file) => this.readDataFromFile(file)),
+    );
   }
 
   private async readDataFromFile(file: string) {
@@ -79,15 +109,15 @@ export class TemporaryDatabaseService {
     return this.database.get(service).get(command).get(uniqueKey);
   }
 
-  create(service: string, uniqueKey: string, data: any) {
+  create(service: string, uniqueKey: string, data: InsertDataType) {
     this.operation({ service, uniqueKey, command: 'insert', data });
   }
 
-  update(service: string, uniqueKey: string, data: any) {
+  update(service: string, uniqueKey: string, data: UpdateDataType) {
     this.operation({ service, uniqueKey, command: 'update', data });
   }
 
-  remove(service: string, uniqueKey: string, data: any) {
+  remove(service: string, uniqueKey: string, data: DeleteDataType) {
     this.operation({ service, uniqueKey, command: 'delete', data });
   }
 
@@ -105,14 +135,10 @@ export class TemporaryDatabaseService {
 
   operation({ service, uniqueKey, command, data }: OperationData) {
     const filePath = join(this.FOLDER_NAME, `${service}-${command}.csv`);
-    fs.readFile(filePath, 'utf8').then((fileData) => {
-      fileData += `${uniqueKey},${JSON.stringify(data)}\n`;
-      fs.writeFile(filePath, fileData);
-      this.database.get(service).get(command).set(uniqueKey, data);
-    });
+    fs.appendFile(filePath, `${uniqueKey},${JSON.stringify(data)}\n`, 'utf8');
   }
 
-  @Cron('* * * * * *')
+  @Cron('0 */10 * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
@@ -126,11 +152,10 @@ export class TemporaryDatabaseService {
 
   private async performInsert(
     service: string,
-    dataMap: Map<string, any>,
+    dataMap: Map<string, DataType>,
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'insert', dataMap);
-    this.entriesMap.clear();
     if (!data.length) return;
     if (prisma instanceof PrismaServiceMySQL) {
       await prisma[service].createMany({
@@ -146,7 +171,7 @@ export class TemporaryDatabaseService {
 
   private async performUpdate(
     service: string,
-    dataMap: Map<string, any>,
+    dataMap: Map<string, DataType>,
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'update', dataMap);
@@ -168,7 +193,7 @@ export class TemporaryDatabaseService {
 
   private async performDelete(
     service: string,
-    dataMap: Map<string, any>,
+    dataMap: Map<string, DataType>,
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'delete', dataMap);
@@ -199,24 +224,5 @@ export class TemporaryDatabaseService {
 
   private clearFile(filename: string) {
     fs.writeFile(join(this.FOLDER_NAME, filename), '', 'utf8');
-  }
-
-  getEntries(key: string): string[] {
-    return this.entriesMap.get(key) || [];
-  }
-
-  addEntry(key: string, value: string): void {
-    const entries = this.getEntries(key);
-    entries.push(value);
-    this.entriesMap.set(key, entries);
-  }
-
-  removeEntry(key: string, value: string): void {
-    const entries = this.getEntries(key);
-    const index = entries.indexOf(value);
-    if (index > -1) {
-      entries.splice(index, 1);
-      this.entriesMap.set(key, entries);
-    }
   }
 }
