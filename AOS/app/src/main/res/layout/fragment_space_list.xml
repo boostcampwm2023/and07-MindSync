@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.space.list.SpaceListViewModel" />
+            type="boostcamp.and07.mindsync.ui.main.MainViewModel" />
 
         <import type="com.google.android.flexbox.FlexDirection"></import>
     </data>
