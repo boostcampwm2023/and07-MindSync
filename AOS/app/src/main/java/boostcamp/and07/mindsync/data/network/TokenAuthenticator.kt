@@ -39,27 +39,22 @@ class TokenAuthenticator
                 runBlocking {
                     tokenRepository.getRefreshToken().first()
                 }
-            val accessToken =
-                runBlocking {
-                    tokenRepository.getRefreshToken().first()
-                }
 
             if (refreshToken == null) {
                 logoutEventRepository.logout()
                 return null
             }
-            // 무조건 새 토큰을 받아온 후 진행시키기 위해 runBlocking
-            runBlocking {
-                getNewAccessToken(refreshToken)
-                    .onSuccess { newAccessToken ->
-                        tokenRepository.saveAccessToken(newAccessToken)
-                    }
-                    .onFailure { e ->
-                        throw e
-                    }
-            }
 
-            return newRequestWithToken(refreshToken, response.request)
+            val newAccessToken =
+                runBlocking {
+                    getNewAccessToken(refreshToken).getOrNull()
+                }
+            return newAccessToken?.let {
+                CoroutineScope(Dispatchers.IO).launch {
+                    tokenRepository.saveAccessToken(newAccessToken)
+                }
+                newRequestWithToken(newAccessToken, response.request)
+            }
         }
 
         private suspend fun getNewAccessToken(refreshToken: String): Result<String> {
