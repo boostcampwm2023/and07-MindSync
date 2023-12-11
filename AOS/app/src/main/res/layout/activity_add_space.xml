@@ -88,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="스페이스 이름"
+                android:hint="@string/space_name"
                 android:onTextChanged="@{vm.onSpaceNameChanged}"
                 android:text="@{vm.uiState.spaceName}" />
         </com.google.android.material.textfield.TextInputLayout>
