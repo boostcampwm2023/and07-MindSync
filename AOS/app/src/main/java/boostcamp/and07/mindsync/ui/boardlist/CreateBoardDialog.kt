@@ -24,8 +24,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogCreateBoardBinding
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MultipartBody
@@ -82,6 +84,7 @@ class CreateBoardDialog : DialogFragment() {
     ): View {
         _binding = DialogCreateBoardBinding.inflate(inflater, container, false)
         setBinding()
+        setClickEventThrottle()
         return binding.root
     }
 
@@ -125,8 +128,10 @@ class CreateBoardDialog : DialogFragment() {
         dismiss()
     }
 
-    fun clickImageButton() {
-        checkPermissionsAndLaunchImagePicker()
+    private fun setClickEventThrottle() {
+        binding.imgbtnUpdateSpaceThumbnail.setClickEvent(lifecycleScope) {
+            checkPermissionsAndLaunchImagePicker()
+        }
     }
 
     private fun createImage(uri: Uri?) {

@@ -8,10 +8,6 @@
         <variable
             name="vm"
             type="boostcamp.and07.mindsync.ui.space.generate.AddSpaceViewModel" />
-
-        <variable
-            name="view"
-            type="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -70,7 +66,6 @@
             android:layout_height="35dp"
             android:background="@drawable/ic_add"
             android:backgroundTint="@color/blue"
-            android:onClick="@{() -> view.clickImageButton()}"
             app:layout_constraintEnd_toEndOf="@id/iv_add_space_thumbnail"
             app:layout_constraintTop_toTopOf="@id/iv_add_space_thumbnail" />
 
