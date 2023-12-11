@@ -80,7 +80,7 @@ export class ProfileSpaceController {
   })
   getSpaces(@Req() req: RequestWithUser) {
     const userUuid = req.user.uuid;
-    return this.profileSpaceService.getSpaces(userUuid);
+    return this.profileSpaceService.retrieveUserSpaces(userUuid);
   }
 
   @Get('users/:space_uuid')
@@ -94,6 +94,6 @@ export class ProfileSpaceController {
     description: 'Space not found.',
   })
   getUsers(@Param('space_uuid') spaceUuid: string) {
-    return this.profileSpaceService.getUsers(spaceUuid);
+    return this.profileSpaceService.retrieveSpaceUsers(spaceUuid);
   }
 }
