@@ -12,6 +12,8 @@ import { CreateProfileSpaceDto } from 'src/profile-space/dto/create-profile-spac
 import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
 import { UpdateSpaceDto } from 'src/spaces/dto/update-space.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import costomEnv from 'src/config/env';
+const { CSV_FOLDER } = costomEnv;
 
 type DeleteDataType = {
   field: string;
@@ -42,15 +44,19 @@ interface OperationData {
 @Injectable()
 export class TemporaryDatabaseService {
   private database: Map<string, Map<string, Map<string, DataType>>> = new Map();
-  private readonly FOLDER_NAME = 'operations';
+  private readonly FOLDER_NAME = CSV_FOLDER;
 
   constructor(
     private readonly prismaMysql: PrismaServiceMySQL,
     private readonly prismaMongoDB: PrismaServiceMongoDB,
   ) {
+    this.init();
+  }
+
+  async init() {
     this.initializeDatabase();
-    this.readDataFromFiles();
-    this.executeBulkOperations();
+    await this.readDataFromFiles();
+    await this.executeBulkOperations();
   }
 
   private initializeDatabase() {
@@ -76,11 +82,11 @@ export class TemporaryDatabaseService {
 
   private async readDataFromFiles() {
     const files = await fs.readdir(this.FOLDER_NAME);
-    files.forEach((file) => {
-      if (file.endsWith('.csv')) {
-        this.readDataFromFile(file);
-      }
-    });
+    return Promise.all(
+      files
+        .filter((file) => file.endsWith('.csv'))
+        .map((file) => this.readDataFromFile(file)),
+    );
   }
 
   private async readDataFromFile(file: string) {
@@ -129,11 +135,7 @@ export class TemporaryDatabaseService {
 
   operation({ service, uniqueKey, command, data }: OperationData) {
     const filePath = join(this.FOLDER_NAME, `${service}-${command}.csv`);
-    fs.readFile(filePath, 'utf8').then((fileData) => {
-      fileData += `${uniqueKey},${JSON.stringify(data)}\n`;
-      fs.writeFile(filePath, fileData);
-      this.database.get(service).get(command).set(uniqueKey, data);
-    });
+    fs.appendFile(filePath, `${uniqueKey},${JSON.stringify(data)}\n`, 'utf8');
   }
 
   @Cron('0 */10 * * * *')
