@@ -80,7 +80,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:backgroundTint="@{vm.uiState.boardName.length() > 0 ? @color/main4 : @color/gray3}"
-            android:onClick="@{()->view.onClickCompleteButton(@string/space_image_name)}"
+            android:onClick="@{()->view.onClickCompleteButton(@string/board_multipart_image_name)}"
             android:text="@string/check_message"
             android:enabled="@{vm.uiState.boardName.length() > 0 ? true : false}"
             android:textColor="@color/white"
