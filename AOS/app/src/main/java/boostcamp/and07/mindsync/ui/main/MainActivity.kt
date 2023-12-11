@@ -20,6 +20,7 @@ import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.boardlist.UsersAdapter
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import boostcamp.and07.mindsync.ui.space.list.SpaceListFragmentDirections
+import boostcamp.and07.mindsync.ui.util.ThrottleDuration
 import boostcamp.and07.mindsync.ui.util.setClickEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -92,7 +93,7 @@ class MainActivity :
 
     private fun setSideBarNavigation() {
         with(binding.includeMainInDrawer) {
-            tvSideBarBoardList.setClickEvent(lifecycleScope) {
+            tvSideBarBoardList.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
                     drawerLayout.closeDrawers()
                     navController.navigate(
@@ -109,17 +110,17 @@ class MainActivity :
                 }
             }
 
-            tvSideBarRecycleBin.setClickEvent(lifecycleScope) {
+            tvSideBarRecycleBin.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_recycleBinFragment)
             }
 
-            imgbtnSideBarAddSpace.setClickEvent(lifecycleScope) {
+            imgbtnSideBarAddSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
 
-            tvSideBarInviteSpace.setClickEvent(lifecycleScope) {
+            tvSideBarInviteSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
                     drawerLayout.closeDrawers()
                     navController.navigate(
@@ -136,12 +137,12 @@ class MainActivity :
                 }
             }
 
-            imgbtnSideBarProfile.setClickEvent(lifecycleScope) {
+            imgbtnSideBarProfile.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 val intent = Intent(this@MainActivity, ProfileActivity::class.java)
                 startActivity(intent)
             }
 
-            tvSideBarLeaveSpace.setClickEvent(lifecycleScope) {
+            tvSideBarLeaveSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 mainViewModel.leaveSpace()
                 // TODO : 보드 목록 화면으로 이동시키기
             }
