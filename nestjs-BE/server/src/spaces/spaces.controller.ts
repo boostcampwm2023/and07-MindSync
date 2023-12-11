@@ -18,7 +18,7 @@ import { UploadService } from 'src/upload/upload.service';
 import { ProfileSpaceService } from 'src/profile-space/profile-space.service';
 import { RequestWithUser } from 'src/utils/interface';
 import customEnv from 'src/config/env';
-const { BASE_IMAGE_URL } = customEnv;
+const { APP_ICON_URL } = customEnv;
 
 @Controller('spaces')
 @ApiTags('spaces')
@@ -43,7 +43,7 @@ export class SpacesController {
   ) {
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
-      : BASE_IMAGE_URL;
+      : APP_ICON_URL;
     createSpaceDto.icon = iconUrl;
     const response = await this.spacesService.create(createSpaceDto);
     const { uuid: spaceUuid } = response.data;
