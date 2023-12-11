@@ -29,6 +29,7 @@ jobs:
           echo "BASE_IMAGE_URL=$BASE_IMAGE_URL" >> ./nestjs-BE/server/.env
           echo "BUCKET_NAME=$BUCKET_NAME" >> ./nestjs-BE/server/.env
           echo "APP_ICON_URL=$APP_ICON_URL" >> ./nestjs-BE/server/.env
+          echo "CSV_FOLDER=$CSV_FOLDER" >> ./nestjs-BE/server/.env
           docker build -t ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync ./nestjs-BE/server
           docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
         env:
@@ -46,6 +47,7 @@ jobs:
           BASE_IMAGE_URL: ${{ secrets.BASE_IMAGE_URL }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           APP_ICON_URL: ${{ secrets.APP_ICON_URL }}
+          CSV_FOLDER: ${{ secrets.CSV_FOLDER }}
 
   deploy:
     needs: build
@@ -63,4 +65,8 @@ jobs:
             docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
             docker stop mindsync_server || true
             docker rm mindsync_server || true
-            docker run -d --name mindsync_server -p ${{ secrets.SERVER_PORT }}:${{ secrets.CONTAINER_PORT }} ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
+            docker run -d \
+              --name mindsync_server \
+              -p ${{ secrets.SERVER_PORT }}:${{ secrets.CONTAINER_PORT }} \
+              -v temporary-volume:${{ secrets.CSV_FOLDER }} \
+              ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
