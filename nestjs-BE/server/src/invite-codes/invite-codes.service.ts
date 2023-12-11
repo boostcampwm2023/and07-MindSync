@@ -38,9 +38,10 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
 
   async createCode(createInviteCodeDto: CreateInviteCodeDto) {
     const { space_uuid: spaceUuid } = createInviteCodeDto;
-    await this.spacesService.findOne(spaceUuid);
+    const spaceResponse = await this.spacesService.findOne(spaceUuid);
     const inviteCodeData = await this.generateInviteCode(createInviteCodeDto);
     super.create(inviteCodeData);
+    this.cache.put(inviteCodeData.invite_code, spaceResponse);
     return this.createResponse(inviteCodeData.invite_code);
   }
 
@@ -87,7 +88,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     }
   }
 
-  generateShortInviteCode(length: number) {
+  private generateShortInviteCode(length: number) {
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let inviteCode = '';
@@ -99,7 +100,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     return inviteCode;
   }
 
-  async generateUniqueInviteCode(length: number): Promise<string> {
+  private async generateUniqueInviteCode(length: number): Promise<string> {
     let inviteCode: string;
     let inviteCodeData: InviteCodeData;
 
