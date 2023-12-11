@@ -49,4 +49,10 @@ class ProfileSpaceRepositoryImpl
                     )
                 }
             }
+
+        override fun leaveSpace(spaceId: String): Flow<Boolean> =
+            flow {
+                val response = profileSpaceApi.leaveSpace(spaceId)
+                emit(true)
+            }
     }

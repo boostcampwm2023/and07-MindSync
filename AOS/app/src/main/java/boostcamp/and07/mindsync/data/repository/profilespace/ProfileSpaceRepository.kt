@@ -11,4 +11,6 @@ interface ProfileSpaceRepository {
     fun getSpaces(): Flow<List<Space>>
 
     fun getSpaceUsers(spaceUuid: String): Flow<List<UserData>>
+
+    fun leaveSpace(spaceId: String): Flow<Boolean>
 }
