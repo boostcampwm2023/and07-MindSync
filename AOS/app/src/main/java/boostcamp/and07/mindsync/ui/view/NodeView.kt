@@ -251,11 +251,13 @@ class NodeView(
             }
 
             is RectangleNode -> {
-                canvas.drawRect(
+                canvas.drawRoundRect(
                     node.path.leftX().toPx(context),
                     node.path.topY().toPx(context),
                     node.path.rightX().toPx(context),
                     node.path.bottomY().toPx(context),
+                    Dp(ROUNDED_CORNER_RADIUS).toPx(context),
+                    Dp(ROUNDED_CORNER_RADIUS).toPx(context),
                     drawInfo.strokePaint,
                 )
             }
@@ -317,11 +319,13 @@ class NodeView(
         depth: Int,
     ) {
         drawInfo.rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
-        canvas.drawRect(
+        canvas.drawRoundRect(
             node.path.leftX().toPx(context),
             node.path.topY().toPx(context),
             node.path.rightX().toPx(context),
             node.path.bottomY().toPx(context),
+            Dp(ROUNDED_CORNER_RADIUS).toPx(context),
+            Dp(ROUNDED_CORNER_RADIUS).toPx(context),
             drawInfo.rectanglePaint,
         )
     }
@@ -389,5 +393,6 @@ class NodeView(
         private const val DEFAULT_SPACING_VALUE = 50f
         private const val CHILD_NODE_SPACING_VALUE = 7f
         private const val ATTACH_CIRCLE_NODE_RANGE_VALUE = 15f
+        private const val ROUNDED_CORNER_RADIUS = 8f
     }
 }
