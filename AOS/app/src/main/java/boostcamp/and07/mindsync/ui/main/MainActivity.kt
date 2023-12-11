@@ -70,6 +70,9 @@ class MainActivity :
                     if (event is MainUiEvent.GetUsers) {
                         mainViewModel.getSpaceUsers()
                     }
+                    if (event is MainUiEvent.FetchSpaces) {
+                        mainViewModel.getSpaces()
+                    }
                 }
             }
         }
@@ -92,7 +95,11 @@ class MainActivity :
                         ),
                     )
                 } ?: run {
-                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        resources.getString(R.string.space_not_join),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
             tvSideBarRecycleBin.setOnClickListener {
@@ -112,12 +119,20 @@ class MainActivity :
                         ),
                     )
                 } ?: run {
-                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        resources.getString(R.string.space_not_join),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
             imgbtnSideBarProfile.setOnClickListener {
                 val intent = Intent(this@MainActivity, ProfileActivity::class.java)
                 startActivity(intent)
+            }
+            tvSideBarLeaveSpace.setOnClickListener {
+                mainViewModel.leaveSpace()
+                // TODO : 보드 목록 화면으로 이동시키기
             }
         }
     }
