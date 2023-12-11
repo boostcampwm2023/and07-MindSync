@@ -42,6 +42,7 @@
             android:id="@+id/et_edit_profile_nickname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:text="@{vm.uiState.nickname}"
             app:layout_constraintBottom_toTopOf="@id/btn_edit_profile_cancel"
             app:layout_constraintEnd_toEndOf="@id/gl_edit_profile_end"
             app:layout_constraintStart_toStartOf="@id/gl_edit_profile_start"
