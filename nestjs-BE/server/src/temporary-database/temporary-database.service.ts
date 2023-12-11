@@ -6,17 +6,42 @@ import {
 import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { join } from 'path';
+import { TokenData } from 'src/auth/auth.service';
+import { InviteCodeData } from 'src/invite-codes/invite-codes.service';
+import { CreateProfileSpaceDto } from 'src/profile-space/dto/create-profile-space.dto';
+import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
+import { UpdateSpaceDto } from 'src/spaces/dto/update-space.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+
+type DeleteDataType = {
+  field: string;
+  value: string;
+};
+
+type InsertDataType =
+  | TokenData
+  | InviteCodeData
+  | CreateProfileSpaceDto
+  | UpdateProfileDto
+  | UpdateSpaceDto
+  | UpdateUserDto;
+
+type UpdateDataType = {
+  field: string;
+  value: InsertDataType;
+};
+type DataType = InsertDataType | UpdateDataType | DeleteDataType;
 
 interface OperationData {
   service: string;
   uniqueKey: string;
   command: string;
-  data: any;
+  data: DataType;
 }
 
 @Injectable()
 export class TemporaryDatabaseService {
-  private database: Map<string, Map<string, Map<string, any>>> = new Map();
+  private database: Map<string, Map<string, Map<string, DataType>>> = new Map();
   private readonly FOLDER_NAME = 'operations';
 
   constructor(
@@ -78,15 +103,15 @@ export class TemporaryDatabaseService {
     return this.database.get(service).get(command).get(uniqueKey);
   }
 
-  create(service: string, uniqueKey: string, data: any) {
+  create(service: string, uniqueKey: string, data: InsertDataType) {
     this.operation({ service, uniqueKey, command: 'insert', data });
   }
 
-  update(service: string, uniqueKey: string, data: any) {
+  update(service: string, uniqueKey: string, data: UpdateDataType) {
     this.operation({ service, uniqueKey, command: 'update', data });
   }
 
-  remove(service: string, uniqueKey: string, data: any) {
+  remove(service: string, uniqueKey: string, data: DeleteDataType) {
     this.operation({ service, uniqueKey, command: 'delete', data });
   }
 
@@ -125,7 +150,7 @@ export class TemporaryDatabaseService {
 
   private async performInsert(
     service: string,
-    dataMap: Map<string, any>,
+    dataMap: Map<string, DataType>,
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'insert', dataMap);
@@ -144,7 +169,7 @@ export class TemporaryDatabaseService {
 
   private async performUpdate(
     service: string,
-    dataMap: Map<string, any>,
+    dataMap: Map<string, DataType>,
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'update', dataMap);
@@ -166,7 +191,7 @@ export class TemporaryDatabaseService {
 
   private async performDelete(
     service: string,
-    dataMap: Map<string, any>,
+    dataMap: Map<string, DataType>,
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'delete', dataMap);
