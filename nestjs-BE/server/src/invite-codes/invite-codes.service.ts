@@ -39,35 +39,52 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
   async createCode(createInviteCodeDto: CreateInviteCodeDto) {
     const { space_uuid: spaceUuid } = createInviteCodeDto;
     await this.spacesService.findOne(spaceUuid);
-    const inviteCode = await this.generateUniqueInviteCode(INVITE_CODE_LENGTH);
-    const currentDate = new Date();
-    const expiryDate = new Date(currentDate);
-    expiryDate.setHours(currentDate.getHours() + INVITE_CODE_EXPIRY_HOURS);
-    const data: InviteCodeData = {
-      ...createInviteCodeDto,
-      invite_code: inviteCode,
-      expiry_date: expiryDate,
-    };
-    super.create(data);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data: { invite_code: inviteCode },
-    };
+    const inviteCodeData = await this.generateInviteCode(createInviteCodeDto);
+    super.create(inviteCodeData);
+    return this.createResponse(inviteCodeData.invite_code);
   }
 
   async findSpace(inviteCode: string) {
+    const inviteCodeData = await this.getInviteCodeData(inviteCode);
+    this.checkExpiry(inviteCode, inviteCodeData.expiry_date);
+    const spaceResponse = await this.spacesService.findOne(
+      inviteCodeData.space_uuid,
+    );
+    return spaceResponse;
+  }
+
+  private async generateInviteCode(createInviteCodeDto: CreateInviteCodeDto) {
+    const uniqueInviteCode =
+      await this.generateUniqueInviteCode(INVITE_CODE_LENGTH);
+    const expiryDate = this.calculateExpiryDate();
+
+    return {
+      ...createInviteCodeDto,
+      invite_code: uniqueInviteCode,
+      expiry_date: expiryDate,
+    };
+  }
+
+  private calculateExpiryDate(): Date {
+    const currentDate = new Date();
+    const expiryDate = new Date(currentDate);
+    expiryDate.setHours(currentDate.getHours() + INVITE_CODE_EXPIRY_HOURS);
+    return expiryDate;
+  }
+
+  private async getInviteCodeData(inviteCode: string) {
     const inviteCodeResponse = await super.findOne(inviteCode);
     const { data: inviteCodeData } = inviteCodeResponse;
+    return inviteCodeData;
+  }
+
+  private checkExpiry(inviteCode: string, expiryDate: Date) {
     const currentTimestamp = new Date().getTime();
-    const expiryTimestamp = new Date(inviteCodeData.expiry_date).getTime();
+    const expiryTimestamp = new Date(expiryDate).getTime();
     if (expiryTimestamp < currentTimestamp) {
       super.remove(inviteCode);
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
-    const spaceUuid = inviteCodeData.space_uuid;
-    const spaceResponse = await this.spacesService.findOne(spaceUuid);
-    return spaceResponse;
   }
 
   generateShortInviteCode(length: number) {
@@ -92,5 +109,13 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     } while (inviteCodeData !== null);
 
     return inviteCode;
+  }
+
+  private createResponse(inviteCode: string) {
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Created',
+      data: { invite_code: inviteCode },
+    };
   }
 }
