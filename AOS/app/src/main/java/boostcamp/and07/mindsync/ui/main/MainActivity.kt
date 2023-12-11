@@ -74,7 +74,7 @@ class MainActivity :
                         mainViewModel.getSpaces()
                         Toast.makeText(
                             this@MainActivity,
-                            "${event.spaceName}방에서 떠났습니다.",
+                            getString(R.string.space_leave_room_message, event.spaceName),
                             Toast.LENGTH_SHORT,
                         ).show()
                     }
