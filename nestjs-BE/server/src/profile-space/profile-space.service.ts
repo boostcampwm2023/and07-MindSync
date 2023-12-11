@@ -86,7 +86,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     const filterSpaceUsers = spaceUsers.filter(
       (profile) => profile.uuid !== profileData.uuid,
     );
-    this.userCache.put(spaceUuid, filterSpaceUsers);
+    this.spaceCache.put(spaceUuid, filterSpaceUsers);
     return filterSpaceUsers.length === 0;
   }
 
