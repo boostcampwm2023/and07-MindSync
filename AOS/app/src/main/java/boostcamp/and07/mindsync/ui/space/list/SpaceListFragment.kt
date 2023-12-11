@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.space.list
 
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Space
@@ -9,6 +10,7 @@ import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.boardlist.SpaceListAdapter
 import boostcamp.and07.mindsync.ui.main.MainViewModel
 import boostcamp.and07.mindsync.ui.main.SpaceClickListener
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,7 +38,7 @@ class SpaceListFragment : BaseFragment<FragmentSpaceListBinding>(R.layout.fragme
                 }
             },
         )
-        binding.btnSpaceListAddSpace.setOnClickListener {
+        binding.btnSpaceListAddSpace.setClickEvent(lifecycleScope) {
             findNavController().navigate(
                 R.id.action_to_addSpaceDialog,
             )
