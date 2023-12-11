@@ -97,6 +97,8 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.18.0") // 카카오 로그인
     // LayoutManager flexBox
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    // lottie
+    implementation("com.airbnb.android:lottie:6.2.0")
 }
 
 val ktlintCheck by tasks.registering(JavaExec::class) {

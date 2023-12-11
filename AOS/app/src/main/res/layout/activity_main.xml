@@ -8,6 +8,7 @@
         <variable
             name="vm"
             type="boostcamp.and07.mindsync.ui.main.MainViewModel" />
+        <import type="android.view.View"/>
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -38,6 +39,7 @@
                 android:background="@android:color/transparent"
                 android:onClick="openDrawerButtonOnClick"
                 android:src="@drawable/ic_menu"
+                android:visibility="@{vm.uiState.nowSpace!=null ? View.VISIBLE : View.INVISIBLE}"
                 app:layout_constraintBottom_toTopOf="@id/fcv_main_nav_host"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

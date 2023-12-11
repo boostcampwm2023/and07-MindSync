@@ -90,8 +90,12 @@ class MainViewModel
             uiState.value.nowSpace?.let { nowSpace ->
                 viewModelScope.launch(coroutineExceptionHandler) {
                     profileSpaceRepository.leaveSpace(nowSpace.id).collectLatest {
-                        _uiState.update {
-                            MainUiState()
+                        _uiState.update { mainUiState ->
+                            mainUiState.copy(
+                                spaces = mainUiState.spaces.filter { space -> space.id != nowSpace.id },
+                                nowSpace = null,
+                                users = listOf(),
+                            )
                         }
                         _event.emit(MainUiEvent.LeaveSpace(nowSpace.name))
                     }

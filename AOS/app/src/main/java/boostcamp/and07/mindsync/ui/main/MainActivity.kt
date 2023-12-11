@@ -73,7 +73,6 @@ class MainActivity :
                         mainViewModel.getSpaceUsers()
                     }
                     if (event is MainUiEvent.LeaveSpace) {
-                        mainViewModel.getSpaces()
                         Toast.makeText(
                             this@MainActivity,
                             getString(R.string.space_leave_room_message, event.spaceName),
@@ -144,7 +143,8 @@ class MainActivity :
 
             tvSideBarLeaveSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
                 mainViewModel.leaveSpace()
-                // TODO : 보드 목록 화면으로 이동시키기
+                drawerLayout.closeDrawers()
+                navController.popBackStack()
             }
         }
     }

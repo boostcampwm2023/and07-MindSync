@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="tv_space_list_onboarding_message, view_space_list_down_arrow, btn_space_list_add_space"
-            android:visibility="@{vm.uiState.spaces.size() == 0 ? View.VISIBLE : View.GONE }" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_space_list_onboarding_message"
@@ -55,7 +55,7 @@
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
             android:layout_marginBottom="10dp"
-            app:lottie_fileName="animation_down_arrow_black.json"
+            app:lottie_fileName="animation_down_arrow_white.json"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/btn_space_list_add_space"/>
