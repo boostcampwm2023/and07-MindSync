@@ -49,4 +49,11 @@ export class BoardTreesService {
   hasTree(boardId: string) {
     return this.boardTrees.has(boardId);
   }
+
+  updateTreeData(boardId: string) {
+    const tree = this.boardTrees.get(boardId);
+    this.boardTreeModel
+      .updateOne({ boardId }, { tree: JSON.stringify(tree) })
+      .exec();
+  }
 }

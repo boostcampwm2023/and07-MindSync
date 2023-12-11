@@ -47,6 +47,7 @@ export class BoardTreesGateway {
     const operation =
       operationTypeMap[serializedOperation.operationType](serializedOperation);
     this.boardTreesService.applyOperation(boardId, operation);
+    this.boardTreesService.updateTreeData(boardId);
 
     client.broadcast
       .to(boardId)
