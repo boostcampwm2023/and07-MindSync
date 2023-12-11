@@ -17,7 +17,6 @@ interface OperationData {
 @Injectable()
 export class TemporaryDatabaseService {
   private database: Map<string, Map<string, Map<string, any>>> = new Map();
-  private entriesMap: Map<string, string[]> = new Map();
   private readonly FOLDER_NAME = 'operations';
 
   constructor(
@@ -112,7 +111,7 @@ export class TemporaryDatabaseService {
     });
   }
 
-  @Cron('* * * * * *')
+  @Cron('0 */10 * * * *')
   async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
@@ -130,7 +129,6 @@ export class TemporaryDatabaseService {
     prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
   ) {
     const data = this.prepareData(service, 'insert', dataMap);
-    this.entriesMap.clear();
     if (!data.length) return;
     if (prisma instanceof PrismaServiceMySQL) {
       await prisma[service].createMany({
@@ -199,24 +197,5 @@ export class TemporaryDatabaseService {
 
   private clearFile(filename: string) {
     fs.writeFile(join(this.FOLDER_NAME, filename), '', 'utf8');
-  }
-
-  getEntries(key: string): string[] {
-    return this.entriesMap.get(key) || [];
-  }
-
-  addEntry(key: string, value: string): void {
-    const entries = this.getEntries(key);
-    entries.push(value);
-    this.entriesMap.set(key, entries);
-  }
-
-  removeEntry(key: string, value: string): void {
-    const entries = this.getEntries(key);
-    const index = entries.indexOf(value);
-    if (index > -1) {
-      entries.splice(index, 1);
-      this.entriesMap.set(key, entries);
-    }
   }
 }
