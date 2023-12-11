@@ -36,7 +36,13 @@ class SpaceListFragment : BaseFragment<FragmentSpaceListBinding>(R.layout.fragme
                 }
             },
         )
+        binding.btnSpaceListAddSpace.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_to_addSpaceDialog,
+            )
+        }
     }
+
     override fun onResume() {
         super.onResume()
         spaceListViewModel.getSpaces()
