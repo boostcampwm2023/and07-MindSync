@@ -122,6 +122,7 @@ export abstract class BaseService<T extends HasUuid> {
   }
 
   async getDataFromCacheOrDB(key: string): Promise<T | null> {
+    if (!key) throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     const cacheData = this.cache.get(key);
     if (cacheData) return cacheData;
     const temporaryDatabaseData = this.temporaryDatabaseService.get(
