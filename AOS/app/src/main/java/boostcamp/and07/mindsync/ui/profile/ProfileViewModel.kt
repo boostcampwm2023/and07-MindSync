@@ -56,7 +56,7 @@ class ProfileViewModel
         }
 
         private fun isProfileEditDisabled(nickname: CharSequence) =
-            uiState.value.serverFetchedNickName != nickname.toString() && nickname.isNotEmpty() || uiState.value.imageFile != null
+            uiState.value.serverFetchedNickName != nickname.toString() || uiState.value.imageFile != null
 
         fun setProfileImageFile(file: File) {
             _uiState.update { uiState ->
@@ -82,6 +82,12 @@ class ProfileViewModel
             }
         }
 
+        fun editNickname(nickname: CharSequence) {
+            _uiState.update { uiState ->
+                uiState.copy(editingNickname = nickname.toString())
+            }
+        }
+
         private fun fetchProfile() {
             viewModelScope.launch(coroutineExceptionHandler) {
                 profileRepository.getProfile().collectLatest { profile ->
@@ -91,6 +97,7 @@ class ProfileViewModel
                             serverFetchedNickName = profile.nickname,
                             nickname = profile.nickname,
                             imageUri = Uri.parse(profile.imageUrl),
+                            editingNickname = profile.nickname,
                         )
                     }
                 }
