@@ -70,8 +70,13 @@ class MainActivity :
                     if (event is MainUiEvent.GetUsers) {
                         mainViewModel.getSpaceUsers()
                     }
-                    if (event is MainUiEvent.FetchSpaces) {
+                    if (event is MainUiEvent.LeaveSpace) {
                         mainViewModel.getSpaces()
+                        Toast.makeText(
+                            this@MainActivity,
+                            "${event.spaceName}방에서 떠났습니다.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
                     }
                 }
             }

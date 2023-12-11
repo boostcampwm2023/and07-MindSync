@@ -90,11 +90,10 @@ class MainViewModel
             uiState.value.nowSpace?.let { nowSpace ->
                 viewModelScope.launch(coroutineExceptionHandler) {
                     profileSpaceRepository.leaveSpace(nowSpace.id).collectLatest {
-                        _event.emit(MainUiEvent.ShowMessage("${nowSpace.name}방에서 떠났습니다."))
                         _uiState.update {
                             MainUiState()
                         }
-                        _event.emit(MainUiEvent.FetchSpaces)
+                        _event.emit(MainUiEvent.LeaveSpace(nowSpace.name))
                     }
                 }
             }

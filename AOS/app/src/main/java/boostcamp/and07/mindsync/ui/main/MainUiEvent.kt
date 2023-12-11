@@ -5,5 +5,5 @@ sealed class MainUiEvent {
 
     data object GetUsers : MainUiEvent()
 
-    data object FetchSpaces : MainUiEvent()
+    data class LeaveSpace(val spaceName: String) : MainUiEvent()
 }
