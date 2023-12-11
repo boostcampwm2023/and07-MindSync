@@ -16,7 +16,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import customEnv from 'src/config/env';
 const { BASE_IMAGE_URL } = customEnv;
 
-interface TokenData {
+export interface TokenData {
   uuid?: string;
   token: string;
   expiry_date: Date;
