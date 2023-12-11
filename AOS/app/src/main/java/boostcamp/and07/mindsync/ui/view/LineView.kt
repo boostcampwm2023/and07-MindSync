@@ -1,7 +1,9 @@
 package boostcamp.and07.mindsync.ui.view
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
@@ -19,6 +21,7 @@ class LineView constructor(
     private val drawInfo = DrawInfo(context)
     private val path = Path()
     private lateinit var tree: Tree
+    private val paint = Paint()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -49,6 +52,16 @@ class LineView constructor(
         toNode: Node,
         canvas: Canvas,
     ) {
+        val linePaint = when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                drawInfo.darkModeLinePaint
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {
+                drawInfo.linePaint
+            }
+
+            else -> drawInfo.linePaint
+        }
         val startX = getNodeEdgeX(fromNode, true)
         val startY = fromNode.path.centerY.toPx(context)
         val endX = getNodeEdgeX(toNode, false)
@@ -60,7 +73,7 @@ class LineView constructor(
                 moveTo(startX, startY)
                 cubicTo(midX, startY, midX, endY, endX, endY)
             }
-        canvas.drawPath(path, drawInfo.linePaint)
+        canvas.drawPath(path, linePaint)
     }
 
     private fun getNodeEdgeX(
