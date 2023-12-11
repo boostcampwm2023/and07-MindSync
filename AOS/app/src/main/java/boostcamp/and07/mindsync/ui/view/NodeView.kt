@@ -215,18 +215,22 @@ class NodeView(
 
     private fun drawAttachedNode(canvas: Canvas) {
         attachedNode?.let { attachedNode ->
-            if (attachedNode is RectangleNode) {
-                val height = attachedNode.path.height
-                val width = attachedNode.path.width
-                val radius = maxOf(height.toPx(context), width.toPx(context))
-                canvas.drawCircle(
-                    attachedNode.path.centerX.toPx(context),
-                    attachedNode.path.centerY.toPx(context),
-                    radius,
-                    drawInfo.boundaryPaint,
-                )
-                invalidate()
+            val height = when (attachedNode) {
+                is RectangleNode -> attachedNode.path.height
+                is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
             }
+            val width = when (attachedNode) {
+                is RectangleNode -> attachedNode.path.width
+                is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
+            }
+            val radius = maxOf(height.toPx(context), width.toPx(context))
+            canvas.drawCircle(
+                attachedNode.path.centerX.toPx(context),
+                attachedNode.path.centerY.toPx(context),
+                radius,
+                drawInfo.boundaryPaint,
+            )
+            invalidate()
         }
     }
 
@@ -390,5 +394,6 @@ class NodeView(
     companion object {
         private const val DEFAULT_SPACING_VALUE = 50f
         private const val CHILD_NODE_SPACING_VALUE = 7f
+        private const val ATTACH_CIRCLE_NODE_RANGE_VALUE = 15f
     }
 }
