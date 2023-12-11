@@ -215,14 +215,16 @@ class NodeView(
 
     private fun drawAttachedNode(canvas: Canvas) {
         attachedNode?.let { attachedNode ->
-            val height = when (attachedNode) {
-                is RectangleNode -> attachedNode.path.height
-                is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
-            }
-            val width = when (attachedNode) {
-                is RectangleNode -> attachedNode.path.width
-                is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
-            }
+            val height =
+                when (attachedNode) {
+                    is RectangleNode -> attachedNode.path.height
+                    is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
+                }
+            val width =
+                when (attachedNode) {
+                    is RectangleNode -> attachedNode.path.width
+                    is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
+                }
             val radius = maxOf(height.toPx(context), width.toPx(context))
             canvas.drawCircle(
                 attachedNode.path.centerX.toPx(context),
@@ -267,12 +269,8 @@ class NodeView(
     ): Boolean {
         when (node) {
             is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
-                        context,
-                    ) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
-                        context,
-                    )
+                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
                 ) {
                     return true
                 }
@@ -339,9 +337,7 @@ class NodeView(
                 drawInfo.textPaint.color = Color.WHITE
                 if (lines.size > 1) {
                     var y =
-                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) / 2 + drawInfo.padding.toPx(
-                            context,
-                        ) / 2
+                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) / 2 + drawInfo.padding.toPx(context) / 2
                     for (line in lines) {
                         drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
@@ -366,9 +362,7 @@ class NodeView(
                 drawInfo.textPaint.color = Color.BLACK
                 if (lines.size > 1) {
                     var y =
-                        node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(
-                            context,
-                        ) / 2
+                        node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(context) / 2
                     for (line in lines) {
                         drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
