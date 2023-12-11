@@ -20,5 +20,6 @@
     <string name="space_list_title">스페이스 목록</string>
     <string name="space_already_join">이미 가입한 스페이스입니다</string>
     <string name="space_not_join">스페이스에 입장하지 않은 상태입니다!</string>
+    <string name="space_invite_code">초대 코드</string>
     <string name="space_leave_room_message">%1$s방에서 떠났습니다.</string>
 </resources>

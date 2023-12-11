@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="초대 코드"
+                android:hint="@string/space_invite_code"
                 android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
                 android:text="@{vm.uiState.spaceInviteCode}" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -60,9 +60,10 @@
             android:layout_width="264dp"
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
-            android:backgroundTint="@color/main4"
+            android:backgroundTint="@{vm.uiState.spaceInviteCode.length() > 0 ? @color/main4 : @color/gray3}"
             android:onClick="@{() -> vm.compareInviteCode()}"
             android:text="@string/check_message"
+            android:enabled="@{vm.uiState.spaceInviteCode.length() > 0 ? true : false}"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

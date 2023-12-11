@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="스페이스 이름"
+                android:hint="@string/board_list_board_name"
                 android:onTextChanged="@{vm.onBoardNameChanged}"
                 android:text="@{vm.uiState.boardName}" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -80,9 +80,10 @@
             android:layout_width="264dp"
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
-            android:backgroundTint="@color/main4"
+            android:backgroundTint="@{vm.uiState.boardName.length() > 0 ? @color/main4 : @color/gray3}"
             android:onClick="@{()->view.onClickCompleteButton(@string/space_image_name)}"
             android:text="@string/check_message"
+            android:enabled="@{vm.uiState.boardName.length() > 0 ? true : false}"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
