@@ -18,8 +18,7 @@ model USER_TB {
 }
 
 model REFRESH_TOKEN_TB {
-  uuid        String      @id @db.VarChar(32)
-  token       String    @unique
+  token       String    @id @db.VarChar(32)
   expiry_date DateTime
   user_id     String
   user        USER_TB   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)

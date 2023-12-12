@@ -69,21 +69,21 @@ export class AuthService extends BaseService<TokenData> {
     return accessToken;
   }
 
-  async createRefreshToken(): Promise<string> {
-    const refreshTokenPayload = { uuid: generateUuid() };
-    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload, {
-      secret: jwtConstants.refreshSecret,
-      expiresIn: '14d',
-    });
-    return refreshToken;
+  async createRefreshToken(): Promise<Record<string, string>> {
+    const refreshTokenUuid = generateUuid();
+    const refreshToken = await this.jwtService.signAsync(
+      { uuid: refreshTokenUuid },
+      { secret: jwtConstants.refreshSecret, expiresIn: '14d' },
+    );
+    return { refreshToken, refreshTokenUuid };
   }
 
-  createRefreshTokenData(refreshToken: string, userUuid: string) {
+  createRefreshTokenData(refreshTokenUuid: string, userUuid: string) {
     const currentDate = new Date();
     const expiryDate = new Date(currentDate);
     expiryDate.setDate(currentDate.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
     const refreshTokenData: TokenData = {
-      token: refreshToken,
+      token: refreshTokenUuid,
       expiry_date: expiryDate,
       user_id: userUuid,
     };
@@ -91,13 +91,13 @@ export class AuthService extends BaseService<TokenData> {
   }
 
   async login(userUuid: string) {
-    const refreshToken = await this.createRefreshToken();
+    const { refreshToken, refreshTokenUuid } = await this.createRefreshToken();
     const accessToken = await this.createAccessToken(userUuid);
     const refreshTokenData = this.createRefreshTokenData(
-      refreshToken,
+      refreshTokenUuid,
       userUuid,
     );
-    super.create(refreshTokenData);
+    super.create(refreshTokenData, false);
     const tokenData = {
       access_token: accessToken,
       refresh_token: refreshToken,
@@ -107,10 +107,10 @@ export class AuthService extends BaseService<TokenData> {
 
   async renewAccessToken(refreshToken: string) {
     try {
-      this.jwtService.verify(refreshToken, {
+      const { uuid } = this.jwtService.verify(refreshToken, {
         secret: jwtConstants.refreshSecret,
       });
-      const { data: tokenData } = await this.findOne(refreshToken);
+      const { data: tokenData } = await super.findOne(uuid);
       const accessToken = await this.createAccessToken(tokenData.user_id);
       return ResponseUtils.createResponse(HttpStatus.OK, {
         access_token: accessToken,
