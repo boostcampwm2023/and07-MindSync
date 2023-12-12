@@ -1,9 +1,11 @@
 package boostcamp.and07.mindsync.data.network
 
 import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
+import boostcamp.and07.mindsync.data.network.request.board.RestoreBoardRequest
 import boostcamp.and07.mindsync.data.network.response.board.BoardsResponse
 import boostcamp.and07.mindsync.data.network.response.board.CreateBoardResponse
 import boostcamp.and07.mindsync.data.network.response.board.DeleteBoardResponse
+import boostcamp.and07.mindsync.data.network.response.board.RestoreBoardResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -32,4 +34,9 @@ interface BoardApi {
     suspend fun deleteBoard(
         @Body deleteBoardRequest: DeleteBoardRequest,
     ): DeleteBoardResponse
+
+    @PATCH("boards/restore")
+    suspend fun restoreBoard(
+        @Body restoreRequest: RestoreBoardRequest,
+    ): RestoreBoardResponse
 }
