@@ -17,7 +17,7 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_board_thumbnail"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="100dp"
             app:layout_constraintStart_toEndOf="@id/cb_board"
             app:layout_constraintTop_toTopOf="parent"

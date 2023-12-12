@@ -42,7 +42,7 @@ class BoardListRepositoryImpl
             flow {
                 val response = boardApi.getBoards(spaceId)
                 emit(
-                    response.data.map { board ->
+                    response.data.filter { board -> board.isDeleted.not() }.map { board ->
                         Board(
                             id = board.boardId,
                             name = board.boardName,
