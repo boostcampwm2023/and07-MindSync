@@ -39,11 +39,11 @@ data class SerializedTree(
 @Serializable
 data class NodeDto(
     @SerialName("children")
-    val children: List<String>?,
+    val children: List<String>,
     @SerialName("targetId")
-    val targetId: String?,
+    val targetId: String,
     @SerialName("parentId")
-    val parentId: String?,
+    val parentId: String,
     @SerialName("description")
-    val description: String?,
+    val description: String,
 )
