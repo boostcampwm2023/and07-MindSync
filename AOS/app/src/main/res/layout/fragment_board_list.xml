@@ -17,6 +17,18 @@
         android:layout_height="match_parent"
         tools:context=".ui.boardlist.BoardListFragment">
 
+        <TextView
+            android:id="@+id/tv_board_list_title"
+            style="@style/Typography.Title01"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/board_list_title"
+            android:textAlignment="center"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/gl_board_list_start"
             android:layout_width="wrap_content"
@@ -36,7 +48,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/gl_board_list_end"
             app:layout_constraintStart_toEndOf="@id/gl_board_list_start"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_board_list_title"
             tools:listitem="@layout/item_board" />
 
 
