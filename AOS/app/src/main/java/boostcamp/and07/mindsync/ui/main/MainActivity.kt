@@ -222,14 +222,11 @@ class MainActivity :
         navController.addOnDestinationChangedListener { _, destination, _ ->
             lifecycleScope.launch {
                 mainViewModel.uiState.collectLatest { uiState ->
-                    if (uiState.spaces.isEmpty()) {
-                        binding.tvMainTitle.setText(R.string.app_start)
-                    } else if (destination.id == R.id.spaceListFragment) {
-                        binding.tvMainTitle.setText(R.string.space_list_title)
-                    } else if (destination.id == R.id.boardListFragment) {
-                        binding.tvMainTitle.setText(R.string.board_list_title)
-                    } else {
-                        binding.tvMainTitle.text = ""
+                    binding.tvMainTitle.text = when {
+                        uiState.spaces.isEmpty() -> getString(R.string.app_start)
+                        destination.id == R.id.spaceListFragment -> getString(R.string.space_list_title)
+                        destination.id == R.id.boardListFragment -> getString(R.string.board_list_title)
+                        else -> ""
                     }
                 }
             }
