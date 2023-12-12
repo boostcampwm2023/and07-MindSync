@@ -148,7 +148,7 @@
             android:maxHeight="0dp"
             app:flexBoxLayoutManager="@{FlexDirection.ROW}"
             android:background="@drawable/bg_round_board"
-            android:backgroundTint="@color/main1"
+            android:backgroundTint="@color/white"
             android:layout_margin="10dp"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/view_side_bar_menu"
