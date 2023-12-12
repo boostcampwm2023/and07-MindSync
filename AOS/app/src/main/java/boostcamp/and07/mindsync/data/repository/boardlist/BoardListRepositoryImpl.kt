@@ -17,7 +17,7 @@ class BoardListRepositoryImpl
         override fun createBoard(
             boardName: String,
             spaceId: String,
-            imageUrl: MultipartBody.Part,
+            imageUrl: MultipartBody.Part?,
         ): Flow<Board> =
             flow {
                 val response =
@@ -53,9 +53,9 @@ class BoardListRepositoryImpl
                 )
             }
 
-        override fun deleteBoard(boardId: String): Flow<Unit> =
+        override fun deleteBoard(boardId: String): Flow<Boolean> =
             flow {
                 val response = boardApi.deleteBoard(DeleteBoardRequest(boardId))
-                emit(Unit)
+                emit(true)
             }
     }
