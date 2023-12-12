@@ -106,8 +106,10 @@ export class AuthService extends BaseService<TokenData> {
   }
 
   async renewAccessToken(refreshToken: string) {
+    const decodedToken = this.jwtService.decode(refreshToken);
+    const uuid = decodedToken?.uuid;
     try {
-      const { uuid } = this.jwtService.verify(refreshToken, {
+      this.jwtService.verify(refreshToken, {
         secret: jwtConstants.refreshSecret,
       });
       const { data: tokenData } = await super.findOne(uuid);
@@ -116,7 +118,7 @@ export class AuthService extends BaseService<TokenData> {
         access_token: accessToken,
       });
     } catch (error) {
-      super.remove(refreshToken);
+      super.remove(uuid);
       throw new UnauthorizedException(
         'Refresh token expired. Please log in again.',
       );
