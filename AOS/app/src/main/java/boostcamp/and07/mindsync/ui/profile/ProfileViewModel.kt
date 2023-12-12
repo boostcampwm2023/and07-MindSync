@@ -48,13 +48,23 @@ class ProfileViewModel
 
         fun updateNickName(nickname: CharSequence) {
             _uiState.update { uiState ->
-                uiState.copy(nickname = nickname.toString())
+                uiState.copy(nickname = nickname.toString(), isModify = isProfileEditDisabled(nickname))
+            }
+            viewModelScope.launch {
+                _event.emit(ProfileUiEvent.UpdateProfileNickName)
             }
         }
 
+        private fun isProfileEditDisabled(nickname: CharSequence) =
+            uiState.value.serverFetchedNickName != nickname.toString() || uiState.value.imageFile != null
+
         fun setProfileImageFile(file: File) {
             _uiState.update { uiState ->
-                uiState.copy(imageFile = file)
+                val isNicknameNotEmpty = uiState.nickname.isNotEmpty()
+                uiState.copy(
+                    imageFile = file,
+                    isModify = isNicknameNotEmpty || uiState.isModify,
+                )
             }
         }
 
@@ -72,13 +82,22 @@ class ProfileViewModel
             }
         }
 
+        fun editNickname(nickname: CharSequence) {
+            _uiState.update { uiState ->
+                uiState.copy(editingNickname = nickname.toString())
+            }
+        }
+
         private fun fetchProfile() {
             viewModelScope.launch(coroutineExceptionHandler) {
                 profileRepository.getProfile().collectLatest { profile ->
                     _uiState.update { uiState ->
                         uiState.copy(
+                            serverFetchedImage = Uri.parse(profile.imageUrl),
+                            serverFetchedNickName = profile.nickname,
                             nickname = profile.nickname,
                             imageUri = Uri.parse(profile.imageUrl),
+                            editingNickname = profile.nickname,
                         )
                     }
                 }

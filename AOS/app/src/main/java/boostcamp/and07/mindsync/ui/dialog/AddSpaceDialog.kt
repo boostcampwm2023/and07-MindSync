@@ -55,10 +55,9 @@ class AddSpaceDialog : DialogFragment() {
 
         val displayMetrics = requireActivity().resources.displayMetrics
         val deviceWidth = displayMetrics.widthPixels
-        val deviceHeight = displayMetrics.heightPixels
 
         params?.width = (deviceWidth * 0.8).toInt()
-        params?.height = (deviceHeight * 0.3).toInt()
+        params?.height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="side_bar_board_list">보드 목록</string>
+    <string name="side_bar_recycle_bin">휴지통</string>
+    <string name="side_bar_invite_space">스페이스 초대하기</string>
+    <string name="side_bar_leave_space">스페이스 나가기</string>
+    <string name="side_bar_fold_description">사이드바 접기</string>
+    <string name="side_bar_user_list">유저 목록</string>
+</resources>

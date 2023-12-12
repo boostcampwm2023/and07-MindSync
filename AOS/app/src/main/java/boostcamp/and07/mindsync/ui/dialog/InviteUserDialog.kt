@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -64,7 +63,6 @@ class InviteUserDialog : DialogFragment() {
             spaceRepository.getInviteSpaceCode(args.spaceId)
                 .collectLatest { inviteCode ->
                     binding.tvInviteUserSpaceCode.text = inviteCode
-                    Toast.makeText(requireContext(), "성공!", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -86,7 +84,7 @@ class InviteUserDialog : DialogFragment() {
         val deviceHeight = displayMetrics.heightPixels
 
         params?.width = (deviceWidth * 0.8).toInt()
-        params?.height = (deviceHeight * 0.25).toInt()
+        params?.height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 

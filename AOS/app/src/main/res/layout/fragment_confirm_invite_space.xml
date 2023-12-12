@@ -16,30 +16,41 @@
         android:padding="10dp"
         tools:context=".ui.space.ConFirmInviteSpaceFragment">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_invite_confirm_space_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.12"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_invite_confirm_space_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.285"/>
 
         <TextView
             android:id="@+id/tv_confirm_invite_space_message"
             style="@style/Typography.Title02"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
             android:padding="10dp"
             android:text="@string/confirm_invite_space_fragment_title"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/gl_invite_confirm_space_message" />
 
         <ImageView
             android:id="@+id/iv_confirm_invite_space_thumbnail"
             android:layout_width="125dp"
             android:layout_height="125dp"
-            android:layout_marginTop="65dp"
             android:src="@mipmap/ic_app_logo_round"
             app:imageUri="@{vm.uiState.space.imageUrl}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_confirm_invite_space_message" />
+            app:layout_constraintTop_toBottomOf="@id/gl_invite_confirm_space_thumbnail" />
 
         <TextView
             android:id="@+id/tv_confirm_invite_space_title"

@@ -14,7 +14,7 @@ class SpaceRepositoryImpl
     constructor(private val spaceApi: SpaceApi) : SpaceRepository {
         override fun addSpace(
             name: RequestBody,
-            icon: MultipartBody.Part,
+            icon: MultipartBody.Part?,
         ): Flow<Space> =
             flow {
                 val response = spaceApi.addSpace(name, icon)

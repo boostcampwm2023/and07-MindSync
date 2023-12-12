@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.main.MainViewModel" />
+        <import type="android.view.View"/>
+        <import type="com.google.android.flexbox.FlexDirection"></import>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.space.list.SpaceListFragment">
+
+        <TextView
+            android:id="@+id/tv_space_list_title"
+            style="@style/Typography.Title01"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/space_list_title"
+            android:textAlignment="center"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Group
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="tv_space_list_onboarding_message, view_space_list_down_arrow, btn_space_list_add_space"
+            android:visibility="@{vm.uiState.spaces.size() == 0 ? View.VISIBLE : View.GONE }" />
+
+        <TextView
+            android:id="@+id/tv_space_list_onboarding_message"
+            android:layout_width="0dp"
+            style="@style/Typography.Body01.Regular"
+            android:layout_height="wrap_content"
+            android:text="@string/space_list_onboarding_message"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_space_list_add_space"
+            app:layout_constraintTop_toBottomOf="@id/tv_space_list_title" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/view_space_list_down_arrow"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:lottie_url="REPLACE_JSON_URL"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:layout_marginBottom="10dp"
+            app:lottie_fileName="animation_down_arrow_white.json"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_space_list_add_space"/>
+
+        <Button
+            android:id="@+id/btn_space_list_add_space"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/space_list_add_space"
+            android:backgroundTint="@color/main4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_space_list_onboarding_message"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_space_list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="@{vm.uiState.spaces.size() == 0 ? View.GONE : View.VISIBLE }"
+            app:flexBoxLayoutManager="@{FlexDirection.ROW}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_space_list_title"
+            app:layout_constraintVertical_bias="0.0"
+            app:spaces="@{vm.uiState.spaces}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

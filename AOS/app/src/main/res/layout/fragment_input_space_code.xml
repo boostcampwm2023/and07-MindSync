@@ -21,18 +21,24 @@
         android:padding="10dp"
         tools:context=".ui.space.InputSpaceFragment">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_input_space_code_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.18"/>
+
         <TextView
             android:id="@+id/tv_input_space_code_title"
             style="@style/Typography.Title02"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="130dp"
             android:lineSpacingExtra="5dp"
             android:text="@string/input_space_code_title"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/gl_input_space_code_top" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfl_input_space_code"
@@ -49,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="초대 코드"
+                android:hint="@string/space_invite_code"
                 android:onTextChanged="@{vm.onSpaceInviteCodeChanged}"
                 android:text="@{vm.uiState.spaceInviteCode}" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -60,9 +66,10 @@
             android:layout_width="264dp"
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
-            android:backgroundTint="@color/main4"
+            android:backgroundTint="@{vm.uiState.spaceInviteCode.length() > 0 ? @color/main4 : @color/gray3}"
             android:onClick="@{() -> vm.compareInviteCode()}"
             android:text="@string/check_message"
+            android:enabled="@{vm.uiState.spaceInviteCode.length() > 0 ? true : false}"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

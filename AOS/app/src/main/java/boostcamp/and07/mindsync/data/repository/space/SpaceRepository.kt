@@ -8,7 +8,7 @@ import okhttp3.RequestBody
 interface SpaceRepository {
     fun addSpace(
         name: RequestBody,
-        icon: MultipartBody.Part,
+        icon: MultipartBody.Part?,
     ): Flow<Space>
 
     fun getSpace(spaceUuid: String): Flow<Space>

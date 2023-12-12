@@ -30,14 +30,25 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_gravity="center|top"
-            app:boards="@{vm.boardUiState.boards}"
             android:background="@android:color/transparent"
+            app:boards="@{vm.boardUiState.boards}"
             app:flexBoxLayoutManager="@{FlexDirection.ROW}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/gl_board_list_end"
             app:layout_constraintStart_toEndOf="@id/gl_board_list_start"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_board" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_board_list_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_refresh_board"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:rippleColor="@color/mindmap2" />
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

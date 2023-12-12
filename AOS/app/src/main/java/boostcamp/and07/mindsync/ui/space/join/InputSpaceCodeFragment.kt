@@ -9,7 +9,6 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.FragmentInputSpaceCodeBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
-import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -46,7 +45,7 @@ class InputSpaceCodeFragment :
                         is SpaceEvent.Error -> {
                             Snackbar.make(
                                 binding.root,
-                                SpaceExceptionMessage.ERROR_MESSAGE_SPACE_GET.message,
+                                spaceEvent.message,
                                 Snackbar.LENGTH_SHORT,
                             )
                                 .show()

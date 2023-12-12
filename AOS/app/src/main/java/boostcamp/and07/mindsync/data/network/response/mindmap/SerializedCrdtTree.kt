@@ -9,20 +9,20 @@ data class SerializedCrdtTree(
     @SerialName("clock")
     val clock: Clock,
     @SerialName("operationLogs")
-    val operationLogs: List<OperationLog>?,
+    val operationLogs: List<SerializedOperationLog>?,
     @SerialName("tree")
-    val tree: Tree,
+    val tree: SerializedTree,
 )
 
 @Serializable
-data class OperationLog(
-    val operation: Operation,
+data class SerializedOperationLog(
+    val operation: SerializedOperation,
     val oldDescription: String? = null,
     val oldParentId: String? = null,
 )
 
 @Serializable
-data class Operation(
+data class SerializedOperation(
     val operationType: String,
     val id: String,
     val clock: Clock,
@@ -31,7 +31,7 @@ data class Operation(
 )
 
 @Serializable
-data class Tree(
+data class SerializedTree(
     @SerialName("nodes")
     val nodes: List<NodeDto>,
 )
@@ -39,11 +39,11 @@ data class Tree(
 @Serializable
 data class NodeDto(
     @SerialName("children")
-    val children: List<String>?,
+    val children: List<String>,
     @SerialName("targetId")
-    val targetId: String?,
+    val targetId: String,
     @SerialName("parentId")
-    val parentId: String?,
+    val parentId: String,
     @SerialName("description")
-    val description: String?,
+    val description: String,
 )

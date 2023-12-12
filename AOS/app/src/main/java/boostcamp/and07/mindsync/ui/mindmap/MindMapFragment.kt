@@ -19,6 +19,8 @@ import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
+import boostcamp.and07.mindsync.ui.util.ThrottleDuration
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
@@ -44,7 +46,8 @@ class MindMapFragment :
         collectOperation()
         collectSelectedNode()
         collectSocketState()
-        mindMapViewModel.setBoardId(args.boardId)
+        setClickEventThrottle()
+        mindMapViewModel.setBoard(args.boardId, args.boardName)
     }
 
     private fun collectSocketState() {
@@ -83,12 +86,12 @@ class MindMapFragment :
     private fun setupRootNode() {
         val displayMetrics = requireActivity().resources.displayMetrics
         val screenHeight = Dp(Px(displayMetrics.heightPixels.toFloat()).toDp(requireContext()))
-        mindMapViewModel.changeRootY(screenHeight / 2)
+        val screenWidth = Dp(Px(displayMetrics.widthPixels.toFloat()).toDp(requireContext()))
+        mindMapViewModel.changeRootXY(screenWidth / 2, screenHeight / 2)
     }
 
     private fun setBinding() {
         binding.vm = mindMapViewModel
-        binding.view = this
         mindMapContainer = MindMapContainer(requireContext())
         mindMapContainer.setNodeClickListener(this)
         mindMapContainer.setTreeUpdateListener(this)
@@ -122,20 +125,32 @@ class MindMapFragment :
         dialog.show(requireActivity().supportFragmentManager, "EditDescriptionDialog")
     }
 
-    fun addButtonListener(selectNode: Node) {
-        showDialog(selectNode) { parent, description ->
-            mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description, parent.id))
-        }
-    }
-
-    fun editButtonListener(selectNode: Node) {
-        showDialog(selectNode) { node, description ->
-            val newNode =
-                when (node) {
-                    is CircleNode -> node.copy(description = description)
-                    is RectangleNode -> node.copy(description = description)
+    private fun setClickEventThrottle() {
+        with(binding) {
+            imgbtnMindMapAdd.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
+                mindMapViewModel.selectedNode.value?.let { selectNode ->
+                    showDialog(selectNode) { parent, description ->
+                        mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description, parent.id))
+                    }
                 }
-            mindMapViewModel.updateNode(newNode)
+            }
+            imgbtnMindMapEdit.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
+                mindMapViewModel.selectedNode.value?.let { selectNode ->
+                    showDialog(selectNode) { node, description ->
+                        val newNode =
+                            when (node) {
+                                is CircleNode -> node.copy(description = description)
+                                is RectangleNode -> node.copy(description = description)
+                            }
+                        mindMapViewModel.updateNode(newNode)
+                    }
+                }
+            }
+            imgbtnMindMapRemove.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
+                mindMapViewModel.selectedNode.value?.let { selectNode ->
+                    mindMapViewModel.removeNode(selectNode)
+                }
+            }
         }
     }
 

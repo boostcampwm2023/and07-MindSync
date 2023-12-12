@@ -29,7 +29,9 @@ class BoardListViewModel
 
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString())) }
+                viewModelScope.launch {
+                    _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString()))
+                }
             }
 
         fun setSpaceId(spaceId: String) {
@@ -40,14 +42,14 @@ class BoardListViewModel
         }
 
         fun addBoard(
-            part: MultipartBody.Part?,
+            imageFile: MultipartBody.Part?,
             name: String,
         ) {
             viewModelScope.launch(coroutineExceptionHandler) {
                 boardListRepository.createBoard(
                     boardName = name,
                     spaceId = _boardUiState.value.spaceId,
-                    imageUrl = TEST_IMAGE_URL,
+                    imageUrl = imageFile,
                 ).collectLatest { board ->
                     _boardUiState.update { boardUiState ->
                         val newBoards = boardUiState.boards.toMutableList().apply { add(board) }
@@ -58,11 +60,11 @@ class BoardListViewModel
             }
         }
 
-        private fun getBoards() {
+        fun getBoards() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                boardListRepository.getBoard(_boardUiState.value.spaceId).collectLatest { list ->
-                    _boardUiState.update { it ->
-                        it.copy(boards = list)
+                boardListRepository.getBoard(_boardUiState.value.spaceId, false).collectLatest { boards ->
+                    _boardUiState.update { boardUiState ->
+                        boardUiState.copy(boards = boards)
                     }
                     _boardUiEvent.emit(BoardUiEvent.Success)
                 }
@@ -84,9 +86,10 @@ class BoardListViewModel
                 val newBoards = boardUiState.value.boards.toMutableList()
                 val newSelectBoards = boardUiState.value.selectBoards.toMutableList()
                 _boardUiState.value.selectBoards.map { board ->
-                    boardListRepository.deleteBoard(board.id)
-                    newBoards.remove(board)
-                    newSelectBoards.remove(board)
+                    boardListRepository.deleteBoard(board.id).collectLatest {
+                        newBoards.remove(board)
+                        newSelectBoards.remove(board)
+                    }
                 }
                 _boardUiState.update { boardUiState ->
                     boardUiState.copy(
@@ -97,8 +100,22 @@ class BoardListViewModel
             }
         }
 
-        companion object {
-            private const val TEST_IMAGE_URL =
-                "https://image.yes24.com/blogimage/blog/w/o/woojukaki/IMG_20201015_182419.jpg"
+        fun restoreBoard() {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                val newBoards = boardUiState.value.boards.toMutableList()
+                val newSelectBoards = boardUiState.value.selectBoards.toMutableList()
+                _boardUiState.value.selectBoards.map { board ->
+                    boardListRepository.restoreBoard(board.id).collectLatest {
+                        newBoards.remove(board)
+                        newSelectBoards.remove(board)
+                    }
+                }
+                _boardUiState.update { boardUiState ->
+                    boardUiState.copy(
+                        boards = newBoards,
+                        selectBoards = newSelectBoards,
+                    )
+                }
+            }
         }
     }

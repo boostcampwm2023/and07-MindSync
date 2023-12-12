@@ -62,13 +62,14 @@ class AddSpaceViewModel
         }
 
         fun addSpace(imageName: String) {
-            _uiState.value.spaceThumbnailFile?.let { imageFile ->
-                val icon = fileToMultiPart(imageFile, imageName)
-                val name = _uiState.value.spaceName.toRequestBody()
-                viewModelScope.launch(coroutineExceptionHandler) {
-                    spaceRepository.addSpace(name, icon).collectLatest { space ->
-                        _event.emit(SpaceEvent.Success)
-                    }
+            val icon =
+                _uiState.value.spaceThumbnailFile?.let { imageFile ->
+                    fileToMultiPart(imageFile, imageName)
+                }
+            val name = _uiState.value.spaceName.toRequestBody()
+            viewModelScope.launch(coroutineExceptionHandler) {
+                spaceRepository.addSpace(name, icon).collectLatest { space ->
+                    _event.emit(SpaceEvent.Success)
                 }
             } ?: run{
                 viewModelScope.launch(coroutineExceptionHandler){

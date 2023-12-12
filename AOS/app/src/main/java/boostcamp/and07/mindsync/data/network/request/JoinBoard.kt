@@ -5,4 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class JoinBoard(
     val boardId: String,
+    val boardName: String,
 )

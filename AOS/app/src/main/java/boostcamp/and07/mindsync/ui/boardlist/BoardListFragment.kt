@@ -10,6 +10,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -38,6 +39,7 @@ class BoardListFragment :
                     findNavController().navigate(
                         BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
                             board.id,
+                            board.name,
                         ),
                     )
                 }
@@ -73,7 +75,7 @@ class BoardListFragment :
     }
 
     private fun onFloatingButtonClick() {
-        binding.btnBoardListAddBoard.setOnClickListener {
+        binding.btnBoardListAddBoard.setClickEvent(lifecycleScope) {
             if (boardListViewModel.boardUiState.value.selectBoards.isEmpty()) {
                 val createBoardDialog = CreateBoardDialog()
                 createBoardDialog.setCompleteListener { part, name ->
@@ -86,6 +88,9 @@ class BoardListFragment :
             } else {
                 boardListViewModel.deleteBoard()
             }
+        }
+        binding.btnBoardListRefresh.setClickEvent(lifecycleScope) {
+            boardListViewModel.getBoards()
         }
     }
 }

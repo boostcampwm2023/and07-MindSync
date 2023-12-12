@@ -1,6 +1,5 @@
-import java.io.FileInputStream
 import java.util.Properties
-
+import java.io.FileInputStream
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -110,6 +109,8 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.18.0") // 카카오 로그인
     // LayoutManager flexBox
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    // lottie
+    implementation("com.airbnb.android:lottie:6.2.0")
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-analytics")
