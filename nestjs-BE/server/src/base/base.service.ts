@@ -113,9 +113,10 @@ export abstract class BaseService<T extends HasUuid> {
     if (insertTemporaryData) {
       this.temporaryDatabaseService.delete(this.className, key, 'insert');
     } else {
+      const value = key.includes('+') ? this.stringToObject(key) : key;
       this.temporaryDatabaseService.remove(this.className, key, {
         field: this.field,
-        value: key,
+        value: value,
       });
     }
     return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);

@@ -10,13 +10,11 @@ CREATE TABLE `USER_TB` (
 
 -- CreateTable
 CREATE TABLE `REFRESH_TOKEN_TB` (
-    `uuid` VARCHAR(32) NOT NULL,
-    `token` VARCHAR(191) NOT NULL,
+    `token` VARCHAR(32) NOT NULL,
     `expiry_date` DATETIME(3) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `REFRESH_TOKEN_TB_token_key`(`token`),
-    PRIMARY KEY (`uuid`)
+    PRIMARY KEY (`token`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -44,7 +42,7 @@ CREATE TABLE `PROFILE_SPACE_TB` (
     `space_uuid` VARCHAR(32) NOT NULL,
     `profile_uuid` VARCHAR(32) NOT NULL,
 
-    PRIMARY KEY (`space_uuid`, `profile_uuid`)
+    UNIQUE INDEX `PROFILE_SPACE_TB_space_uuid_profile_uuid_key`(`space_uuid`, `profile_uuid`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
