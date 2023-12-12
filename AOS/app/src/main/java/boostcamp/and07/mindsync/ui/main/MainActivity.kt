@@ -79,6 +79,7 @@ class MainActivity :
                             getString(R.string.space_leave_room_message, event.spaceName),
                             Toast.LENGTH_SHORT,
                         ).show()
+                        navController.navigate(R.id.spaceListFragment)
                     }
                 }
             }

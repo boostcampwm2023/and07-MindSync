@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.ui.space.generate
 
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
