@@ -30,22 +30,23 @@
 ### 🚀 스페이스
 |스페이스 추가|초대 코드 발급|스페이스 참가|스페이스 나가기|
 |:---:|:---:|:---:|:---:|
-| ![스페이스추가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/1f66c0a0-e6cc-4982-88a5-02ef18a6e8ed) | ![초대코드발급](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/df53cdcc-4315-4d8f-8bb3-9d8c3d48b0c3) | ![스페이스참가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/691b418c-a953-4b0a-bf01-93b4879b66e2) | ![스페이스나가기](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/a8a0708c-8f97-42cc-a170-d646f4a53c99) |
+| ![스페이스추가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/5c0767b5-0367-42bc-96a3-bf09258b8b12) | ![초대코드발급](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/25f3a8e9-ba33-4475-b9f1-1d6719f89619) | ![스페이스참가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/ef76a871-f7f9-481b-913b-ed87f7775465) | ![스페이스나가기](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/73ba5493-b7c9-447a-b035-a4e5037c81fd) |
 
 ### 📃 보드
 
-|보드 생성|보드 삭제|
-|:---:|:---:|
-|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/95ee4b26-c87e-42b0-b10e-0875ccabeb60" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/d9bd87e7-96f7-4c66-a359-7096dbffbab1" width=200 height=400/>|
+
+|보드 생성|보드 삭제|휴지통|
+|:---:|:---:|:---:|
+|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/b6237b45-4fbf-4b26-81ad-ef051926ff34" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/b26fe997-b374-4db4-a0c3-c67682ca5fe7" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/bd80ce6a-faf9-4d81-b6dd-aff8b65a6589" width=200 height=400/>|
 
 ### 🧠 마인드맵
 |노드 추가|노드 삭제|노드 편집|
 |:---:|:---:|:---:|
-|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/70460643-9053-4772-a266-5969668668a5" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/d3a8cb39-1c33-4016-b811-9f9b799ac0d9" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/56e23b58-228f-4667-a70f-722bbdf01304" width=200 height=400/>|
+|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/b6310037-551c-4c6e-9d78-6add7d7d70b5" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/d149109f-3c52-4e87-93cb-c3c7113fcfee" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/f969ef4d-3743-4e6c-a334-6bdf6ccd8f4d" width=200 height=400/>|
 
 |노드 이동|확대/축소/드래그|실시간동시편집|
 |:---:|:---:|:---:|
-|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/1db09580-6fa0-4ea3-8ce9-ba900cf55a70" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/f8eef1ce-c40e-40d3-976a-eccce195f461" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/1599e324-9334-44f3-95a4-4b8e0c9ec425" width=200 height=400/>|
+|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/4a458d20-680b-479c-8bbb-17757f5b83ae" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/3150048e-9eb3-4a08-97a8-3afa707cf03f" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/db89c76e-4e3b-4ddb-ba76-0e9387f9ebef" width=200 height=400/>|
 
 
 ## 🎯 기술적 도전
