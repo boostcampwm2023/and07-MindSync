@@ -41,12 +41,20 @@ export abstract class BaseService<T extends HasUuid> {
   async create(data: T, generateUuidFlag: boolean = true) {
     if (generateUuidFlag) data.uuid = generateUuid();
     const key = this.generateKey(data);
-    const storeData = await this.getDataFromCacheOrDB(key);
-    if (storeData) {
-      throw new HttpException('Data already exists.', HttpStatus.CONFLICT);
+    const deleteCommand = this.temporaryDatabaseService.get(
+      this.className,
+      key,
+      'delete',
+    );
+    if (deleteCommand) {
+      this.temporaryDatabaseService.delete(this.className, key, 'delete');
+    } else {
+      const storeData = await this.getDataFromCacheOrDB(key);
+      if (storeData) {
+        throw new HttpException('Data already exists.', HttpStatus.CONFLICT);
+      }
+      this.temporaryDatabaseService.create(this.className, key, data);
     }
-
-    this.temporaryDatabaseService.create(this.className, key, data);
     this.cache.put(key, data);
     return ResponseUtils.createResponse(HttpStatus.CREATED, data);
   }
@@ -95,7 +103,7 @@ export abstract class BaseService<T extends HasUuid> {
 
   async remove(key: string) {
     const storeData = await this.getDataFromCacheOrDB(key);
-    if (!storeData) return;
+    if (!storeData) return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);
     this.cache.delete(key);
     const insertTemporaryData = this.temporaryDatabaseService.get(
       this.className,
@@ -116,7 +124,7 @@ export abstract class BaseService<T extends HasUuid> {
       const value = key.includes('+') ? this.stringToObject(key) : key;
       this.temporaryDatabaseService.remove(this.className, key, {
         field: this.field,
-        value: value,
+        value,
       });
     }
     return ResponseUtils.createResponse(HttpStatus.NO_CONTENT);
