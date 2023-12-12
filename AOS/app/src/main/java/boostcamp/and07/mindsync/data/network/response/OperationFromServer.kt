@@ -1,6 +1,6 @@
 package boostcamp.and07.mindsync.data.network.response
 
-import boostcamp.and07.mindsync.data.crdt.SerializedOperation
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
 import kotlinx.serialization.Serializable
 
 @Serializable

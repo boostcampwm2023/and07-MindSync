@@ -17,15 +17,6 @@ data class OperationInput(
     val parentId: String? = null,
 )
 
-@Serializable
-data class SerializedOperation(
-    val operationType: String,
-    val id: String,
-    val clock: Clock,
-    val description: String? = null,
-    val parentId: String? = null,
-)
-
 enum class OperationType(val command: String) {
     ADD("add"),
     DELETE("delete"),

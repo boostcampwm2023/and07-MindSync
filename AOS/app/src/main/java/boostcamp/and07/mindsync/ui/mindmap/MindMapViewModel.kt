@@ -10,7 +10,6 @@ import boostcamp.and07.mindsync.data.crdt.OperationDelete
 import boostcamp.and07.mindsync.data.crdt.OperationMove
 import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.crdt.OperationUpdate
-import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
@@ -19,6 +18,7 @@ import boostcamp.and07.mindsync.data.network.SocketEvent
 import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage

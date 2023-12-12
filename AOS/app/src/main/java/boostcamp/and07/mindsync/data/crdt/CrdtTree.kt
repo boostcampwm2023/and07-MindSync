@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.data.crdt
 
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
 
 class CrdtTree(id: String) {
     private var operationLog: MutableList<OperationLog> = mutableListOf()
@@ -84,62 +85,6 @@ class CrdtTree(id: String) {
             clock = clock.copy(id = operation.clock.id, counter = operation.clock.counter),
             description = operation.description,
         )
-    }
-
-    fun deserializeOperationAdd(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationAdd {
-        val input =
-            OperationInput(
-                id = serializedOperation.id,
-                parentId = serializedOperation.parentId,
-                description = serializedOperation.description,
-                clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
-            )
-        return OperationAdd(input)
-    }
-
-    fun deserializeOperationDelete(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationDelete {
-        val input =
-            OperationInput(
-                id = serializedOperation.id,
-                clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
-            )
-        return OperationDelete(input)
-    }
-
-    fun deserializeOperationMove(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationMove {
-        val input =
-            OperationInput(
-                id = serializedOperation.id,
-                parentId = serializedOperation.parentId,
-                clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
-            )
-        return OperationMove(input)
-    }
-
-    fun deserializeOperationUpdate(serializedOperation: boostcamp.and07.mindsync.data.network.response.mindmap.Operation): OperationUpdate {
-        val input =
-            OperationInput(
-                id = serializedOperation.id,
-                description = serializedOperation.description,
-                clock =
-                    Clock(
-                        serializedOperation.clock.id,
-                        serializedOperation.clock.counter,
-                    ),
-            )
-        return OperationUpdate(input)
     }
 
     fun deserializeOperationAdd(serializedOperation: SerializedOperation): OperationAdd {

@@ -16,13 +16,13 @@ data class SerializedCrdtTree(
 
 @Serializable
 data class OperationLog(
-    val operation: Operation,
+    val operation: SerializedOperation,
     val oldDescription: String? = null,
     val oldParentId: String? = null,
 )
 
 @Serializable
-data class Operation(
+data class SerializedOperation(
     val operationType: String,
     val id: String,
     val clock: Clock,
