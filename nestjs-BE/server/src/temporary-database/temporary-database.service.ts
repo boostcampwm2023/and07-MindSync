@@ -17,7 +17,7 @@ const { CSV_FOLDER } = costomEnv;
 
 type DeleteDataType = {
   field: string;
-  value: string;
+  value: string | Record<string, string>;
 };
 
 export type InsertDataType =

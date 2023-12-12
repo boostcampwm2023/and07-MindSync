@@ -67,7 +67,7 @@ export class ProfileSpaceController {
       spaceUuid,
       profileData,
     );
-    if (isSpaceEmpty) this.spacesService.remove(spaceUuid);
+    if (isSpaceEmpty) return this.spacesService.remove(spaceUuid);
     const key = this.profileSpaceService.generateKey(joinData);
     return this.profileSpaceService.remove(key);
   }
