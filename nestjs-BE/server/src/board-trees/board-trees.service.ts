@@ -30,12 +30,13 @@ export class BoardTreesService {
     return JSON.stringify(boardTree);
   }
 
-  async initBoardTree(boardId: string) {
+  async initBoardTree(boardId: string, boardName: string) {
     const existingTree = await this.findByBoardId(boardId);
     if (existingTree) {
       this.boardTrees.set(boardId, CrdtTree.parse<string>(existingTree.tree));
     } else {
       const newTree = new CrdtTree<string>(boardId);
+      newTree.tree.get('root').description = boardName;
       this.create(boardId, JSON.stringify(newTree));
       this.boardTrees.set(boardId, newTree);
     }
