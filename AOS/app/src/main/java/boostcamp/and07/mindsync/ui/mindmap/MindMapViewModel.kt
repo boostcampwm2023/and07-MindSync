@@ -55,7 +55,7 @@ class MindMapViewModel
         fun setBoardId(boardId: String) {
             if (this.boardId != boardId) {
                 this.boardId = boardId
-                joinBoard(boardId)
+                joinBoard(boardId, boardName)
             }
         }
 
@@ -88,8 +88,11 @@ class MindMapViewModel
             }
         }
 
-        fun joinBoard(boardId: String) {
-            mindMapSocketManager.joinBoard(boardId)
+        fun joinBoard(
+            boardId: String,
+            boardName: String,
+        ) {
+            mindMapSocketManager.joinBoard(boardId, boardName)
         }
 
         fun addNode(

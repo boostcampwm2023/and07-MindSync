@@ -47,7 +47,7 @@ class MindMapFragment :
         collectSelectedNode()
         collectSocketState()
         setClickEventThrottle()
-        mindMapViewModel.setBoardId(args.boardId)
+        mindMapViewModel.setBoard(args.boardId, args.boardName)
     }
 
     private fun collectSocketState() {

@@ -15,6 +15,9 @@
         <argument
             android:name="boardId"
             app:argType="string" />
+        <argument
+            android:name="boardName"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/boardListFragment"

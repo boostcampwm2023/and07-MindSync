@@ -69,8 +69,11 @@ class MindMapSocketManager {
         }
     }
 
-    fun joinBoard(boardId: String) {
-        socket.emit(EVENT_JOIN_BOARD, Json.encodeToString(JoinBoard(boardId)))
+    fun joinBoard(
+        boardId: String,
+        boardName: String,
+    ) {
+        socket.emit(EVENT_JOIN_BOARD, Json.encodeToString(JoinBoard(boardId, boardName)))
     }
 
     fun updateMindMap(
