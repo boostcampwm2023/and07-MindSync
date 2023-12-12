@@ -32,7 +32,8 @@ class RecycleBinFragment : BaseFragment<FragmentRecycleBinBinding>(R.layout.frag
                 override fun onClick(board: Board) {
                     findNavController().navigate(
                         BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
-                            board.id,
+                            boardId = board.id,
+                            boardName = board.name,
                         ),
                     )
                 }
