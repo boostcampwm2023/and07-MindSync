@@ -23,7 +23,10 @@ export class BoardTreesGateway {
   async handleJoinBoard(client: Socket, payload: string) {
     const payloadObject = JSON.parse(payload);
     if (!this.boardTreesService.hasTree(payloadObject.boardId)) {
-      await this.boardTreesService.initBoardTree(payloadObject.boardId);
+      await this.boardTreesService.initBoardTree(
+        payloadObject.boardId,
+        payloadObject.boardName,
+      );
     }
     client.join(payloadObject.boardId);
     client.emit(
