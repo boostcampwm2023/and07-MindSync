@@ -84,7 +84,7 @@ class InviteUserDialog : DialogFragment() {
         val deviceHeight = displayMetrics.heightPixels
 
         params?.width = (deviceWidth * 0.8).toInt()
-        params?.height = (deviceHeight * 0.25).toInt()
+        params?.height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 
