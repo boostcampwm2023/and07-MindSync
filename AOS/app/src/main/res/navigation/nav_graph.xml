@@ -33,7 +33,11 @@
     <fragment
         android:id="@+id/recycleBinFragment"
         android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
-        android:label="RecycleBinFragment" />
+        android:label="RecycleBinFragment">
+        <argument
+            android:name="spaceId"
+            app:argType="string" />
+    </fragment>
     <activity
         android:id="@+id/addSpaceActivity"
         android:name="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity"

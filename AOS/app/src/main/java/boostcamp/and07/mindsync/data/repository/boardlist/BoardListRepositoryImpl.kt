@@ -3,6 +3,7 @@ package boostcamp.and07.mindsync.data.repository.boardlist
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.data.network.BoardApi
 import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
+import boostcamp.and07.mindsync.data.network.request.board.RestoreBoardRequest
 import boostcamp.and07.mindsync.ui.util.toRequestBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,11 +39,14 @@ class BoardListRepositoryImpl
                 }
             }
 
-        override fun getBoard(spaceId: String): Flow<List<Board>> =
+        override fun getBoard(
+            spaceId: String,
+            isDeleted: Boolean,
+        ): Flow<List<Board>> =
             flow {
                 val response = boardApi.getBoards(spaceId)
                 emit(
-                    response.data.filter { board -> board.isDeleted.not() }.map { board ->
+                    response.data.filter { board -> board.isDeleted == isDeleted }.map { board ->
                         Board(
                             id = board.boardId,
                             name = board.boardName,
@@ -56,6 +60,12 @@ class BoardListRepositoryImpl
         override fun deleteBoard(boardId: String): Flow<Boolean> =
             flow {
                 val response = boardApi.deleteBoard(DeleteBoardRequest(boardId))
+                emit(true)
+            }
+
+        override fun restoreBoard(boardId: String): Flow<Boolean> =
+            flow {
+                val response = boardApi.restoreBoard(RestoreBoardRequest(boardId))
                 emit(true)
             }
     }

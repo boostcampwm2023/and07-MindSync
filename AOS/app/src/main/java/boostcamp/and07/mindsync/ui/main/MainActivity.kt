@@ -118,7 +118,20 @@ class MainActivity :
                 ThrottleDuration.LONG_DURATION.duration,
             ) {
                 drawerLayout.closeDrawers()
-                navController.navigate(R.id.action_to_recycleBinFragment)
+                mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
+                    drawerLayout.closeDrawers()
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToRecycleBinFragment(
+                            spaceId = nowSpace.id,
+                        ),
+                    )
+                } ?: run {
+                    Toast.makeText(
+                        this@MainActivity,
+                        resources.getString(R.string.space_not_join),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
             }
 
             imgbtnSideBarAddSpace.setClickEvent(
@@ -228,6 +241,7 @@ class MainActivity :
                             uiState.spaces.isEmpty() -> getString(R.string.app_start)
                             destination.id == R.id.spaceListFragment -> getString(R.string.space_list_title)
                             destination.id == R.id.boardListFragment -> getString(R.string.board_list_title)
+                            destination.id == R.id.recycleBinFragment -> getString(R.string.recyclebin_title)
                             else -> ""
                         }
                 }

@@ -36,7 +36,7 @@ class MindMapViewModel
         private val mindMapRepository: MindMapRepository,
     ) : ViewModel() {
         private var boardId: String = ""
-        val crdtTree = CrdtTree(IdGenerator.makeRandomNodeId())
+        val crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
         private var _selectedNode = MutableStateFlow<Node?>(null)
         val selectedNode: StateFlow<Node?> = _selectedNode
         private val _operation = MutableStateFlow<Operation?>(null)
@@ -52,10 +52,14 @@ class MindMapViewModel
             setSocketEvent()
         }
 
-        fun setBoardId(boardId: String) {
+        fun setBoard(
+            boardId: String,
+            boardName: String,
+        ) {
             if (this.boardId != boardId) {
                 this.boardId = boardId
                 joinBoard(boardId, boardName)
+                updateNode(crdtTree.tree.getRootNode().copy(description = boardName))
             }
         }
 

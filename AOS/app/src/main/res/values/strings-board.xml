@@ -4,4 +4,6 @@
     <string name="board_list_board_create_date">yyyy-mm-dd</string>
     <string name="board_multipart_image_name">image</string>
     <string name="board_list_title">보드 목록</string>
+    <string name="recyclebin_title">휴지통</string>
+    <string name="recyclebin_info">휴지통의 보드는 7일 후에 자동 삭제 됩니다.</string>
 </resources>
