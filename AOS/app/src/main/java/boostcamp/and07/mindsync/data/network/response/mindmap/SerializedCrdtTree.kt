@@ -9,13 +9,13 @@ data class SerializedCrdtTree(
     @SerialName("clock")
     val clock: Clock,
     @SerialName("operationLogs")
-    val operationLogs: List<OperationLog>?,
+    val operationLogs: List<SerializedOperationLog>?,
     @SerialName("tree")
     val tree: SerializedTree,
 )
 
 @Serializable
-data class OperationLog(
+data class SerializedOperationLog(
     val operation: SerializedOperation,
     val oldDescription: String? = null,
     val oldParentId: String? = null,
