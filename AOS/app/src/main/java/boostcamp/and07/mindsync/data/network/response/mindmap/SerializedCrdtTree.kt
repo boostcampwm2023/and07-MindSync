@@ -11,7 +11,7 @@ data class SerializedCrdtTree(
     @SerialName("operationLogs")
     val operationLogs: List<OperationLog>?,
     @SerialName("tree")
-    val tree: Tree,
+    val tree: SerializedTree,
 )
 
 @Serializable
@@ -31,7 +31,7 @@ data class SerializedOperation(
 )
 
 @Serializable
-data class Tree(
+data class SerializedTree(
     @SerialName("nodes")
     val nodes: List<NodeDto>,
 )
