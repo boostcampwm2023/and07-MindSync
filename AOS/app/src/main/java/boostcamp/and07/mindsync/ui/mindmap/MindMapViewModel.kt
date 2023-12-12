@@ -10,7 +10,6 @@ import boostcamp.and07.mindsync.data.crdt.OperationDelete
 import boostcamp.and07.mindsync.data.crdt.OperationMove
 import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.crdt.OperationUpdate
-import boostcamp.and07.mindsync.data.crdt.SerializedOperation
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
@@ -19,6 +18,7 @@ import boostcamp.and07.mindsync.data.network.SocketEvent
 import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
+import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
 import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
@@ -55,7 +55,7 @@ class MindMapViewModel
         fun setBoardId(boardId: String) {
             if (this.boardId != boardId) {
                 this.boardId = boardId
-                joinBoard(boardId)
+                joinBoard(boardId, boardName)
             }
         }
 
@@ -88,8 +88,11 @@ class MindMapViewModel
             }
         }
 
-        fun joinBoard(boardId: String) {
-            mindMapSocketManager.joinBoard(boardId)
+        fun joinBoard(
+            boardId: String,
+            boardName: String,
+        ) {
+            mindMapSocketManager.joinBoard(boardId, boardName)
         }
 
         fun addNode(
@@ -188,10 +191,13 @@ class MindMapViewModel
             crdtTree.tree = newTree
         }
 
-        fun changeRootY(windowHeight: Dp) {
+        fun changeRootXY(
+            windowWidth: Dp,
+            windowHeight: Dp,
+        ) {
             crdtTree.tree.setRootNode(
                 crdtTree.tree.getRootNode().copy(
-                    path = crdtTree.tree.getRootNode().path.copy(centerY = windowHeight),
+                    path = crdtTree.tree.getRootNode().path.copy(centerX = windowWidth, centerY = windowHeight),
                 ),
             )
         }

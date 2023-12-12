@@ -39,6 +39,7 @@ class BoardListFragment :
                     findNavController().navigate(
                         BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
                             board.id,
+                            board.name,
                         ),
                     )
                 }
