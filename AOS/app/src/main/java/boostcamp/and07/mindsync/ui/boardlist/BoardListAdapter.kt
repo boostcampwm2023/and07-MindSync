@@ -64,7 +64,7 @@ class BoardListAdapter : ListAdapter<Board, BoardListAdapter.BoardListViewHolder
                     oldItem: Board,
                     newItem: Board,
                 ): Boolean {
-                    return oldItem.id == newItem.id
+                    return oldItem == newItem
                 }
             }
     }
