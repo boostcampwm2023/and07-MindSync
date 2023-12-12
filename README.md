@@ -2,21 +2,67 @@
 
 # Mind Sync (Mind Synchronize)
 
-마인드맵/캔버스 공동 작업 어플리케이션
+마인드맵 실시간 공동 편집 어플리케이션
+
+<img src="https://private-user-images.githubusercontent.com/39490416/289770962-5712ec94-f845-4647-bb4d-d4b7bfc5a878.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNjQ1MjQsIm5iZiI6MTcwMjM2NDIyNCwicGF0aCI6Ii8zOTQ5MDQxNi8yODk3NzA5NjItNTcxMmVjOTQtZjg0NS00NjQ3LWJiNGQtZDRiN2JmYzVhODc4LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA2NTcwNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWVlZDE2YmVjYmZjNTMwNzZiZjNiYmNiYWUwMWVhNzRkYzFmMTE1NTUzM2VlN2MxNWQ1YmZiZTZlZTMyNzgwNzEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.bwpET88xq-RhDxP3fnbGOIyX01s99csiJR8bldvzefw" height="400">
+
+</br>
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm2023%2Fand07-MindSync%2Fhit-counter&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 </div>
 
-## 팀 정보
+## ✨ 프로젝트 소개
 
-|          | 김찬희(J035) | 양선아(K023) | 이상준(K027) | 이용환(J110) | 이재한(K029) |
-|:----:|:--------:|:---------:|:---------:|:---------:|:---------:|
-|          | ![](https://github.com/Conut-1.png) | ![](https://github.com/yang1318.png) | ![](https://github.com/hegleB.png) | ![](https://github.com/tnpfldyd.png) | ![](https://github.com/jaehan4707.png) |
-| **프로젝트<br>목표** | 면접에서 자신있게<br>내세울 수 있는<br>기술적 도전해보기! | 딥다이브 해보기 | '왜'라는 질문을<br>시작점으로 삼아<br>해당 기술을 깊이<br>이해하고 설명할 수 있는<br>능력 갖추기 | 대용량 트래픽 처리를<br>위한 기술적인<br>도전 해보기 | 협업을 하는 방법과<br>적용한 기술, 프로젝트<br>구조를 이해하고<br>남들에게 전달할 수 있는<br>경험해보기! |
+- 마인드맵을 사용하여 아이디어를 시각적으로 표현해보세요
+- 협업을 원하는 친구나 동료를 초대하는 것도 가능합니다
+- 간편하게 마인드맵을 생성하고, 다른 사용자들과 실시간으로 공동 편집을 진행할 수 있어요
 
-- [그라운드 룰 (github wiki)](https://github.com/boostcampwm2023/and07-MindSync/wiki/%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)
-- [컨벤션 (github wiki)](https://github.com/boostcampwm2023/and07-MindSync/wiki/Git-%EC%BB%A8%EB%B2%A4%EC%85%98#%EF%B8%8Fconventions)
-  
-### 문서
-- 📒 [설계서 (notion)](https://yangyang-workspace.notion.site/7efada904a3d44328474a6fb30689db7?pvs=4)
-- 📕 [기획서&디자인 피그마 (figma)](https://www.figma.com/file/Wb1U49Xd2W9xKHaPEltIRB/MindSync?type=design&node-id=2%3A218&mode=design&t=3MJMbYI1z4k217UB-1)
-- 🧾 [백로그 (github project)](https://github.com/orgs/boostcampwm2023/projects/41) 
+
+## 👨‍👩‍👧‍👦 팀원 소개
+
+|[김찬희(J035)](https://github.com/Conut-1) | [양선아(K023)](https://github.com/yang1318) | [이상준(K027)](https://github.com/hegleB) | [이용환(J110)](https://github.com/tnpfldyd) | [이재한(K029)](https://github.com/jaehan4707) |
+|:--------:|:---------:|:---------:|:---------:|:---------:|
+| ![](https://github.com/Conut-1.png) | ![](https://github.com/yang1318.png) | ![](https://github.com/hegleB.png) | ![](https://github.com/tnpfldyd.png) | ![](https://github.com/jaehan4707.png) |
+
+## ⚒️ 기능 소개
+
+### 🚀 스페이스
+|스페이스 추가|초대 코드 발급|스페이스 참가|스페이스 나가기|
+|:---:|:---:|:---:|:---:|
+| ![스페이스추가](https://private-user-images.githubusercontent.com/39490416/289837424-56af4905-6a2d-41c5-b707-e8eb3349770b.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzkzODMsIm5iZiI6MTcwMjM3OTA4MywicGF0aCI6Ii8zOTQ5MDQxNi8yODk4Mzc0MjQtNTZhZjQ5MDUtNmEyZC00MWM1LWI3MDctZThlYjMzNDk3NzBiLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDExMDQ0M1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTU0ZTQ5ZTI2NjQ2NzFmYjRhYzlkYTJkYjQwOGVmYjQ0ZTk3NDdkNjA4MjQ5YWEzZjc4MWU3MWU0YmFmMGRmOTMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.czny0y5ylM2RHwjkSjMhSPWVspb81zOL1LIc88ZeQCU) | ![초대코드발급](https://private-user-images.githubusercontent.com/39490416/289803274-8f1c35fd-5e80-41eb-a005-8457aa3e2cd1.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzIyMzksIm5iZiI6MTcwMjM3MTkzOSwicGF0aCI6Ii8zOTQ5MDQxNi8yODk4MDMyNzQtOGYxYzM1ZmQtNWU4MC00MWViLWEwMDUtODQ1N2FhM2UyY2QxLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA5MDUzOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWYwZWNiYjBjZDM3Mzk5OTkwODcxYmJkZDQ1YWM2MWIyNjc2ZmEwYzUxOTlkYTQwMDQxN2MyYzQ1ZGFmNDNkMWMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.LRz58kr9ZgBNHQBsElQQ17uaTyUYwIXAmlSc8LT8kbM) | ![스페이스참가](https://private-user-images.githubusercontent.com/39490416/289837417-d12d2272-0bef-42bb-8bc0-75e26ecc12ad.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzkzODMsIm5iZiI6MTcwMjM3OTA4MywicGF0aCI6Ii8zOTQ5MDQxNi8yODk4Mzc0MTctZDEyZDIyNzItMGJlZi00MmJiLThiYzAtNzVlMjZlY2MxMmFkLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDExMDQ0M1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTI0NWJjODlkNmM3ZTU5YjllMzUwOTU4YmMwZTlkNzI1YzY5NDBiYzRkNDFkODEzNTk5NTExYTM4NjUxYzRmNTgmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.vLIGeruoHDKfuwlO25j547EqhjSgF1EjV5xI886JOyY) | ![스페이스나가기](https://private-user-images.githubusercontent.com/39490416/289803247-92186bba-d4dc-4dc0-a6ed-bac0fde04a43.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzIxNTcsIm5iZiI6MTcwMjM3MTg1NywicGF0aCI6Ii8zOTQ5MDQxNi8yODk4MDMyNDctOTIxODZiYmEtZDRkYy00ZGMwLWE2ZWQtYmFjMGZkZTA0YTQzLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA5MDQxN1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWY1YTY5MTBmODMyZDcxMTZlNDc1MmNmY2FhM2FhNDA4NjAzNTAyN2I0NjJlOTBiZDhiNzA3MmM3MjdkODI1MzAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.zFi_tirbPsvzVXAC9ZaV5W3QZX_rbsgkLuWPzZyYuMU) |
+
+### 📃 보드
+
+|보드 생성|보드 삭제|
+|:---:|:---:|
+|<img src="https://private-user-images.githubusercontent.com/39490416/289830123-6d45e8ff-87d0-4738-bd2a-818edcf84de0.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzc3ODMsIm5iZiI6MTcwMjM3NzQ4MywicGF0aCI6Ii8zOTQ5MDQxNi8yODk4MzAxMjMtNmQ0NWU4ZmYtODdkMC00NzM4LWJkMmEtODE4ZWRjZjg0ZGUwLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDEwMzgwM1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWJmMDA3ZGU2MGFiZTFmYzhlZjQ1YmZkY2M1MjFkYjhmODVmZDZkZTM5YzgyNzc5YmJlOTMxZDIzNGYzNmM0NjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.PAGUqzFFYV3e7J-AEhHG1FE5wsMwzaW6cBy_OFbQIRk" width=200 height=400/>|<img src="https://private-user-images.githubusercontent.com/39490416/289830088-3039b3d2-cd67-497f-89ea-63beefe85992.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzc3ODMsIm5iZiI6MTcwMjM3NzQ4MywicGF0aCI6Ii8zOTQ5MDQxNi8yODk4MzAwODgtMzAzOWIzZDItY2Q2Ny00OTdmLTg5ZWEtNjNiZWVmZTg1OTkyLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDEwMzgwM1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTEwMTdlMjUyNmU2NjhkZjk5MjdkZmFhZTgwMGQwNWIzMmQxNDQ1MmVhYzhlMjA4MGYxMGFjZDE1NzdjMDBlYmImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.qkHp81VNI3-5fncaCG6oAKtKdVoLM5xjtIKij2lwAFI" width=200 height=400/>|
+
+### 🧠 마인드맵
+|노드 추가|노드 삭제|노드 편집|
+|:---:|:---:|:---:|
+|<img src="https://private-user-images.githubusercontent.com/39490416/289838105-b58b3989-c1d3-49d4-bbf4-42cf1b7d8d1d.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNzk1NDQsIm5iZiI6MTcwMjM3OTI0NCwicGF0aCI6Ii8zOTQ5MDQxNi8yODk4MzgxMDUtYjU4YjM5ODktYzFkMy00OWQ0LWJiZjQtNDJjZjFiN2Q4ZDFkLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDExMDcyNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdkZjA3MWVkMDNkZjI3MWExNDk0NGJhZjVhOGE3NDFkZjM2NjNkZDBiMjhmMzQ4NWI5YTgyYWViMGIyYjE1MDMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.-b-4wvaIsWBrAR9O0uNt8lU3CPvjGKcJRz9QJVHyqbg" width=200 height=400/>|<img src="https://private-user-images.githubusercontent.com/39490416/289791087-942831c2-76dd-4da2-89dd-4db8a080b6cd.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNjk1NjcsIm5iZiI6MTcwMjM2OTI2NywicGF0aCI6Ii8zOTQ5MDQxNi8yODk3OTEwODctOTQyODMxYzItNzZkZC00ZGEyLTg5ZGQtNGRiOGEwODBiNmNkLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA4MjEwN1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTRhM2MzMzZkOGFkMTU0YzIxZjkzNjRjY2RhYjE3OGY5NDk1YTg4ODc2ZGEzOWU5MTJmN2E5Mjk4NGUyOWU5NTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.bUpwZlK13FOGjRi3T6lkRiXMydAHiF1ECgtig3ub9Go" width=200 height=400/>|<img src="https://private-user-images.githubusercontent.com/39490416/289792606-6f709cef-0c33-49e9-8d29-351e29f6b37f.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNjk4NDksIm5iZiI6MTcwMjM2OTU0OSwicGF0aCI6Ii8zOTQ5MDQxNi8yODk3OTI2MDYtNmY3MDljZWYtMGMzMy00OWU5LThkMjktMzUxZTI5ZjZiMzdmLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA4MjU0OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTcyMDc4ZGFmOTkwZGQ2NDM3YWJlNjg3NDQyNWYxZWIxMDczYmZmMGE4N2I4NjNiMjVhOTQ3NDM4M2ZmMjRiMjAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.pFSucOM8trk913bD9hWcZBpFxppkNPF_Ide0fQ6AD4o" width=200 height=400/>|
+
+|노드 이동|확대/축소/드래그|실시간동시편집|
+|:---:|:---:|:---:|
+|<img src="https://private-user-images.githubusercontent.com/39490416/289792203-14b7a1c0-4a17-4bf5-bda8-3a713e5ea7d9.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNjk3NDcsIm5iZiI6MTcwMjM2OTQ0NywicGF0aCI6Ii8zOTQ5MDQxNi8yODk3OTIyMDMtMTRiN2ExYzAtNGExNy00YmY1LWJkYTgtM2E3MTNlNWVhN2Q5LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA4MjQwN1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPThjMGRiOWRlNDcxN2E0MDg3OGM5NGJiY2Q1NzkxNTk4MWIyZDFkOWE5MzMwNDRlM2JiZTBlYjNlNDM2NGM1YjQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.i8dtnEfNKOmCqhtlxecpB-Bt_Zp3nN1VolHPpv0-UIc" width=200 height=400/>|<img src="https://private-user-images.githubusercontent.com/39490416/289791934-0129cf0b-2322-4190-8c96-eff794d1c8af.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzNjk2OTIsIm5iZiI6MTcwMjM2OTM5MiwicGF0aCI6Ii8zOTQ5MDQxNi8yODk3OTE5MzQtMDEyOWNmMGItMjMyMi00MTkwLThjOTYtZWZmNzk0ZDFjOGFmLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDA4MjMxMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTJkYTNlMTRhMjU1YzcyNmY1NTk2MTc4YjVjMjEyZDI2NWFiOTZjNTQxNTZhNGRhOWFmOTMwM2EyNGE3ZmU0MzcmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.D8vSoQQy5ynvFPYnDzLdR413kbIn_HgrcMOXeQNbyko" width=200 height=400/>|<img src="https://private-user-images.githubusercontent.com/39490416/289850069-b2c57c55-1151-4116-8e40-bd518b65f5b9.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MDIzODI0MzIsIm5iZiI6MTcwMjM4MjEzMiwicGF0aCI6Ii8zOTQ5MDQxNi8yODk4NTAwNjktYjJjNTdjNTUtMTE1MS00MTE2LThlNDAtYmQ1MThiNjVmNWI5LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzEyMTIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMxMjEyVDExNTUzMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTA3YjkxNmE4OTkyMmMzMDQyNGMzZGFhYjNkN2E1OWVlYTNlNzJjNTQ2NjExYTg2YWJjOTNlYzE0ZTkyMDAwODEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.SermPuizuP7PMimU8rKv61v4scsyM7O6HhKw2KvI-2Y" width=200 height=400/>|
+
+
+## 🎯 기술적 도전
+
+  업데이트 할 예정
+
+## 📚 기술스택
+
+### AOS
+
+- `Kotlin` `Canvas` `Socket.IO` `Coil` `MVVM` `Retrofit` `Datastore` `Hilt` `Flow` `Jetpack Navigation` `DataBinding`
+### BE
+
+- `Typescript` `NestJS` `Naver Cloud Platform` `MySQL` `MongoDB`
+
+
+## 📑 문서
+|설계서|기획서&디자인|백로그|그라운드 룰|컨벤션|
+|:---:|:---:|:---:|:---:|:---:|
+|[📒설계서](https://yangyang-workspace.notion.site/7efada904a3d44328474a6fb30689db7?pvs=4)|[📕기획서&디자인](https://www.figma.com/file/Wb1U49Xd2W9xKHaPEltIRB/MindSync?type=design&node-id=2%3A218&mode=design&t=3MJMbYI1z4k217UB-1)|[🧾백로그](https://github.com/orgs/boostcampwm2023/projects/41)|[⛳그라운드 룰](https://github.com/boostcampwm2023/and07-MindSync/wiki/%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)|[🤝컨벤션](https://github.com/boostcampwm2023/and07-MindSync/wiki/Git-%EC%BB%A8%EB%B2%A4%EC%85%98#%EF%B8%8Fconventions)|
