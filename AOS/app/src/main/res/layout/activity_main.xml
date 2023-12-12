@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imgbtn_main_menu"
+                app:layout_constraintTop_toBottomOf="@id/tv_main_title"
                 app:navGraph="@navigation/nav_graph" />
 
             <ImageButton
@@ -43,6 +43,16 @@
                 app:layout_constraintBottom_toTopOf="@id/fcv_main_nav_host"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/tv_main_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_margin="20dp"
+                style="@style/Typography.Title01"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
