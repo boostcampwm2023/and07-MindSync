@@ -155,7 +155,8 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     const users = await this.fetchSpaceUsersFromCacheOrDB(spaceUuid);
     const usersData = await Promise.all(
       users.map(async (user) => {
-        return await this.profilesService.findOne(user.user_id);
+        const profile = await this.profilesService.findOne(user.user_id);
+        return profile.data;
       }),
     );
     this.spaceCache.put(spaceUuid, usersData);
