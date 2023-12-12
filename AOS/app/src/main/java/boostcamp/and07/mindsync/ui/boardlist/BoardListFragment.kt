@@ -88,5 +88,8 @@ class BoardListFragment :
                 boardListViewModel.deleteBoard()
             }
         }
+        binding.btnBoardListRefresh.setClickEvent(lifecycleScope) {
+            boardListViewModel.getBoards()
+        }
     }
 }
