@@ -86,7 +86,8 @@ class MindMapFragment :
     private fun setupRootNode() {
         val displayMetrics = requireActivity().resources.displayMetrics
         val screenHeight = Dp(Px(displayMetrics.heightPixels.toFloat()).toDp(requireContext()))
-        mindMapViewModel.changeRootY(screenHeight / 2)
+        val screenWidth = Dp(Px(displayMetrics.widthPixels.toFloat()).toDp(requireContext()))
+        mindMapViewModel.changeRootXY(screenWidth / 2, screenHeight / 2)
     }
 
     private fun setBinding() {
