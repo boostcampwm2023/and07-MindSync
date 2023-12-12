@@ -52,7 +52,10 @@ class MindMapViewModel
             setSocketEvent()
         }
 
-        fun setBoard(boardId: String, boardName: String) {
+        fun setBoard(
+            boardId: String,
+            boardName: String,
+        ) {
             if (this.boardId != boardId) {
                 this.boardId = boardId
                 joinBoard(boardId, boardName)
