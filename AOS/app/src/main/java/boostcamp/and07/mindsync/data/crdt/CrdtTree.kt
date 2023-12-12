@@ -4,11 +4,12 @@ import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
 
-class CrdtTree(id: String) {
-    private var operationLog: MutableList<OperationLog> = mutableListOf()
-    private var clock: Clock = Clock(id)
-    var tree: Tree = Tree()
-
+class CrdtTree(
+    id: String,
+    private var operationLog: MutableList<OperationLog> = mutableListOf(),
+    private var clock: Clock = Clock(id),
+    var tree: Tree,
+) {
     fun get(id: String): Node {
         return tree.getNode(id)
     }
