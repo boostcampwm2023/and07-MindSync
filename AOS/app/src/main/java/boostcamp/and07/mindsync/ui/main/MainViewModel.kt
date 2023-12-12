@@ -29,6 +29,7 @@ class MainViewModel
         val uiState: StateFlow<MainUiState> = _uiState
         private val _event = MutableSharedFlow<MainUiEvent>()
         val event: SharedFlow<MainUiEvent> = _event
+
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
                 viewModelScope.launch { _event.emit(MainUiEvent.ShowMessage(throwable.message.toString())) }
