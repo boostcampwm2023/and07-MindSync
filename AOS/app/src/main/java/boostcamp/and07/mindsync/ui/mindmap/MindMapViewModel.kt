@@ -59,6 +59,7 @@ class MindMapViewModel
             if (this.boardId != boardId) {
                 this.boardId = boardId
                 joinBoard(boardId, boardName)
+                updateNode(crdtTree.tree.getRootNode().copy(description = boardName))
             }
         }
 
