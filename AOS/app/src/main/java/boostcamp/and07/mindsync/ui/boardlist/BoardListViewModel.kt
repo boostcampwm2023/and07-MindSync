@@ -62,7 +62,7 @@ class BoardListViewModel
 
         fun getBoards() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                boardListRepository.getBoard(_boardUiState.value.spaceId).collectLatest { boards ->
+                boardListRepository.getBoard(_boardUiState.value.spaceId, false).collectLatest { boards ->
                     _boardUiState.update { boardUiState ->
                         boardUiState.copy(boards = boards)
                     }
@@ -87,6 +87,25 @@ class BoardListViewModel
                 val newSelectBoards = boardUiState.value.selectBoards.toMutableList()
                 _boardUiState.value.selectBoards.map { board ->
                     boardListRepository.deleteBoard(board.id).collectLatest {
+                        newBoards.remove(board)
+                        newSelectBoards.remove(board)
+                    }
+                }
+                _boardUiState.update { boardUiState ->
+                    boardUiState.copy(
+                        boards = newBoards,
+                        selectBoards = newSelectBoards,
+                    )
+                }
+            }
+        }
+
+        fun restoreBoard() {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                val newBoards = boardUiState.value.boards.toMutableList()
+                val newSelectBoards = boardUiState.value.selectBoards.toMutableList()
+                _boardUiState.value.selectBoards.map { board ->
+                    boardListRepository.restoreBoard(board.id).collectLatest {
                         newBoards.remove(board)
                         newSelectBoards.remove(board)
                     }

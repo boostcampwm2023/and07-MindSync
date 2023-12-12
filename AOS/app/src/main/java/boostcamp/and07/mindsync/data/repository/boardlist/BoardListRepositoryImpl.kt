@@ -39,11 +39,14 @@ class BoardListRepositoryImpl
                 }
             }
 
-        override fun getBoard(spaceId: String): Flow<List<Board>> =
+        override fun getBoard(
+            spaceId: String,
+            isDeleted: Boolean,
+        ): Flow<List<Board>> =
             flow {
                 val response = boardApi.getBoards(spaceId)
                 emit(
-                    response.data.filter { board -> board.isDeleted.not() }.map { board ->
+                    response.data.filter { board -> board.isDeleted == isDeleted }.map { board ->
                         Board(
                             id = board.boardId,
                             name = board.boardName,

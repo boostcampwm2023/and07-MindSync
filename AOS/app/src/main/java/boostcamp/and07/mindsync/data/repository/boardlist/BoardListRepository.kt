@@ -11,7 +11,10 @@ interface BoardListRepository {
         imageUrl: MultipartBody.Part?,
     ): Flow<Board>
 
-    fun getBoard(spaceId: String): Flow<List<Board>>
+    fun getBoard(
+        spaceId: String,
+        isDeleted: Boolean,
+    ): Flow<List<Board>>
 
     fun deleteBoard(boardId: String): Flow<Boolean>
 
