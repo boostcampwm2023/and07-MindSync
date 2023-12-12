@@ -17,17 +17,6 @@
         android:layout_height="match_parent"
         tools:context=".ui.space.list.SpaceListFragment">
 
-        <TextView
-            android:id="@+id/tv_space_list_title"
-            style="@style/Typography.Title01"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/space_list_title"
-            android:textAlignment="center"
-            android:layout_marginTop="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.Group
             android:layout_width="0dp"
@@ -45,7 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/btn_space_list_add_space"
-            app:layout_constraintTop_toBottomOf="@id/tv_space_list_title" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/view_space_list_down_arrow"
@@ -81,7 +70,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_space_list_title"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
             app:spaces="@{vm.uiState.spaces}" />
 
