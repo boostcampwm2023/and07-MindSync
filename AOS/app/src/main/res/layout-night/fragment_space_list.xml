@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="tv_space_list_onboarding_message, view_space_list_down_arrow, btn_space_list_add_space"
-            android:visibility="gone" />
+            android:visibility="@{vm.uiState.spaces.size() == 0 ? View.VISIBLE : View.GONE }" />
 
         <TextView
             android:id="@+id/tv_space_list_onboarding_message"
