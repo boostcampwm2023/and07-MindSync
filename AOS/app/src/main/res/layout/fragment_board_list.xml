@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_restore_board"
+            android:src="@drawable/ic_refresh_board"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:rippleColor="@color/mindmap2" />
