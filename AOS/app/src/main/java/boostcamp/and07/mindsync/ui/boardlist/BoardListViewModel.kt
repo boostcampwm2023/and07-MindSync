@@ -60,11 +60,11 @@ class BoardListViewModel
             }
         }
 
-        private fun getBoards() {
+        fun getBoards() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                boardListRepository.getBoard(_boardUiState.value.spaceId).collectLatest { list ->
-                    _boardUiState.update { it ->
-                        it.copy(boards = list)
+                boardListRepository.getBoard(_boardUiState.value.spaceId).collectLatest { boards ->
+                    _boardUiState.update { boardUiState ->
+                        boardUiState.copy(boards = boards)
                     }
                     _boardUiEvent.emit(BoardUiEvent.Success)
                 }

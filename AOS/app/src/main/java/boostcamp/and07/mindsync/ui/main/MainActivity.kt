@@ -183,6 +183,7 @@ class MainActivity :
         spaceAdapter.setSideBarClickListener(
             object : SpaceClickListener {
                 override fun onClickSpace(space: Space) {
+                    navController.navigate(SpaceListFragmentDirections.actionToBoardListFragment(spaceId = space.id))
                     mainViewModel.updateCurrentSpace(space)
                 }
             },
