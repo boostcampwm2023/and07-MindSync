@@ -21,18 +21,24 @@
         android:padding="10dp"
         tools:context=".ui.space.InputSpaceFragment">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_input_space_code_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.18"/>
+
         <TextView
             android:id="@+id/tv_input_space_code_title"
             style="@style/Typography.Title02"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="130dp"
             android:lineSpacingExtra="5dp"
             android:text="@string/input_space_code_title"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/gl_input_space_code_top" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tfl_input_space_code"
