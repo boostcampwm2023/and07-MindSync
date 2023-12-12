@@ -52,6 +52,7 @@ class MainActivity :
         setSideBarNavigation()
         setBinding()
         observeEvent()
+        setTitle()
     }
 
     override fun getViewModel(): BaseActivityViewModel {
@@ -92,7 +93,10 @@ class MainActivity :
 
     private fun setSideBarNavigation() {
         with(binding.includeMainInDrawer) {
-            tvSideBarBoardList.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
+            tvSideBarBoardList.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
                     drawerLayout.closeDrawers()
                     navController.navigate(
@@ -109,17 +113,26 @@ class MainActivity :
                 }
             }
 
-            tvSideBarRecycleBin.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
+            tvSideBarRecycleBin.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_recycleBinFragment)
             }
 
-            imgbtnSideBarAddSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
+            imgbtnSideBarAddSpace.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
 
-            tvSideBarInviteSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
+            tvSideBarInviteSpace.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
                     drawerLayout.closeDrawers()
                     navController.navigate(
@@ -136,12 +149,18 @@ class MainActivity :
                 }
             }
 
-            imgbtnSideBarProfile.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
+            imgbtnSideBarProfile.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 val intent = Intent(this@MainActivity, ProfileActivity::class.java)
                 startActivity(intent)
             }
 
-            tvSideBarLeaveSpace.setClickEvent(lifecycleScope, ThrottleDuration.LONG_DURATION.duration) {
+            tvSideBarLeaveSpace.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 mainViewModel.leaveSpace()
                 drawerLayout.closeDrawers()
                 navController.popBackStack()
@@ -197,5 +216,23 @@ class MainActivity :
 
     fun foldDrawerButtonOnClick(view: View) {
         drawerLayout.closeDrawers()
+    }
+
+    private fun setTitle() {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            lifecycleScope.launch {
+                mainViewModel.uiState.collectLatest { uiState ->
+                    if (uiState.spaces.isEmpty()) {
+                        binding.tvMainTitle.setText(R.string.app_start)
+                    } else if (destination.id == R.id.spaceListFragment) {
+                        binding.tvMainTitle.setText(R.string.space_list_title)
+                    } else if (destination.id == R.id.boardListFragment) {
+                        binding.tvMainTitle.setText(R.string.board_list_title)
+                    } else {
+                        binding.tvMainTitle.text = ""
+                    }
+                }
+            }
+        }
     }
 }
