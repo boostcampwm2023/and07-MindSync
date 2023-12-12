@@ -110,6 +110,7 @@
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/view_side_bar_menu"
             app:layout_constraintTop_toTopOf="@id/view_side_bar_menu"
+            android:text="@{vm.uiState.nowSpace.name}"
             tools:text="스페이스 이름" />
 
         <TextView
