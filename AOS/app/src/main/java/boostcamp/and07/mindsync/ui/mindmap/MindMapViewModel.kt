@@ -191,7 +191,10 @@ class MindMapViewModel
             crdtTree.tree = newTree
         }
 
-        fun changeRootXY(windowWidth: Dp, windowHeight: Dp) {
+        fun changeRootXY(
+            windowWidth: Dp,
+            windowHeight: Dp,
+        ) {
             crdtTree.tree.setRootNode(
                 crdtTree.tree.getRootNode().copy(
                     path = crdtTree.tree.getRootNode().path.copy(centerX = windowWidth, centerY = windowHeight),
