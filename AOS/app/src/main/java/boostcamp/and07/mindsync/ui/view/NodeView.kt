@@ -341,7 +341,7 @@ class NodeView(
                 drawInfo.textPaint.color = Color.WHITE
                 if (lines.size > 1) {
                     var y =
-                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) / 2 + drawInfo.padding.toPx(context) / 2
+                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) + drawInfo.padding.toPx(context)
                     for (line in lines) {
                         drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
