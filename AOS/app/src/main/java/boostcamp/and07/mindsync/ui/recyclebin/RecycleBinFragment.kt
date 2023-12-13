@@ -1,21 +1,18 @@
 package boostcamp.and07.mindsync.ui.recyclebin
 
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentRecycleBinBinding
+import boostcamp.and07.mindsync.ui.RecycleBin.RecycleBinAdapter
 import boostcamp.and07.mindsync.ui.base.BaseFragment
-import boostcamp.and07.mindsync.ui.boardlist.BoardClickListener
-import boostcamp.and07.mindsync.ui.boardlist.BoardListAdapter
-import boostcamp.and07.mindsync.ui.boardlist.BoardListFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RecycleBinFragment : BaseFragment<FragmentRecycleBinBinding>(R.layout.fragment_recycle_bin) {
     private val recycleBinViewModel: RecycleBinViewModel by viewModels()
-    private val boardListAdapter = BoardListAdapter()
+    private val recycleBinAdapter = RecycleBinAdapter()
     private val args: RecycleBinFragmentArgs by navArgs()
 
     override fun initView() {
@@ -26,18 +23,9 @@ class RecycleBinFragment : BaseFragment<FragmentRecycleBinBinding>(R.layout.frag
 
     private fun setBinding() {
         binding.vm = recycleBinViewModel
-        binding.rvRecyclebinBoard.adapter = boardListAdapter
-        boardListAdapter.setBoardClickListener(
-            object : BoardClickListener {
-                override fun onClick(board: Board) {
-                    findNavController().navigate(
-                        BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
-                            boardId = board.id,
-                            boardName = board.name,
-                        ),
-                    )
-                }
-
+        binding.rvRecyclebinBoard.adapter = recycleBinAdapter
+        recycleBinAdapter.setRecycleBinClickListener(
+            object :RecycleBinClickListener {
                 override fun onCheckBoxClick(board: Board) {
                     recycleBinViewModel.selectBoard(board)
                 }
