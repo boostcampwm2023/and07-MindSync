@@ -28,18 +28,32 @@
 ## ⚒️ 기능 소개
 
 ### 🚀 스페이스
+- 스페이스는 여러 사용자가 함께 협업하는 공간입니다.
+- 스페이스를 만들고, 초대코드를 공유해서 다른 사용자를 초대할 수 있습니다.
+- 스페이스에 함께 있는 사용자들은 스페이스에 저장된 보드들을 공유하게 됩니다.
+- 스페이스는 스페이스에 참여한 모든 사용자가 나가게 되면 삭제됩니다.
+
 |스페이스 추가|초대 코드 발급|스페이스 참가|스페이스 나가기|
 |:---:|:---:|:---:|:---:|
 | ![스페이스추가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/5c0767b5-0367-42bc-96a3-bf09258b8b12) | ![초대코드발급](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/25f3a8e9-ba33-4475-b9f1-1d6719f89619) | ![스페이스참가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/ef76a871-f7f9-481b-913b-ed87f7775465) | ![스페이스나가기](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/73ba5493-b7c9-447a-b035-a4e5037c81fd) |
 
 ### 📃 보드
-
+- 보드는 마인드맵을 저장하는 공간입니다.
+- 스페이스 하나에 여러개의 보드가 저장되고, 각 보드에는 마인드맵이 하나씩 할당됩니다.
+- 보드를 삭제하면 보드는 휴지통으로 이동됩니다.
+- 보드를 영구 삭제할수는 없고, 삭제된 일자 기준으로 7일이 지나면 자동으로 삭제됩니다.  
+    - 여러명이 협업할 수 있는 환경이기 때문에 영구 삭제는 되지 않도록 했습니다.
 
 |보드 생성|보드 삭제|휴지통|
 |:---:|:---:|:---:|
 |<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/b6237b45-4fbf-4b26-81ad-ef051926ff34" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/b26fe997-b374-4db4-a0c3-c67682ca5fe7" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/bd80ce6a-faf9-4d81-b6dd-aff8b65a6589" width=200 height=400/>|
 
 ### 🧠 마인드맵
+- 보드를 클릭하면 마인드맵 화면으로 이동하게 됩니다.
+- 핵심 기능인 마인드맵을 그리고, 편집할 수 있는 공간입니다.
+- 노드를 추가, 삭제, 편집, 이동할 수 있습니다.
+- socket.io와 CRDT 알고리즘을 이용해 실시간으로 통신이 되도록 했습니다.
+
 |노드 추가|노드 삭제|노드 편집|
 |:---:|:---:|:---:|
 |<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/b6310037-551c-4c6e-9d78-6add7d7d70b5" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/d149109f-3c52-4e87-93cb-c3c7113fcfee" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/f969ef4d-3743-4e6c-a334-6bdf6ccd8f4d" width=200 height=400/>|
