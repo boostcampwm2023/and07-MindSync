@@ -82,7 +82,9 @@
         android:label="ProfileActivity" />
     <action
         android:id="@+id/action_to_boardListFragment"
-        app:destination="@id/boardListFragment" />
+        app:destination="@id/boardListFragment"
+        app:popUpTo="@id/spaceListFragment"
+        />
     <action
         android:id="@+id/action_to_recycleBinFragment"
         app:destination="@id/recycleBinFragment" />
