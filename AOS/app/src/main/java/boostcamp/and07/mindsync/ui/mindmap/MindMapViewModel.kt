@@ -33,7 +33,7 @@ class MindMapViewModel
     @Inject
     constructor() : ViewModel() {
         private var boardId: String = ""
-        val crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
+        var crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
         private var _selectedNode = MutableStateFlow<Node?>(null)
         val selectedNode: StateFlow<Node?> = _selectedNode
         private val _operation = MutableStateFlow<Operation?>(null)
@@ -154,7 +154,12 @@ class MindMapViewModel
             val operation =
                 when (operation.operationType) {
                     OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
-                    OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
+                    OperationType.DELETE.command -> {
+                        if (operation.id == _selectedNode.value?.id) {
+                            _selectedNode.value = null
+                        }
+                        crdtTree.deserializeOperationDelete(operation)
+                    }
                     OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
                     OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
                     else -> {
@@ -170,7 +175,12 @@ class MindMapViewModel
                 val operation =
                     when (operationLog.operation.operationType) {
                         OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operationLog.operation)
-                        OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operationLog.operation)
+                        OperationType.DELETE.command -> {
+                            if (operationLog.operation.id == _selectedNode.value?.id) {
+                                _selectedNode.value = null
+                            }
+                            crdtTree.deserializeOperationDelete(operationLog.operation)
+                        }
                         OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operationLog.operation)
                         OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operationLog.operation)
                         else -> {
@@ -211,5 +221,14 @@ class MindMapViewModel
 
         fun updateOperationType(operationType: String) {
             _operationType.value = operationType
+        }
+
+        fun clearTree() {
+            crdtTree =
+                CrdtTree(
+                    id = "",
+                    tree = Tree(),
+                )
+            _selectedNode.value = null
         }
     }

@@ -1,6 +1,8 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
+import android.content.Context
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -38,6 +40,19 @@ class MindMapFragment :
     }
     private lateinit var mindMapContainer: MindMapContainer
     private val args: MindMapFragmentArgs by navArgs()
+    private var isBack = false
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    isBack = true
+                    findNavController().popBackStack()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     override fun initView() {
         setupRootNode()
@@ -164,5 +179,12 @@ class MindMapFragment :
         parent: Node,
     ) {
         mindMapViewModel.moveNode(tree, target, parent)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (isBack) {
+            mindMapViewModel.clearTree()
+        }
     }
 }
