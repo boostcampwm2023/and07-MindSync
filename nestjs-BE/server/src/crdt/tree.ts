@@ -41,6 +41,7 @@ export class Tree<T> {
 
     const targetIndex = parentNode.children.indexOf(targetId);
     if (targetIndex !== -1) parentNode.children.splice(targetIndex, 1);
+    targetNode.parentId = '0';
 
     return this.nodes.get(targetId);
   }
