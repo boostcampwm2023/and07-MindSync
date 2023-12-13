@@ -1,7 +1,9 @@
 package boostcamp.and07.mindsync.data.model
 
 import boostcamp.and07.mindsync.ui.util.Dp
+import kotlinx.serialization.Serializable
 
+@Serializable
 sealed class NodePath(open val centerX: Dp, open val centerY: Dp)
 
 data class RectanglePath(
