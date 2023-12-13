@@ -100,6 +100,7 @@
                     android:layout_marginTop="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:counterEnabled="true"
                     app:layout_constraintTop_toBottomOf="@id/iv_add_space_thumbnail">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -117,8 +118,8 @@
                     android:layout_width="264dp"
                     android:layout_height="50dp"
                     android:layout_marginTop="30dp"
-                    android:backgroundTint="@{vm.uiState.spaceName.length() > 0 ? @color/main4 : @color/gray3}"
-                    android:enabled="@{vm.uiState.spaceName.length() > 0 ? true : false}"
+                    android:backgroundTint="@{vm.uiState.spaceName.length() > 0 &amp;&amp; vm.uiState.spaceName.length &lt;=20 ? @color/main4 : @color/gray3}"
+                    app:editButtonEnabled="@{vm.uiState.spaceName}"
                     android:onClick="@{()->vm.addSpace(@string/space_image_name)}"
                     android:text="@string/check_message"
                     android:textColor="@color/white"
