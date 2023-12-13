@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import {
   PrismaServiceMySQL,
   PrismaServiceMongoDB,
@@ -20,7 +20,6 @@ export interface HasUuid {
   uuid?: string;
 }
 
-@Injectable()
 export abstract class BaseService<T extends HasUuid> {
   protected cache: LRUCache;
   protected className: string;
