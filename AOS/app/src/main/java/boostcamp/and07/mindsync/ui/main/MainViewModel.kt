@@ -50,14 +50,11 @@ class MainViewModel
         fun getSpaces() {
             viewModelScope.launch(coroutineExceptionHandler) {
                 profileSpaceRepository.getSpaces().collectLatest { responseSpaces ->
-                    val spaceMap: Map<String, Space> =
-                        _uiState.value.spaces.associateBy { space -> space.id }
-                    val newSpaces = mutableListOf<Space>()
-                    responseSpaces.forEach { space ->
-                        if (spaceMap.containsKey(space.id)) {
-                            newSpaces.add(space.copy(isSelected = spaceMap[space.id]!!.isSelected))
+                    val newSpaces = responseSpaces.map { space ->
+                        if (space.id == _uiState.value.nowSpace?.id) {
+                            space.copy(isSelected = true)
                         } else {
-                            newSpaces.add(space)
+                            space
                         }
                     }
                     _uiState.update { uiState ->
