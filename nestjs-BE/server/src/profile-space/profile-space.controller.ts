@@ -39,7 +39,7 @@ export class ProfileSpaceController {
     const { space_uuid } = createProfileSpaceDto;
     const { joinData, profileData } =
       await this.profileSpaceService.processData(userUuid, space_uuid);
-    const responseData = await this.profileSpaceService.create(joinData);
+    const responseData = await this.profileSpaceService.create(joinData, false);
     const data = await this.spacesService.processData(space_uuid, profileData);
     await this.profileSpaceService.put(userUuid, space_uuid, data);
     return responseData;

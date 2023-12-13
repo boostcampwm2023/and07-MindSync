@@ -147,7 +147,7 @@ export abstract class BaseService<T extends HasUuid> {
     return databaseData;
   }
 
-  stringToObject(key: string) {
+  private stringToObject(key: string) {
     const obj = {};
     const keyValuePairs = key.split('+');
 

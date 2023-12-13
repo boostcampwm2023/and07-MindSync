@@ -44,11 +44,6 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return `space_uuid:${data.space_uuid}+profile_uuid:${data.profile_uuid}`;
   }
 
-  async create(data: CreateProfileSpaceDto) {
-    const response = await super.create(data, false);
-    return response;
-  }
-
   async processData(userUuid: string, spaceUuid: string) {
     const profileResponse = await this.profilesService.findOne(userUuid);
     const profileUuid = profileResponse.data?.uuid;
@@ -97,7 +92,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return filterSpaceUsers.length === 0;
   }
 
-  async fetchUserSpacesFromCacheOrDB(
+  private async fetchUserSpacesFromCacheOrDB(
     userUuid: string,
     profileUuid: string,
   ): Promise<UpdateSpaceDto[]> {
@@ -118,7 +113,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
     return storeUserSpaces;
   }
 
-  async fetchSpaceUsersFromCacheOrDB(
+  private async fetchSpaceUsersFromCacheOrDB(
     spaceUuid: string,
   ): Promise<UpdateProfileDto[]> {
     const cacheSpaceProfiles = this.spaceCache.get(spaceUuid);

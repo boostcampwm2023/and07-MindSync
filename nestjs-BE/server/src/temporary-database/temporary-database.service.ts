@@ -53,7 +53,7 @@ export class TemporaryDatabaseService {
     this.init();
   }
 
-  async init() {
+  private async init() {
     this.initializeDatabase();
     await this.readDataFromFiles();
     await this.executeBulkOperations();
@@ -133,14 +133,14 @@ export class TemporaryDatabaseService {
     });
   }
 
-  operation({ service, uniqueKey, command, data }: OperationData) {
+  private operation({ service, uniqueKey, command, data }: OperationData) {
     const filePath = join(this.FOLDER_NAME, `${service}-${command}.csv`);
     fs.appendFile(filePath, `${uniqueKey},${JSON.stringify(data)}\n`, 'utf8');
     this.database.get(service).get(command).set(uniqueKey, data);
   }
 
   @Cron('0 */10 * * * *')
-  async executeBulkOperations() {
+  private async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
       const prisma =
