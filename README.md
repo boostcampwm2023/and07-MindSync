@@ -50,8 +50,46 @@
 
 
 ## 🎯 기술적 도전
+저희는 다음과 같은 과제에 도전했습니다.
+1. **마인드맵을 그릴 수 있다.**
+2. **마인드맵을 동시에 실시간 편집 할 수 있다.**
 
-  업데이트 할 예정
+그래서 해당 과제를 수행하기 위해 다음과 같은 과정을 거쳤습니다.
+1. <span style="background-color: #E6E6FA">**마인드맵을 그리기 위해** </span>
+       
+    - **노드를 그려주는 커스텀 뷰와 라인을 그려주는 커스텀 뷰를 구현했습니다.**
+      - [커스텀뷰 학습하기](https://yangyang-workspace.notion.site/CustomView-9d4a86f6cd2046f4806d42655d220340?pvs=4)
+      - [마인드맵을 저장하는 자료구조 설계하기](https://yangyang-workspace.notion.site/d89604f305e7406fa8243ddb0926706a?pvs=4)
+      - [라인을 곡선으로 그리기](https://yangyang-workspace.notion.site/5adf5fa59e464e7ba316ad5dc4b0db51?pvs=4)
+      - [텍스트 크기에 따른 노드 크기 자동화](https://yangyang-workspace.notion.site/CustomView-DrawText-0c7165d51af84f50b82673fde84766a5?pvs=4)
+    - **줌 기능을 추가하고, 늘어나는 마인드맵의 크기에 따라 줌을 조절했습니다.**
+      - [마인드맵이 커졌을 때 잘리는 현상 해결 과정](https://yangyang-workspace.notion.site/947792eae0014041aa1d7d92869a1d71?pvs=4)
+      - [줌 기능이 추가됨에 따라, 노드 이동기능과 겹치는 터치 이벤트 관리하기](https://yangyang-workspace.notion.site/56448f36097049e4acef2897fecac41a?pvs=4)
+    - **노드가 추가/편집 될 때마다 크기를 재고, 정렬하도록 했습니다.**
+      - [정렬 알고리즘](https://yangyang-workspace.notion.site/067de1120ec841808d46279d752b9352?pvs=4)
+3. <span style="background-color: #E6E6FA">**마인드맵을 동시에 실시간 편집 할 수 있도록 하기 위해**</span>
+    
+    - [Tree 구조에 적용가능한 작업기반 CRDT를 구현했습니다.](https://yangyang-workspace.notion.site/CRDT-093a7ce7785543cc8c69ac84c138a955?pvs=4)
+    - [socket.io 학습하기](https://yangyang-workspace.notion.site/Socket-IO-bd7ceaba859a4449bfe73bbeaa2f6798?pvs=4)
+4. <span style="background-color: #E6E6FA">**빠른 응답을 위한 캐싱을 적용했습니다.**</span>
+    
+   - [캐시 적용기](https://yangyang-workspace.notion.site/Cache-c3a6b494d39c45ce93c2ee9dd95cf6e6?pvs=4)
+5. <span style="background-color: #E6E6FA">**동시에 마인드맵을 편집할 수 있는 공간인 스페이스와 마인드맵을 서버에 저장하는 보드를 설계했습니다.**</span>
+    
+6. <span style="background-color: #E6E6FA">**자주 소통하도록 노력하며 협업했습니다.**</span>
+    - 페어프로그래밍을 자주 했습니다.
+    - 안드로이드&백엔드 분야간의 소통도 매일 활발하게 이루어졌습니다.
+      - 초반에는 매일 1시간의 티타임을 가지면서 매일 1시간씩 꼭 대화하는 시간을 가졌습니다.
+      - api 적용, 소켓 통신을 개발하기 시작하고 나서부터는 더 많은 소통이 필요했고, 그래서 같은 회의실을 사용해서 서로의 이슈를 바로바로 공유할 수 있도록 했습니다.
+
+## 🚀 문제 해결 과정
+- [안드로이드에 Access Token과 Refresh Token 적용하기](https://yangyang-workspace.notion.site/Access-Token-Refresh-Token-DataStore-Preference-Interceptor-Authenticator-9934da08678f4b13a5396f47038e1f7f?pvs=4)
+- [서버에 Bulk Insert 및 Update 적용하기](https://yangyang-workspace.notion.site/Bulk-Insert-Update-ec109de908e54b4f833ffaf24e206d8c?pvs=4)
+- [서버에 카카오 OAuth 적용하기](https://yangyang-workspace.notion.site/OAuth-ceee7681f4124d34aafd714728b8aaeb?pvs=4)
+- [서버에 Refresh Toekn 적용하기](https://yangyang-workspace.notion.site/Refresh-Token-66f30a6645cb472582817f695d759e28?pvs=4)
+- [안드로이드 CI 적용기](https://yangyang-workspace.notion.site/Android-CI-7eb07b0b0c5346959a1271c526993604?pvs=4)
+- [안드로이드 CD 적용기](https://yangyang-workspace.notion.site/Android-CD-7bf21956eafc47b8bd5a06990f3852da?pvs=4)
+- [서버 중복 코드를 추상 클래스로 분리하기](https://yangyang-workspace.notion.site/228c00d520ed42e7a2706297fc7c1c09?pvs=4)
 
 ## 📚 기술스택
 
