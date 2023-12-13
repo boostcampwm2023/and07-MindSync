@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.util
 
 import android.net.Uri
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -36,4 +37,13 @@ fun TextView.bindDate(date: String) {
     val day = localDate.dayOfMonth
 
     this.text = "$year-$month-$day"
+}
+
+@BindingAdapter("app:editButtonEnabled")
+fun Button.bindEnabled(content: String) {
+    this.isEnabled =
+        when (content.length) {
+            in 1..20 -> true
+            else -> false
+        }
 }

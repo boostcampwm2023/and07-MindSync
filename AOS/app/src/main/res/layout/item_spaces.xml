@@ -29,10 +29,11 @@
 
         <TextView
             android:id="@+id/tv_space_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/pretendard_bold"
             android:text="@{space.name}"
+            android:singleLine="true"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="@id/imgbtn_space_thumbnail"
             app:layout_constraintStart_toStartOf="@id/imgbtn_space_thumbnail"

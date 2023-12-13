@@ -101,11 +101,12 @@
         <TextView
             android:id="@+id/tv_side_bar_space_name"
             style="@style/Typography.Title03"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:singleLine="true"
             app:layout_constraintEnd_toStartOf="@id/imgbtn_side_bar_fold"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/view_side_bar_menu"

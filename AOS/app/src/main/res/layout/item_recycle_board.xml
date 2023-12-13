@@ -43,12 +43,13 @@
 
         <TextView
             android:id="@+id/tv_recyclebin_board_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:contentDescription="@string/board_list_board_name"
             android:fontFamily="@font/pretendard_bold"
             android:text="@{board.name}"
             android:textAlignment="center"
+            android:singleLine="true"
             app:layout_constraintEnd_toEndOf="@id/cv_recyclebin_board_thumbnail"
             app:layout_constraintStart_toStartOf="@id/cv_recyclebin_board_thumbnail"
             app:layout_constraintTop_toBottomOf="@id/cv_recyclebin_board_thumbnail"
