@@ -41,6 +41,7 @@ class MainActivity :
         super.onStart()
         mainViewModel.fetchProfile()
         mainViewModel.getSpaces()
+        setTitle()
     }
 
     override fun init() {
@@ -52,7 +53,6 @@ class MainActivity :
         setSideBarNavigation()
         setBinding()
         observeEvent()
-        setTitle()
     }
 
     override fun getViewModel(): BaseActivityViewModel {
