@@ -15,7 +15,6 @@ import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import {
   ApiBody,
-  ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -29,7 +28,6 @@ import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
 import {
   BoardListSuccess,
-  CreateBoardFailure,
   CreateBoardSuccess,
   DeleteBoardFailure,
   DeleteBoardSuccess,
@@ -59,10 +57,6 @@ export class BoardsController {
     type: CreateBoardSuccess,
     description: '보드 생성 완료',
   })
-  @ApiConflictResponse({
-    type: CreateBoardFailure,
-    description: '보드가 이미 존재함',
-  })
   @Public()
   @Post('create')
   @UseInterceptors(FileInterceptor('image'))
@@ -72,10 +66,6 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    await this.boardsService.findByNameAndSpaceId(
-      createBoardDto.boardName,
-      createBoardDto.spaceId,
-    );
     const imageUrl = image
       ? await this.uploadService.uploadFile(image)
       : customEnv.APP_ICON_URL;
