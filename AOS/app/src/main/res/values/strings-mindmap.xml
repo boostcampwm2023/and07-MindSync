@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mindmap_add">add</string>
+    <string name="mindmap_text_empty"></string>
+    <string name="mindmap_input_text">텍스트 입력</string>
+    <string name="mindmap_write">작성</string>
+</resources>

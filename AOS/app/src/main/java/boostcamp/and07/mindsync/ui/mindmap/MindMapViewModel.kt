@@ -43,6 +43,8 @@ class MindMapViewModel
         val socketState: StateFlow<SocketState> = _socketState
         private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
         val socketEvent: StateFlow<SocketEvent?> = _socketEvent
+        private val _operationType = MutableStateFlow("")
+        val operationType: StateFlow<String> = _operationType
 
         init {
             setSocketState()
@@ -198,8 +200,16 @@ class MindMapViewModel
         ) {
             crdtTree.tree.setRootNode(
                 crdtTree.tree.getRootNode().copy(
-                    path = crdtTree.tree.getRootNode().path.copy(centerX = windowWidth, centerY = windowHeight),
+                    path =
+                        crdtTree.tree.getRootNode().path.copy(
+                            centerX = windowWidth,
+                            centerY = windowHeight,
+                        ),
                 ),
             )
+        }
+
+        fun updateOperationType(operationType: String) {
+            _operationType.value = operationType
         }
     }
