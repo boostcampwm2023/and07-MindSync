@@ -41,8 +41,9 @@ fun TextView.bindDate(date: String) {
 
 @BindingAdapter("app:editButtonEnabled")
 fun Button.bindEnabled(content: String) {
-    this.isEnabled = when (content.length) {
-        in 1..20 -> true
-        else -> false
-    }
+    this.isEnabled =
+        when (content.length) {
+            in 1..20 -> true
+            else -> false
+        }
 }
