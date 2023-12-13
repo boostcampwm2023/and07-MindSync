@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="@string/board_list_board_name"
+                android:hint="@string/board_list_board_name_hint"
                 android:onTextChanged="@{vm.onBoardNameChanged}"
                 android:text="@{vm.uiState.boardName}" />
         </com.google.android.material.textfield.TextInputLayout>

@@ -95,7 +95,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tfl_add_space_edit_space"
-                    android:layout_width="264dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +108,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
-                        android:hint="@string/space_name"
+                        android:hint="@string/space_name_hint"
                         android:onTextChanged="@{vm.onSpaceNameChanged}"
                         android:text="@{vm.uiState.spaceName}" />
                 </com.google.android.material.textfield.TextInputLayout>
