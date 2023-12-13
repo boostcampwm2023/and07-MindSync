@@ -56,6 +56,15 @@ export class Tree<T> {
     return { nodes: Array.from(this.nodes.values()) };
   }
 
+  isAncestor(targetId: string, ancestorId: string) {
+    let curNode = this.nodes.get(targetId);
+    while (curNode) {
+      if (curNode.parentId === ancestorId) return true;
+      curNode = this.nodes.get(curNode.parentId);
+    }
+    return false;
+  }
+
   static parse<T>(json: string) {
     const { nodes } = JSON.parse(json);
     const tree = new Tree<T>();
