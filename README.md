@@ -102,6 +102,6 @@
 
 
 ## 📑 문서
-|설계서|기획서&디자인|백로그|그라운드 룰|컨벤션|
+|설계서|피그마 디자인|프로덕트 백로그|스프린트 백로그|그라운드 룰|
 |:---:|:---:|:---:|:---:|:---:|
-|[📒설계서](https://yangyang-workspace.notion.site/7efada904a3d44328474a6fb30689db7?pvs=4)|[📕기획서&디자인](https://www.figma.com/file/Wb1U49Xd2W9xKHaPEltIRB/MindSync?type=design&node-id=2%3A218&mode=design&t=3MJMbYI1z4k217UB-1)|[🧾백로그](https://github.com/orgs/boostcampwm2023/projects/41)|[⛳그라운드 룰](https://github.com/boostcampwm2023/and07-MindSync/wiki/%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)|[🤝컨벤션](https://github.com/boostcampwm2023/and07-MindSync/wiki/Git-%EC%BB%A8%EB%B2%A4%EC%85%98#%EF%B8%8Fconventions)|
+|[📒설계서: 프로젝트를 시작하면서 목표와 어떤 기능을 구현할 지 설계한 내용](https://yangyang-workspace.notion.site/7efada904a3d44328474a6fb30689db7?pvs=4)|[📕피그마 디자인](https://www.figma.com/file/Wb1U49Xd2W9xKHaPEltIRB/MindSync?type=design&node-id=2%3A218&mode=design&t=3MJMbYI1z4k217UB-1)|[🧾프로젝트 백로그: 전체 기능에 대한 일정 설계](https://github.com/orgs/boostcampwm2023/projects/41)|[스프린트 백로그: 매주 작성하는 구체적인 일정 설계](https://github.com/orgs/boostcampwm2023/projects/40)|[⛳MindSync 팀의 그라운드 룰](https://github.com/boostcampwm2023/and07-MindSync/wiki/%ED%8C%80-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0)|
