@@ -35,7 +35,7 @@
 
 |스페이스 추가|초대 코드 발급|스페이스 참가|스페이스 나가기|
 |:---:|:---:|:---:|:---:|
-| ![스페이스추가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/5c0767b5-0367-42bc-96a3-bf09258b8b12) | ![초대코드발급](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/25f3a8e9-ba33-4475-b9f1-1d6719f89619) | ![스페이스참가](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/ef76a871-f7f9-481b-913b-ed87f7775465) | ![스페이스나가기](https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/73ba5493-b7c9-447a-b035-a4e5037c81fd) |
+| <img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/5c0767b5-0367-42bc-96a3-bf09258b8b12" width=200 height=400/> | <img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/25f3a8e9-ba33-4475-b9f1-1d6719f89619" width=200 height=400/> | <img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/ef76a871-f7f9-481b-913b-ed87f7775465" width=200 height=400/> | <img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/73ba5493-b7c9-447a-b035-a4e5037c81fd" width=200 height=400/> |
 
 ### 📃 보드
 - 보드는 마인드맵을 저장하는 공간입니다.
