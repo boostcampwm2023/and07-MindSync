@@ -18,8 +18,7 @@ import { ResponseUtils } from 'src/utils/response';
 const { BASE_IMAGE_URL } = customEnv;
 
 export interface TokenData {
-  uuid?: string;
-  token: string;
+  uuid: string;
   expiry_date: Date;
   user_id: string;
 }
@@ -36,12 +35,12 @@ export class AuthService extends BaseService<TokenData> {
       temporaryDatabaseService,
       cacheSize: REFRESH_TOKEN_CACHE_SIZE,
       className: 'REFRESH_TOKEN_TB',
-      field: 'token',
+      field: 'uuid',
     });
   }
 
   generateKey(data: TokenData): string {
-    return data.token;
+    return data.uuid;
   }
 
   async getKakaoAccount(kakaoUserId: number) {
@@ -83,7 +82,7 @@ export class AuthService extends BaseService<TokenData> {
     const expiryDate = new Date(currentDate);
     expiryDate.setDate(currentDate.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
     const refreshTokenData: TokenData = {
-      token: refreshTokenUuid,
+      uuid: refreshTokenUuid,
       expiry_date: expiryDate,
       user_id: userUuid,
     };
@@ -126,7 +125,7 @@ export class AuthService extends BaseService<TokenData> {
   }
 
   async findUser(usersService: UsersService, email: string, provider: string) {
-    const key = `email:${email}+provider:${provider}`;
+    const key = usersService.generateKey({ email, provider });
     const findUserData = await usersService.getDataFromCacheOrDB(key);
     return findUserData?.uuid;
   }
@@ -145,5 +144,11 @@ export class AuthService extends BaseService<TokenData> {
     };
     profilesService.create(profileData);
     return userUuid;
+  }
+
+  remove(refreshToken: string) {
+    const decodedToken = this.jwtService.decode(refreshToken);
+    const uuid = decodedToken?.uuid;
+    return super.remove(uuid);
   }
 }

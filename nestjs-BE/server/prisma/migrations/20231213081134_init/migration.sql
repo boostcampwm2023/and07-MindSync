@@ -10,11 +10,11 @@ CREATE TABLE `USER_TB` (
 
 -- CreateTable
 CREATE TABLE `REFRESH_TOKEN_TB` (
-    `token` VARCHAR(32) NOT NULL,
+    `uuid` VARCHAR(32) NOT NULL,
     `expiry_date` DATETIME(3) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`token`)
+    PRIMARY KEY (`uuid`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable

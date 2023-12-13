@@ -18,7 +18,7 @@ model USER_TB {
 }
 
 model REFRESH_TOKEN_TB {
-  token       String    @id @db.VarChar(32)
+  uuid        String    @id @db.VarChar(32)
   expiry_date DateTime
   user_id     String
   user        USER_TB   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
@@ -28,14 +28,14 @@ model PROFILE_TB {
   uuid     String @id @db.VarChar(32)
   user_id  String @unique @db.VarChar(32)
   image    String
-  nickname String
+  nickname String @db.VarChar(20)
   user     USER_TB @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
   spaces   PROFILE_SPACE_TB[]
 }
 
 model SPACE_TB {
   uuid     String @id @db.VarChar(32)
-  name     String
+  name     String @db.VarChar(20)
   icon     String
   profiles PROFILE_SPACE_TB[]
   invite_codes INVITE_CODE_TB[]
