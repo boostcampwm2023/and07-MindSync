@@ -5,7 +5,6 @@ import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentRecycleBinBinding
-import boostcamp.and07.mindsync.ui.RecycleBin.RecycleBinAdapter
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +24,7 @@ class RecycleBinFragment : BaseFragment<FragmentRecycleBinBinding>(R.layout.frag
         binding.vm = recycleBinViewModel
         binding.rvRecyclebinBoard.adapter = recycleBinAdapter
         recycleBinAdapter.setRecycleBinClickListener(
-            object :RecycleBinClickListener {
+            object : RecycleBinClickListener {
                 override fun onCheckBoxClick(board: Board) {
                     recycleBinViewModel.selectBoard(board)
                 }

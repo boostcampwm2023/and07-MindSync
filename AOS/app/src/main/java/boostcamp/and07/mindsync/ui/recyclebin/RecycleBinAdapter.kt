@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.ui.RecycleBin
+package boostcamp.and07.mindsync.ui.recyclebin
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.ItemRecycleBoardBinding
-import boostcamp.and07.mindsync.ui.recyclebin.RecycleBinClickListener
 
 class RecycleBinAdapter :
     ListAdapter<Board, RecycleBinAdapter.RecycleBinViewHolder>(DIFF_CALLBACK) {
