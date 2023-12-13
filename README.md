@@ -71,10 +71,10 @@
     
     - [Tree 구조에 적용가능한 작업기반 CRDT를 구현했습니다.](https://yangyang-workspace.notion.site/CRDT-093a7ce7785543cc8c69ac84c138a955?pvs=4)
     - [socket.io 학습하기](https://yangyang-workspace.notion.site/Socket-IO-bd7ceaba859a4449bfe73bbeaa2f6798?pvs=4)
-4. <span style="background-color: #E6E6FA">**빠른 응답을 위한 캐싱을 적용했습니다.**</span>
+4. <span style="background-color: #E6E6FA">**빠른 응답을 위한 캐싱을 직접 구현해 적용했습니다.**</span>
     
    - [캐시 적용기](https://yangyang-workspace.notion.site/Cache-c3a6b494d39c45ce93c2ee9dd95cf6e6?pvs=4)
-5. <span style="background-color: #E6E6FA">**동시에 마인드맵을 편집할 수 있는 공간인 스페이스와 마인드맵을 서버에 저장하는 보드를 설계했습니다.**</span>
+5. <span style="background-color: #E6E6FA">**마인드맵을 서버에 저장하는 공간인 보드와 보드를 여러개 저장할 수 있는 공간인 스페이스를 설계해 사용자가 초대/가입 할 수 있도록 했습니다.**</span>
     
 6. <span style="background-color: #E6E6FA">**자주 소통하도록 노력하며 협업했습니다.**</span>
     - 페어프로그래밍을 자주 했습니다.
