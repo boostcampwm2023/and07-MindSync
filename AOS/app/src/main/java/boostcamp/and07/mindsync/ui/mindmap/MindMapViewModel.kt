@@ -30,149 +30,133 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MindMapViewModel
-@Inject
-constructor() : ViewModel() {
-    private var boardId: String = ""
-    var crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
-    private var _selectedNode = MutableStateFlow<Node?>(null)
-    val selectedNode: StateFlow<Node?> = _selectedNode
-    private val _operation = MutableStateFlow<Operation?>(null)
-    val operation: StateFlow<Operation?> = _operation
-    private val mindMapSocketManager = MindMapSocketManager()
-    private val _socketState = MutableStateFlow(SocketState.DISCONNECT)
-    val socketState: StateFlow<SocketState> = _socketState
-    private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
-    val socketEvent: StateFlow<SocketEvent?> = _socketEvent
-    private val _operationType = MutableStateFlow("")
-    val operationType: StateFlow<String> = _operationType
+    @Inject
+    constructor() : ViewModel() {
+        private var boardId: String = ""
+        var crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
+        private var _selectedNode = MutableStateFlow<Node?>(null)
+        val selectedNode: StateFlow<Node?> = _selectedNode
+        private val _operation = MutableStateFlow<Operation?>(null)
+        val operation: StateFlow<Operation?> = _operation
+        private val mindMapSocketManager = MindMapSocketManager()
+        private val _socketState = MutableStateFlow(SocketState.DISCONNECT)
+        val socketState: StateFlow<SocketState> = _socketState
+        private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
+        val socketEvent: StateFlow<SocketEvent?> = _socketEvent
+        private val _operationType = MutableStateFlow("")
+        val operationType: StateFlow<String> = _operationType
 
-    init {
-        setSocketState()
-        setSocketEvent()
-    }
-
-    fun setBoard(
-        boardId: String,
-        boardName: String,
-    ) {
-        if (this.boardId != boardId) {
-            this.boardId = boardId
-            joinBoard(boardId, boardName)
-            updateNode(crdtTree.tree.getRootNode().copy(description = boardName))
+        init {
+            setSocketState()
+            setSocketEvent()
         }
-    }
 
-    private fun setSocketState() {
-        viewModelScope.launch {
-            mindMapSocketManager.listenState().collectLatest { state ->
-                _socketState.value = state
+        fun setBoard(
+            boardId: String,
+            boardName: String,
+        ) {
+            if (this.boardId != boardId) {
+                this.boardId = boardId
+                joinBoard(boardId, boardName)
+                updateNode(crdtTree.tree.getRootNode().copy(description = boardName))
             }
         }
-    }
 
-    private fun setSocketEvent() {
-        viewModelScope.launch {
-            mindMapSocketManager.listenEvent().collectLatest { event ->
-                _socketEvent.value = event
-                when (event.eventType) {
-                    SocketEventType.OPERATION_FROM_SERVER -> {
-                        when (val operation = event.operation) {
-                            is SerializedOperation -> {
-                                applyOperation(operation)
-                            }
+        private fun setSocketState() {
+            viewModelScope.launch {
+                mindMapSocketManager.listenState().collectLatest { state ->
+                    _socketState.value = state
+                }
+            }
+        }
 
-                            is SerializedCrdtTree -> {
-                                applyOperation(operation)
+        private fun setSocketEvent() {
+            viewModelScope.launch {
+                mindMapSocketManager.listenEvent().collectLatest { event ->
+                    _socketEvent.value = event
+                    when (event.eventType) {
+                        SocketEventType.OPERATION_FROM_SERVER -> {
+                            when (val operation = event.operation) {
+                                is SerializedOperation -> {
+                                    applyOperation(operation)
+                                }
+
+                                is SerializedCrdtTree -> {
+                                    applyOperation(operation)
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
 
-    fun joinBoard(
-        boardId: String,
-        boardName: String,
-    ) {
-        mindMapSocketManager.joinBoard(boardId, boardName)
-    }
+        fun joinBoard(
+            boardId: String,
+            boardName: String,
+        ) {
+            mindMapSocketManager.joinBoard(boardId, boardName)
+        }
 
-    fun addNode(
-        parent: Node,
-        addNode: RectangleNode,
-    ) {
-        val addOperation =
-            crdtTree.generateOperationAdd(addNode.id, parent.id, addNode.description)
-        crdtTree.applyOperation(addOperation)
-        _operation.value = addOperation
-        requestUpdateMindMap(operation = addOperation)
-    }
+        fun addNode(
+            parent: Node,
+            addNode: RectangleNode,
+        ) {
+            val addOperation =
+                crdtTree.generateOperationAdd(addNode.id, parent.id, addNode.description)
+            crdtTree.applyOperation(addOperation)
+            _operation.value = addOperation
+            requestUpdateMindMap(operation = addOperation)
+        }
 
-    fun removeNode(target: Node) {
-        _selectedNode.value = null
-        val removeOperation = crdtTree.generateOperationDelete(target.id)
-        crdtTree.applyOperation(removeOperation)
-        _operation.value = removeOperation
-        requestUpdateMindMap(operation = removeOperation)
-    }
+        fun removeNode(target: Node) {
+            _selectedNode.value = null
+            val removeOperation = crdtTree.generateOperationDelete(target.id)
+            crdtTree.applyOperation(removeOperation)
+            _operation.value = removeOperation
+            requestUpdateMindMap(operation = removeOperation)
+        }
 
-    fun moveNode(
-        tree: Tree,
-        target: Node,
-        parent: Node,
-    ) {
-        this.crdtTree.tree = tree
-        val moveOperation = crdtTree.generateOperationMove(target.id, parent.id)
-        crdtTree.applyOperation(moveOperation)
-        _operation.value = moveOperation
-        requestUpdateMindMap(operation = moveOperation)
-    }
+        fun moveNode(
+            tree: Tree,
+            target: Node,
+            parent: Node,
+        ) {
+            this.crdtTree.tree = tree
+            val moveOperation = crdtTree.generateOperationMove(target.id, parent.id)
+            crdtTree.applyOperation(moveOperation)
+            _operation.value = moveOperation
+            requestUpdateMindMap(operation = moveOperation)
+        }
 
-    fun setSelectedNode(selectNode: Node?) {
-        _selectedNode.value = selectNode
-    }
+        fun setSelectedNode(selectNode: Node?) {
+            _selectedNode.value = selectNode
+        }
 
-    fun requestUpdateMindMap(operation: Operation) {
-        val serializedOperation =
-            when (operation) {
-                is OperationAdd -> crdtTree.serializeOperationAdd(operation)
+        fun requestUpdateMindMap(operation: Operation) {
+            val serializedOperation =
+                when (operation) {
+                    is OperationAdd -> crdtTree.serializeOperationAdd(operation)
 
-                is OperationDelete -> crdtTree.serializeOperationDelete(operation)
+                    is OperationDelete -> crdtTree.serializeOperationDelete(operation)
 
-                is OperationMove -> crdtTree.serializeOperationMove(operation)
+                    is OperationMove -> crdtTree.serializeOperationMove(operation)
 
-                is OperationUpdate -> crdtTree.serializeOperationUpdate(operation)
-            }
-        mindMapSocketManager.updateMindMap(
-            serializedOperation = serializedOperation,
-            boardId = boardId,
-        )
-    }
-
-    fun applyOperation(operation: SerializedOperation) {
-        val operation =
-            when (operation.operationType) {
-                OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
-                OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
-                OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
-                OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
-                else -> {
-                    throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_NOT_DEFINED_OPERATION.message)
+                    is OperationUpdate -> crdtTree.serializeOperationUpdate(operation)
                 }
-            }
-        crdtTree.applyOperation(operation)
-        _operation.value = operation
-    }
+            mindMapSocketManager.updateMindMap(
+                serializedOperation = serializedOperation,
+                boardId = boardId,
+            )
+        }
 
-    fun applyOperation(operation: SerializedCrdtTree) {
-        operation.operationLogs?.forEach { operationLog ->
+        fun applyOperation(operation: SerializedOperation) {
             val operation =
-                when (operationLog.operation.operationType) {
-                    OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operationLog.operation)
-                    OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operationLog.operation)
-                    OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operationLog.operation)
-                    OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operationLog.operation)
+                when (operation.operationType) {
+                    OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
+                    OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
+                    OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
+                    OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
                     else -> {
                         throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_NOT_DEFINED_OPERATION.message)
                     }
@@ -180,41 +164,61 @@ constructor() : ViewModel() {
             crdtTree.applyOperation(operation)
             _operation.value = operation
         }
-    }
 
-    fun updateNode(updateNode: Node) {
-        val updateOperation =
-            crdtTree.generateOperationUpdate(updateNode.id, updateNode.description)
-        crdtTree.applyOperation(updateOperation)
-        _operation.value = updateOperation
-        requestUpdateMindMap(updateOperation)
-    }
+        fun applyOperation(operation: SerializedCrdtTree) {
+            operation.operationLogs?.forEach { operationLog ->
+                val operation =
+                    when (operationLog.operation.operationType) {
+                        OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operationLog.operation)
+                        OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operationLog.operation)
+                        OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operationLog.operation)
+                        OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operationLog.operation)
+                        else -> {
+                            throw IllegalArgumentException(ExceptionMessage.ERROR_MESSAGE_NOT_DEFINED_OPERATION.message)
+                        }
+                    }
+                crdtTree.applyOperation(operation)
+                _operation.value = operation
+            }
+        }
 
-    fun update(newTree: Tree) {
-        crdtTree.tree = newTree
-    }
+        fun updateNode(updateNode: Node) {
+            val updateOperation =
+                crdtTree.generateOperationUpdate(updateNode.id, updateNode.description)
+            crdtTree.applyOperation(updateOperation)
+            _operation.value = updateOperation
+            requestUpdateMindMap(updateOperation)
+        }
 
-    fun changeRootXY(
-        windowWidth: Dp,
-        windowHeight: Dp,
-    ) {
-        crdtTree.tree.setRootNode(
-            crdtTree.tree.getRootNode().copy(
-                path =
-                crdtTree.tree.getRootNode().path.copy(
-                    centerX = windowWidth,
-                    centerY = windowHeight,
+        fun update(newTree: Tree) {
+            crdtTree.tree = newTree
+        }
+
+        fun changeRootXY(
+            windowWidth: Dp,
+            windowHeight: Dp,
+        ) {
+            crdtTree.tree.setRootNode(
+                crdtTree.tree.getRootNode().copy(
+                    path =
+                        crdtTree.tree.getRootNode().path.copy(
+                            centerX = windowWidth,
+                            centerY = windowHeight,
+                        ),
                 ),
-            ),
-        )
-    }
+            )
+        }
 
-    fun updateOperationType(operationType: String) {
-        _operationType.value = operationType
-    }
+        fun updateOperationType(operationType: String) {
+            _operationType.value = operationType
+        }
 
-    fun clearTree() {
-        crdtTree = CrdtTree(id = "", tree = Tree())
-        _selectedNode.value = null
+        fun clearTree() {
+            crdtTree =
+                CrdtTree(
+                    id = "",
+                    tree = Tree(),
+                )
+            _selectedNode.value = null
+        }
     }
-}

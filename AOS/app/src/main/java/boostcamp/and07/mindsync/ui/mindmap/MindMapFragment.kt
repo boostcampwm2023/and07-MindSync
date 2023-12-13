@@ -1,8 +1,6 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
 import android.content.Context
-import android.content.res.Configuration
-import android.os.Bundle
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
@@ -46,12 +44,13 @@ class MindMapFragment :
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                isBack = true
-                findNavController().popBackStack()
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    isBack = true
+                    findNavController().popBackStack()
+                }
             }
-        }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
