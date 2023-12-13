@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Board } from './schemas/board.schema';
 import { Model } from 'mongoose';
@@ -25,13 +25,6 @@ export class BoardsService {
       restoredAt: now,
     });
     return createdBoard.save();
-  }
-
-  async findByNameAndSpaceId(boardName: string, spaceId: string) {
-    const existingBoard = await this.boardModel
-      .findOne({ boardName, spaceId })
-      .exec();
-    if (existingBoard) throw new ConflictException('Board already exist.');
   }
 
   async findBySpaceId(spaceId: string): Promise<Board[]> {
