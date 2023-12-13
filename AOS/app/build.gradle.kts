@@ -28,8 +28,8 @@ android {
         applicationId = "boostcamp.and07.mindsync"
         minSdk = 26
         targetSdk = 34
-        versionCode = 5
-        versionName = "0.3.4"
+        versionCode = 6
+        versionName = "0.3.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "$url")
         buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "$googleServerClientId")
