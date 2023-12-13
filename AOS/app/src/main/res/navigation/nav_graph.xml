@@ -18,6 +18,9 @@
         <argument
             android:name="boardName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_mindMapFragment_to_editDescriptionDialog"
+            app:destination="@id/editDescriptionDialog" />
     </fragment>
     <fragment
         android:id="@+id/boardListFragment"
@@ -53,7 +56,14 @@
     <dialog
         android:id="@+id/editDescriptionDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog"
-        android:label="EditDescriptionDialog" />
+        android:label="EditDescriptionDialog" >
+        <argument
+            android:name="operation"
+            app:argType="boostcamp.and07.mindsync.data.crdt.OperationType" />
+        <argument
+            android:name="node"
+            app:argType="boostcamp.and07.mindsync.data.model.Node" />
+    </dialog>
     <dialog
         android:id="@+id/inviteUserDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"

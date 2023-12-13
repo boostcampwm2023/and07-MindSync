@@ -45,5 +45,5 @@ data class NodeDto(
     @SerialName("parentId")
     val parentId: String,
     @SerialName("description")
-    val description: String,
+    val description: String = "",
 )

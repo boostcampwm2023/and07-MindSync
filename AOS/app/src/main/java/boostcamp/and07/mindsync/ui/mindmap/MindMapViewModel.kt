@@ -19,7 +19,6 @@ import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
-import boostcamp.and07.mindsync.data.repository.mindmap.MindMapRepository
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,9 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MindMapViewModel
     @Inject
-    constructor(
-        private val mindMapRepository: MindMapRepository,
-    ) : ViewModel() {
+    constructor() : ViewModel() {
         private var boardId: String = ""
         val crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
         private var _selectedNode = MutableStateFlow<Node?>(null)

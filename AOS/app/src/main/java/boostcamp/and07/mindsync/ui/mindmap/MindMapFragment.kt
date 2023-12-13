@@ -1,22 +1,19 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
 import android.util.Log
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.NodeGenerator
-import boostcamp.and07.mindsync.data.model.CircleNode
+import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.model.Node
-import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
-import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
-import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.ThrottleDuration
@@ -36,7 +33,9 @@ class MindMapFragment :
     NodeClickListener,
     TreeUpdateListener,
     NodeMoveListener {
-    private val mindMapViewModel: MindMapViewModel by viewModels()
+    private val mindMapViewModel: MindMapViewModel by navGraphViewModels(R.id.nav_graph) {
+        MindMapViewModelFactory()
+    }
     private lateinit var mindMapContainer: MindMapContainer
     private val args: MindMapFragmentArgs by navArgs()
 
@@ -111,42 +110,39 @@ class MindMapFragment :
     }
 
     private fun showDialog(
-        selectNode: Node,
-        action: (Node, String) -> Unit,
+        operationType: OperationType,
+        selectedNode: Node,
     ) {
-        val dialog = EditDescriptionDialog()
-        dialog.setListener(
-            object : EditDialogInterface {
-                override fun onSubmitClick(description: String) {
-                    action.invoke(selectNode, description)
-                }
-            },
+        findNavController().navigate(
+            MindMapFragmentDirections.actionMindMapFragmentToEditDescriptionDialog(
+                operationType,
+                selectedNode,
+            ),
         )
-        dialog.show(requireActivity().supportFragmentManager, "EditDescriptionDialog")
     }
 
     private fun setClickEventThrottle() {
         with(binding) {
-            imgbtnMindMapAdd.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
+            imgbtnMindMapAdd.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.SHORT_DURATION.duration,
+            ) {
                 mindMapViewModel.selectedNode.value?.let { selectNode ->
-                    showDialog(selectNode) { parent, description ->
-                        mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description, parent.id))
-                    }
+                    showDialog(OperationType.ADD, selectNode)
                 }
             }
-            imgbtnMindMapEdit.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
+            imgbtnMindMapEdit.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.SHORT_DURATION.duration,
+            ) {
                 mindMapViewModel.selectedNode.value?.let { selectNode ->
-                    showDialog(selectNode) { node, description ->
-                        val newNode =
-                            when (node) {
-                                is CircleNode -> node.copy(description = description)
-                                is RectangleNode -> node.copy(description = description)
-                            }
-                        mindMapViewModel.updateNode(newNode)
-                    }
+                    showDialog(OperationType.UPDATE, selectNode)
                 }
             }
-            imgbtnMindMapRemove.setClickEvent(lifecycleScope, ThrottleDuration.SHORT_DURATION.duration) {
+            imgbtnMindMapRemove.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.SHORT_DURATION.duration,
+            ) {
                 mindMapViewModel.selectedNode.value?.let { selectNode ->
                     mindMapViewModel.removeNode(selectNode)
                 }
