@@ -2,7 +2,9 @@ package boostcamp.and07.mindsync.ui.util
 
 import android.content.Context
 import android.util.TypedValue
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Dp(val dpVal: Float) {
     operator fun plus(dpValue: Dp): Dp {
         return Dp(dpVal + dpValue.dpVal)

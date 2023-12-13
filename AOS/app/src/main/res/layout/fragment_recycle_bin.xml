@@ -43,7 +43,7 @@
             android:layout_gravity="center|top"
             android:layout_marginTop="15dp"
             android:background="@android:color/transparent"
-            app:boards="@{vm.uiState.boards}"
+            app:restoreBoards="@{vm.uiState.boards}"
             app:flexBoxLayoutManager="@{FlexDirection.ROW}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/gl_recyclebin_end"
