@@ -43,11 +43,12 @@
 
         <TextView
             android:id="@+id/tv_board_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:contentDescription="@string/board_list_board_name"
             android:fontFamily="@font/pretendard_bold"
             android:text="@{board.name}"
+            android:singleLine="true"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="@id/cv_board_thumbnail"
             app:layout_constraintStart_toStartOf="@id/cv_board_thumbnail"
