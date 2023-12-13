@@ -68,7 +68,7 @@ class EditNickNameDialog : DialogFragment() {
 
     private fun setupModifyBtn() {
         binding.btnEditProfileModify.setOnClickListener {
-            profileViewModel.updateNickName(binding.etEditProfileNickname.text)
+            profileViewModel.updateNickName(binding.etEditProfileNickname.text.toString())
             dismiss()
         }
     }
