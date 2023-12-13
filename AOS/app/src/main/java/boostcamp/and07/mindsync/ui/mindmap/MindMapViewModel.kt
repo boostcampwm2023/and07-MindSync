@@ -154,7 +154,12 @@ class MindMapViewModel
             val operation =
                 when (operation.operationType) {
                     OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
-                    OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
+                    OperationType.DELETE.command -> {
+                        if (operation.id == _selectedNode.value?.id) {
+                            _selectedNode.value = null
+                        }
+                        crdtTree.deserializeOperationDelete(operation)
+                    }
                     OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
                     OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
                     else -> {
@@ -170,7 +175,12 @@ class MindMapViewModel
                 val operation =
                     when (operationLog.operation.operationType) {
                         OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operationLog.operation)
-                        OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operationLog.operation)
+                        OperationType.DELETE.command -> {
+                            if (operationLog.operation.id == _selectedNode.value?.id) {
+                                _selectedNode.value = null
+                            }
+                            crdtTree.deserializeOperationDelete(operationLog.operation)
+                        }
                         OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operationLog.operation)
                         OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operationLog.operation)
                         else -> {
