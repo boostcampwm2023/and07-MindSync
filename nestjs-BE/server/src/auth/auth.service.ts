@@ -60,7 +60,7 @@ export class AuthService extends BaseService<TokenData> {
     return responseBody.kakao_account;
   }
 
-  async createAccessToken(userUuid: string): Promise<string> {
+  private async createAccessToken(userUuid: string): Promise<string> {
     const payload = { sub: userUuid };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: jwtConstants.accessSecret,
@@ -69,7 +69,7 @@ export class AuthService extends BaseService<TokenData> {
     return accessToken;
   }
 
-  async createRefreshToken(): Promise<Record<string, string>> {
+  private async createRefreshToken(): Promise<Record<string, string>> {
     const refreshTokenUuid = generateUuid();
     const refreshToken = await this.jwtService.signAsync(
       { uuid: refreshTokenUuid },
@@ -78,7 +78,7 @@ export class AuthService extends BaseService<TokenData> {
     return { refreshToken, refreshTokenUuid };
   }
 
-  createRefreshTokenData(refreshTokenUuid: string, userUuid: string) {
+  private createRefreshTokenData(refreshTokenUuid: string, userUuid: string) {
     const currentDate = new Date();
     const expiryDate = new Date(currentDate);
     expiryDate.setDate(currentDate.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
