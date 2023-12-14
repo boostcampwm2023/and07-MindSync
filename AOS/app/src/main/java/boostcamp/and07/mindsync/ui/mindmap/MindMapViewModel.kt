@@ -224,6 +224,7 @@ class MindMapViewModel
         }
 
         fun clearTree() {
+            boardId = ""
             crdtTree =
                 CrdtTree(
                     id = "",
