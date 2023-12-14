@@ -10,21 +10,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
+import androidx.fragment.app.viewModels
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.crdt.OperationType
-import boostcamp.and07.mindsync.data.model.CircleNode
-import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.data.util.NodeGenerator
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
-import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 
-class EditDescriptionDialog : DialogFragment() {
+class EditDescriptionDialog() : DialogFragment() {
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
-    private val mindMapViewModel: MindMapViewModel by navGraphViewModels(R.id.nav_graph)
-    private val args: EditDescriptionDialogArgs by navArgs()
+    private val editDescriptionViewModel: EditDescriptionViewModel by viewModels()
+    private var submitListener: ((String) -> (Unit))? = null
+    private var description: String = ""
+
+    fun setDescription(description: String) {
+        this.description = description
+    }
+
+    fun setSubmitListener(submitListener: ((String) -> (Unit))) {
+        this.submitListener = submitListener
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -49,9 +52,9 @@ class EditDescriptionDialog : DialogFragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
         setBinding()
+        setViewModel()
         setupCancelBtn()
         setupSubmitBtn()
-        updateOperationType(args.operation.command)
     }
 
     override fun onStart() {
@@ -60,29 +63,21 @@ class EditDescriptionDialog : DialogFragment() {
     }
 
     private fun setBinding() {
-        binding.vm = mindMapViewModel
+        binding.vm = editDescriptionViewModel
+    }
+
+    private fun setViewModel() {
+        submitListener?.let {
+            editDescriptionViewModel.submitListener = this.submitListener
+        }
+        if (description.isNotEmpty()) {
+            editDescriptionViewModel.setDescription(description)
+        }
     }
 
     private fun setupSubmitBtn() {
         binding.btnSubmit.setOnClickListener {
-            val node = args.node
-            val description = binding.etNodeDescription.text.toString()
-            when (args.operation) {
-                OperationType.ADD -> {
-                    mindMapViewModel.addNode(node, NodeGenerator.makeNode(description, node.id))
-                }
-
-                OperationType.UPDATE -> {
-                    val newNode =
-                        when (node) {
-                            is CircleNode -> node.copy(description = description)
-                            is RectangleNode -> node.copy(description = description)
-                        }
-                    mindMapViewModel.updateNode(newNode)
-                }
-
-                else -> {}
-            }
+            editDescriptionViewModel.submitListener?.invoke(editDescriptionViewModel.description.value)
             dismiss()
         }
     }
@@ -91,10 +86,6 @@ class EditDescriptionDialog : DialogFragment() {
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
-    }
-
-    private fun updateOperationType(operationType: String) {
-        mindMapViewModel.updateOperationType(operationType)
     }
 
     private fun resizeDialog() {
