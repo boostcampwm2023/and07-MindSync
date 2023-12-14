@@ -92,9 +92,9 @@ class MindMapFragment :
         operationType: OperationType,
         selectedNode: Node,
     ) {
-        val text: String = if (operationType == OperationType.ADD) "" else selectedNode.description
+        val description = if (operationType == OperationType.ADD) "" else selectedNode.description
         val editDescriptionDialog = EditDescriptionDialog()
-        editDescriptionDialog.setDescription(text)
+        editDescriptionDialog.setDescription(description)
         editDescriptionDialog.setSubmitListener { description ->
             when (operationType) {
                 OperationType.ADD -> {
