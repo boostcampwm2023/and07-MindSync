@@ -1,7 +1,7 @@
 package boostcamp.and07.mindsync.data.repository.profile
 
 import boostcamp.and07.mindsync.data.model.Profile
-import boostcamp.and07.mindsync.data.network.ProfileApi
+import boostcamp.and07.mindsync.data.network.api.ProfileApi
 import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

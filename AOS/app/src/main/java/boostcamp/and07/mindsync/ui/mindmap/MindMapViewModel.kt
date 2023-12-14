@@ -2,7 +2,7 @@ package boostcamp.and07.mindsync.ui.mindmap
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import boostcamp.and07.mindsync.data.IdGenerator
+import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.data.crdt.CrdtTree
 import boostcamp.and07.mindsync.data.crdt.Operation
 import boostcamp.and07.mindsync.data.crdt.OperationAdd

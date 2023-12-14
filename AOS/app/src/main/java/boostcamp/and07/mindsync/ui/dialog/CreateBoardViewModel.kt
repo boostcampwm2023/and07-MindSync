@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.ui.boardlist
+package boostcamp.and07.mindsync.ui.dialog
 
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel

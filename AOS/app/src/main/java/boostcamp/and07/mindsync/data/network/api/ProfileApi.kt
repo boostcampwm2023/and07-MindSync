@@ -1,6 +1,6 @@
-package boostcamp.and07.mindsync.data.network
+package boostcamp.and07.mindsync.data.network.api
 
-import boostcamp.and07.mindsync.data.network.response.ProfileData
+import boostcamp.and07.mindsync.data.network.response.profile.ProfileData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.GET

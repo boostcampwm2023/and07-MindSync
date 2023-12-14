@@ -1,6 +1,6 @@
 package boostcamp.and07.mindsync.data.network.response.mindmap
 
-import boostcamp.and07.mindsync.data.IdGenerator
+import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.data.crdt.CrdtTree
 import boostcamp.and07.mindsync.data.crdt.Operation
 import boostcamp.and07.mindsync.data.crdt.OperationAdd

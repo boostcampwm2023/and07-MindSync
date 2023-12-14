@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.boardlist.CreateBoardViewModel" />
+            type="boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel" />
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.boardlist.CreateBoardDialog" />
+            type="boostcamp.and07.mindsync.ui.dialog.CreateBoardDialog" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

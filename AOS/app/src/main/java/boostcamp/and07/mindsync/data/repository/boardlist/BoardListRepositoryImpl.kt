@@ -1,7 +1,7 @@
 package boostcamp.and07.mindsync.data.repository.boardlist
 
 import boostcamp.and07.mindsync.data.model.Board
-import boostcamp.and07.mindsync.data.network.BoardApi
+import boostcamp.and07.mindsync.data.network.api.BoardApi
 import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
 import boostcamp.and07.mindsync.data.network.request.board.RestoreBoardRequest
 import boostcamp.and07.mindsync.ui.util.toRequestBody

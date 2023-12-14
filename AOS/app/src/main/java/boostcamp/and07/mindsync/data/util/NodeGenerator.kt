@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.data
+package boostcamp.and07.mindsync.data.util
 
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.RectanglePath
