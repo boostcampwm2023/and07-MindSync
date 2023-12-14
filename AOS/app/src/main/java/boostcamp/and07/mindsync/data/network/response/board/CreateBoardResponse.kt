@@ -8,4 +8,3 @@ data class CreateBoardResponse(
     val statusCode: Int,
     val data: CreateBoardData?,
 )
-

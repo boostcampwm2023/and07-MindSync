@@ -2,7 +2,6 @@ package boostcamp.and07.mindsync.ui.mindmap
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.data.crdt.CrdtTree
 import boostcamp.and07.mindsync.data.crdt.Operation
 import boostcamp.and07.mindsync.data.crdt.OperationAdd
@@ -19,6 +18,7 @@ import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
+import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 import dagger.hilt.android.lifecycle.HiltViewModel

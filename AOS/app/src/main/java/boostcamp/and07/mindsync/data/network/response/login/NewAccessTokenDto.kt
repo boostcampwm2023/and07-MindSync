@@ -8,4 +8,3 @@ data class NewAccessTokenDto(
     @SerialName("access_token")
     val accessToken: String,
 )
-

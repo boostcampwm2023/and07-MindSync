@@ -1,6 +1,5 @@
 package boostcamp.and07.mindsync.data.network.response.mindmap
 
-import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.data.crdt.CrdtTree
 import boostcamp.and07.mindsync.data.crdt.Operation
 import boostcamp.and07.mindsync.data.crdt.OperationAdd
@@ -14,6 +13,7 @@ import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 
 fun SerializedCrdtTree.toCrdtTree(): CrdtTree {

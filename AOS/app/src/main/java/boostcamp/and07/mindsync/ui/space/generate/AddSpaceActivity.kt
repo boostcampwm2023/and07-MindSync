@@ -6,7 +6,6 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
