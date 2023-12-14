@@ -5,7 +5,7 @@
     <data>
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel" />
+            type="boostcamp.and07.mindsync.ui.dialog.EditDescriptionViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,13 +14,13 @@
         android:padding="10dp"
         android:layout_height="300dp">
 
-
         <EditText
             android:id="@+id/et_node_description"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:hint="@string/mindmap_input_text"
-            android:text="@{vm.operationType.equals(@string/mindmap_add) ? @string/mindmap_text_empty : vm.selectedNode.description}"
+            android:onTextChanged="@{(p0, p1, p2, p3) -> vm.onDescriptionChanged(p0)}"
+            android:text="@{vm.description}"
             android:textAlignment="center"
             android:fontFamily="@font/pretendard_regular"
             app:layout_constraintBottom_toTopOf="@id/btn_submit"
