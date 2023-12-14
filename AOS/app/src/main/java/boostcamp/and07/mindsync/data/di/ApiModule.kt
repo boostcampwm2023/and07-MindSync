@@ -1,12 +1,12 @@
 package boostcamp.and07.mindsync.data.di
 
-import boostcamp.and07.mindsync.data.network.BoardApi
-import boostcamp.and07.mindsync.data.network.LoginApi
-import boostcamp.and07.mindsync.data.network.LogoutApi
-import boostcamp.and07.mindsync.data.network.ProfileApi
-import boostcamp.and07.mindsync.data.network.ProfileSpaceApi
-import boostcamp.and07.mindsync.data.network.SpaceApi
-import boostcamp.and07.mindsync.data.network.TokenApi
+import boostcamp.and07.mindsync.data.network.api.BoardApi
+import boostcamp.and07.mindsync.data.network.api.LoginApi
+import boostcamp.and07.mindsync.data.network.api.LogoutApi
+import boostcamp.and07.mindsync.data.network.api.ProfileApi
+import boostcamp.and07.mindsync.data.network.api.ProfileSpaceApi
+import boostcamp.and07.mindsync.data.network.api.SpaceApi
+import boostcamp.and07.mindsync.data.network.api.TokenApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

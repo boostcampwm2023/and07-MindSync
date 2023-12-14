@@ -1,8 +1,8 @@
 package boostcamp.and07.mindsync.data.repository.login
 
 import android.util.Log
-import boostcamp.and07.mindsync.data.network.LogoutApi
-import boostcamp.and07.mindsync.data.network.request.LogoutRequest
+import boostcamp.and07.mindsync.data.network.api.LogoutApi
+import boostcamp.and07.mindsync.data.network.request.login.LogoutRequest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

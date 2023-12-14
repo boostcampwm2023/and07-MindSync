@@ -60,7 +60,7 @@ class SpaceListAdapter : ListAdapter<Space, SpaceListAdapter.SpaceListViewHolder
                     oldItem: Space,
                     newItem: Space,
                 ): Boolean {
-                    return oldItem.id == newItem.id
+                    return oldItem == newItem
                 }
             }
     }

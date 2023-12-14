@@ -2,7 +2,6 @@ package boostcamp.and07.mindsync.ui.mindmap
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import boostcamp.and07.mindsync.data.IdGenerator
 import boostcamp.and07.mindsync.data.crdt.CrdtTree
 import boostcamp.and07.mindsync.data.crdt.Operation
 import boostcamp.and07.mindsync.data.crdt.OperationAdd
@@ -19,6 +18,7 @@ import boostcamp.and07.mindsync.data.network.SocketEventType
 import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedCrdtTree
 import boostcamp.and07.mindsync.data.network.response.mindmap.SerializedOperation
+import boostcamp.and07.mindsync.data.util.IdGenerator
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +33,7 @@ class MindMapViewModel
     @Inject
     constructor() : ViewModel() {
         private var boardId: String = ""
-        val crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
+        var crdtTree = CrdtTree(id = IdGenerator.makeRandomNodeId(), tree = Tree())
         private var _selectedNode = MutableStateFlow<Node?>(null)
         val selectedNode: StateFlow<Node?> = _selectedNode
         private val _operation = MutableStateFlow<Operation?>(null)
@@ -43,6 +43,8 @@ class MindMapViewModel
         val socketState: StateFlow<SocketState> = _socketState
         private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
         val socketEvent: StateFlow<SocketEvent?> = _socketEvent
+        private val _operationType = MutableStateFlow("")
+        val operationType: StateFlow<String> = _operationType
 
         init {
             setSocketState()
@@ -152,7 +154,12 @@ class MindMapViewModel
             val operation =
                 when (operation.operationType) {
                     OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operation)
-                    OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operation)
+                    OperationType.DELETE.command -> {
+                        if (operation.id == _selectedNode.value?.id) {
+                            _selectedNode.value = null
+                        }
+                        crdtTree.deserializeOperationDelete(operation)
+                    }
                     OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operation)
                     OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operation)
                     else -> {
@@ -168,7 +175,12 @@ class MindMapViewModel
                 val operation =
                     when (operationLog.operation.operationType) {
                         OperationType.ADD.command -> crdtTree.deserializeOperationAdd(operationLog.operation)
-                        OperationType.DELETE.command -> crdtTree.deserializeOperationDelete(operationLog.operation)
+                        OperationType.DELETE.command -> {
+                            if (operationLog.operation.id == _selectedNode.value?.id) {
+                                _selectedNode.value = null
+                            }
+                            crdtTree.deserializeOperationDelete(operationLog.operation)
+                        }
                         OperationType.UPDATE.command -> crdtTree.deserializeOperationUpdate(operationLog.operation)
                         OperationType.MOVE.command -> crdtTree.deserializeOperationMove(operationLog.operation)
                         else -> {
@@ -198,8 +210,26 @@ class MindMapViewModel
         ) {
             crdtTree.tree.setRootNode(
                 crdtTree.tree.getRootNode().copy(
-                    path = crdtTree.tree.getRootNode().path.copy(centerX = windowWidth, centerY = windowHeight),
+                    path =
+                        crdtTree.tree.getRootNode().path.copy(
+                            centerX = windowWidth,
+                            centerY = windowHeight,
+                        ),
                 ),
             )
+        }
+
+        fun updateOperationType(operationType: String) {
+            _operationType.value = operationType
+        }
+
+        fun clearTree() {
+            boardId = ""
+            crdtTree =
+                CrdtTree(
+                    id = "",
+                    tree = Tree(),
+                )
+            _selectedNode.value = null
         }
     }

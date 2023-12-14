@@ -5,15 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import boostcamp.and07.mindsync.data.network.response.user.UserData
+import boostcamp.and07.mindsync.data.network.response.user.UserDto
 import boostcamp.and07.mindsync.databinding.ItemUsersBinding
 
-class UsersAdapter : ListAdapter<UserData, UsersAdapter.UsersViewHolder>(DIFF_CALLBACK) {
+class UsersAdapter : ListAdapter<UserDto, UsersAdapter.UsersViewHolder>(DIFF_CALLBACK) {
     class UsersViewHolder(
         private val binding: ItemUsersBinding,
     ) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: UserData) {
+        fun bind(item: UserDto) {
             with(binding) {
                 user = item
             }
@@ -37,17 +37,17 @@ class UsersAdapter : ListAdapter<UserData, UsersAdapter.UsersViewHolder>(DIFF_CA
 
     companion object {
         val DIFF_CALLBACK =
-            object : DiffUtil.ItemCallback<UserData>() {
+            object : DiffUtil.ItemCallback<UserDto>() {
                 override fun areItemsTheSame(
-                    oldItem: UserData,
-                    newItem: UserData,
+                    oldItem: UserDto,
+                    newItem: UserDto,
                 ): Boolean {
                     return oldItem.userId == newItem.userId
                 }
 
                 override fun areContentsTheSame(
-                    oldItem: UserData,
-                    newItem: UserData,
+                    oldItem: UserDto,
+                    newItem: UserDto,
                 ): Boolean {
                     return oldItem == newItem
                 }

@@ -59,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:textAlignment="center"
+            android:singleLine="true"
             android:text="@{vm.uiState.space.name}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

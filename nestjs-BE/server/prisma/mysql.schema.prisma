@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "./generated/mysql"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_DATABASE_URL")
+}
+
+model USER_TB {
+  uuid     String      @id @db.VarChar(32)
+  email    String
+  provider String
+  profiles PROFILE_TB[]
+  refresh_tokens REFRESH_TOKEN_TB[]
+  @@unique([email, provider])
+}
+
+model REFRESH_TOKEN_TB {
+  uuid        String      @id @db.VarChar(32)
+  token       String    @unique
+  expiry_date DateTime
+  user_id     String
+  user        USER_TB   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
+}
+
+model PROFILE_TB {
+  uuid     String @id @db.VarChar(32)
+  user_id  String @unique @db.VarChar(32)
+  image    String
+  nickname String
+  user     USER_TB @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
+  spaces   PROFILE_SPACE_TB[]
+}
+
+model SPACE_TB {
+  uuid     String @id @db.VarChar(32)
+  name     String
+  icon     String
+  profiles PROFILE_SPACE_TB[]
+  invite_codes INVITE_CODE_TB[]
+}
+
+model PROFILE_SPACE_TB {
+  space_uuid   String     @db.VarChar(32)
+  profile_uuid String     @db.VarChar(32)
+  space        SPACE_TB   @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
+  profile      PROFILE_TB @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
+  @@unique([space_uuid, profile_uuid])
+}
+
+model INVITE_CODE_TB {
+  uuid        String   @id     @db.VarChar(32)
+  invite_code String   @unique @db.VarChar(10)
+  space_uuid  String   @db.VarChar(32)
+  expiry_date DateTime
+  space       SPACE_TB @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
+}
+

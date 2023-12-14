@@ -40,6 +40,7 @@ class MainActivity :
     override fun onStart() {
         super.onStart()
         mainViewModel.fetchProfile()
+        mainViewModel.getSpaceUsers()
         mainViewModel.getSpaces()
         setTitle()
     }

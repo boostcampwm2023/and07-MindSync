@@ -13,17 +13,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.util.NodeGenerator
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 
 class EditDescriptionDialog : DialogFragment() {
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
-    private lateinit var editDialogInterface: EditDialogInterface
     private val mindMapViewModel: MindMapViewModel by navGraphViewModels(R.id.nav_graph)
     private val args: EditDescriptionDialogArgs by navArgs()
 
@@ -49,8 +48,19 @@ class EditDescriptionDialog : DialogFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setBinding()
         setupCancelBtn()
         setupSubmitBtn()
+        updateOperationType(args.operation.command)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        resizeDialog()
+    }
+
+    private fun setBinding() {
+        binding.vm = mindMapViewModel
     }
 
     private fun setupSubmitBtn() {
@@ -83,9 +93,8 @@ class EditDescriptionDialog : DialogFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        resizeDialog()
+    private fun updateOperationType(operationType: String) {
+        mindMapViewModel.updateOperationType(operationType)
     }
 
     private fun resizeDialog() {
