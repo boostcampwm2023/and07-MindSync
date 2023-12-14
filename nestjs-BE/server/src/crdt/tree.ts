@@ -41,6 +41,7 @@ export class Tree<T> {
 
     const targetIndex = parentNode.children.indexOf(targetId);
     if (targetIndex !== -1) parentNode.children.splice(targetIndex, 1);
+    targetNode.parentId = '0';
 
     return this.nodes.get(targetId);
   }
@@ -54,6 +55,15 @@ export class Tree<T> {
 
   toJSON() {
     return { nodes: Array.from(this.nodes.values()) };
+  }
+
+  isAncestor(targetId: string, ancestorId: string) {
+    let curNode = this.nodes.get(targetId);
+    while (curNode) {
+      if (curNode.parentId === ancestorId) return true;
+      curNode = this.nodes.get(curNode.parentId);
+    }
+    return false;
   }
 
   static parse<T>(json: string) {

@@ -141,6 +141,10 @@ export class OperationMove<T> extends Operation<T> {
     const node = tree.get(this.id);
     const oldParentId = node.parentId;
 
+    if (tree.isAncestor(this.parentId, this.id)) {
+      return { operation: this, oldParentId };
+    }
+
     tree.removeNode(this.id);
     tree.attachNode(this.id, this.parentId);
     return { operation: this, oldParentId };

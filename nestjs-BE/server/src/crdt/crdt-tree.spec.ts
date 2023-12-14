@@ -59,3 +59,18 @@ it('crdt tree 역직렬화', () => {
 
   expect(JSON.stringify(tree)).toEqual(JSON.stringify(parsedTree));
 });
+
+it('crdt tree 순환', () => {
+  const tree = new CrdtTree<string>('1');
+
+  const op1 = tree.generateOperationAdd('a', 'root', 'hello');
+  const op2 = tree.generateOperationAdd('b', 'root', 'hi');
+  const op3 = tree.generateOperationAdd('c', 'a', 'good');
+  const op4 = tree.generateOperationAdd('d', 'b', 'bad');
+  const op5 = tree.generateOperationMove('a', 'b');
+  const op6 = tree.generateOperationMove('b', 'a');
+
+  tree.applyOperations([op1, op2, op3, op4, op5, op6]);
+
+  expect(tree.tree.get('b').parentId).toEqual('root');
+});
