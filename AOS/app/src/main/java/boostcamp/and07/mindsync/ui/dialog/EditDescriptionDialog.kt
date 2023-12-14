@@ -14,7 +14,7 @@ import androidx.fragment.app.viewModels
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 
-class EditDescriptionDialog() : DialogFragment() {
+class EditDescriptionDialog : DialogFragment() {
     private var _binding: DialogEditDescriptionBinding? = null
     private val binding get() = _binding!!
     private val editDescriptionViewModel: EditDescriptionViewModel by viewModels()
