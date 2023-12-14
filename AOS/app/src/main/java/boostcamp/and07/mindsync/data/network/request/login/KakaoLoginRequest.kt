@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.data.network.request
+package boostcamp.and07.mindsync.data.network.request.login
 
 import kotlinx.serialization.Serializable
 

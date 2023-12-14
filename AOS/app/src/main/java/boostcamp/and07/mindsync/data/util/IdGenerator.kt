@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.data
+package boostcamp.and07.mindsync.data.util
 
 import java.util.UUID
 

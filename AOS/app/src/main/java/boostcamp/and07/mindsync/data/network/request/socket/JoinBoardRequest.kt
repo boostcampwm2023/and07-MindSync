@@ -1,9 +1,9 @@
-package boostcamp.and07.mindsync.data.network.request
+package boostcamp.and07.mindsync.data.network.request.socket
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class JoinBoard(
+data class JoinBoardRequest(
     val boardId: String,
     val boardName: String,
 )

@@ -10,6 +10,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
+import boostcamp.and07.mindsync.ui.dialog.CreateBoardDialog
 import boostcamp.and07.mindsync.ui.util.setClickEvent
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint

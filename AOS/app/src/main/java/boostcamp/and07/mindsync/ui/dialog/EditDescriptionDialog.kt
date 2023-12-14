@@ -13,10 +13,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.NodeGenerator
 import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.RectangleNode
+import boostcamp.and07.mindsync.data.util.NodeGenerator
 import boostcamp.and07.mindsync.databinding.DialogEditDescriptionBinding
 import boostcamp.and07.mindsync.ui.mindmap.MindMapViewModel
 

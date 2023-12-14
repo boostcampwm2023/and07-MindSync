@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.data.network
+package boostcamp.and07.mindsync.data.network.api
 
 import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
 import boostcamp.and07.mindsync.data.network.request.board.RestoreBoardRequest

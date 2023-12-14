@@ -1,6 +1,6 @@
-package boostcamp.and07.mindsync.data.network
+package boostcamp.and07.mindsync.data.network.api
 
-import boostcamp.and07.mindsync.data.network.request.ProfileSpaceJoinRequest
+import boostcamp.and07.mindsync.data.network.request.space.ProfileSpaceJoinRequest
 import boostcamp.and07.mindsync.data.network.response.space.GetSpacesResponse
 import boostcamp.and07.mindsync.data.network.response.space.ProfileSpaceJoinResponse
 import boostcamp.and07.mindsync.data.network.response.user.UserResponse

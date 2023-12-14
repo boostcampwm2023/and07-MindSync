@@ -1,7 +1,6 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -13,7 +12,6 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.Tree
-import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.util.Dp
@@ -59,30 +57,8 @@ class MindMapFragment :
         setBinding()
         collectOperation()
         collectSelectedNode()
-        collectSocketState()
         setClickEventThrottle()
         mindMapViewModel.setBoard(args.boardId, args.boardName)
-    }
-
-    private fun collectSocketState() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mindMapViewModel.socketState.collectLatest { state ->
-                    when (state) {
-                        SocketState.CONNECT -> {
-                        }
-
-                        SocketState.DISCONNECT -> {
-                            Log.d("MindMapFragment", "collectSocketState: disconnect")
-                        }
-
-                        SocketState.ERROR -> {
-                            Log.d("MindMapFragment", "collectSocketState: error")
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun collectOperation() {

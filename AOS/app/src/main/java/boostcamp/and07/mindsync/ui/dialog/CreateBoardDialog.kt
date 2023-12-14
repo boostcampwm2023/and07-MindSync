@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.ui.boardlist
+package boostcamp.and07.mindsync.ui.dialog
 
 import android.Manifest
 import android.app.ActionBar.LayoutParams

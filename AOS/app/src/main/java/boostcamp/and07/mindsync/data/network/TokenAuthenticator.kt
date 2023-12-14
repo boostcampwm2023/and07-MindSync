@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.data.network
 
-import boostcamp.and07.mindsync.data.network.request.NewAccessTokenRequest
+import boostcamp.and07.mindsync.data.network.api.TokenApi
+import boostcamp.and07.mindsync.data.network.request.login.NewAccessTokenRequest
 import boostcamp.and07.mindsync.data.repository.login.DataStoreConst
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.login.TokenRepository

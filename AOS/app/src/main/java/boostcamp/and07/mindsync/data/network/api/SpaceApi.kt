@@ -1,4 +1,4 @@
-package boostcamp.and07.mindsync.data.network
+package boostcamp.and07.mindsync.data.network.api
 
 import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
 import boostcamp.and07.mindsync.data.network.response.space.InviteCodeResponse
