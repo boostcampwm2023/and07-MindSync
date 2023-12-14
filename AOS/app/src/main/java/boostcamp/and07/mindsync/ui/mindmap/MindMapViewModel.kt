@@ -43,8 +43,6 @@ class MindMapViewModel
         val socketState: StateFlow<SocketState> = _socketState
         private val _socketEvent = MutableStateFlow<SocketEvent?>(null)
         val socketEvent: StateFlow<SocketEvent?> = _socketEvent
-        private val _operationType = MutableStateFlow("")
-        val operationType: StateFlow<String> = _operationType
 
         init {
             setSocketState()
@@ -217,19 +215,5 @@ class MindMapViewModel
                         ),
                 ),
             )
-        }
-
-        fun updateOperationType(operationType: String) {
-            _operationType.value = operationType
-        }
-
-        fun clearTree() {
-            boardId = ""
-            crdtTree =
-                CrdtTree(
-                    id = "",
-                    tree = Tree(),
-                )
-            _selectedNode.value = null
         }
     }

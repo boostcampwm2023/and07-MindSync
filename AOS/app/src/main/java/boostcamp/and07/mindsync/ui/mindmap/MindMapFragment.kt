@@ -1,19 +1,20 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
-import android.content.Context
-import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.crdt.OperationType
+import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
+import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
+import boostcamp.and07.mindsync.data.util.NodeGenerator
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
+import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
 import boostcamp.and07.mindsync.ui.util.ThrottleDuration
@@ -33,24 +34,9 @@ class MindMapFragment :
     NodeClickListener,
     TreeUpdateListener,
     NodeMoveListener {
-    private val mindMapViewModel: MindMapViewModel by navGraphViewModels(R.id.nav_graph) {
-        MindMapViewModelFactory()
-    }
+    private val mindMapViewModel: MindMapViewModel by viewModels()
     private lateinit var mindMapContainer: MindMapContainer
     private val args: MindMapFragmentArgs by navArgs()
-    private var isBack = false
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        val callback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    isBack = true
-                    findNavController().popBackStack()
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
 
     override fun initView() {
         setupRootNode()
@@ -64,10 +50,12 @@ class MindMapFragment :
     private fun collectOperation() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mindMapViewModel.operation.collectLatest {
-                    mindMapContainer.update(mindMapViewModel.crdtTree.tree)
-                    binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
-                    binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
+                mindMapViewModel.operation.collectLatest { operation ->
+                    operation?.let {
+                        mindMapContainer.update(mindMapViewModel.crdtTree.tree)
+                        binding.zoomLayoutMindMapRoot.lineView.updateTree(mindMapContainer.tree)
+                        binding.zoomLayoutMindMapRoot.nodeView.updateTree(mindMapContainer.tree)
+                    }
                 }
             }
         }
@@ -104,11 +92,30 @@ class MindMapFragment :
         operationType: OperationType,
         selectedNode: Node,
     ) {
-        findNavController().navigate(
-            MindMapFragmentDirections.actionMindMapFragmentToEditDescriptionDialog(
-                operationType,
-                selectedNode,
-            ),
+        val description = if (operationType == OperationType.ADD) "" else selectedNode.description
+        val editDescriptionDialog = EditDescriptionDialog()
+        editDescriptionDialog.setDescription(description)
+        editDescriptionDialog.setSubmitListener { description ->
+            when (operationType) {
+                OperationType.ADD -> {
+                    mindMapViewModel.addNode(selectedNode, NodeGenerator.makeNode(description, selectedNode.id))
+                }
+
+                OperationType.UPDATE -> {
+                    val newNode =
+                        when (selectedNode) {
+                            is CircleNode -> selectedNode.copy(description = description)
+                            is RectangleNode -> selectedNode.copy(description = description)
+                        }
+                    mindMapViewModel.updateNode(newNode)
+                }
+
+                else -> {}
+            }
+        }
+        editDescriptionDialog.show(
+            requireActivity().supportFragmentManager,
+            "EditDescriptionDialog",
         )
     }
 
@@ -155,12 +162,5 @@ class MindMapFragment :
         parent: Node,
     ) {
         mindMapViewModel.moveNode(tree, target, parent)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (isBack) {
-            mindMapViewModel.clearTree()
-        }
     }
 }
