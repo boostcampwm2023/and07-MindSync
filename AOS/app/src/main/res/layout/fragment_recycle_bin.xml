@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="vm"
+            type="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinViewModel" />
 
+        <import type="com.google.android.flexbox.FlexDirection"></import>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,14 +16,58 @@
         android:layout_height="match_parent"
         tools:context=".ui.recyclebin.RecycleBinFragment">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_recyclebin_start"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+
         <TextView
+            android:id="@+id/tv_recyclebin_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="@id/gl_recyclebin_start"
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/Typography.Body01.Medium"
+            app:layout_constraintEnd_toEndOf="@id/gl_recyclebin_end"
+            android:text="@string/recyclebin_info"
+            android:background="@color/gray3"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_recyclebin_board"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="15dp"
+            android:background="@android:color/transparent"
+            app:restoreBoards="@{vm.uiState.boards}"
+            app:flexBoxLayoutManager="@{FlexDirection.ROW}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/gl_recyclebin_end"
+            app:layout_constraintStart_toEndOf="@id/gl_recyclebin_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_recyclebin_info"
+            tools:listitem="@layout/item_recycle_board" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_recyclebin_restore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recycle Bin Fragment"
+            android:layout_margin="10dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_restore_board"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:rippleColor="@color/mindmap2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_recyclebin_end"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

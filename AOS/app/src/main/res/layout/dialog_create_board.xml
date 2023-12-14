@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="boostcamp.and07.mindsync.ui.boardlist.CreateBoardViewModel" />
+            type="boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel" />
 
         <variable
             name="view"
-            type="boostcamp.and07.mindsync.ui.boardlist.CreateBoardDialog" />
+            type="boostcamp.and07.mindsync.ui.dialog.CreateBoardDialog" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +21,19 @@
         android:padding="10dp"
         tools:context=".ui.space.generate.AddSpaceActivity">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_create_board_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.254"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gl_create_board_space_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.13"/>
 
         <TextView
             android:id="@+id/tv_add_space_title"
@@ -33,18 +46,17 @@
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/iv_add_space_thumbnail" />
+            app:layout_constraintBottom_toTopOf="@id/gl_create_board_space_title" />
 
         <ImageView
             android:id="@+id/iv_add_space_thumbnail"
             android:layout_width="125dp"
             android:layout_height="125dp"
-            android:layout_marginTop="65dp"
             android:src="@mipmap/ic_app_logo_round"
             app:imageUri="@{vm.uiState.boardImage}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_add_space_title" />
+            app:layout_constraintTop_toBottomOf="@id/gl_create_board_image" />
 
         <ImageView
             android:id="@+id/imgbtn_update_space_thumbnail"
@@ -52,7 +64,6 @@
             android:layout_height="35dp"
             android:background="@drawable/ic_add"
             android:backgroundTint="@color/blue"
-            android:onClick="@{() -> view.clickImageButton()}"
             app:layout_constraintEnd_toEndOf="@id/iv_add_space_thumbnail"
             app:layout_constraintTop_toTopOf="@id/iv_add_space_thumbnail" />
 
@@ -63,6 +74,7 @@
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:counterEnabled="true"
             app:layout_constraintTop_toBottomOf="@id/iv_add_space_thumbnail">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -70,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:hint="스페이스 이름"
+                android:hint="@string/board_list_board_name_hint"
                 android:onTextChanged="@{vm.onBoardNameChanged}"
                 android:text="@{vm.uiState.boardName}" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -80,9 +92,10 @@
             android:layout_width="264dp"
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
-            android:backgroundTint="@color/main4"
-            android:onClick="@{()->view.onClickCompleteButton(@string/space_image_name)}"
+            android:onClick="@{()->view.onClickCompleteButton(@string/board_multipart_image_name)}"
             android:text="@string/check_message"
+            android:backgroundTint="@{vm.uiState.boardName.length() > 0 &amp;&amp; vm.uiState.boardName.length &lt;=20 ? @color/main4 : @color/gray3}"
+            app:editButtonEnabled="@{vm.uiState.boardName}"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -45,4 +45,11 @@ class DrawInfo(context: Context) {
             color = Color.BLACK
             alpha = 50
         }
+    val darkModeLinePaint =
+        Paint().apply {
+            color = Color.GRAY
+            style = Paint.Style.STROKE
+            strokeWidth = Dp(5f).toPx(context)
+            isAntiAlias = true
+        }
 }

@@ -90,11 +90,13 @@
         <TextView
             android:id="@+id/tv_profile_nickname"
             style="@style/Typography.Title01"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:textAlignment="center"
             android:text="@{vm.uiState.nickname}"
             android:textColor="@color/gray4"
+            android:singleLine="true"
             app:layout_constraintEnd_toEndOf="@id/iv_profile_image"
             app:layout_constraintStart_toStartOf="@id/iv_profile_image"
             app:layout_constraintTop_toBottomOf="@id/iv_profile_image"
@@ -117,11 +119,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:backgroundTint="@color/main4"
+            android:backgroundTint="@{vm.uiState.isModify ? @color/main4 : @color/gray3}"
             android:text="@string/profile_modify"
             android:textColor="@color/white"
             android:onClick="@{()->vm.updateProfile(@string/profile_image_name)}"
             app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
+            android:enabled="@{vm.uiState.isModify}"
             app:layout_constraintStart_toStartOf="@id/gl_profile_start"
             app:layout_constraintTop_toBottomOf="@id/tv_profile_nickname" />
 

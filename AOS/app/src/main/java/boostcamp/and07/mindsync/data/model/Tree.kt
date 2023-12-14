@@ -1,6 +1,6 @@
 package boostcamp.and07.mindsync.data.model
 
-import boostcamp.and07.mindsync.data.NodeGenerator
+import boostcamp.and07.mindsync.data.util.NodeGenerator
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.ExceptionMessage
 

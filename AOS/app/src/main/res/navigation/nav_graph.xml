@@ -15,6 +15,12 @@
         <argument
             android:name="boardId"
             app:argType="string" />
+        <argument
+            android:name="boardName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_mindMapFragment_to_editDescriptionDialog"
+            app:destination="@id/editDescriptionDialog" />
     </fragment>
     <fragment
         android:id="@+id/boardListFragment"
@@ -30,7 +36,11 @@
     <fragment
         android:id="@+id/recycleBinFragment"
         android:name="boostcamp.and07.mindsync.ui.recyclebin.RecycleBinFragment"
-        android:label="RecycleBinFragment" />
+        android:label="RecycleBinFragment">
+        <argument
+            android:name="spaceId"
+            app:argType="string" />
+    </fragment>
     <activity
         android:id="@+id/addSpaceActivity"
         android:name="boostcamp.and07.mindsync.ui.space.generate.AddSpaceActivity"
@@ -46,7 +56,14 @@
     <dialog
         android:id="@+id/editDescriptionDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog"
-        android:label="EditDescriptionDialog" />
+        android:label="EditDescriptionDialog" >
+        <argument
+            android:name="operation"
+            app:argType="boostcamp.and07.mindsync.data.crdt.OperationType" />
+        <argument
+            android:name="node"
+            app:argType="boostcamp.and07.mindsync.data.model.Node" />
+    </dialog>
     <dialog
         android:id="@+id/inviteUserDialog"
         android:name="boostcamp.and07.mindsync.ui.dialog.InviteUserDialog"
@@ -65,7 +82,9 @@
         android:label="ProfileActivity" />
     <action
         android:id="@+id/action_to_boardListFragment"
-        app:destination="@id/boardListFragment" />
+        app:destination="@id/boardListFragment"
+        app:popUpTo="@id/spaceListFragment"
+        />
     <action
         android:id="@+id/action_to_recycleBinFragment"
         app:destination="@id/recycleBinFragment" />

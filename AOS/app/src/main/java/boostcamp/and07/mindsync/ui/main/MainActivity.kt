@@ -20,6 +20,8 @@ import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.boardlist.UsersAdapter
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import boostcamp.and07.mindsync.ui.space.list.SpaceListFragmentDirections
+import boostcamp.and07.mindsync.ui.util.ThrottleDuration
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -38,7 +40,9 @@ class MainActivity :
     override fun onStart() {
         super.onStart()
         mainViewModel.fetchProfile()
+        mainViewModel.getSpaceUsers()
         mainViewModel.getSpaces()
+        setTitle()
     }
 
     override fun init() {
@@ -70,6 +74,14 @@ class MainActivity :
                     if (event is MainUiEvent.GetUsers) {
                         mainViewModel.getSpaceUsers()
                     }
+                    if (event is MainUiEvent.LeaveSpace) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            getString(R.string.space_leave_room_message, event.spaceName),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        navController.navigate(R.id.spaceListFragment)
+                    }
                 }
             }
         }
@@ -83,7 +95,10 @@ class MainActivity :
 
     private fun setSideBarNavigation() {
         with(binding.includeMainInDrawer) {
-            tvSideBarBoardList.setOnClickListener {
+            tvSideBarBoardList.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
                     drawerLayout.closeDrawers()
                     navController.navigate(
@@ -92,18 +107,47 @@ class MainActivity :
                         ),
                     )
                 } ?: run {
-                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        resources.getString(R.string.space_not_join),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
-            tvSideBarRecycleBin.setOnClickListener {
+
+            tvSideBarRecycleBin.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 drawerLayout.closeDrawers()
-                navController.navigate(R.id.action_to_recycleBinFragment)
+                mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
+                    drawerLayout.closeDrawers()
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToRecycleBinFragment(
+                            spaceId = nowSpace.id,
+                        ),
+                    )
+                } ?: run {
+                    Toast.makeText(
+                        this@MainActivity,
+                        resources.getString(R.string.space_not_join),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
             }
-            imgbtnSideBarAddSpace.setOnClickListener {
+
+            imgbtnSideBarAddSpace.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.action_to_addSpaceDialog)
             }
-            tvSideBarInviteSpace.setOnClickListener {
+
+            tvSideBarInviteSpace.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 mainViewModel.uiState.value.nowSpace?.let { nowSpace ->
                     drawerLayout.closeDrawers()
                     navController.navigate(
@@ -112,12 +156,29 @@ class MainActivity :
                         ),
                     )
                 } ?: run {
-                    Toast.makeText(this@MainActivity, resources.getString(R.string.space_not_join), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        resources.getString(R.string.space_not_join),
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
-            imgbtnSideBarProfile.setOnClickListener {
+
+            imgbtnSideBarProfile.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
                 val intent = Intent(this@MainActivity, ProfileActivity::class.java)
                 startActivity(intent)
+            }
+
+            tvSideBarLeaveSpace.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.LONG_DURATION.duration,
+            ) {
+                mainViewModel.leaveSpace()
+                drawerLayout.closeDrawers()
+                navController.popBackStack()
             }
         }
     }
@@ -136,12 +197,16 @@ class MainActivity :
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawers()
             } else {
-                if (System.currentTimeMillis() - backPressedTime <= 2000L) {
-                    backPressedToast?.cancel()
-                    finish()
+                if (navController.currentDestination!!.id == R.id.spaceListFragment) {
+                    if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                        backPressedToast?.cancel()
+                        finish()
+                    } else {
+                        backPressedTime = System.currentTimeMillis()
+                        backPressedToast?.show()
+                    }
                 } else {
-                    backPressedTime = System.currentTimeMillis()
-                    backPressedToast?.show()
+                    navController.popBackStack()
                 }
             }
         }
@@ -152,16 +217,12 @@ class MainActivity :
         spaceAdapter.setSideBarClickListener(
             object : SpaceClickListener {
                 override fun onClickSpace(space: Space) {
+                    navController.navigate(SpaceListFragmentDirections.actionToBoardListFragment(spaceId = space.id))
                     mainViewModel.updateCurrentSpace(space)
                 }
             },
         )
         binding.includeMainInDrawer.rvSideBarSpace.adapter = spaceAdapter
-        lifecycleScope.launch {
-            mainViewModel.uiState.collectLatest { uiState ->
-                spaceAdapter.submitList(uiState.spaces.toMutableList())
-            }
-        }
         binding.includeMainInDrawer.rcvSideBarUsers.adapter = usersAdapter
     }
 
@@ -171,5 +232,22 @@ class MainActivity :
 
     fun foldDrawerButtonOnClick(view: View) {
         drawerLayout.closeDrawers()
+    }
+
+    private fun setTitle() {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            lifecycleScope.launch {
+                mainViewModel.uiState.collectLatest { uiState ->
+                    binding.tvMainTitle.text =
+                        when {
+                            uiState.spaces.isEmpty() -> getString(R.string.app_start)
+                            destination.id == R.id.spaceListFragment -> getString(R.string.space_list_title)
+                            destination.id == R.id.boardListFragment -> getString(R.string.board_list_title)
+                            destination.id == R.id.recycleBinFragment -> getString(R.string.recyclebin_title)
+                            else -> ""
+                        }
+                }
+            }
+        }
     }
 }

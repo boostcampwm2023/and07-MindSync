@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.ui.space.SpaceEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
+import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +29,7 @@ class InputSpaceCodeViewModel
         val event = _event.asSharedFlow()
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _event.emit(SpaceEvent.Error(throwable.message.toString())) }
+                viewModelScope.launch { _event.emit(SpaceEvent.Error(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_INVITE_CODE_WRONG.message)) }
             }
 
         fun onSpaceInviteCodeChanged(

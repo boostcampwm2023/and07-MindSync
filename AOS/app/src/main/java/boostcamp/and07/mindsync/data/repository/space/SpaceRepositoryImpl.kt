@@ -1,7 +1,7 @@
 package boostcamp.and07.mindsync.data.repository.space
 
 import boostcamp.and07.mindsync.data.model.Space
-import boostcamp.and07.mindsync.data.network.SpaceApi
+import boostcamp.and07.mindsync.data.network.api.SpaceApi
 import boostcamp.and07.mindsync.data.network.request.space.InviteCodeRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,7 +14,7 @@ class SpaceRepositoryImpl
     constructor(private val spaceApi: SpaceApi) : SpaceRepository {
         override fun addSpace(
             name: RequestBody,
-            icon: MultipartBody.Part,
+            icon: MultipartBody.Part?,
         ): Flow<Space> =
             flow {
                 val response = spaceApi.addSpace(name, icon)

@@ -3,6 +3,7 @@ package boostcamp.and07.mindsync.ui.profile
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -14,6 +15,7 @@ import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.databinding.FragmentProfileBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -40,7 +42,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
                 createImage(uri)
             }
         setBinding()
-        setupImageEdit()
+        setClickEventThrottle()
         setupShowNicknameEditBtn()
         setupBackBtn()
         observeEvent()
@@ -57,8 +59,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         binding.vm = profileViewModel
     }
 
-    private fun setupImageEdit() {
-        binding.ivProfileImage.setOnClickListener {
+    private fun setClickEventThrottle() {
+        binding.ivProfileImage.setClickEvent(lifecycleScope) {
             imagePickerHandler.checkPermissionsAndLaunchImagePicker()
         }
     }
@@ -94,6 +96,9 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
                                 "${event.message}",
                                 Toast.LENGTH_SHORT,
                             ).show()
+                        }
+                        is ProfileUiEvent.UpdateProfileNickName -> {
+                            binding.tvProfileNickname.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
                         }
                     }
                 }

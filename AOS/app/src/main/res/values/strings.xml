@@ -1,13 +1,10 @@
 <resources>
     <string name="app_name">MindSync</string>
-    <string name="side_bar_board_list">보드 목록</string>
-    <string name="side_bar_conversation_history">대화 기록</string>
-    <string name="side_bar_recycle_bin">휴지통</string>
-    <string name="side_bar_invite_space">스페이스 초대하기</string>
-    <string name="side_bar_leave_space">스페이스 나가기</string>
-    <string name="side_bar_fold_description">사이드바 접기</string>
     <string name="main_back_pressed_message">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="check_message">확인</string>
     <string name="cancel_message">취소</string>
     <string name="create_board_introduce">생성할 보드의\n정보를 입력해주세요!</string>
+    <string name="space_list_onboarding_message">스페이스를 추가해서\n다른사람들과 함께\n마인드맵을 그려보세요!</string>
+    <string name="space_list_add_space">스페이스 추가하기</string>
+    <string name="app_start">MindSync 시작하기</string>
 </resources>

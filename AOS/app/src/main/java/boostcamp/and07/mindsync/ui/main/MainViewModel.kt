@@ -29,6 +29,7 @@ class MainViewModel
         val uiState: StateFlow<MainUiState> = _uiState
         private val _event = MutableSharedFlow<MainUiEvent>()
         val event: SharedFlow<MainUiEvent> = _event
+
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
                 viewModelScope.launch { _event.emit(MainUiEvent.ShowMessage(throwable.message.toString())) }
@@ -48,10 +49,18 @@ class MainViewModel
 
         fun getSpaces() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                profileSpaceRepository.getSpaces().collectLatest { spaces ->
+                profileSpaceRepository.getSpaces().collectLatest { responseSpaces ->
+                    val newSpaces =
+                        responseSpaces.map { space ->
+                            if (space.id == _uiState.value.nowSpace?.id) {
+                                space.copy(isSelected = true)
+                            } else {
+                                space
+                            }
+                        }
                     _uiState.update { uiState ->
                         uiState.copy(
-                            spaces = spaces,
+                            spaces = newSpaces,
                         )
                     }
                 }
@@ -59,8 +68,12 @@ class MainViewModel
         }
 
         fun updateCurrentSpace(space: Space) {
+            val updatedSpaces = _uiState.value.spaces.map { it.copy(isSelected = it == space) }
             _uiState.update { uiState ->
-                uiState.copy(nowSpace = space)
+                uiState.copy(
+                    nowSpace = space,
+                    spaces = updatedSpaces,
+                )
             }
             viewModelScope.launch {
                 _event.emit(MainUiEvent.ShowMessage("${space.name}방에 참가했습니다."))
@@ -77,6 +90,23 @@ class MainViewModel
                                 users = list,
                             )
                         }
+                    }
+                }
+            }
+        }
+
+        fun leaveSpace() {
+            uiState.value.nowSpace?.let { nowSpace ->
+                viewModelScope.launch(coroutineExceptionHandler) {
+                    profileSpaceRepository.leaveSpace(nowSpace.id).collectLatest {
+                        _uiState.update { mainUiState ->
+                            mainUiState.copy(
+                                spaces = mainUiState.spaces.filter { space -> space.id != nowSpace.id },
+                                nowSpace = null,
+                                users = listOf(),
+                            )
+                        }
+                        _event.emit(MainUiEvent.LeaveSpace(nowSpace.name))
                     }
                 }
             }

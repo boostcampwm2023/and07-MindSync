@@ -1,11 +1,13 @@
 package boostcamp.and07.mindsync.data.repository.boardlist
 
 import boostcamp.and07.mindsync.data.model.Board
-import boostcamp.and07.mindsync.data.network.BoardApi
-import boostcamp.and07.mindsync.data.network.request.board.CreateBoardRequest
+import boostcamp.and07.mindsync.data.network.api.BoardApi
 import boostcamp.and07.mindsync.data.network.request.board.DeleteBoardRequest
+import boostcamp.and07.mindsync.data.network.request.board.RestoreBoardRequest
+import boostcamp.and07.mindsync.ui.util.toRequestBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class BoardListRepositoryImpl
@@ -16,16 +18,14 @@ class BoardListRepositoryImpl
         override fun createBoard(
             boardName: String,
             spaceId: String,
-            imageUrl: String,
+            imageUrl: MultipartBody.Part?,
         ): Flow<Board> =
             flow {
                 val response =
                     boardApi.createBoard(
-                        CreateBoardRequest(
-                            boardName,
-                            spaceId,
-                            imageUrl,
-                        ),
+                        boardName.toRequestBody(),
+                        spaceId.toRequestBody(),
+                        imageUrl,
                     )
                 response.data?.let { data ->
                     emit(
@@ -33,17 +33,20 @@ class BoardListRepositoryImpl
                             id = data.boardId,
                             name = boardName,
                             date = data.date,
-                            imageUrl = imageUrl,
+                            imageUrl = data.imageUrl,
                         ),
                     )
                 }
             }
 
-        override fun getBoard(spaceId: String): Flow<List<Board>> =
+        override fun getBoard(
+            spaceId: String,
+            isDeleted: Boolean,
+        ): Flow<List<Board>> =
             flow {
                 val response = boardApi.getBoards(spaceId)
                 emit(
-                    response.data.map { board ->
+                    response.data.filter { board -> board.isDeleted == isDeleted }.map { board ->
                         Board(
                             id = board.boardId,
                             name = board.boardName,
@@ -54,9 +57,15 @@ class BoardListRepositoryImpl
                 )
             }
 
-        override fun deleteBoard(boardId: String): Flow<Unit> =
+        override fun deleteBoard(boardId: String): Flow<Boolean> =
             flow {
                 val response = boardApi.deleteBoard(DeleteBoardRequest(boardId))
-                emit(Unit)
+                emit(true)
+            }
+
+        override fun restoreBoard(boardId: String): Flow<Boolean> =
+            flow {
+                val response = boardApi.restoreBoard(RestoreBoardRequest(boardId))
+                emit(true)
             }
     }

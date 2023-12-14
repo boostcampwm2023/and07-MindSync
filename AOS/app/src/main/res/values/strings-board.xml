@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="board_list_board_name_hint">보드 이름은 20자가 최대입니다.</string>
     <string name="board_list_board_name">보드 이름</string>
     <string name="board_list_board_create_date">yyyy-mm-dd</string>
+    <string name="board_multipart_image_name">image</string>
+    <string name="board_list_title">보드 목록</string>
+    <string name="recyclebin_title">휴지통</string>
+    <string name="recyclebin_info">휴지통의 보드는 7일 후에 자동 삭제 됩니다.</string>
 </resources>

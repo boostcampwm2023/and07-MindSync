@@ -1,24 +1,23 @@
 package boostcamp.and07.mindsync.ui.mindmap
 
-import android.util.Log
-import androidx.fragment.app.viewModels
+import android.content.Context
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.NodeGenerator
-import boostcamp.and07.mindsync.data.model.CircleNode
+import boostcamp.and07.mindsync.data.crdt.OperationType
 import boostcamp.and07.mindsync.data.model.Node
-import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
-import boostcamp.and07.mindsync.data.network.SocketState
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
-import boostcamp.and07.mindsync.ui.dialog.EditDescriptionDialog
-import boostcamp.and07.mindsync.ui.dialog.EditDialogInterface
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
+import boostcamp.and07.mindsync.ui.util.ThrottleDuration
+import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toDp
 import boostcamp.and07.mindsync.ui.view.MindMapContainer
 import boostcamp.and07.mindsync.ui.view.listener.NodeClickListener
@@ -34,38 +33,32 @@ class MindMapFragment :
     NodeClickListener,
     TreeUpdateListener,
     NodeMoveListener {
-    private val mindMapViewModel: MindMapViewModel by viewModels()
+    private val mindMapViewModel: MindMapViewModel by navGraphViewModels(R.id.nav_graph) {
+        MindMapViewModelFactory()
+    }
     private lateinit var mindMapContainer: MindMapContainer
     private val args: MindMapFragmentArgs by navArgs()
+    private var isBack = false
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    isBack = true
+                    findNavController().popBackStack()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     override fun initView() {
         setupRootNode()
         setBinding()
         collectOperation()
         collectSelectedNode()
-        collectSocketState()
-        mindMapViewModel.setBoardId(args.boardId)
-    }
-
-    private fun collectSocketState() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mindMapViewModel.socketState.collectLatest { state ->
-                    when (state) {
-                        SocketState.CONNECT -> {
-                        }
-
-                        SocketState.DISCONNECT -> {
-                            Log.d("MindMapFragment", "collectSocketState: disconnect")
-                        }
-
-                        SocketState.ERROR -> {
-                            Log.d("MindMapFragment", "collectSocketState: error")
-                        }
-                    }
-                }
-            }
-        }
+        setClickEventThrottle()
+        mindMapViewModel.setBoard(args.boardId, args.boardName)
     }
 
     private fun collectOperation() {
@@ -83,12 +76,12 @@ class MindMapFragment :
     private fun setupRootNode() {
         val displayMetrics = requireActivity().resources.displayMetrics
         val screenHeight = Dp(Px(displayMetrics.heightPixels.toFloat()).toDp(requireContext()))
-        mindMapViewModel.changeRootY(screenHeight / 2)
+        val screenWidth = Dp(Px(displayMetrics.widthPixels.toFloat()).toDp(requireContext()))
+        mindMapViewModel.changeRootXY(screenWidth / 2, screenHeight / 2)
     }
 
     private fun setBinding() {
         binding.vm = mindMapViewModel
-        binding.view = this
         mindMapContainer = MindMapContainer(requireContext())
         mindMapContainer.setNodeClickListener(this)
         mindMapContainer.setTreeUpdateListener(this)
@@ -108,34 +101,43 @@ class MindMapFragment :
     }
 
     private fun showDialog(
-        selectNode: Node,
-        action: (Node, String) -> Unit,
+        operationType: OperationType,
+        selectedNode: Node,
     ) {
-        val dialog = EditDescriptionDialog()
-        dialog.setListener(
-            object : EditDialogInterface {
-                override fun onSubmitClick(description: String) {
-                    action.invoke(selectNode, description)
-                }
-            },
+        findNavController().navigate(
+            MindMapFragmentDirections.actionMindMapFragmentToEditDescriptionDialog(
+                operationType,
+                selectedNode,
+            ),
         )
-        dialog.show(requireActivity().supportFragmentManager, "EditDescriptionDialog")
     }
 
-    fun addButtonListener(selectNode: Node) {
-        showDialog(selectNode) { parent, description ->
-            mindMapViewModel.addNode(parent, NodeGenerator.makeNode(description, parent.id))
-        }
-    }
-
-    fun editButtonListener(selectNode: Node) {
-        showDialog(selectNode) { node, description ->
-            val newNode =
-                when (node) {
-                    is CircleNode -> node.copy(description = description)
-                    is RectangleNode -> node.copy(description = description)
+    private fun setClickEventThrottle() {
+        with(binding) {
+            imgbtnMindMapAdd.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.SHORT_DURATION.duration,
+            ) {
+                mindMapViewModel.selectedNode.value?.let { selectNode ->
+                    showDialog(OperationType.ADD, selectNode)
                 }
-            mindMapViewModel.updateNode(newNode)
+            }
+            imgbtnMindMapEdit.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.SHORT_DURATION.duration,
+            ) {
+                mindMapViewModel.selectedNode.value?.let { selectNode ->
+                    showDialog(OperationType.UPDATE, selectNode)
+                }
+            }
+            imgbtnMindMapRemove.setClickEvent(
+                lifecycleScope,
+                ThrottleDuration.SHORT_DURATION.duration,
+            ) {
+                mindMapViewModel.selectedNode.value?.let { selectNode ->
+                    mindMapViewModel.removeNode(selectNode)
+                }
+            }
         }
     }
 
@@ -153,5 +155,12 @@ class MindMapFragment :
         parent: Node,
     ) {
         mindMapViewModel.moveNode(tree, target, parent)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (isBack) {
+            mindMapViewModel.clearTree()
+        }
     }
 }

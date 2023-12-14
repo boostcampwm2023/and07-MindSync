@@ -40,7 +40,7 @@ class NodeView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawAttachedNodeNode(canvas)
+        drawAttachedNode(canvas)
         drawTree(canvas)
         mindMapContainer.selectNode?.let { selectedNode ->
             makeStrokeNode(canvas, selectedNode)
@@ -56,7 +56,7 @@ class NodeView(
             }
 
             MotionEvent.ACTION_MOVE -> {
-                mindMapContainer.isMoving = true
+                mindMapContainer.isMoving = mindMapContainer.selectNode is RectangleNode
                 moveNode(
                     event.x,
                     event.y,
@@ -104,6 +104,7 @@ class NodeView(
         dy: Float,
     ) {
         var attachedNode: Node? = null
+        if (mindMapContainer.selectNode is CircleNode) return
         mindMapContainer.tree.doPreorderTraversal { node ->
             mindMapContainer.selectNode?.let {
                 if (isInsideNode(node, dx, dy) && mindMapContainer.selectNode?.id != node.id) {
@@ -170,7 +171,11 @@ class NodeView(
             target.path.centerY,
         )
         node.children.forEach { nodeId ->
-            traverseChildNode(node, tree.getNode(nodeId), childNodeSpacing + CHILD_NODE_SPACING_VALUE)
+            traverseChildNode(
+                node,
+                tree.getNode(nodeId),
+                childNodeSpacing + CHILD_NODE_SPACING_VALUE,
+            )
         }
     }
 
@@ -208,21 +213,27 @@ class NodeView(
         invalidate()
     }
 
-    private fun drawAttachedNodeNode(canvas: Canvas) {
+    private fun drawAttachedNode(canvas: Canvas) {
         attachedNode?.let { attachedNode ->
-            if (attachedNode is RectangleNode) {
-                val height = attachedNode.path.height
-                val width = attachedNode.path.width
-                val radius = maxOf(height.toPx(context), width.toPx(context))
-                canvas.drawCircle(
-                    attachedNode.path.centerX.toPx(context),
-                    attachedNode.path.centerY.toPx(context),
-                    radius,
-                    drawInfo.boundaryPaint,
-                )
-            }
+            val height =
+                when (attachedNode) {
+                    is RectangleNode -> attachedNode.path.height
+                    is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
+                }
+            val width =
+                when (attachedNode) {
+                    is RectangleNode -> attachedNode.path.width
+                    is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
+                }
+            val radius = maxOf(height.toPx(context), width.toPx(context))
+            canvas.drawCircle(
+                attachedNode.path.centerX.toPx(context),
+                attachedNode.path.centerY.toPx(context),
+                radius,
+                drawInfo.boundaryPaint,
+            )
+            invalidate()
         }
-        invalidate()
     }
 
     private fun makeStrokeNode(
@@ -240,11 +251,13 @@ class NodeView(
             }
 
             is RectangleNode -> {
-                canvas.drawRect(
+                canvas.drawRoundRect(
                     node.path.leftX().toPx(context),
                     node.path.topY().toPx(context),
                     node.path.rightX().toPx(context),
                     node.path.bottomY().toPx(context),
+                    Dp(ROUNDED_CORNER_RADIUS).toPx(context),
+                    Dp(ROUNDED_CORNER_RADIUS).toPx(context),
                     drawInfo.strokePaint,
                 )
             }
@@ -306,11 +319,13 @@ class NodeView(
         depth: Int,
     ) {
         drawInfo.rectanglePaint.color = nodeColors[(depth - 1) % nodeColors.size]
-        canvas.drawRect(
+        canvas.drawRoundRect(
             node.path.leftX().toPx(context),
             node.path.topY().toPx(context),
             node.path.rightX().toPx(context),
             node.path.bottomY().toPx(context),
+            Dp(ROUNDED_CORNER_RADIUS).toPx(context),
+            Dp(ROUNDED_CORNER_RADIUS).toPx(context),
             drawInfo.rectanglePaint,
         )
     }
@@ -326,9 +341,7 @@ class NodeView(
                 drawInfo.textPaint.color = Color.WHITE
                 if (lines.size > 1) {
                     var y =
-                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) / 2 + drawInfo.padding.toPx(
-                            context,
-                        ) / 2
+                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) + drawInfo.padding.toPx(context)
                     for (line in lines) {
                         drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
@@ -353,9 +366,7 @@ class NodeView(
                 drawInfo.textPaint.color = Color.BLACK
                 if (lines.size > 1) {
                     var y =
-                        node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(
-                            context,
-                        ) / 2
+                        node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(context) / 2
                     for (line in lines) {
                         drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                         canvas.drawText(
@@ -381,5 +392,7 @@ class NodeView(
     companion object {
         private const val DEFAULT_SPACING_VALUE = 50f
         private const val CHILD_NODE_SPACING_VALUE = 7f
+        private const val ATTACH_CIRCLE_NODE_RANGE_VALUE = 15f
+        private const val ROUNDED_CORNER_RADIUS = 8f
     }
 }

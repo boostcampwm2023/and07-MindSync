@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeleteBoardResponse(
-    val statusCode: String,
+    val statusCode: Int,
     val message: String,
     val error: String? = null,
 )
