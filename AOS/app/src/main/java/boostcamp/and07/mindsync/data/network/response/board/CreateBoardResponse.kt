@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class CreateBoardResponse(
     val message: String,
     val statusCode: Int,
-    val data: CreateBoardData?,
+    val data: CreateBoardDto?,
 )
