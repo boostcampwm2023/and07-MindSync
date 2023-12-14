@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="vm"
             type="boostcamp.and07.mindsync.ui.dialog.EditDescriptionViewModel" />
@@ -10,19 +11,19 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="300dp"
+        android:layout_height="300dp"
         android:background="@drawable/bg_round_dialog"
-        android:padding="10dp"
-        android:layout_height="300dp">
+        android:padding="10dp">
 
         <EditText
             android:id="@+id/et_node_description"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fontFamily="@font/pretendard_regular"
             android:hint="@string/mindmap_input_text"
             android:onTextChanged="@{(p0, p1, p2, p3) -> vm.onDescriptionChanged(p0)}"
             android:text="@{vm.description}"
             android:textAlignment="center"
-            android:fontFamily="@font/pretendard_regular"
             app:layout_constraintBottom_toTopOf="@id/btn_submit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,20 +31,22 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancel"
+            style="@style/Typography.Body02.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel_message"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_submit"
-            android:fontFamily="@font/pretendard_medium"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_submit"
+            style="@style/Typography.Body02.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/mindmap_write"
-            android:fontFamily="@font/pretendard_medium"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/btn_cancel" />
