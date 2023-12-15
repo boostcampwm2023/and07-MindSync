@@ -112,7 +112,7 @@
 - `Kotlin` `Canvas` `Socket.IO` `Coil` `MVVM` `Retrofit` `Datastore` `Hilt` `Flow` `Jetpack Navigation` `DataBinding`
 ### BE
 
-- `Typescript` `NestJS` `Naver Cloud Platform` `MySQL` `MongoDB`
+- `Typescript` `NestJS` `Naver Cloud Platform` `MySQL` `MongoDB` `CRDT` `OAuth`
 
 
 ## 📑 문서
