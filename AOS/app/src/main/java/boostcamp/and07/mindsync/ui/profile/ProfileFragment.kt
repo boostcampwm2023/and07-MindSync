@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -19,6 +20,7 @@ import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import javax.inject.Inject
 
@@ -47,11 +49,20 @@ class ProfileFragment : BaseComposeFragment() {
     override fun Screen() {
         val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
         val uiEvent by profileViewModel.event.collectAsStateWithLifecycle(initialValue = ProfileUiEvent.None)
+
+        LaunchedEffect(uiEvent) {
+            profileViewModel.event.collectLatest { event ->
+                if (event is ProfileUiEvent.NavigateToBack) {
+                    requireActivity().finish()
+                }
+            }
+        }
+
         MindSyncTheme {
             ProfileScreen(
                 uiState = uiState,
                 uiEvent = uiEvent,
-                onBack = { requireActivity().finish() },
+                onBack = { profileViewModel.onClickBack() },
                 updateNickname = { profileViewModel.updateNickName(it) },
                 updateProfile = { profileViewModel.updateProfile(it) },
                 editNickname = { profileViewModel.editNickname(it) },

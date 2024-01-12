@@ -109,4 +109,10 @@ class ProfileViewModel
                 uiState.copy(isShownNicknameDialog = isShown)
             }
         }
+
+        fun onClickBack() {
+            viewModelScope.launch {
+                _event.emit(ProfileUiEvent.NavigateToBack)
+            }
+        }
     }
