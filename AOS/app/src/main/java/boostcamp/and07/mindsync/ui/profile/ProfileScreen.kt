@@ -89,6 +89,15 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.weight(0.8f))
             }
         }
+
+        if (isShownDialog) {
+            NickNameDialog(
+                uiState = uiState,
+                editNickname = editNickname,
+                closeDialog = { showDialog(false) },
+                updateNickname = { updateNickname(it) },
+            )
+        }
     }
 }
 
