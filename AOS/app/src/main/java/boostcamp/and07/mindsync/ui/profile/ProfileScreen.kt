@@ -93,7 +93,13 @@ fun ProfileScreen(
             }
 
             ModifyButton(
-                modifier = Modifier.padding(top = 30.dp, start = guidelineStart, end = guidelineEnd).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(
+                        top = 30.dp,
+                        start = guidelineStart,
+                        end = guidelineEnd,
+                    )
+                    .fillMaxWidth(),
                 profileImageName = stringResource(id = R.string.profile_image_name),
                 updateProfile = updateProfile,
                 isModify = uiState.isModify,
