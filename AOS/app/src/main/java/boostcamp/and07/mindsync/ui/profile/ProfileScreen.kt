@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -27,10 +28,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
+import boostcamp.and07.mindsync.ui.theme.Gray4
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 
@@ -65,6 +70,24 @@ fun ProfileScreen(
                 imageUri = uiState.imageUri,
                 showImagePicker = showImagePicker,
             )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Nickname(
+                    modifier = Modifier.weight(1f),
+                    nickname = uiState.nickname,
+                    uiEvent = uiEvent,
+                )
+                NicknameEditButton(
+                    modifier = Modifier.weight(0.2f),
+                    showDialog = showDialog,
+                )
+                Spacer(modifier = Modifier.weight(0.8f))
+            }
         }
     }
 }
@@ -129,6 +152,39 @@ private fun ProfileImage(
                 contentScale = ContentScale.Crop,
             )
         }
+    }
+}
+
+@Composable
+private fun Nickname(
+    modifier: Modifier = Modifier,
+    nickname: String,
+    uiEvent: ProfileUiEvent,
+) {
+    Text(
+        modifier = modifier,
+        text = nickname,
+        style = MaterialTheme.typography.displayLarge,
+        color = if (uiEvent is ProfileUiEvent.UpdateProfileNickName) Blue1 else Gray4,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+private fun NicknameEditButton(
+    modifier: Modifier = Modifier,
+    showDialog: (Boolean) -> Unit,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = { showDialog(true) },
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_outlined_drawing),
+            contentDescription = null,
+        )
     }
 }
 
