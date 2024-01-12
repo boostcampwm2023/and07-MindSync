@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -13,132 +12,15 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp">
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/gl_profile_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.15" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/gl_profile_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.1" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/gl_profile_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.9" />
-
-        <ImageButton
-            android:id="@+id/imgbtn_profile_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:src="@drawable/ic_back"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/compose_view_profile"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/imgbtn_profile_title"
-            style="@style/Typography.Title02"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:text="@string/profile_my_page"
-            app:layout_constraintBottom_toBottomOf="@id/imgbtn_profile_back"
-            app:layout_constraintStart_toEndOf="@id/imgbtn_profile_back"
-            app:layout_constraintTop_toTopOf="@id/imgbtn_profile_back" />
-
-        <ImageView
-            android:id="@+id/iv_profile_image"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:background="@null"
-            android:scaleType="centerCrop"
-            app:imageUri="@{vm.uiState.imageUri.toString()}"
-            app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
-            app:layout_constraintStart_toStartOf="@id/gl_profile_start"
-            app:layout_constraintTop_toTopOf="@id/gl_profile_top"
-            tools:src="@mipmap/ic_launcher" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cv_profile_image_edit"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            app:cardCornerRadius="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
-            app:layout_constraintEnd_toEndOf="@id/iv_profile_image"
-            app:layout_constraintTop_toTopOf="@id/iv_profile_image">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/iv_profile_image_edit"
-                android:background="@color/blue"
-                android:src="@drawable/ic_add_board" />
-        </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:id="@+id/tv_profile_nickname"
-            style="@style/Typography.Title01"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textAlignment="center"
-            android:text="@{vm.uiState.nickname}"
-            android:textColor="@color/gray4"
-            android:singleLine="true"
-            app:layout_constraintEnd_toEndOf="@id/iv_profile_image"
-            app:layout_constraintStart_toStartOf="@id/iv_profile_image"
-            app:layout_constraintTop_toBottomOf="@id/iv_profile_image"
-            tools:text="hegleB" />
-
-        <ImageButton
-            android:id="@+id/imgbtn_profile_nickname_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:background="@null"
-            android:src="@drawable/ic_outlined_drawing"
-            app:layout_constraintBottom_toBottomOf="@id/tv_profile_nickname"
-            app:layout_constraintStart_toEndOf="@id/tv_profile_nickname"
-            app:layout_constraintTop_toTopOf="@id/tv_profile_nickname" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_profile_image_save"
-            style="@style/Typography.Title03"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:backgroundTint="@{vm.uiState.isModify ? @color/main4 : @color/gray3}"
-            android:text="@string/profile_modify"
-            android:textColor="@color/white"
-            android:onClick="@{()->vm.updateProfile(@string/profile_image_name)}"
-            app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
-            android:enabled="@{vm.uiState.isModify}"
-            app:layout_constraintStart_toStartOf="@id/gl_profile_start"
-            app:layout_constraintTop_toBottomOf="@id/tv_profile_nickname" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_profile_logout"
-            style="@style/Typography.Title03"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/main4"
-            android:text="@string/profile_logout"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@id/gl_profile_end"
-            app:layout_constraintStart_toStartOf="@id/gl_profile_start"
-            app:layout_constraintTop_toBottomOf="@id/btn_profile_image_save" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
