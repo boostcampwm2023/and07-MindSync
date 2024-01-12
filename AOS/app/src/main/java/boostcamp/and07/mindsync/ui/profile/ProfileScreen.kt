@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +39,7 @@ import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.Gray4
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
+import boostcamp.and07.mindsync.ui.theme.Red2
 import coil.compose.AsyncImage
 
 @Composable
@@ -57,7 +60,7 @@ fun ProfileScreen(
     ) {
         val guidelineTop = maxHeight * 0.15f
         val guidelineStart = maxWidth * 0.1f
-        val guidelineEnd = maxWidth * 0.9f
+        val guidelineEnd = maxWidth * 0.1f
         ProfileTopAppBar(onBack)
         Column(
             modifier = Modifier
@@ -88,6 +91,13 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.weight(0.8f))
             }
+
+            ModifyButton(
+                modifier = Modifier.padding(top = 30.dp, start = guidelineStart, end = guidelineEnd).fillMaxWidth(),
+                profileImageName = stringResource(id = R.string.profile_image_name),
+                updateProfile = updateProfile,
+                isModify = uiState.isModify,
+            )
         }
 
         if (isShownDialog) {
@@ -193,6 +203,28 @@ private fun NicknameEditButton(
         Icon(
             painter = painterResource(id = R.drawable.ic_outlined_drawing),
             contentDescription = null,
+        )
+    }
+}
+
+@Composable
+private fun ModifyButton(
+    modifier: Modifier = Modifier,
+    profileImageName: String,
+    updateProfile: (String) -> Unit,
+    isModify: Boolean,
+) {
+    Button(
+        onClick = { updateProfile(profileImageName) },
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Red2,
+        ),
+        enabled = isModify,
+    ) {
+        Text(
+            text = stringResource(id = R.string.profile_modify),
+            style = MaterialTheme.typography.displaySmall,
         )
     }
 }
