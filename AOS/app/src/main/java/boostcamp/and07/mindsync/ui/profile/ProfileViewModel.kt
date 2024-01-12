@@ -103,4 +103,10 @@ class ProfileViewModel
                 }
             }
         }
+
+        fun showNicknameDialog(isShown: Boolean) {
+            _uiState.update { uiState ->
+                uiState.copy(isShownNicknameDialog = isShown)
+            }
+        }
     }

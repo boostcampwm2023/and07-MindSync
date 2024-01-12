@@ -11,4 +11,5 @@ data class ProfileUiState(
     val nickname: String = "",
     val imageFile: File? = null,
     val isModify: Boolean = false,
+    val isShownNicknameDialog: Boolean = false,
 )
