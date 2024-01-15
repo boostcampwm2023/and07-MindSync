@@ -4,12 +4,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
@@ -20,7 +16,6 @@ import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import javax.inject.Inject
 
@@ -47,27 +42,14 @@ class ProfileFragment : BaseComposeFragment() {
 
     @Composable
     override fun Screen() {
-        val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
-        val uiEvent by profileViewModel.event.collectAsStateWithLifecycle(initialValue = ProfileUiEvent.None)
-
-        LaunchedEffect(uiEvent) {
-            profileViewModel.event.collectLatest { event ->
-                if (event is ProfileUiEvent.NavigateToBack) {
-                    requireActivity().finish()
-                }
-            }
-        }
-
         MindSyncTheme {
             ProfileScreen(
-                uiState = uiState,
-                uiEvent = uiEvent,
-                onBack = { profileViewModel.onClickBack() },
+                profileViewModel = profileViewModel,
+                onBack = { requireActivity().finish() },
                 updateNickname = { profileViewModel.updateNickName(it) },
                 updateProfile = { profileViewModel.updateProfile(it) },
                 editNickname = { profileViewModel.editNickname(it) },
                 showDialog = { profileViewModel.showNicknameDialog(it) },
-                isShownDialog = uiState.isShownNicknameDialog,
                 showImagePicker = { imagePickerHandler.checkPermissionsAndLaunchImagePicker() },
             )
         }
