@@ -58,26 +58,14 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileScreen(
-    uiState: ProfileUiState,
-    uiEvent: ProfileUiEvent,
     profileViewModel: ProfileViewModel,
     onBack: () -> Unit,
     updateNickname: (CharSequence) -> Unit,
     updateProfile: (String) -> Unit,
     editNickname: (CharSequence) -> Unit,
     showDialog: (Boolean) -> Unit,
-    isShownDialog: Boolean,
     showImagePicker: () -> Unit,
 ) {
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxWidth(),
-    ) {
-        val guidelineTop = maxHeight * 0.15f
-        val guidelineStart = maxWidth * 0.1f
-        val guidelineEnd = maxWidth * 0.1f
-        ProfileTopAppBar(onBack)
-        Column(
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
     val nicknameColor = remember { mutableStateOf(Black) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -97,46 +85,33 @@ fun ProfileScreen(
                 .padding(innerPadding)
                 .fillMaxWidth(),
         ) {
-            ProfileImage(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                imageUri = uiState.imageUri,
+            val guidelineTop = maxHeight * 0.15f
+            val guidelineStart = maxWidth * 0.1f
+            val guidelineEnd = maxWidth * 0.1f
+            ProfileContent(
+                profileViewModel = profileViewModel,
+                guidelineTop = guidelineTop,
+                uiState = uiState,
                 showImagePicker = showImagePicker,
+                nicknameColor = nicknameColor,
+                showDialog = showDialog,
+                guidelineStart = guidelineStart,
+                guidelineEnd = guidelineEnd,
+                updateProfile = updateProfile,
             )
 
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Nickname(
-                    modifier = Modifier.weight(1f),
-                    nickname = uiState.nickname,
-                    uiEvent = uiEvent,
+            if (uiState.isShownNicknameDialog) {
+                NickNameDialog(
+                    uiState = uiState,
+                    editNickname = editNickname,
+                    closeDialog = { showDialog(false) },
+                    updateNickname = { updateNickname(it) },
                 )
-                NicknameEditButton(
-                    modifier = Modifier.weight(0.2f),
-                    showDialog = showDialog,
-                )
-                Spacer(modifier = Modifier.weight(0.8f))
             }
         }
     }
 }
 
-            ModifyButton(
-                modifier = Modifier
-                    .padding(
-                        top = 30.dp,
-                        start = guidelineStart,
-                        end = guidelineEnd,
-                    )
-                    .fillMaxWidth(),
-                profileImageName = stringResource(id = R.string.profile_image_name),
-                updateProfile = updateProfile,
-                isModify = uiState.isModify,
-            )
 @Composable
 private fun HandleProfileEvents(
     profileViewModel: ProfileViewModel,
@@ -160,14 +135,61 @@ private fun HandleProfileEvents(
     }
 }
 
-        if (isShownDialog) {
-            NickNameDialog(
-                uiState = uiState,
-                editNickname = editNickname,
-                closeDialog = { showDialog(false) },
-                updateNickname = { updateNickname(it) },
+@Composable
+private fun ProfileContent(
+    profileViewModel: ProfileViewModel,
+    guidelineTop: Dp,
+    uiState: ProfileUiState,
+    showImagePicker: () -> Unit,
+    nicknameColor: MutableState<Color>,
+    showDialog: (Boolean) -> Unit,
+    guidelineStart: Dp,
+    guidelineEnd: Dp,
+    updateProfile: (String) -> Unit,
+) {
+    ProfileTopAppBar { profileViewModel.onClickBack() }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = guidelineTop),
+    ) {
+        ProfileImage(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            imageUri = uiState.imageUri,
+            showImagePicker = showImagePicker,
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(top = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+            Nickname(
+                modifier = Modifier.weight(1f),
+                nickname = uiState.nickname,
+                nicknameColor = nicknameColor.value,
             )
+            NicknameEditButton(
+                modifier = Modifier.weight(0.2f),
+                showDialog = showDialog,
+            )
+            Spacer(modifier = Modifier.weight(0.8f))
         }
+
+        ModifyButton(
+            modifier = Modifier
+                .padding(
+                    top = 30.dp,
+                    start = guidelineStart,
+                    end = guidelineEnd,
+                )
+                .fillMaxWidth(),
+            profileImageName = stringResource(id = R.string.profile_image_name),
+            updateProfile = updateProfile,
+            isModify = uiState.isModify,
+        )
     }
 }
 
@@ -238,13 +260,13 @@ private fun ProfileImage(
 private fun Nickname(
     modifier: Modifier = Modifier,
     nickname: String,
-    uiEvent: ProfileUiEvent,
+    nicknameColor: Color,
 ) {
     Text(
         modifier = modifier,
         text = nickname,
         style = MaterialTheme.typography.displayLarge,
-        color = if (uiEvent is ProfileUiEvent.UpdateProfileNickName) Blue1 else Gray4,
+        color = nicknameColor,
         textAlign = TextAlign.Center,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -295,14 +317,12 @@ private fun ProfileScreenPreview() {
     MindSyncTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             ProfileScreen(
-                uiState = ProfileUiState(),
-                uiEvent = ProfileUiEvent.NavigateToBack,
+                viewModel(),
                 onBack = { /*TODO*/ },
                 updateNickname = { },
                 updateProfile = { },
                 editNickname = { },
                 showDialog = { },
-                isShownDialog = false,
                 showImagePicker = { },
             )
         }
