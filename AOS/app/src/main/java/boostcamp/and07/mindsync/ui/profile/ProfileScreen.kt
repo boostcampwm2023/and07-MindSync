@@ -49,8 +49,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
-import boostcamp.and07.mindsync.ui.theme.Black
 import boostcamp.and07.mindsync.ui.theme.Blue1
+import boostcamp.and07.mindsync.ui.theme.Gray3
+import boostcamp.and07.mindsync.ui.theme.Gray4
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Red2
 import coil.compose.AsyncImage
@@ -67,7 +68,7 @@ fun ProfileScreen(
     showImagePicker: () -> Unit,
 ) {
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
-    val nicknameColor = remember { mutableStateOf(Black) }
+    val nicknameColor = remember { mutableStateOf(Gray4) }
     val snackBarHostState = remember { SnackbarHostState() }
     HandleProfileEvents(
         profileViewModel = profileViewModel,
@@ -301,12 +302,14 @@ private fun ModifyButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = Red2,
+            disabledContainerColor = Gray3,
         ),
         enabled = isModify,
     ) {
         Text(
             text = stringResource(id = R.string.profile_modify),
             style = MaterialTheme.typography.displaySmall,
+            color = Color.White,
         )
     }
 }
