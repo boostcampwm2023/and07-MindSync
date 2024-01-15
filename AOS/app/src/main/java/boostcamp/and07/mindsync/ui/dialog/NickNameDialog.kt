@@ -49,8 +49,8 @@ fun NickNameDialog(
     var textFieldValue = remember {
         mutableStateOf(
             TextFieldValue(
-                text = uiState.editingNickname,
-                selection = TextRange(uiState.editingNickname.length),
+                text = uiState.nickname,
+                selection = TextRange(uiState.nickname.length),
             ),
         )
     }
