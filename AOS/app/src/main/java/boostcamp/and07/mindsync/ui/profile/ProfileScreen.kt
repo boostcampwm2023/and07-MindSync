@@ -21,31 +21,46 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
+import boostcamp.and07.mindsync.ui.theme.Black
 import boostcamp.and07.mindsync.ui.theme.Blue1
-import boostcamp.and07.mindsync.ui.theme.Gray4
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Red2
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileScreen(
     uiState: ProfileUiState,
     uiEvent: ProfileUiEvent,
+    profileViewModel: ProfileViewModel,
     onBack: () -> Unit,
     updateNickname: (CharSequence) -> Unit,
     updateProfile: (String) -> Unit,
@@ -63,9 +78,24 @@ fun ProfileScreen(
         val guidelineEnd = maxWidth * 0.1f
         ProfileTopAppBar(onBack)
         Column(
+    val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+    val nicknameColor = remember { mutableStateOf(Black) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    HandleProfileEvents(
+        profileViewModel = profileViewModel,
+        onBack = onBack,
+        nicknameColor = nicknameColor,
+        snackBarHostState = snackBarHostState,
+    )
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
+        },
+    ) { innerPadding ->
+        BoxWithConstraints(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = guidelineTop),
+                .padding(innerPadding)
+                .fillMaxWidth(),
         ) {
             ProfileImage(
                 modifier = Modifier
@@ -91,6 +121,9 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.weight(0.8f))
             }
+        }
+    }
+}
 
             ModifyButton(
                 modifier = Modifier
@@ -104,7 +137,28 @@ fun ProfileScreen(
                 updateProfile = updateProfile,
                 isModify = uiState.isModify,
             )
+@Composable
+private fun HandleProfileEvents(
+    profileViewModel: ProfileViewModel,
+    onBack: () -> Unit,
+    nicknameColor: MutableState<Color>,
+    snackBarHostState: SnackbarHostState,
+) {
+    LaunchedEffect(profileViewModel.event) {
+        profileViewModel.event.collectLatest { event ->
+            when (event) {
+                is ProfileUiEvent.NavigateToBack -> onBack()
+
+                is ProfileUiEvent.ShowMessage -> snackBarHostState.showSnackbar(
+                    message = event.message,
+                    duration = SnackbarDuration.Short,
+                )
+
+                is ProfileUiEvent.UpdateProfileNickName -> nicknameColor.value = Blue1
+            }
         }
+    }
+}
 
         if (isShownDialog) {
             NickNameDialog(
