@@ -22,8 +22,6 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
                     scaleFactor = max(MIN_ZOOM, min(scaleFactor, MAX_ZOOM))
                     focusX = detector.focusX
                     focusY = detector.focusY
-                    requestLayout()
-                    applyScaleAndTranslation()
                     return true
                 }
             },
@@ -44,7 +42,6 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
         lineView = LineView(context, attrs = null)
         addView(lineView)
         addView(nodeView)
-        applyScaleAndTranslation()
     }
 
     override fun onMeasure(
