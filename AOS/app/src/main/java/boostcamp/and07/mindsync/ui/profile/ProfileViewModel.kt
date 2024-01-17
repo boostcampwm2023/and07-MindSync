@@ -103,4 +103,16 @@ class ProfileViewModel
                 }
             }
         }
+
+        fun showNicknameDialog(isShown: Boolean) {
+            _uiState.update { uiState ->
+                uiState.copy(isShownNicknameDialog = isShown)
+            }
+        }
+
+        fun onClickBack() {
+            viewModelScope.launch {
+                _event.emit(ProfileUiEvent.NavigateToBack)
+            }
+        }
     }
