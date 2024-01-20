@@ -69,17 +69,13 @@ class MainActivity :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.event.collectLatest { event ->
                     if (event is MainUiEvent.ShowMessage) {
-                        Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_SHORT).show()
+                        showMessage(event.message)
                     }
                     if (event is MainUiEvent.GetUsers) {
                         mainViewModel.getSpaceUsers()
                     }
                     if (event is MainUiEvent.LeaveSpace) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            getString(R.string.space_leave_room_message, event.spaceName),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        showMessage(getString(R.string.space_leave_room_message, event.spaceName))
                         navController.navigate(R.id.spaceListFragment)
                     }
                 }

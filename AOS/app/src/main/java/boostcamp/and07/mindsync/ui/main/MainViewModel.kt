@@ -77,7 +77,7 @@ class MainViewModel
             }
             viewModelScope.launch {
                 _event.emit(MainUiEvent.ShowMessage("${space.name}방에 참가했습니다."))
-                _event.emit(MainUiEvent.GetUsers)
+                getSpaceUsers()
             }
         }
 
