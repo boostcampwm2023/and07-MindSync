@@ -3,7 +3,7 @@ package boostcamp.and07.mindsync.ui.space.join
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,11 +25,15 @@ class InputSpaceCodeViewModel
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
-        private val _event = MutableSharedFlow<SpaceEvent>()
+        private val _event = MutableSharedFlow<SpaceUiEvent>()
         val event = _event.asSharedFlow()
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _event.emit(SpaceEvent.Error(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_INVITE_CODE_WRONG.message)) }
+                viewModelScope.launch {
+                    _event.emit(
+                        SpaceUiEvent.ShowMessage(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_INVITE_CODE_WRONG.message),
+                    )
+                }
             }
 
         fun onSpaceInviteCodeChanged(
@@ -48,7 +52,7 @@ class InputSpaceCodeViewModel
         fun compareInviteCode() {
             viewModelScope.launch(coroutineExceptionHandler) {
                 spaceRepository.joinInviteCode(_uiState.value.spaceInviteCode).collectLatest { space ->
-                    _event.emit(SpaceEvent.GetSuccess(space))
+                    _event.emit(SpaceUiEvent.NavigationToConfirmSpace(space))
                 }
             }
         }
