@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.profilespace.ProfileSpaceRepository
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -26,11 +26,11 @@ class SpaceListViewModel
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
-        private val _event = MutableSharedFlow<SpaceEvent>()
-        val event: SharedFlow<SpaceEvent> = _event
+        private val _uiEvent = MutableSharedFlow<SpaceUiEvent>()
+        val uiEvent: SharedFlow<SpaceUiEvent> = _uiEvent
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _event.emit(SpaceEvent.Error(throwable.message.toString())) }
+                viewModelScope.launch { _uiEvent.emit(SpaceUiEvent.ShowMessage(throwable.message.toString())) }
             }
 
         fun getSpaces() {
