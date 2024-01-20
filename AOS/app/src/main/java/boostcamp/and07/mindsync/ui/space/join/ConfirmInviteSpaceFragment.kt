@@ -9,8 +9,7 @@ import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.FragmentConfirmInviteSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
-import com.google.android.material.snackbar.Snackbar
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,18 +42,14 @@ class ConfirmInviteSpaceFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 confirmInviteSpaceViewModel.event.collectLatest { spaceEvent ->
                     when (spaceEvent) {
-                        is SpaceEvent.Success -> {
+                        is SpaceUiEvent.JoinSpace -> {
                             findNavController().navigate(R.id.action_to_mainActitivty)
                         }
 
-                        is SpaceEvent.Error -> {
-                            Snackbar.make(
-                                binding.root,
-                                resources.getString(R.string.space_already_join),
-                                Snackbar.LENGTH_SHORT,
-                            )
-                                .show()
+                        is SpaceUiEvent.ShowMessage -> {
+                            showMessage(spaceEvent.message)
                         }
+                        else -> {}
                     }
                 }
             }
