@@ -10,12 +10,10 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.ActivityAddSpaceBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.util.ImagePickerHandler
-import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
 import boostcamp.and07.mindsync.ui.util.setClickEvent
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -55,18 +53,13 @@ class AddSpaceActivity : BaseActivity<ActivityAddSpaceBinding>(R.layout.activity
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 addSpaceViewModel.event.collectLatest { spaceEvent ->
                     when (spaceEvent) {
-                        is SpaceEvent.Success -> {
+                        is SpaceUiEvent.SuccessAdd -> {
                             finish()
                         }
-
-                        is Error -> {
-                            Snackbar.make(
-                                binding.root,
-                                SpaceExceptionMessage.ERROR_MESSAGE_SPACE_ADD.message,
-                                Snackbar.LENGTH_SHORT,
-                            )
-                                .show()
+                        is SpaceUiEvent.ShowMessage -> { // 에러일 경우가 잇나?
+                            showMessage(spaceEvent.message)
                         }
+                        else -> {}
                     }
                 }
             }
