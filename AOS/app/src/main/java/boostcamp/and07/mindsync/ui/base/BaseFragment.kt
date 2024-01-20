@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 
 abstract class BaseFragment<T : ViewDataBinding>(private val layoutResId: Int) : Fragment() {
     private var _binding: T? = null
@@ -35,5 +37,13 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutResId: Int) :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun setupBackStack() {
+        findNavController().popBackStack()
+    }
+
+    fun showMessage(message: String) {
+        Snackbar.make(this.requireView(), message, Snackbar.LENGTH_LONG).show()
     }
 }

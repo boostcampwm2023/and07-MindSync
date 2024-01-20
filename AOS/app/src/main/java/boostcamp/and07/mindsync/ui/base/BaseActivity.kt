@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import boostcamp.and07.mindsync.ui.login.LoginActivity
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -50,6 +51,10 @@ abstract class BaseActivity<T : ViewDataBinding>(private val layoutResId: Int) :
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    fun showMessage(message: String) {
+        Snackbar.make(this.binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onDestroy() {
