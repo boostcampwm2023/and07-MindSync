@@ -12,7 +12,6 @@ import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
 import boostcamp.and07.mindsync.ui.dialog.CreateBoardDialog
 import boostcamp.and07.mindsync.ui.util.setClickEvent
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -57,17 +56,9 @@ class BoardListFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 boardListViewModel.boardUiEvent.collectLatest { boardEvent ->
                     when (boardEvent) {
-                        is BoardUiEvent.Success -> {}
-
-                        is BoardUiEvent.Error -> {
-                            Snackbar.make(
-                                binding.root,
-                                boardEvent.message,
-                                Snackbar.LENGTH_SHORT,
-                            )
-                                .show()
+                        is BoardUiEvent.ShowMessage -> {
+                            showMessage(boardEvent.message)
                         }
-
                         else -> {}
                     }
                 }

@@ -30,7 +30,7 @@ class BoardListViewModel
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
                 viewModelScope.launch {
-                    _boardUiEvent.emit(BoardUiEvent.Error(throwable.message.toString()))
+                    _boardUiEvent.emit(BoardUiEvent.ShowMessage(throwable.message.toString()))
                 }
             }
 
@@ -55,19 +55,18 @@ class BoardListViewModel
                         val newBoards = boardUiState.boards.toMutableList().apply { add(board) }
                         boardUiState.copy(boards = newBoards)
                     }
-                    _boardUiEvent.emit(BoardUiEvent.Success)
                 }
             }
         }
 
         fun getBoards() {
             viewModelScope.launch(coroutineExceptionHandler) {
-                boardListRepository.getBoard(_boardUiState.value.spaceId, false).collectLatest { boards ->
-                    _boardUiState.update { boardUiState ->
-                        boardUiState.copy(boards = boards)
+                boardListRepository.getBoard(_boardUiState.value.spaceId, false)
+                    .collectLatest { boards ->
+                        _boardUiState.update { boardUiState ->
+                            boardUiState.copy(boards = boards)
+                        }
                     }
-                    _boardUiEvent.emit(BoardUiEvent.Success)
-                }
             }
         }
 
