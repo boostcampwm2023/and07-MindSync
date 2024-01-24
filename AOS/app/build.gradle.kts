@@ -10,7 +10,6 @@ plugins {
     id("kotlinx-serialization")
     id("com.google.gms.google-services")
 }
-
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
