@@ -48,3 +48,6 @@ jobs:
         with:
           name: app-release.aab
           path: AOS/app/build/outputs/bundle/release/
+
+      - name: Create service_account.json
+        run: echo '${{ secrets.GOOGLE_PLAY_STORE_SERVICE_ACCOUT }}' > service_account.json
