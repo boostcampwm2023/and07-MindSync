@@ -65,3 +65,13 @@ jobs:
           release_name: ${{ steps.extract_version_name.outputs.version }}     
           files: |
               AOS/app/build/outputs/bundle/release/app-release.aab
+              
+      - name: Deploy to Google Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: service_account.json
+          packageName: boostcamp.and07.mindsync
+          releaseName: ${{ steps.extract_version_name.outputs.version }}    
+          releaseFiles: AOS/app/build/outputs/bundle/release/app-release.aab
+          track: production
+          whatsNewDirectory: AOS/whatsNewDirectory
