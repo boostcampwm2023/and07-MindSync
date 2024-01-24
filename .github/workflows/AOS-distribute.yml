@@ -15,3 +15,13 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: 17
+
+      - name: Create Properties File
+        env:
+          RELEASE_KEYSTORE: ${{ secrets.KEY_STORE_BASE_64 }}
+          KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+            echo "$RELEASE_KEYSTORE" | base64 -d > AOS/app/mindsync_keystore
+            echo "$KEYSTORE_PROPERTIES" > AOS/keystore.properties
+            echo "$LOCAL_PROPERTIES" > AOS/local.properties
