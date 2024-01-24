@@ -28,3 +28,13 @@ jobs:
 
       - name: Create google-services.json
         run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > AOS/app/google-services.json
+
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease
+        working-directory: ./AOS
+      
+      - name: Upload AAB
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.aab
+          path: AOS/app/build/outputs/bundle/release/app-release.aab
