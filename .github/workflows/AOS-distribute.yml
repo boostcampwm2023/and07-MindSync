@@ -38,3 +38,13 @@ jobs:
         with:
           name: app-release.aab
           path: AOS/app/build/outputs/bundle/release/app-release.aab
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download AAB
+        uses: actions/download-artifact@v2
+        with:
+          name: app-release.aab
+          path: AOS/app/build/outputs/bundle/release/
