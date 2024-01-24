@@ -25,3 +25,6 @@ jobs:
             echo "$RELEASE_KEYSTORE" | base64 -d > AOS/app/mindsync_keystore
             echo "$KEYSTORE_PROPERTIES" > AOS/keystore.properties
             echo "$LOCAL_PROPERTIES" > AOS/local.properties
+
+      - name: Create google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > AOS/app/google-services.json
