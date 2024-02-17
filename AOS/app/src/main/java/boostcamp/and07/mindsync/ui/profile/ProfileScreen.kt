@@ -25,11 +25,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,10 +43,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
@@ -133,20 +129,12 @@ private fun ProfileContent(
     editNickname: (CharSequence) -> Unit = { },
     snackBarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
-    ProfileTopAppBar { profileViewModel.onClickBack() }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = guidelineTop),
-    ) {
-        ProfileImage(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally),
-            imageUri = uiState.imageUri,
-            showImagePicker = showImagePicker,
-        )
-
-        Row(
+    Scaffold(
+        topBar = { ProfileTopAppBar(onBack) },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
+        },
+    ) { innerPadding ->
             modifier = Modifier
                 .padding(top = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
