@@ -89,6 +89,16 @@ fun ProfileScreen(
             }
         },
     )
+
+    ProfileContent(
+        uiState = uiState,
+        showImagePicker = showImagePicker,
+        nicknameColor = nicknameColor,
+        showDialog = showDialog,
+        updateProfile = updateProfile,
+        updateNickname = updateNickname,
+        editNickname = editNickname,
+    )
 }
 
 @Composable
@@ -113,15 +123,15 @@ private fun HandleProfileEvents(
 
 @Composable
 private fun ProfileContent(
-    profileViewModel: ProfileViewModel,
-    guidelineTop: Dp,
-    uiState: ProfileUiState,
-    showImagePicker: () -> Unit,
-    nicknameColor: MutableState<Color>,
-    showDialog: (Boolean) -> Unit,
-    guidelineStart: Dp,
-    guidelineEnd: Dp,
-    updateProfile: (String) -> Unit,
+    onBack: () -> Unit = { },
+    uiState: ProfileUiState = ProfileUiState(),
+    showImagePicker: () -> Unit = { },
+    nicknameColor: Color = Gray4,
+    showDialog: (Boolean) -> Unit = { },
+    updateProfile: (String) -> Unit = { },
+    updateNickname: (CharSequence) -> Unit = { },
+    editNickname: (CharSequence) -> Unit = { },
+    snackBarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     ProfileTopAppBar { profileViewModel.onClickBack() }
     Column(
@@ -293,16 +303,6 @@ private fun ModifyButton(
 @Composable
 private fun ProfileScreenPreview() {
     MindSyncTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            ProfileScreen(
-                viewModel(),
-                onBack = { /*TODO*/ },
-                updateNickname = { },
-                updateProfile = { },
-                editNickname = { },
-                showDialog = { },
-                showImagePicker = { },
-            )
-        }
+        ProfileContent()
     }
 }
