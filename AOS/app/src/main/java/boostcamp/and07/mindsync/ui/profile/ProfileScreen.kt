@@ -33,6 +33,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +58,7 @@ import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Red2
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -68,69 +71,41 @@ fun ProfileScreen(
     showImagePicker: () -> Unit,
 ) {
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
-    val nicknameColor = remember { mutableStateOf(Gray4) }
+    var nicknameColor by remember { mutableStateOf(Gray4) }
     val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     HandleProfileEvents(
         profileViewModel = profileViewModel,
         onBack = onBack,
-        nicknameColor = nicknameColor,
-        snackBarHostState = snackBarHostState,
-    )
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackBarHostState)
+        updateNicknameColor = { changedColor ->
+            nicknameColor = changedColor
         },
-    ) { innerPadding ->
-        BoxWithConstraints(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth(),
-        ) {
-            val guidelineTop = maxHeight * 0.15f
-            val guidelineStart = maxWidth * 0.1f
-            val guidelineEnd = maxWidth * 0.1f
-            ProfileContent(
-                profileViewModel = profileViewModel,
-                guidelineTop = guidelineTop,
-                uiState = uiState,
-                showImagePicker = showImagePicker,
-                nicknameColor = nicknameColor,
-                showDialog = showDialog,
-                guidelineStart = guidelineStart,
-                guidelineEnd = guidelineEnd,
-                updateProfile = updateProfile,
-            )
-
-            if (uiState.isShownNicknameDialog) {
-                NickNameDialog(
-                    uiState = uiState,
-                    editNickname = editNickname,
-                    closeDialog = { showDialog(false) },
-                    updateNickname = { updateNickname(it) },
+        showSnackBar = { errorMessage ->
+            coroutineScope.launch {
+                snackBarHostState.showSnackbar(
+                    message = errorMessage,
+                    duration = SnackbarDuration.Short,
                 )
             }
-        }
-    }
+        },
+    )
 }
 
 @Composable
 private fun HandleProfileEvents(
     profileViewModel: ProfileViewModel,
     onBack: () -> Unit,
-    nicknameColor: MutableState<Color>,
-    snackBarHostState: SnackbarHostState,
+    updateNicknameColor: (Color) -> Unit,
+    showSnackBar: (String) -> Unit,
 ) {
     LaunchedEffect(profileViewModel.event) {
         profileViewModel.event.collectLatest { event ->
             when (event) {
                 is ProfileUiEvent.NavigateToBack -> onBack()
 
-                is ProfileUiEvent.ShowMessage -> snackBarHostState.showSnackbar(
-                    message = event.message,
-                    duration = SnackbarDuration.Short,
-                )
+                is ProfileUiEvent.ShowMessage -> showSnackBar(event.message)
 
-                is ProfileUiEvent.UpdateProfileNickName -> nicknameColor.value = Blue1
+                is ProfileUiEvent.UpdateProfileNickName -> updateNicknameColor(Blue1)
             }
         }
     }
