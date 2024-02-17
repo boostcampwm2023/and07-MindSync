@@ -135,34 +135,66 @@ private fun ProfileContent(
             SnackbarHost(hostState = snackBarHostState)
         },
     ) { innerPadding ->
+        BoxWithConstraints(
             modifier = Modifier
-                .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Nickname(
-                modifier = Modifier.weight(1f),
-                nickname = uiState.nickname,
-                nicknameColor = nicknameColor.value,
-            )
-            NicknameEditButton(
-                modifier = Modifier.weight(0.2f),
-                showDialog = showDialog,
-            )
-            Spacer(modifier = Modifier.weight(0.8f))
-        }
-
-        ModifyButton(
-            modifier = Modifier
-                .padding(
-                    top = 30.dp,
-                    start = guidelineStart,
-                    end = guidelineEnd,
-                )
+                .padding(innerPadding)
                 .fillMaxWidth(),
-            profileImageName = stringResource(id = R.string.profile_image_name),
-            updateProfile = updateProfile,
-            isModify = uiState.isModify,
+        ) {
+            val guidelineTop = maxHeight * 0.15f
+            val guidelineStart = maxWidth * 0.1f
+            val guidelineEnd = maxWidth * 0.1f
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = guidelineTop),
+            ) {
+                ProfileImage(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally),
+                    imageUri = uiState.imageUri,
+                    showImagePicker = showImagePicker,
+                )
+
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Nickname(
+                        modifier = Modifier.weight(1f),
+                        nickname = uiState.nickname,
+                        nicknameColor = nicknameColor,
+                    )
+                    NicknameEditButton(
+                        modifier = Modifier.weight(0.2f),
+                        showDialog = showDialog,
+                    )
+                    Spacer(modifier = Modifier.weight(0.8f))
+                }
+
+                ModifyButton(
+                    modifier = Modifier
+                        .padding(
+                            top = 30.dp,
+                            start = guidelineStart,
+                            end = guidelineEnd,
+                        )
+                        .fillMaxWidth(),
+                    profileImageName = stringResource(id = R.string.profile_image_name),
+                    updateProfile = updateProfile,
+                    isModify = uiState.isModify,
+                )
+            }
+        }
+    }
+
+    if (uiState.isShownNicknameDialog) {
+        NickNameDialog(
+            uiState = uiState,
+            editNickname = editNickname,
+            closeDialog = { showDialog(false) },
+            updateNickname = { updateNickname(it) },
         )
     }
 }
