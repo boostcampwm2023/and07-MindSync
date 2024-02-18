@@ -1,8 +1,14 @@
 package boostcamp.and07.mindsync.ui.space.generate
 
-import android.util.Log
+import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
@@ -24,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -33,25 +42,31 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
+import coil.compose.AsyncImage
 
 @Composable
 fun AddSpaceScreen(
     addSpaceViewModel: AddSpaceViewModel,
     onBackClicked: () -> Unit,
+    createSpace: (String) -> Unit,
+    updateSpaceName: (String) -> Unit,
+    createImage: (Uri) -> Unit,
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             uri?.let { imageThumbnail ->
-                addSpaceViewModel.setSpaceThumbnail(imageThumbnail.toString())
+                createImage(imageThumbnail)
             }
         },
     )
     AddSpaceContent(
         onBackClicked = onBackClicked,
-        uiState,
-        imageLauncher,
+        uiState = uiState,
+        imageLauncher = imageLauncher,
+        createSpace = createSpace,
+        updateSpaceName = updateSpaceName,
     )
 }
 
@@ -60,6 +75,8 @@ fun AddSpaceContent(
     onBackClicked: () -> Unit = { },
     uiState: SpaceUiState = SpaceUiState(),
     imageLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    createSpace: (String) -> Unit = {},
+    updateSpaceName: (String) -> Unit = {},
 ) {
     AddSpaceTopBar(onBackClicked)
     Row(
@@ -84,7 +101,7 @@ fun AddSpaceContent(
             .padding(top = 250.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
-        InputSpaceNameField()
+        InputSpaceNameField(uiState, updateSpaceName)
     }
     Row(
         modifier = Modifier
@@ -92,7 +109,7 @@ fun AddSpaceContent(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
-        SpaceNameInputButton()
+        SpaceNameInputButton(createSpace)
     }
 }
 
@@ -163,32 +180,35 @@ fun AddSpaceThumbnail(
 }
 
 @Composable
-fun InputSpaceNameField() {
+fun InputSpaceNameField(
+    uiState: SpaceUiState,
+    updateSpaceName: (String) -> Unit,
+) {
     val spaceHint = stringResource(id = R.string.space_name_hint)
-    var value by remember { mutableStateOf("") }
+    var spaceName by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = uiState.spaceName,
+            ),
+        )
+    }
     TextField(
-        value = value,
+        value = spaceName,
         onValueChange = {
-            Log.d("compose", "value: ${value.isEmpty()}")
-            value = it
+            spaceName = it
+            updateSpaceName(it.text)
         },
-        maxLines = 2,
         modifier = Modifier.padding(20.dp),
         placeholder = { Text(spaceHint) },
     )
 }
 
 @Composable
-fun SpaceNameInputButton() {
-    Button(onClick = {}, Modifier.width(264.dp)) {
+fun SpaceNameInputButton(createSpace: (String) -> Unit) {
+    val icon = stringResource(id = R.string.space_image_name)
+    Button(onClick = {
+        createSpace(icon)
+    }, Modifier.width(264.dp)) {
         Text(text = stringResource(id = R.string.check_message))
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-private fun AddSpaceScreenPreview() {
-    MindSyncTheme {
-        AddSpaceScreen()
     }
 }
