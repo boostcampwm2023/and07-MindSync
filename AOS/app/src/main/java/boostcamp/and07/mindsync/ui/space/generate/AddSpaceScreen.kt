@@ -1,5 +1,6 @@
 package boostcamp.and07.mindsync.ui.space.generate
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -115,13 +120,17 @@ fun AddSpaceThumbnail() {
 
 @Composable
 fun InputSpaceNameField() {
-    var value = stringResource(id = R.string.space_name_hint)
-
+    val spaceHint = stringResource(id = R.string.space_name_hint)
+    var value by remember { mutableStateOf("") }
     TextField(
         value = value,
-        onValueChange = { value = it },
+        onValueChange = {
+            Log.d("compose", "value: ${value.isEmpty()}")
+            value = it
+        },
         maxLines = 2,
         modifier = Modifier.padding(20.dp),
+        placeholder = { Text(spaceHint) },
     )
 }
 
