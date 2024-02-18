@@ -36,10 +36,31 @@ import boostcamp.and07.mindsync.ui.theme.Blue1
 
 @Composable
 fun AddSpaceScreen(
-    onBackClicked: () -> Unit,
     addSpaceViewModel: AddSpaceViewModel,
+    onBackClicked: () -> Unit,
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
+    val imageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let { imageThumbnail ->
+                addSpaceViewModel.setSpaceThumbnail(imageThumbnail.toString())
+            }
+        },
+    )
+    AddSpaceContent(
+        onBackClicked = onBackClicked,
+        uiState,
+        imageLauncher,
+    )
+}
+
+@Composable
+fun AddSpaceContent(
+    onBackClicked: () -> Unit = { },
+    uiState: SpaceUiState = SpaceUiState(),
+    imageLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+) {
     AddSpaceTopBar(onBackClicked)
     Row(
         modifier = Modifier
@@ -55,7 +76,7 @@ fun AddSpaceScreen(
             .padding(top = 150.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
-        AddSpaceThumbnail()
+        AddSpaceThumbnail(imageLauncher, uiState.spaceThumbnail)
     }
     Row(
         modifier = Modifier
@@ -102,11 +123,27 @@ fun AddSpaceInfo() {
 }
 
 @Composable
-fun AddSpaceThumbnail() {
-    Box {
-        Image(
-            painterResource(id = R.drawable.ic_app_logo_foreground),
+fun AddSpaceThumbnail(
+    onImageClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    imageUrl: String,
+) {
+    Box(
+        modifier = Modifier
+            .size(120.dp)
+            .border(2.dp, Color.Gray),
+    ) {
+        AsyncImage(
+            placeholder = painterResource(id = R.drawable.ic_add_board),
+            model = imageUrl,
             contentDescription = null,
+            modifier = Modifier
+                .clickable {
+                    onImageClicked.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                    )
+                }
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
         )
         Box(
             Modifier
