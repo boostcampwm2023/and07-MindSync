@@ -26,16 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
-import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 
 @Composable
-fun AddSpaceScreen() {
-    AddSpaceTopBar()
+fun AddSpaceScreen(
+    onBackClicked: () -> Unit,
+    addSpaceViewModel: AddSpaceViewModel,
+) {
+    val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
+    AddSpaceTopBar(onBackClicked)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,14 +58,16 @@ fun AddSpaceScreen() {
         AddSpaceThumbnail()
     }
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(top = 250.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         InputSpaceNameField()
     }
     Row(
-        modifier = Modifier.padding(top = 400.dp)
+        modifier = Modifier
+            .padding(top = 400.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -69,9 +76,9 @@ fun AddSpaceScreen() {
 }
 
 @Composable
-fun AddSpaceTopBar() {
+fun AddSpaceTopBar(onBackClicked: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        IconButton(modifier = Modifier.size(25.dp), onClick = {}) {
+        IconButton(modifier = Modifier.size(25.dp), onClick = onBackClicked) {
             Image(
                 painter = painterResource(id = R.drawable.ic_back),
                 contentDescription = "뒤로가기",
