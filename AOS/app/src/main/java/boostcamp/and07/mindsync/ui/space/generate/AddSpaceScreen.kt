@@ -30,6 +30,41 @@ import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 
 @Composable
 fun AddSpaceScreen() {
+    AddSpaceTopBar()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 50.dp),
+        horizontalArrangement = Arrangement.Absolute.Center,
+    ) {
+        AddSpaceInfo()
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 150.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        AddSpaceThumbnail()
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .padding(top = 250.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        InputSpaceNameField()
+    }
+    Row(
+        modifier = Modifier.padding(top = 400.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        SpaceNameInputButton()
+    }
+}
+
+@Composable
+fun AddSpaceTopBar() {
     Row(modifier = Modifier.fillMaxWidth()) {
         IconButton(modifier = Modifier.size(25.dp), onClick = {}) {
             Image(
@@ -43,71 +78,59 @@ fun AddSpaceScreen() {
             modifier = Modifier.padding(start = 14.dp),
         )
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 50.dp),
-        horizontalArrangement = Arrangement.Absolute.Center,
-    ) {
-        Text(
-            text = stringResource(id = R.string.generate_space_title),
-            style = MaterialTheme.typography.displayMedium,
-            textAlign = TextAlign.Center,
-        )
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 150.dp),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Box {
-            Image(
-                painterResource(id = R.drawable.ic_app_logo_foreground),
-                contentDescription = null,
-            )
-            Box(
-                Modifier
-                    .size(25.dp)
-                    .clip(shape = RoundedCornerShape(5.dp))
-                    .background(color = Blue1)
-                    .align(Alignment.TopEnd),
-            ) {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Image(
-                        painterResource(id = R.drawable.ic_add_board),
-                        contentDescription = null,
-                    )
-                }
-            }
-        }
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth()
-            .padding(top = 250.dp),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        var value = stringResource(id = R.string.space_name_hint)
+}
 
-        TextField(
-            value = value,
-            onValueChange = { value = it },
-            maxLines = 2,
-            modifier = Modifier.padding(20.dp),
+@Composable
+fun AddSpaceInfo() {
+    Text(
+        text = stringResource(id = R.string.generate_space_title),
+        style = MaterialTheme.typography.displayMedium,
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+fun AddSpaceThumbnail() {
+    Box {
+        Image(
+            painterResource(id = R.drawable.ic_app_logo_foreground),
+            contentDescription = null,
         )
-    }
-    Row(
-        modifier = Modifier.padding(top = 400.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Button(onClick = {}, Modifier.width(264.dp)) {
-            Text(text = stringResource(id = R.string.check_message))
+        Box(
+            Modifier
+                .size(25.dp)
+                .clip(shape = RoundedCornerShape(5.dp))
+                .background(color = Blue1)
+                .align(Alignment.TopEnd),
+        ) {
+            IconButton(onClick = { /*TODO*/ }) {
+                Image(
+                    painterResource(id = R.drawable.ic_add_board),
+                    contentDescription = null,
+                )
+            }
         }
     }
 }
 
+@Composable
+fun InputSpaceNameField() {
+    var value = stringResource(id = R.string.space_name_hint)
 
+    TextField(
+        value = value,
+        onValueChange = { value = it },
+        maxLines = 2,
+        modifier = Modifier.padding(20.dp),
+    )
+}
+
+@Composable
+fun SpaceNameInputButton() {
+    Button(onClick = {}, Modifier.width(264.dp)) {
+        Text(text = stringResource(id = R.string.check_message))
+    }
+}
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
@@ -116,4 +139,3 @@ private fun AddSpaceScreenPreview() {
         AddSpaceScreen()
     }
 }
-
