@@ -19,9 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,11 +59,8 @@ fun AddSpaceScreen(
     createImage: (Uri) -> Unit,
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
-
+    val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
-        topBar = {
-            AddSpaceTopBar(onBackClicked)
-        },
         containerColor = Yellow4,
     ) { innerPadding ->
         BoxWithConstraints(
@@ -81,6 +81,7 @@ fun AddSpaceScreen(
 @Composable
 fun AddSpaceContent(
     uiState: SpaceUiState = SpaceUiState(),
+    onBackClicked: () -> Unit = {},
     createSpace: (String) -> Unit = {},
     updateSpaceName: (String) -> Unit = {},
     createImage: (Uri) -> Unit = {},
@@ -93,9 +94,12 @@ fun AddSpaceContent(
             }
         },
     )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        AddSpaceTopBar(onBackClicked)
+    }
     Row(
         modifier = Modifier
-            .padding(top = 30.dp)
+            .padding(top = 50.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Absolute.Center,
     ) {
@@ -112,27 +116,28 @@ fun AddSpaceContent(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 300.dp),
+            .padding(top = 300.dp, start = 20.dp, end = 20.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         InputSpaceNameField(uiState = uiState, updateSpaceName = updateSpaceName)
     }
     Row(
         modifier = Modifier
-            .padding(top = 400.dp)
+            .padding(top = 450.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
-        SpaceNameInputButton(createSpace = createSpace)
+        SpaceNameInputButton(createSpace = createSpace, uiState.spaceName)
     }
 }
 
 @Composable
 fun AddSpaceTopBar(onBackClicked: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Row() {
         IconButton(
             modifier = Modifier
-                .size(25.dp).padding(15.dp),
+                .size(25.dp)
+                .padding(1.dp),
             onClick = onBackClicked,
         ) {
             Image(
@@ -143,7 +148,7 @@ fun AddSpaceTopBar(onBackClicked: () -> Unit) {
         Text(
             text = stringResource(id = R.string.generate_space_menu_message),
             style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.padding(start = 14.dp),
+            modifier = Modifier.padding(start = 14.dp, top = 1.dp),
         )
     }
 }
@@ -230,11 +235,19 @@ fun InputSpaceNameField(
 }
 
 @Composable
-fun SpaceNameInputButton(createSpace: (String) -> Unit) {
+fun SpaceNameInputButton(createSpace: (String) -> Unit, spaceName: String) {
     val icon = stringResource(id = R.string.space_image_name)
-    Button(onClick = {
-        createSpace(icon)
-    }, Modifier.width(264.dp)) {
+    Button(
+        onClick = {
+            createSpace(icon)
+        },
+        enabled = spaceName.length in 1..20,
+        modifier = Modifier.width(264.dp),
+        colors = ButtonDefaults.buttonColors(
+            disabledContainerColor = Color.LightGray,
+        ),
+
+    ) {
         Text(text = stringResource(id = R.string.check_message))
     }
 }
