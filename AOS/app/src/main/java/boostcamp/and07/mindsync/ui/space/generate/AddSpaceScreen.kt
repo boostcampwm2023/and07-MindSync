@@ -7,10 +7,10 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -31,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +44,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
+import boostcamp.and07.mindsync.ui.theme.Yellow4
 import coil.compose.AsyncImage
 
 @Composable
@@ -56,18 +57,29 @@ fun AddSpaceScreen(
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
 
-    AddSpaceContent(
-        onBackClicked = onBackClicked,
-        uiState = uiState,
-        createSpace = createSpace,
-        updateSpaceName = updateSpaceName,
-        createImage = createImage,
-    )
+    Scaffold(
+        topBar = {
+            AddSpaceTopBar(onBackClicked)
+        },
+        containerColor = Yellow4,
+    ) { innerPadding ->
+        BoxWithConstraints(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
+        ) {
+            AddSpaceContent(
+                uiState = uiState,
+                createSpace = createSpace,
+                updateSpaceName = updateSpaceName,
+                createImage = createImage,
+            )
+        }
+    }
 }
 
 @Composable
 fun AddSpaceContent(
-    onBackClicked: () -> Unit = { },
     uiState: SpaceUiState = SpaceUiState(),
     createSpace: (String) -> Unit = {},
     updateSpaceName: (String) -> Unit = {},
@@ -81,11 +93,10 @@ fun AddSpaceContent(
             }
         },
     )
-    AddSpaceTopBar(onBackClicked)
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 50.dp),
+            .padding(top = 30.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.Absolute.Center,
     ) {
         AddSpaceInfo()
@@ -94,17 +105,17 @@ fun AddSpaceContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 150.dp),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.Absolute.Center,
     ) {
-        AddSpaceThumbnail(imageLauncher, uiState.spaceThumbnail)
+        AddSpaceThumbnail(onImageClicked = imageLauncher, imageUrl = uiState.spaceThumbnail)
     }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 250.dp),
+            .padding(top = 300.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
-        InputSpaceNameField(uiState, updateSpaceName)
+        InputSpaceNameField(uiState = uiState, updateSpaceName = updateSpaceName)
     }
     Row(
         modifier = Modifier
@@ -112,14 +123,18 @@ fun AddSpaceContent(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
-        SpaceNameInputButton(createSpace)
+        SpaceNameInputButton(createSpace = createSpace)
     }
 }
 
 @Composable
 fun AddSpaceTopBar(onBackClicked: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        IconButton(modifier = Modifier.size(25.dp), onClick = onBackClicked) {
+        IconButton(
+            modifier = Modifier
+                .size(25.dp).padding(15.dp),
+            onClick = onBackClicked,
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_back),
                 contentDescription = "뒤로가기",
@@ -216,7 +231,7 @@ fun SpaceNameInputButton(createSpace: (String) -> Unit) {
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun AddSpacePreview() {
     MindSyncTheme {
