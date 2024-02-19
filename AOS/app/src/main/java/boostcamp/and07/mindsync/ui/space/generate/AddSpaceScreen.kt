@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,11 +45,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Yellow4
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AddSpaceScreen(
@@ -60,6 +63,11 @@ fun AddSpaceScreen(
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
+    HandleAddSpaceEvents(
+        addSpaceViewModel = addSpaceViewModel,
+        onBack = onBackClicked,
+        snackBarHostState = snackBarHostState,
+    )
     Scaffold(
         containerColor = Yellow4,
     ) { innerPadding ->
@@ -70,6 +78,7 @@ fun AddSpaceScreen(
         ) {
             AddSpaceContent(
                 uiState = uiState,
+                onBackClicked = onBackClicked,
                 createSpace = createSpace,
                 updateSpaceName = updateSpaceName,
                 createImage = createImage,
@@ -132,6 +141,24 @@ fun AddSpaceContent(
 }
 
 @Composable
+private fun HandleAddSpaceEvents(
+    addSpaceViewModel: AddSpaceViewModel,
+    onBack: () -> Unit,
+    snackBarHostState: SnackbarHostState,
+) {
+    LaunchedEffect(addSpaceViewModel.event) {
+        addSpaceViewModel.event.collectLatest { event ->
+            when (event) {
+                is SpaceUiEvent.SuccessAdd -> onBack()
+
+                is SpaceUiEvent.ShowMessage -> snackBarHostState.showSnackbar(event.message)
+                else -> {}
+            }
+        }
+    }
+}
+
+@Composable
 fun AddSpaceTopBar(onBackClicked: () -> Unit) {
     Row() {
         IconButton(
@@ -142,7 +169,7 @@ fun AddSpaceTopBar(onBackClicked: () -> Unit) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = "뒤로가기",
+                contentDescription = null,
             )
         }
         Text(
