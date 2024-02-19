@@ -149,13 +149,13 @@ fun AddSpaceThumbnail(
 ) {
     Box(
         modifier = Modifier
-            .size(120.dp)
-            .border(2.dp, Color.Gray),
+            .size(120.dp),
     ) {
         AsyncImage(
-            placeholder = painterResource(id = R.drawable.ic_add_board),
             model = imageUrl,
             contentDescription = null,
+            placeholder = painterResource(id = R.drawable.ic_placeholder),
+            error = painterResource(id = R.drawable.ic_placeholder),
             modifier = Modifier
                 .clickable {
                     onImageClicked.launch(
