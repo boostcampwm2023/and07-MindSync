@@ -211,12 +211,20 @@ fun InputSpaceNameField(
         )
     }
     TextField(
+        modifier = Modifier.fillMaxWidth().padding(20.dp),
         value = spaceName,
         onValueChange = {
             spaceName = it
             updateSpaceName(it.text)
         },
-        modifier = Modifier.padding(20.dp),
+        supportingText = {
+            Text(
+                text = "${uiState.spaceName.length}",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.End,
+            )
+        },
+
         placeholder = { Text(spaceHint) },
     )
 }
