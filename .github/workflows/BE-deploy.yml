@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - "BE-develop"
+    paths:
+      - "nestjs-BE/**"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -69,4 +71,5 @@ jobs:
               --name mindsync_server \
               -p ${{ secrets.SERVER_PORT }}:${{ secrets.CONTAINER_PORT }} \
               -v temporary-volume:${{ secrets.CSV_FOLDER }} \
+              --net mybridge \
               ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
