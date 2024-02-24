@@ -64,10 +64,10 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_KEY }}
           script: |
             echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
-            docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
-            docker stop mindsync_server || true
-            docker rm mindsync_server || true
-            docker run -d \
+            sudo docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
+            sudo docker stop mindsync_server || true
+            sudo docker rm mindsync_server || true
+            sudo docker run -d \
               --name mindsync_server \
               -p ${{ secrets.SERVER_PORT }}:${{ secrets.CONTAINER_PORT }} \
               -v temporary-volume:${{ secrets.CSV_FOLDER }} \
