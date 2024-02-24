@@ -63,7 +63,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           script: |
-            echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
+            echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | sudo docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
             sudo docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
             sudo docker stop mindsync_server || true
             sudo docker rm mindsync_server || true
