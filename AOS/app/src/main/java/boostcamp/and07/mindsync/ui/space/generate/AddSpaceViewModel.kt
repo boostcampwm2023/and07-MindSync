@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import boostcamp.and07.mindsync.ui.util.toRequestBody
@@ -29,11 +29,11 @@ class AddSpaceViewModel
     ) : BaseActivityViewModel(logoutEventRepository) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
-        private val _event = MutableSharedFlow<SpaceEvent>()
+        private val _event = MutableSharedFlow<SpaceUiEvent>()
         val event = _event.asSharedFlow()
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _event.emit(SpaceEvent.Error(throwable.message.toString())) }
+                viewModelScope.launch { _event.emit(SpaceUiEvent.ShowMessage(throwable.message.toString())) }
             }
 
         fun onSpaceNameChanged(
@@ -67,7 +67,7 @@ class AddSpaceViewModel
             val name = _uiState.value.spaceName.toRequestBody()
             viewModelScope.launch(coroutineExceptionHandler) {
                 spaceRepository.addSpace(name, icon).collectLatest { space ->
-                    _event.emit(SpaceEvent.Success)
+                    _event.emit(SpaceUiEvent.SuccessAdd)
                 }
             }
         }

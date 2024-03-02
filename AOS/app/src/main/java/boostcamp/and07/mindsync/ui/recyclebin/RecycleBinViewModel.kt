@@ -29,7 +29,7 @@ class RecycleBinViewModel
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
                 viewModelScope.launch {
-                    _uiEvent.emit(RecycleBinUiEvent.Error(throwable.message.toString()))
+                    _uiEvent.emit(RecycleBinUiEvent.ShowMessage(throwable.message.toString()))
                 }
             }
 
@@ -48,7 +48,6 @@ class RecycleBinViewModel
                     _uiState.update { boardUiState ->
                         boardUiState.copy(boards = boards)
                     }
-                    _uiEvent.emit(RecycleBinUiEvent.Success)
                 }
             }
         }

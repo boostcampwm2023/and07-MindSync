@@ -8,8 +8,7 @@ import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.databinding.FragmentInputSpaceCodeBinding
 import boostcamp.and07.mindsync.ui.base.BaseFragment
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
-import com.google.android.material.snackbar.Snackbar
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -34,7 +33,7 @@ class InputSpaceCodeFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 inputSpaceCodeViewModel.event.collectLatest { spaceEvent ->
                     when (spaceEvent) {
-                        is SpaceEvent.GetSuccess -> {
+                        is SpaceUiEvent.NavigationToConfirmSpace -> {
                             findNavController().navigate(
                                 InputSpaceCodeFragmentDirections.actionToConfirmInviteSpaceFragment(
                                     spaceEvent.space,
@@ -42,14 +41,10 @@ class InputSpaceCodeFragment :
                             )
                         }
 
-                        is SpaceEvent.Error -> {
-                            Snackbar.make(
-                                binding.root,
-                                spaceEvent.message,
-                                Snackbar.LENGTH_SHORT,
-                            )
-                                .show()
+                        is SpaceUiEvent.ShowMessage -> {
+                            showMessage(spaceEvent.message)
                         }
+                        else -> {}
                     }
                 }
             }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.model.Space
 import boostcamp.and07.mindsync.data.repository.profilespace.ProfileSpaceRepository
-import boostcamp.and07.mindsync.ui.space.SpaceEvent
+import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -25,11 +25,11 @@ class ConfirmInviteSpaceViewModel
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
-        private val _event = MutableSharedFlow<SpaceEvent>()
+        private val _event = MutableSharedFlow<SpaceUiEvent>()
         val event = _event.asSharedFlow()
         private val coroutineExceptionHandler =
             CoroutineExceptionHandler { _, throwable ->
-                viewModelScope.launch { _event.emit(SpaceEvent.Error(throwable.message.toString())) }
+                viewModelScope.launch { _event.emit(SpaceUiEvent.ShowMessage(throwable.message.toString())) }
             }
 
         fun updateSpace(space: Space) {
@@ -42,7 +42,7 @@ class ConfirmInviteSpaceViewModel
             uiState.value.space?.let { space ->
                 viewModelScope.launch(coroutineExceptionHandler) {
                     profileSpaceRepository.joinSpace(space.id).collectLatest {
-                        _event.emit(SpaceEvent.Success)
+                        _event.emit(SpaceUiEvent.JoinSpace)
                     }
                 }
             }
