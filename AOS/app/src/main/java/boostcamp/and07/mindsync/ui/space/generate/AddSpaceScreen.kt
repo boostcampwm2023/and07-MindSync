@@ -72,9 +72,10 @@ fun AddSpaceScreen(
         containerColor = Yellow4,
     ) { innerPadding ->
         BoxWithConstraints(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxWidth(),
         ) {
             AddSpaceContent(
                 uiState = uiState,
@@ -95,45 +96,50 @@ fun AddSpaceContent(
     updateSpaceName: (String) -> Unit = {},
     createImage: (Uri) -> Unit = {},
 ) {
-    val imageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            uri?.let { imageThumbnail ->
-                createImage(imageThumbnail)
-            }
-        },
-    )
+    val imageLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri ->
+                uri?.let { imageThumbnail ->
+                    createImage(imageThumbnail)
+                }
+            },
+        )
     Row(verticalAlignment = Alignment.CenterVertically) {
         AddSpaceTopBar(onBackClicked)
     }
     Row(
-        modifier = Modifier
-            .padding(top = 50.dp)
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .padding(top = 50.dp)
+                .fillMaxWidth(),
         horizontalArrangement = Arrangement.Absolute.Center,
     ) {
         AddSpaceInfo()
     }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 150.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 150.dp),
         horizontalArrangement = Arrangement.Absolute.Center,
     ) {
         AddSpaceThumbnail(onImageClicked = imageLauncher, imageUrl = uiState.spaceThumbnail)
     }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 300.dp, start = 20.dp, end = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 300.dp, start = 20.dp, end = 20.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         InputSpaceNameField(uiState = uiState, updateSpaceName = updateSpaceName)
     }
     Row(
-        modifier = Modifier
-            .padding(top = 450.dp)
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .padding(top = 450.dp)
+                .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
         SpaceNameInputButton(createSpace = createSpace, uiState.spaceName)
@@ -160,11 +166,12 @@ private fun HandleAddSpaceEvents(
 
 @Composable
 fun AddSpaceTopBar(onBackClicked: () -> Unit) {
-    Row() {
+    Row {
         IconButton(
-            modifier = Modifier
-                .size(25.dp)
-                .padding(1.dp),
+            modifier =
+                Modifier
+                    .size(25.dp)
+                    .padding(1.dp),
             onClick = onBackClicked,
         ) {
             Image(
@@ -195,21 +202,23 @@ fun AddSpaceThumbnail(
     imageUrl: String,
 ) {
     Box(
-        modifier = Modifier
-            .size(120.dp),
+        modifier =
+            Modifier
+                .size(120.dp),
     ) {
         AsyncImage(
             model = imageUrl,
             contentDescription = null,
             placeholder = painterResource(id = R.drawable.ic_placeholder),
             error = painterResource(id = R.drawable.ic_placeholder),
-            modifier = Modifier
-                .clickable {
-                    onImageClicked.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                    )
-                }
-                .clip(CircleShape),
+            modifier =
+                Modifier
+                    .clickable {
+                        onImageClicked.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                        )
+                    }
+                    .clip(CircleShape),
             contentScale = ContentScale.Crop,
         )
         Box(
@@ -256,13 +265,15 @@ fun InputSpaceNameField(
                 textAlign = TextAlign.End,
             )
         },
-
         placeholder = { Text(spaceHint) },
     )
 }
 
 @Composable
-fun SpaceNameInputButton(createSpace: (String) -> Unit, spaceName: String) {
+fun SpaceNameInputButton(
+    createSpace: (String) -> Unit,
+    spaceName: String,
+) {
     val icon = stringResource(id = R.string.space_image_name)
     Button(
         onClick = {
@@ -270,10 +281,10 @@ fun SpaceNameInputButton(createSpace: (String) -> Unit, spaceName: String) {
         },
         enabled = spaceName.length in 1..20,
         modifier = Modifier.width(264.dp),
-        colors = ButtonDefaults.buttonColors(
-            disabledContainerColor = Color.LightGray,
-        ),
-
+        colors =
+            ButtonDefaults.buttonColors(
+                disabledContainerColor = Color.LightGray,
+            ),
     ) {
         Text(text = stringResource(id = R.string.check_message))
     }
