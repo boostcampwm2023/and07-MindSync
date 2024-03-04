@@ -54,7 +54,14 @@ fun BoardListScreen(
     onAcceptClicked: (Uri) -> Unit,
 ) {
     val uiState by boardListViewModel.boardUiState.collectAsStateWithLifecycle()
-    Scaffold(bottomBar = { BoardListBottomBar() }) { innerPadding ->
+    Scaffold(bottomBar = {
+        BoardListBottomBar(
+            uiState = uiState,
+            addBoard = showDialog,
+            deleteBoard = deleteBoard,
+            refreshBoard = refreshBoard,
+        )
+    }) { innerPadding ->
         BoxWithConstraints(
             modifier =
             Modifier
@@ -165,10 +172,15 @@ fun BoardDetail(boardName: String, boardDate: String) {
 }
 
 @Composable
-fun BoardListBottomBar() {
+fun BoardListBottomBar(
+    uiState: BoardListUiState,
+    addBoard: (Boolean) -> Unit,
+    deleteBoard: () -> Unit,
+    refreshBoard: () -> Unit,
+) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.Start) {
-            FloatingActionButton(onClick = {}) {
+            FloatingActionButton(onClick = refreshBoard) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_refresh_board),
                     contentDescription = null,
@@ -177,9 +189,18 @@ fun BoardListBottomBar() {
         }
         Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.End) {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
+            var icon: Int
+            val action: () -> Unit
+            if (uiState.selectBoards.isNotEmpty()) {
+                icon = R.drawable.ic_delete_board
+                action = deleteBoard
+            } else {
+                icon = R.drawable.ic_add_board
+                action = { addBoard(true) }
+            }
+            FloatingActionButton(onClick = action) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_add_board),
+                    painter = painterResource(id = icon),
                     contentDescription = null,
                 )
             }
