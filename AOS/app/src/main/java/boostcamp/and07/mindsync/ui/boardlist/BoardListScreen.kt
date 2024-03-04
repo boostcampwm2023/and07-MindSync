@@ -64,6 +64,15 @@ fun BoardListScreen(
             BoardListComponent(
                 uiState = uiState,
             )
+            if (uiState.isShownDialog) {
+                AddBoardScreen(
+                    createBoardViewModel = createBoardViewModel,
+                    createBoard = createBoard,
+                    updateBoardName = { createBoardViewModel.onBoardNameChanged(it, 0, 0, 0) },
+                    createImage = onAcceptClicked,
+                    closeDialog = showDialog,
+                )
+            }
         }
     }
 }
