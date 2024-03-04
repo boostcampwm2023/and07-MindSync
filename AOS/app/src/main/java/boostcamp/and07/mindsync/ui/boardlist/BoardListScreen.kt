@@ -1,9 +1,9 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
@@ -39,8 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
+import boostcamp.and07.mindsync.ui.dialog.AddBoardScreen
+import boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
+import java.io.File
 
 @Composable
 fun BoardListScreen(
@@ -70,6 +71,7 @@ fun BoardListScreen(
         ) {
             BoardListComponent(
                 uiState = uiState,
+                onCheckBoxClicked = onCheckBoxClicked,
             )
             if (uiState.isShownDialog) {
                 AddBoardScreen(
@@ -84,23 +86,12 @@ fun BoardListScreen(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BoardListComponent(
-    uiState: BoardUiState = BoardUiState(),
+    uiState: BoardListUiState = BoardListUiState(),
+    onCheckBoxClicked: (Board) -> Unit = {},
 ) {
     val scrollState = rememberLazyGridState()
-    val boards: List<Board> = listOf<Board>(
-        Board(
-            id = "1",
-            date = "2023-01-01",
-            name = "board111111111121212121212121212212121",
-            imageUrl = "",
-            isChecked = true,
-        ),
-        Board(id = "2", date = "2023-01-02", name = "board2", imageUrl = "", isChecked = false),
-        Board(id = "3", date = "2023-01-03", name = "board3", imageUrl = "", isChecked = true),
-    )
     LazyVerticalGrid(
         state = scrollState,
         columns = GridCells.Adaptive(minSize = 128.dp),
@@ -109,18 +100,18 @@ fun BoardListComponent(
         contentPadding = PaddingValues(20.dp),
         content = {
             items(
-                items = boards,
-                itemContent = { BoardRow(board = it) },
+                items = uiState.boards,
+                itemContent = { BoardRow(board = it, onCheckBoxClicked = onCheckBoxClicked) },
             )
         },
     )
 }
 
 @Composable
-fun BoardRow(board: Board) {
+fun BoardRow(board: Board, onCheckBoxClicked: (Board) -> Unit) {
     Column {
         Row() {
-            Checkbox(checked = board.isChecked, onCheckedChange = {})
+            Checkbox(checked = board.isChecked, onCheckedChange = { onCheckBoxClicked(board) })
             BoardThumbnail(imageUrl = board.imageUrl)
         }
         Spacer(modifier = Modifier.height(10.dp))
