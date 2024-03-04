@@ -70,15 +70,15 @@ class BoardListViewModel
             }
         }
 
-        fun selectBoard(selectBoard: Board) {
-            _boardUiState.update { boardUiState ->
-                val newSelectBoards =
-                    boardUiState.boards.toMutableList().filter { board -> board.isChecked }
-                boardUiState.copy(
-                    selectBoards = newSelectBoards,
-                )
-            }
+    fun selectBoard() {
+        _boardUiState.update { boardUiState ->
+            val newSelectBoards =
+                boardUiState.boards.toMutableList().filter { board -> board.isChecked }
+            boardUiState.copy(
+                selectBoards = newSelectBoards,
+            )
         }
+    }
 
         fun deleteBoard() {
             viewModelScope.launch(coroutineExceptionHandler) {

@@ -47,7 +47,7 @@ import java.io.File
 fun BoardListScreen(
     boardListViewModel: BoardListViewModel,
     createBoardViewModel: CreateBoardViewModel,
-    onCheckBoxClicked: (Board) -> Unit,
+    onCheckBoxClicked: () -> Unit,
     refreshBoard: () -> Unit,
     showDialog: (Boolean) -> Unit,
     deleteBoard: () -> Unit,
@@ -89,7 +89,7 @@ fun BoardListScreen(
 @Composable
 fun BoardListComponent(
     uiState: BoardListUiState = BoardListUiState(),
-    onCheckBoxClicked: (Board) -> Unit = {},
+    onCheckBoxClicked: () -> Unit = {},
 ) {
     val scrollState = rememberLazyGridState()
     LazyVerticalGrid(
@@ -108,10 +108,13 @@ fun BoardListComponent(
 }
 
 @Composable
-fun BoardRow(board: Board, onCheckBoxClicked: (Board) -> Unit) {
+fun BoardRow(board: Board, onCheckBoxClicked: () -> Unit) {
     Column {
         Row() {
-            Checkbox(checked = board.isChecked, onCheckedChange = { onCheckBoxClicked(board) })
+            Checkbox(checked = board.isChecked, onCheckedChange = {
+                board.isChecked = !board.isChecked
+                onCheckBoxClicked()
+            })
             BoardThumbnail(imageUrl = board.imageUrl)
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -182,6 +185,7 @@ fun BoardListBottomBar(
         Column(horizontalAlignment = Alignment.End) {
             var icon: Int
             val action: () -> Unit
+
             if (uiState.selectBoards.isNotEmpty()) {
                 icon = R.drawable.ic_delete_board
                 action = deleteBoard
