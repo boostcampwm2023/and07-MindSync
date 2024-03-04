@@ -45,6 +45,13 @@ import coil.compose.AsyncImage
 @Composable
 fun BoardListScreen(
     boardListViewModel: BoardListViewModel,
+    createBoardViewModel: CreateBoardViewModel,
+    onCheckBoxClicked: (Board) -> Unit,
+    refreshBoard: () -> Unit,
+    showDialog: (Boolean) -> Unit,
+    deleteBoard: () -> Unit,
+    createBoard: (File?, String) -> Unit,
+    onAcceptClicked: (Uri) -> Unit,
 ) {
     val uiState by boardListViewModel.boardUiState.collectAsStateWithLifecycle()
     Scaffold(bottomBar = { BoardListBottomBar() }) { innerPadding ->
