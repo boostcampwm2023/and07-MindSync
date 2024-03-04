@@ -6,4 +6,5 @@ data class BoardListUiState(
     val spaceId: String = "",
     val boards: List<Board> = listOf(),
     val selectBoards: List<Board> = listOf(),
+    val isShownDialog: Boolean = false,
 )
