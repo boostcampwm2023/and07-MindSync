@@ -72,7 +72,6 @@ fun AddBoardScreen(
                 .padding(innerPadding),
         ) {
             AddBoardContent(
-                uiState = uiState,
                 createBoard = createBoard,
                 updateBoardName = updateBoardName,
                 createImage = createImage,
@@ -101,7 +100,7 @@ fun AddBoardContent(
         )
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val dialogWidth = screenWidth * 0.8f
-    Dialog(onDismissRequest = { /*TODO*/ }) {
+    Dialog(onDismissRequest = { closeDialog(false) }) {
         Column(
             modifier = Modifier
                 .width(dialogWidth)
