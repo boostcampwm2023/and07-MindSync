@@ -122,7 +122,7 @@ class BoardListViewModel
                 _boardUiState.update { boardUiState ->
                     boardUiState.copy(
                         boards = newBoards,
-                        selectBoards = newSelectBoards,
+                        selectBoards = listOf(),
                     )
                 }
             }
