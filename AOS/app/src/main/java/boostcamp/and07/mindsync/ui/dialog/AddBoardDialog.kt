@@ -63,8 +63,8 @@ fun AddBoardScreen(
     Scaffold { innerPadding ->
         BoxWithConstraints(
             modifier =
-            Modifier
-                .padding(innerPadding),
+                Modifier
+                    .padding(innerPadding),
         ) {
             AddBoardContent(
                 uiState = boardUiState,
@@ -101,9 +101,9 @@ fun AddBoardContent(
     Dialog(onDismissRequest = closeDialog) {
         Column(
             modifier =
-            Modifier
-                .width(dialogWidth)
-                .background(color = Yellow4),
+                Modifier
+                    .width(dialogWidth)
+                    .background(color = Yellow4),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -118,8 +118,8 @@ fun AddBoardContent(
             }
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Absolute.Center,
             ) {
                 AddBoardTopBar()
@@ -127,25 +127,25 @@ fun AddBoardContent(
             Spacer(modifier = Modifier.height(30.dp))
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Absolute.Center,
             ) {
                 AddBoardThumbnail(onImageClicked = imageLauncher, imageUrl = uiState.boardImage)
             }
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp),
                 horizontalArrangement = Arrangement.Center,
             ) {
                 InputBoardNameField(uiState = uiState, updateBoardName = updateBoardName)
             }
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
                 BoardNameInputButton(
@@ -174,8 +174,8 @@ fun AddBoardThumbnail(
 ) {
     Box(
         modifier =
-        Modifier
-            .size(120.dp),
+            Modifier
+                .size(120.dp),
     ) {
         AsyncImage(
             model = imageUrl,
@@ -183,13 +183,13 @@ fun AddBoardThumbnail(
             placeholder = painterResource(id = R.drawable.ic_placeholder),
             error = painterResource(id = R.drawable.ic_placeholder),
             modifier =
-            Modifier
-                .clickable {
-                    onImageClicked.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                    )
-                }
-                .clip(CircleShape),
+                Modifier
+                    .clickable {
+                        onImageClicked.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                        )
+                    }
+                    .clip(CircleShape),
             contentScale = ContentScale.Crop,
         )
         Box(
@@ -221,18 +221,19 @@ fun InputBoardNameField(
     updateBoardName: (CharSequence) -> Unit,
 ) {
     val boardHint = stringResource(id = R.string.board_list_board_name_hint)
-    var boardName = remember {
-        mutableStateOf(
-            TextFieldValue(
-                text = uiState.boardName,
-            ),
-        )
-    }
+    var boardName =
+        remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = uiState.boardName,
+                ),
+            )
+        }
     TextField(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(20.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
         value = boardName.value,
         onValueChange = {
             boardName.value = it
@@ -264,9 +265,9 @@ fun BoardNameInputButton(
         enabled = uiState.boardName.length in 1..20,
         modifier = Modifier.width(264.dp),
         colors =
-        ButtonDefaults.buttonColors(
-            disabledContainerColor = Color.LightGray,
-        ),
+            ButtonDefaults.buttonColors(
+                disabledContainerColor = Color.LightGray,
+            ),
     ) {
         Text(text = stringResource(id = R.string.check_message))
     }

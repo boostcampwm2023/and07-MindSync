@@ -68,9 +68,9 @@ fun BoardListScreen(
     }) { innerPadding ->
         BoxWithConstraints(
             modifier =
-            Modifier
-                .padding(innerPadding)
-                .fillMaxWidth(),
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxWidth(),
         ) {
             BoardListComponent(
                 uiState = uiState,
@@ -153,12 +153,12 @@ fun BoardThumbnail(
         placeholder = painterResource(id = R.drawable.ic_placeholder),
         error = painterResource(id = R.drawable.ic_placeholder),
         modifier =
-        Modifier
-            .size(width = 100.dp, height = 100.dp)
-            .clip(CircleShape)
-            .clickable {
-                navigateToMindMap(board.id, board.name)
-            },
+            Modifier
+                .size(width = 100.dp, height = 100.dp)
+                .clip(CircleShape)
+                .clickable {
+                    navigateToMindMap(board.id, board.name)
+                },
         contentScale = ContentScale.Crop,
     )
 }
