@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
-import boostcamp.and07.mindsync.ui.dialog.AddBoardScreen
+import boostcamp.and07.mindsync.ui.dialog.AddBoardDialogScreen
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 import java.io.File
@@ -78,7 +78,7 @@ fun BoardListScreen(
                 navigateToMindMap = navigateToMindMap,
             )
             if (uiState.isShownDialog) {
-                AddBoardScreen(
+                AddBoardDialogScreen(
                     boardUiState = uiState,
                     createBoard = createBoard,
                     updateBoardName = updateBoardName,

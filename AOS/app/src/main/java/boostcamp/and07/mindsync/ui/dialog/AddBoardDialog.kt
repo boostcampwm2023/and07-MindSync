@@ -53,7 +53,7 @@ import coil.compose.AsyncImage
 import java.io.File
 
 @Composable
-fun AddBoardScreen(
+fun AddBoardDialogScreen(
     boardUiState: BoardListUiState,
     createBoard: (File?, String) -> Unit,
     updateBoardName: (CharSequence) -> Unit,
@@ -66,7 +66,7 @@ fun AddBoardScreen(
                 Modifier
                     .padding(innerPadding),
         ) {
-            AddBoardContent(
+            AddBoardDialogContent(
                 uiState = boardUiState,
                 createBoard = createBoard,
                 updateBoardName = updateBoardName,
@@ -80,7 +80,7 @@ fun AddBoardScreen(
 }
 
 @Composable
-fun AddBoardContent(
+fun AddBoardDialogContent(
     uiState: BoardListUiState = BoardListUiState(),
     closeDialog: () -> Unit = {},
     createBoard: (File?, String) -> Unit = { imageFile, imageName -> {} },
@@ -277,6 +277,6 @@ fun BoardNameInputButton(
 @Composable
 private fun AddBoardPreview() {
     MindSyncTheme {
-        AddBoardContent()
+        AddBoardDialogContent()
     }
 }
