@@ -203,7 +203,7 @@ fun BoardListBottomBar(
     deleteBoard: () -> Unit,
     refreshBoard: () -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Row(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
         Column(horizontalAlignment = Alignment.Start) {
             FloatingActionButton(onClick = refreshBoard) {
                 Icon(
