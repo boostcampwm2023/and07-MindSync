@@ -26,14 +26,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,8 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.boardlist.BoardListUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Yellow4
@@ -57,25 +54,26 @@ import java.io.File
 
 @Composable
 fun AddBoardScreen(
-    createBoardViewModel: CreateBoardViewModel,
+    boardUiState: BoardListUiState,
     createBoard: (File?, String) -> Unit,
-    updateBoardName: (String) -> Unit,
+    updateBoardName: (CharSequence) -> Unit,
     createImage: (Uri) -> Unit,
-    closeDialog: (Boolean) -> Unit,
+    closeDialog: () -> Unit,
 ) {
-    val uiState by createBoardViewModel.uiState.collectAsStateWithLifecycle()
-    val snackBarHostState = remember { SnackbarHostState() }
-    Scaffold() { innerPadding ->
+    Scaffold { innerPadding ->
         BoxWithConstraints(
             modifier =
             Modifier
                 .padding(innerPadding),
         ) {
             AddBoardContent(
+                uiState = boardUiState,
                 createBoard = createBoard,
                 updateBoardName = updateBoardName,
                 createImage = createImage,
-                closeDialog = { closeDialog(false) },
+                closeDialog = {
+                    closeDialog()
+                },
             )
         }
     }
@@ -83,10 +81,10 @@ fun AddBoardScreen(
 
 @Composable
 fun AddBoardContent(
-    uiState: CreateBoardUiState = CreateBoardUiState(),
-    closeDialog: (Boolean) -> Unit = {},
+    uiState: BoardListUiState = BoardListUiState(),
+    closeDialog: () -> Unit = {},
     createBoard: (File?, String) -> Unit = { imageFile, imageName -> {} },
-    updateBoardName: (String) -> Unit = {},
+    updateBoardName: (CharSequence) -> Unit = {},
     createImage: (Uri) -> Unit = {},
 ) {
     val imageLauncher =
@@ -100,9 +98,10 @@ fun AddBoardContent(
         )
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val dialogWidth = screenWidth * 0.8f
-    Dialog(onDismissRequest = { closeDialog(false) }) {
+    Dialog(onDismissRequest = closeDialog) {
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .width(dialogWidth)
                 .background(color = Yellow4),
         ) {
@@ -110,7 +109,7 @@ fun AddBoardContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
             ) {
-                IconButton(onClick = { closeDialog(false) }) {
+                IconButton(onClick = closeDialog) {
                     Image(
                         painterResource(id = R.drawable.ic_back),
                         contentDescription = null,
@@ -218,11 +217,11 @@ fun AddBoardThumbnail(
 
 @Composable
 fun InputBoardNameField(
-    uiState: CreateBoardUiState,
-    updateBoardName: (String) -> Unit,
+    uiState: BoardListUiState,
+    updateBoardName: (CharSequence) -> Unit,
 ) {
     val boardHint = stringResource(id = R.string.board_list_board_name_hint)
-    var boardName by remember {
+    var boardName = remember {
         mutableStateOf(
             TextFieldValue(
                 text = uiState.boardName,
@@ -230,12 +229,13 @@ fun InputBoardNameField(
         )
     }
     TextField(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(20.dp),
-        value = boardName,
+        value = boardName.value,
         onValueChange = {
-            boardName = it
+            boardName.value = it
             updateBoardName(it.text)
         },
         supportingText = {
@@ -252,14 +252,14 @@ fun InputBoardNameField(
 @Composable
 fun BoardNameInputButton(
     createBoard: (File?, String) -> Unit,
-    uiState: CreateBoardUiState,
-    closeDialog: (Boolean) -> Unit,
+    uiState: BoardListUiState,
+    closeDialog: () -> Unit,
 ) {
     val icon = stringResource(id = R.string.board_multipart_image_name)
     Button(
         onClick = {
             createBoard(uiState.boardThumbnailFile, uiState.boardName)
-            closeDialog(false)
+            closeDialog()
         },
         enabled = uiState.boardName.length in 1..20,
         modifier = Modifier.width(264.dp),
