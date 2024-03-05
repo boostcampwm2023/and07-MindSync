@@ -43,6 +43,8 @@ import boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun BoardListScreen(
@@ -159,6 +161,15 @@ fun BoardThumbnail(board: Board, navigateToMindMap: (String, String) -> Unit) {
     )
 }
 
+fun dateFormat(date: String): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    val localDate = LocalDateTime.parse(date, formatter)
+    val year = localDate.year
+    val month = localDate.monthValue
+    val day = localDate.dayOfMonth
+    return "$year-$month-$day"
+}
+
 @Composable
 fun BoardDetail(boardName: String, boardDate: String) {
     Row(modifier = Modifier.fillMaxWidth()) {
@@ -175,7 +186,7 @@ fun BoardDetail(boardName: String, boardDate: String) {
             )
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = boardDate,
+                text = dateFormat(boardDate),
                 style = MaterialTheme.typography.displaySmall,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
@@ -203,7 +214,7 @@ fun BoardListBottomBar(
         }
         Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.End) {
-            var icon: Int
+            val icon: Int
             val action: () -> Unit
 
             if (uiState.selectBoards.isNotEmpty()) {
