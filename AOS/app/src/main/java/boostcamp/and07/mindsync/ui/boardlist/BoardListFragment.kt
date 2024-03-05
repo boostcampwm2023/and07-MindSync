@@ -1,36 +1,33 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
+import android.net.Uri
+import androidx.compose.runtime.Composable
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import boostcamp.and07.mindsync.R
-import boostcamp.and07.mindsync.data.model.Board
-import boostcamp.and07.mindsync.databinding.FragmentBoardListBinding
-import boostcamp.and07.mindsync.ui.base.BaseFragment
-import boostcamp.and07.mindsync.ui.dialog.CreateBoardDialog
-import boostcamp.and07.mindsync.ui.util.setClickEvent
+import boostcamp.and07.mindsync.ui.base.BaseComposeFragment
+import boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel
+import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
+import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import java.io.File
 
 @AndroidEntryPoint
-class BoardListFragment :
-    BaseFragment<FragmentBoardListBinding>(R.layout.fragment_board_list) {
+class BoardListFragment : BaseComposeFragment() {
     private val boardListViewModel: BoardListViewModel by viewModels()
-    private val boardListAdapter = BoardListAdapter()
-    private val args: BoardListFragmentArgs by navArgs()
+    private val createBoardViewModel: CreateBoardViewModel by viewModels()
 
-    override fun initView() {
-        setBinding()
-        collectBoardEvent()
-        onFloatingButtonClick()
-        boardListViewModel.setSpaceId(args.spaceId)
+    private fun createImage(uri: Uri?) {
+        uri?.let { uri ->
+            val file = File(uri.toAbsolutePath(requireContext()))
+            createBoardViewModel.setBoardImage(uri.toString())
+            createBoardViewModel.setImageFile(file)
+        }
     }
 
-    private fun navigateToMindMap(boardId: String, boardName: String) {
+    private fun navigateToMindMap(
+        boardId: String,
+        boardName: String,
+    ) {
         findNavController().navigate(
             BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
                 boardId = boardId,
@@ -39,45 +36,24 @@ class BoardListFragment :
         )
     }
 
-                override fun onCheckBoxClick(board: Board) {
-                    boardListViewModel.selectBoard(board)
-                }
-            },
-        )
-    }
-
-    private fun collectBoardEvent() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                boardListViewModel.boardUiEvent.collectLatest { boardEvent ->
-                    when (boardEvent) {
-                        is BoardUiEvent.ShowMessage -> {
-                            showMessage(boardEvent.message)
-                        }
-                        else -> {}
-                    }
-                }
-            }
-        }
-    }
-
-    private fun onFloatingButtonClick() {
-        binding.btnBoardListAddBoard.setClickEvent(lifecycleScope) {
-            if (boardListViewModel.boardUiState.value.selectBoards.isEmpty()) {
-                val createBoardDialog = CreateBoardDialog()
-                createBoardDialog.setCompleteListener { part, name ->
-                    boardListViewModel.addBoard(part, name)
-                }
-                createBoardDialog.show(
-                    requireActivity().supportFragmentManager,
-                    "CreateBoardDialog",
-                )
-            } else {
-                boardListViewModel.deleteBoard()
-            }
-        }
-        binding.btnBoardListRefresh.setClickEvent(lifecycleScope) {
-            boardListViewModel.getBoards()
+    @Composable
+    override fun Screen() {
+        MindSyncTheme {
+            BoardListScreen(
+                boardListViewModel = boardListViewModel,
+                onCheckBoxClicked = { boardListViewModel.selectBoard() },
+                refreshBoard = { boardListViewModel.restoreBoard() },
+                showDialog = { boardListViewModel.showCreateBoardDialog(it) },
+                deleteBoard = { boardListViewModel.deleteBoard() },
+                createBoardViewModel = createBoardViewModel,
+                createBoard = { imageFile, imageName ->
+                    boardListViewModel.addBoard(imageFile, imageName)
+                },
+                onAcceptClicked = { uri -> createImage(uri) },
+                navigateToMindMap = { boardId, boardName ->
+                    navigateToMindMap(boardId, boardName)
+                },
+            )
         }
     }
 }
