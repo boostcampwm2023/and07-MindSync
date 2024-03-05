@@ -76,11 +76,16 @@ constructor(
         }
     }
 
-        fun showCreateBoardDialog(isShown: Boolean) {
-            _boardUiState.update { uiState ->
-                uiState.copy(isShownDialog = isShown)
-            }
+    fun showCreateBoardDialog(isShown: Boolean) {
+        _boardUiState.update { uiState ->
+            uiState.copy(
+                isShownDialog = isShown,
+                boardName = "",
+                boardImage = "",
+                boardThumbnailFile = null,
+            )
         }
+    }
 
     fun getBoards() {
         viewModelScope.launch(coroutineExceptionHandler) {
