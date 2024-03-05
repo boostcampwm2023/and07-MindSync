@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import boostcamp.and07.mindsync.ui.base.BaseComposeFragment
-import boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.util.toAbsolutePath
 import dagger.hilt.android.AndroidEntryPoint
@@ -14,13 +13,12 @@ import java.io.File
 @AndroidEntryPoint
 class BoardListFragment : BaseComposeFragment() {
     private val boardListViewModel: BoardListViewModel by viewModels()
-    private val createBoardViewModel: CreateBoardViewModel by viewModels()
 
     private fun createImage(uri: Uri?) {
         uri?.let { uri ->
             val file = File(uri.toAbsolutePath(requireContext()))
-            createBoardViewModel.setBoardImage(uri.toString())
-            createBoardViewModel.setImageFile(file)
+            boardListViewModel.setBoardImage(uri.toString())
+            boardListViewModel.setImageFile(file)
         }
     }
 
@@ -45,7 +43,6 @@ class BoardListFragment : BaseComposeFragment() {
                 refreshBoard = { boardListViewModel.restoreBoard() },
                 showDialog = { boardListViewModel.showCreateBoardDialog(it) },
                 deleteBoard = { boardListViewModel.deleteBoard() },
-                createBoardViewModel = createBoardViewModel,
                 createBoard = { imageFile, imageName ->
                     boardListViewModel.addBoard(imageFile, imageName)
                 },
@@ -53,6 +50,7 @@ class BoardListFragment : BaseComposeFragment() {
                 navigateToMindMap = { boardId, boardName ->
                     navigateToMindMap(boardId, boardName)
                 },
+                updateBoardName = { boardListViewModel.onBoardNameChanged(it) },
             )
         }
     }

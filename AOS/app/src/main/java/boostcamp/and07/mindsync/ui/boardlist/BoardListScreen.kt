@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.ui.dialog.AddBoardScreen
-import boostcamp.and07.mindsync.ui.dialog.CreateBoardViewModel
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 import java.io.File
@@ -49,7 +48,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun BoardListScreen(
     boardListViewModel: BoardListViewModel,
-    createBoardViewModel: CreateBoardViewModel,
     onCheckBoxClicked: () -> Unit,
     refreshBoard: () -> Unit,
     showDialog: (Boolean) -> Unit,
@@ -57,6 +55,7 @@ fun BoardListScreen(
     createBoard: (File?, String) -> Unit,
     onAcceptClicked: (Uri) -> Unit,
     navigateToMindMap: (String, String) -> Unit,
+    updateBoardName: (CharSequence) -> Unit,
 ) {
     val uiState by boardListViewModel.boardUiState.collectAsStateWithLifecycle()
     Scaffold(bottomBar = {
@@ -80,11 +79,11 @@ fun BoardListScreen(
             )
             if (uiState.isShownDialog) {
                 AddBoardScreen(
-                    createBoardViewModel = createBoardViewModel,
+                    boardUiState = uiState,
                     createBoard = createBoard,
-                    updateBoardName = { createBoardViewModel.onBoardNameChanged(it, 0, 0, 0) },
+                    updateBoardName = updateBoardName,
                     createImage = onAcceptClicked,
-                    closeDialog = showDialog,
+                    closeDialog = { showDialog(false) },
                 )
             }
         }
@@ -126,7 +125,7 @@ fun BoardRow(
     navigateToMindMap: (String, String) -> Unit,
 ) {
     Column {
-        Row() {
+        Row {
             Checkbox(checked = board.isChecked, onCheckedChange = {
                 board.isChecked = !board.isChecked
                 onCheckBoxClicked()
@@ -144,7 +143,10 @@ fun BoardRow(
 }
 
 @Composable
-fun BoardThumbnail(board: Board, navigateToMindMap: (String, String) -> Unit) {
+fun BoardThumbnail(
+    board: Board,
+    navigateToMindMap: (String, String) -> Unit,
+) {
     AsyncImage(
         model = board.imageUrl,
         contentDescription = null,
@@ -171,7 +173,10 @@ fun dateFormat(date: String): String {
 }
 
 @Composable
-fun BoardDetail(boardName: String, boardDate: String) {
+fun BoardDetail(
+    boardName: String,
+    boardDate: String,
+) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.fillMaxWidth(),
