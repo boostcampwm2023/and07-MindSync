@@ -45,15 +45,21 @@ class CreateBoardViewModel
                     fileToMultiPart(imageFile, imageName)
                 }
             val name = _uiState.value.boardName
+            _uiState.update { uiState ->
+                uiState.copy(boardName = name)
+            }
             return Pair(icon, name)
         }
 
         fun setImageFile(file: File) {
-            imageFile = file
+            _uiState.update { uiState ->
+                uiState.copy(boardThumbnailFile = file)
+            }
         }
     }
 
 data class CreateBoardUiState(
     val boardName: String = "",
     val boardImage: String = "",
+    val boardThumbnailFile: File? = null,
 )
