@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ fun BoardListScreen(
     deleteBoard: () -> Unit,
     createBoard: (File?, String) -> Unit,
     onAcceptClicked: (Uri) -> Unit,
+    navigateToMindMap: (String, String) -> Unit,
 ) {
     val uiState by boardListViewModel.boardUiState.collectAsStateWithLifecycle()
     Scaffold(bottomBar = {
@@ -72,6 +74,7 @@ fun BoardListScreen(
             BoardListComponent(
                 uiState = uiState,
                 onCheckBoxClicked = onCheckBoxClicked,
+                navigateToMindMap = navigateToMindMap,
             )
             if (uiState.isShownDialog) {
                 AddBoardScreen(
@@ -90,6 +93,7 @@ fun BoardListScreen(
 fun BoardListComponent(
     uiState: BoardListUiState = BoardListUiState(),
     onCheckBoxClicked: () -> Unit = {},
+    navigateToMindMap: (String, String) -> Unit = { boardId, boardName -> { } },
 ) {
     val scrollState = rememberLazyGridState()
     LazyVerticalGrid(
@@ -101,21 +105,34 @@ fun BoardListComponent(
         content = {
             items(
                 items = uiState.boards,
-                itemContent = { BoardRow(board = it, onCheckBoxClicked = onCheckBoxClicked) },
+                itemContent = {
+                    BoardRow(
+                        board = it,
+                        onCheckBoxClicked = onCheckBoxClicked,
+                        navigateToMindMap = navigateToMindMap,
+                    )
+                },
             )
         },
     )
 }
 
 @Composable
-fun BoardRow(board: Board, onCheckBoxClicked: () -> Unit) {
+fun BoardRow(
+    board: Board,
+    onCheckBoxClicked: () -> Unit,
+    navigateToMindMap: (String, String) -> Unit,
+) {
     Column {
         Row() {
             Checkbox(checked = board.isChecked, onCheckedChange = {
                 board.isChecked = !board.isChecked
                 onCheckBoxClicked()
             })
-            BoardThumbnail(imageUrl = board.imageUrl)
+            BoardThumbnail(
+                board = board,
+                navigateToMindMap = navigateToMindMap,
+            )
         }
         Spacer(modifier = Modifier.height(10.dp))
         Row(modifier = Modifier.fillMaxSize()) {
@@ -125,16 +142,19 @@ fun BoardRow(board: Board, onCheckBoxClicked: () -> Unit) {
 }
 
 @Composable
-fun BoardThumbnail(imageUrl: String) {
+fun BoardThumbnail(board: Board, navigateToMindMap: (String, String) -> Unit) {
     AsyncImage(
-        model = imageUrl,
+        model = board.imageUrl,
         contentDescription = null,
         placeholder = painterResource(id = R.drawable.ic_placeholder),
         error = painterResource(id = R.drawable.ic_placeholder),
         modifier =
         Modifier
             .size(width = 100.dp, height = 100.dp)
-            .clip(CircleShape),
+            .clip(CircleShape)
+            .clickable {
+                navigateToMindMap(board.id, board.name)
+            },
         contentScale = ContentScale.Crop,
     )
 }

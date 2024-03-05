@@ -30,19 +30,14 @@ class BoardListFragment :
         boardListViewModel.setSpaceId(args.spaceId)
     }
 
-    private fun setBinding() {
-        binding.vm = boardListViewModel
-        binding.rvBoardListBoard.adapter = boardListAdapter
-        boardListAdapter.setBoardClickListener(
-            object : BoardClickListener {
-                override fun onClick(board: Board) {
-                    findNavController().navigate(
-                        BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
-                            board.id,
-                            board.name,
-                        ),
-                    )
-                }
+    private fun navigateToMindMap(boardId: String, boardName: String) {
+        findNavController().navigate(
+            BoardListFragmentDirections.actionBoardListFragmentToMindMapFragment(
+                boardId = boardId,
+                boardName = boardName,
+            ),
+        )
+    }
 
                 override fun onCheckBoxClick(board: Board) {
                     boardListViewModel.selectBoard(board)
