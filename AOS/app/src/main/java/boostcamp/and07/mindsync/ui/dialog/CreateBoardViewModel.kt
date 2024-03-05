@@ -33,7 +33,7 @@ class CreateBoardViewModel
             }
         }
 
-        fun setSpaceImage(boardImage: String) {
+        fun setBoardImage(boardImage: String) {
             _uiState.update { uiState ->
                 uiState.copy(boardImage = boardImage)
             }

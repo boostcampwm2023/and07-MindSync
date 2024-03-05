@@ -46,7 +46,7 @@ class CreateBoardDialog : DialogFragment() {
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { url ->
             url?.let {
                 val file = File(url.toAbsolutePath(requireContext()))
-                createBoardViewModel.setSpaceImage(url.toString())
+                createBoardViewModel.setBoardImage(url.toString())
                 createBoardViewModel.setImageFile(file)
             }
         }
@@ -99,10 +99,6 @@ class CreateBoardDialog : DialogFragment() {
         resizeDialog()
     }
 
-    fun setCompleteListener(listener: (MultipartBody.Part?, String) -> (Unit)) {
-        this.completeListener = listener
-    }
-
     private fun resizeDialog() {
         val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
 
@@ -134,7 +130,7 @@ class CreateBoardDialog : DialogFragment() {
 
     private fun createImage(uri: Uri?) {
         uri?.let { uri ->
-            createBoardViewModel.setSpaceImage(uri.toString())
+            createBoardViewModel.setBoardImage(uri.toString())
         }
     }
 
