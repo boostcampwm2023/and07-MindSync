@@ -97,3 +97,21 @@ fun RemoveIconButton(
         )
     }
 }
+
+@Composable
+fun RefreshIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    iconColor: Color = Color.Black,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_refresh_board),
+            contentDescription = null,
+            tint = iconColor,
+        )
+    }
+}
