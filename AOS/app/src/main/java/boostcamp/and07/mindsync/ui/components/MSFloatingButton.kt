@@ -25,3 +25,21 @@ fun RecycleBinRestoreFloatingButton(
         )
     }
 }
+
+@Composable
+fun RefreshFloatingButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    backgroundColor: Color = Color(0xFFD4BFF9),
+) {
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = onClick,
+        containerColor = backgroundColor,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_restore_board),
+            contentDescription = null,
+        )
+    }
+}
