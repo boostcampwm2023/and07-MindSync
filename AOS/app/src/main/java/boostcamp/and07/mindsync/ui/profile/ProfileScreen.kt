@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.components.BackIconButton
+import boostcamp.and07.mindsync.ui.components.EditIconButton
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.Gray3
@@ -280,15 +281,10 @@ private fun NicknameEditButton(
     modifier: Modifier = Modifier,
     showDialog: (Boolean) -> Unit,
 ) {
-    IconButton(
+    EditIconButton(
         modifier = modifier,
         onClick = { showDialog(true) },
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_outlined_drawing),
-            contentDescription = null,
-        )
-    }
+    )
 }
 
 @Composable
