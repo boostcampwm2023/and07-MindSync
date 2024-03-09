@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.components.BackIconButton
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.Gray3
@@ -206,14 +207,9 @@ private fun ProfileTopAppBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(
+        BackIconButton(
             onClick = { onBack() },
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = null,
-            )
-        }
+        )
         Text(
             text = stringResource(id = R.string.profile_my_page),
             style = MaterialTheme.typography.displayMedium,
