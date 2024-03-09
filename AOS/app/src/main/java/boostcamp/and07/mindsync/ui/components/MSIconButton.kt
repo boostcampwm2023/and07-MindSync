@@ -43,3 +43,21 @@ fun MenuIconButton(
         )
     }
 }
+
+@Composable
+fun CircleAddIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    iconColor: Color = Color.Black,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_add),
+            contentDescription = null,
+            tint = iconColor,
+        )
+    }
+}
