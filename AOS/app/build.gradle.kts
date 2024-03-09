@@ -119,6 +119,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 }
 
 val ktlintCheck by tasks.registering(JavaExec::class) {

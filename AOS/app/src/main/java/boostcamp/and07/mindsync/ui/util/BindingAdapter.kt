@@ -5,9 +5,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import boostcamp.and07.mindsync.R
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -45,5 +48,14 @@ fun Button.bindEnabled(content: String) {
         when (content.length) {
             in 1..20 -> true
             else -> false
+        }
+}
+
+@BindingAdapter("app:flexBoxLayoutManager")
+fun RecyclerView.bindLayoutManager(direction: Int) {
+    this.layoutManager =
+        FlexboxLayoutManager(context).apply {
+            flexDirection = direction
+            justifyContent = JustifyContent.CENTER
         }
 }
