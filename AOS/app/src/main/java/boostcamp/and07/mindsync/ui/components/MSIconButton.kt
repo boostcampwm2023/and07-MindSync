@@ -133,3 +133,21 @@ fun EditIconButton(
         )
     }
 }
+
+@Composable
+fun FoldIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    iconColor: Color = Color.Black,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_fold),
+            contentDescription = null,
+            tint = iconColor,
+        )
+    }
+}
