@@ -16,10 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -48,9 +44,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.components.BackIconButton
 import boostcamp.and07.mindsync.ui.components.EditIconButton
+import boostcamp.and07.mindsync.ui.components.MSButton
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
-import boostcamp.and07.mindsync.ui.theme.Gray3
 import boostcamp.and07.mindsync.ui.theme.Gray4
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Red2
@@ -294,21 +290,15 @@ private fun ModifyButton(
     updateProfile: (String) -> Unit,
     isModify: Boolean,
 ) {
-    Button(
-        onClick = { updateProfile(profileImageName) },
+    MSButton(
         modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Red2,
-            disabledContainerColor = Gray3,
-        ),
-        enabled = isModify,
-    ) {
-        Text(
-            text = stringResource(id = R.string.profile_modify),
-            style = MaterialTheme.typography.displaySmall,
-            color = Color.White,
-        )
-    }
+        onClick = { updateProfile(profileImageName) },
+        backgroundColor = Red2,
+        isEnabled = isModify,
+        text = stringResource(id = R.string.profile_modify),
+        textStyle = MaterialTheme.typography.displaySmall,
+        fontColor = Color.White,
+    )
 }
 
 @Preview
