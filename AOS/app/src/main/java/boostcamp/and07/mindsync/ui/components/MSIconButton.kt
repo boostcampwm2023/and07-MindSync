@@ -25,3 +25,21 @@ fun BackIconButton(
         )
     }
 }
+
+@Composable
+fun MenuIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    iconColor: Color = Color.Black,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_menu),
+            contentDescription = null,
+            tint = iconColor,
+        )
+    }
+}
