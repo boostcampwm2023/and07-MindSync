@@ -61,3 +61,21 @@ fun CircleAddIconButton(
         )
     }
 }
+
+@Composable
+fun CopyIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    iconColor: Color = Color.Black,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_copy),
+            contentDescription = null,
+            tint = iconColor,
+        )
+    }
+}
