@@ -10,7 +10,6 @@ plugins {
     id("kotlinx-serialization")
     id("com.google.gms.google-services")
 }
-
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -31,8 +30,8 @@ android {
         applicationId = "boostcamp.and07.mindsync"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.0.1"
+        versionCode = 9
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "$url")
