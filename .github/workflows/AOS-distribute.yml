@@ -22,7 +22,7 @@ jobs:
           KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
         run: |
-            echo "$RELEASE_KEYSTORE" | base64 -d > AOS/app/mindsync_keystore
+            echo "$RELEASE_KEYSTORE" | base64 -d > AOS/app/release.keystore
             echo "$KEYSTORE_PROPERTIES" > AOS/keystore.properties
             echo "$LOCAL_PROPERTIES" > AOS/local.properties
 
@@ -74,4 +74,4 @@ jobs:
           releaseName: ${{ steps.extract_version_name.outputs.version }}    
           releaseFiles: AOS/app/build/outputs/bundle/release/app-release.aab
           track: production
-          whatsNewDirectory: AOS/whatsNewDirectory
+          whatsNewDirectory: distribution/whatsnew
