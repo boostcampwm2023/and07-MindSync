@@ -67,8 +67,10 @@ jobs:
               AOS/app/build/outputs/bundle/release/app-release.aab
               
       - name: Create whatsNewDirectory
-        run: mkdir -p ${{ github.workspace }}/distribution/whatsnew
-        
+        run: |
+            mkdir -p ${{ github.workspace }}/distribution/whatsnew
+            echo '${{ secrets.WHATSNEW }}' > ${{ github.workspace }}/distribution/whatsnew/whatsnew-ko-KR
+          
       - name: Deploy to Google Play Store
         uses: r0adkll/upload-google-play@v1
         with:
