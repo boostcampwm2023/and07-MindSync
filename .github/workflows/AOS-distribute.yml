@@ -74,4 +74,4 @@ jobs:
           releaseName: ${{ steps.extract_version_name.outputs.version }}    
           releaseFiles: AOS/app/build/outputs/bundle/release/app-release.aab
           track: production
-          whatsNewDirectory: distribution/whatsnew
+          whatsNewDirectory: ${{ github.workspace }}/distribution/whatsnew
