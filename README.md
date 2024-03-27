@@ -100,7 +100,7 @@
 - [안드로이드에 Access Token과 Refresh Token 적용하기](https://yangyang-workspace.notion.site/Access-Token-Refresh-Token-DataStore-Preference-Interceptor-Authenticator-9934da08678f4b13a5396f47038e1f7f?pvs=4)
 - [서버에 Bulk Insert 및 Update 적용하기](https://yangyang-workspace.notion.site/Bulk-Insert-Update-ec109de908e54b4f833ffaf24e206d8c?pvs=4)
 - [서버에 카카오 OAuth 적용하기](https://yangyang-workspace.notion.site/OAuth-ceee7681f4124d34aafd714728b8aaeb?pvs=4)
-- [서버에 Refresh Toekn 적용하기](https://yangyang-workspace.notion.site/Refresh-Token-66f30a6645cb472582817f695d759e28?pvs=4)
+- [서버에 Refresh Token 적용하기](https://yangyang-workspace.notion.site/Refresh-Token-66f30a6645cb472582817f695d759e28?pvs=4)
 - [안드로이드 CI 적용기](https://yangyang-workspace.notion.site/Android-CI-7eb07b0b0c5346959a1271c526993604?pvs=4)
 - [안드로이드 CD 적용기](https://yangyang-workspace.notion.site/Android-CD-7bf21956eafc47b8bd5a06990f3852da?pvs=4)
 - [서버 중복 코드를 추상 클래스로 분리하기](https://yangyang-workspace.notion.site/228c00d520ed42e7a2706297fc7c1c09?pvs=4)
