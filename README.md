@@ -104,6 +104,7 @@
 - [안드로이드 CI 적용기](https://yangyang-workspace.notion.site/Android-CI-7eb07b0b0c5346959a1271c526993604?pvs=4)
 - [안드로이드 CD 적용기](https://yangyang-workspace.notion.site/Android-CD-7bf21956eafc47b8bd5a06990f3852da?pvs=4)
 - [서버 중복 코드를 추상 클래스로 분리하기](https://yangyang-workspace.notion.site/228c00d520ed42e7a2706297fc7c1c09?pvs=4)
+- [Google Play Store 자동 배포 구축](https://www.notion.so/yangyang-workspace/Google-Play-Store-CD-9bd55780c0f64f7997534b98f1986b2a?pvs=4)
 
 ## 📚 기술스택
 
