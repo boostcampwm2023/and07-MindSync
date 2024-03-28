@@ -67,14 +67,7 @@ class NodeView(
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (mindMapContainer.isMoving) {
-                    mindMapContainer.isMoving = false
-                    mindMapContainer.selectNode?.let { selectedNode ->
-                        findIncludedNode(event.x, event.y)
-                        attachNode(selectedNode)
-                        attachedNode?.let { attachedNode ->
-                            mindMapContainer.update(tree, selectedNode, attachedNode)
-                        }
-                    }
+                    stopNodeMovement()
                 }
                 attachedNode = null
                 lineView.updateTree(tree)
@@ -84,6 +77,9 @@ class NodeView(
         return false
     }
 
+    private fun stopNodeMovement() {
+        mindMapContainer.isMoving = false
+    }
     private fun attachNode(selectedNode: Node) {
         attachedNode?.let { attachedNode ->
             tree.doPreorderTraversal { node ->
