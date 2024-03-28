@@ -80,6 +80,7 @@
     - **줌 기능을 추가하고, 늘어나는 마인드맵의 크기에 따라 줌을 조절했습니다.**
       - [마인드맵이 커졌을 때 잘리는 현상 해결 과정](https://yangyang-workspace.notion.site/947792eae0014041aa1d7d92869a1d71?pvs=4)
       - [줌 기능이 추가됨에 따라, 노드 이동기능과 겹치는 터치 이벤트 관리하기](https://yangyang-workspace.notion.site/56448f36097049e4acef2897fecac41a?pvs=4)
+      - [이동 중 긴 자식 노드가 존재할 때 발생하는 문제 해결](https://www.notion.so/yangyang-workspace/cd711263900d4929bd3fd925f0f5941d?pvs=4)
     - **노드가 추가/편집 될 때마다 크기를 재고, 정렬하도록 했습니다.**
       - [정렬 알고리즘](https://yangyang-workspace.notion.site/067de1120ec841808d46279d752b9352?pvs=4)
 3. <span style="background-color: #E6E6FA">**마인드맵을 동시에 실시간 편집 할 수 있도록 하기 위해**</span>
