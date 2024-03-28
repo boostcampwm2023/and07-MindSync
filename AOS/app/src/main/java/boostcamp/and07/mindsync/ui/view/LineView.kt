@@ -15,13 +15,13 @@ import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class LineView constructor(
+    private val mindMapContainer: MindMapContainer,
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
     private val drawInfo = DrawInfo(context)
     private val path = Path()
     private lateinit var tree: Tree
-    private val paint = Paint()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -64,6 +64,7 @@ class LineView constructor(
 
                 else -> drawInfo.linePaint
             }
+
         val startX = getNodeEdgeX(fromNode, true)
         val startY = fromNode.path.centerY.toPx(context)
         val endX = getNodeEdgeX(toNode, false)
@@ -75,7 +76,18 @@ class LineView constructor(
                 moveTo(startX, startY)
                 cubicTo(midX, startY, midX, endY, endX, endY)
             }
-        canvas.drawPath(path, linePaint)
+        drawPathConditionally(toNode, canvas, path, linePaint)
+    }
+
+    private fun drawPathConditionally(
+        toNode: Node,
+        canvas: Canvas,
+        path: Path,
+        linePaint: Paint,
+    ) {
+        if (!mindMapContainer.isMoving || mindMapContainer.selectNode?.id != toNode.id) {
+            canvas.drawPath(path, linePaint)
+        }
     }
 
     private fun getNodeEdgeX(
