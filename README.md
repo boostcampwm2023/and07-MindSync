@@ -62,8 +62,7 @@
 
 |노드 이동|확대/축소/드래그|실시간동시편집|
 |:---:|:---:|:---:|
-|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/4a458d20-680b-479c-8bbb-17757f5b83ae" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/3150048e-9eb3-4a08-97a8-3afa707cf03f" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/db89c76e-4e3b-4ddb-ba76-0e9387f9ebef" width=200 height=400/>|
-
+|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/1ef596c4-a233-4e9c-b96c-0bb87eb98134" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/3150048e-9eb3-4a08-97a8-3afa707cf03f" width=200 height=400/>|<img src="https://github.com/boostcampwm2023/and07-MindSync/assets/39490416/db89c76e-4e3b-4ddb-ba76-0e9387f9ebef" width=200 height=400/>|
 
 ## 🎯 기술적 도전
 저희는 다음과 같은 과제에 도전했습니다.
