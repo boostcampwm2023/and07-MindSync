@@ -4,6 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.48" apply false
     id("org.jlleitschuh.gradle.ktlint") version "11.6.1" apply false
     kotlin("plugin.serialization") version "1.9.0"
+    id("com.google.gms.google-services") version "4.4.0" apply false
 }
 buildscript {
     repositories {
