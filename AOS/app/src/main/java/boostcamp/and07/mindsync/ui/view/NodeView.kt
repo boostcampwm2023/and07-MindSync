@@ -70,9 +70,7 @@ class NodeView(
                     stopNodeMovement()
                     updateTreeIfNodeAttached(event)
                 }
-                attachedNode = null
-                lineView.updateTree(tree)
-                invalidate()
+                resetStateAndRefreshTree()
             }
         }
         return false
@@ -92,6 +90,12 @@ class NodeView(
         }
     }
     
+    private fun resetStateAndRefreshTree() {
+        attachedNode = null
+        lineView.updateTree(tree)
+        invalidate()
+    }
+
     private fun attachNode(selectedNode: Node) {
         attachedNode?.let { attachedNode ->
             tree.doPreorderTraversal { node ->
