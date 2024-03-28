@@ -57,6 +57,7 @@ class LineView constructor(
                 Configuration.UI_MODE_NIGHT_YES -> {
                     drawInfo.darkModeLinePaint
                 }
+        val linePaint = getLinePaintForMode()
 
                 Configuration.UI_MODE_NIGHT_NO -> {
                     drawInfo.linePaint
@@ -77,6 +78,12 @@ class LineView constructor(
                 cubicTo(midX, startY, midX, endY, endX, endY)
             }
         drawPathConditionally(toNode, canvas, path, linePaint)
+
+    private fun getLinePaintForMode(): Paint {
+        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> drawInfo.darkModeLinePaint
+            else -> drawInfo.linePaint
+        }
     }
 
     private fun drawPathConditionally(
