@@ -142,6 +142,7 @@ class NodeView(
             traverseMovedNode(tree.getRootNode(), selectedNode, dx, dy)
 
             mindMapContainer.update(tree)
+            rightLayoutManager.arrangeNode(tree, selectedNode as RectangleNode)
         }
         lineView.updateTree(tree)
         invalidate()
@@ -158,8 +159,6 @@ class NodeView(
             val centerY = Dp(Px(dy).toDp(context))
             tree.updateNode(target.id, target.description, target.children, centerX, centerY)
         }
-        rightLayoutManager.arrangeNode(tree, target as RectangleNode)
-
         node.children.forEach { nodeId ->
             traverseMovedNode(tree.getNode(nodeId), target, dx, dy)
         }
