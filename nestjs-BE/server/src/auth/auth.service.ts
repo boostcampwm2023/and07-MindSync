@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
-import { PrismaServiceMySQL } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { TemporaryDatabaseService } from 'src/temporary-database/temporary-database.service';
 import { BaseService } from 'src/base/base.service';
 import {
@@ -27,7 +27,7 @@ export interface TokenData {
 export class AuthService extends BaseService<TokenData> {
   constructor(
     private jwtService: JwtService,
-    protected prisma: PrismaServiceMySQL,
+    protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,
   ) {
     super({

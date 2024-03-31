@@ -1,15 +1,12 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import {
-  PrismaServiceMySQL,
-  PrismaServiceMongoDB,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
 import LRUCache from '../utils/lru-cache';
 import generateUuid from '../utils/uuid';
 import { ResponseUtils } from 'src/utils/response';
 
 interface BaseServiceOptions {
-  prisma: PrismaServiceMySQL | PrismaServiceMongoDB;
+  prisma: PrismaService;
   temporaryDatabaseService: TemporaryDatabaseService;
   cacheSize: number;
   className: string;
@@ -24,7 +21,7 @@ export abstract class BaseService<T extends HasUuid> {
   protected cache: LRUCache;
   protected className: string;
   protected field: string;
-  protected prisma: PrismaServiceMySQL | PrismaServiceMongoDB;
+  protected prisma: PrismaService;
   protected temporaryDatabaseService: TemporaryDatabaseService;
 
   constructor(options: BaseServiceOptions) {

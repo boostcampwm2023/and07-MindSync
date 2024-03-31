@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PrismaServiceMySQL,
-  PrismaServiceMongoDB,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -46,10 +43,7 @@ export class TemporaryDatabaseService {
   private database: Map<string, Map<string, Map<string, DataType>>> = new Map();
   private readonly FOLDER_NAME = CSV_FOLDER;
 
-  constructor(
-    private readonly prismaMysql: PrismaServiceMySQL,
-    private readonly prismaMongoDB: PrismaServiceMongoDB,
-  ) {
+  constructor(private readonly prismaMysql: PrismaService) {
     this.init();
   }
 
@@ -143,8 +137,7 @@ export class TemporaryDatabaseService {
   private async executeBulkOperations() {
     for (const service of this.database.keys()) {
       const serviceMap = this.database.get(service);
-      const prisma =
-        service === 'BoardCollection' ? this.prismaMongoDB : this.prismaMysql;
+      const prisma = this.prismaMysql;
       await this.performInsert(service, serviceMap.get('insert'), prisma);
       await this.performUpdate(service, serviceMap.get('update'), prisma);
       await this.performDelete(service, serviceMap.get('delete'), prisma);
@@ -154,26 +147,20 @@ export class TemporaryDatabaseService {
   private async performInsert(
     service: string,
     dataMap: Map<string, DataType>,
-    prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
+    prisma: PrismaService,
   ) {
     const data = this.prepareData(service, 'insert', dataMap);
     if (!data.length) return;
-    if (prisma instanceof PrismaServiceMySQL) {
-      await prisma[service].createMany({
-        data: data,
-        skipDuplicates: true,
-      });
-    } else {
-      await prisma[service].createMany({
-        data: data,
-      });
-    }
+    await prisma[service].createMany({
+      data: data,
+      skipDuplicates: true,
+    });
   }
 
   private async performUpdate(
     service: string,
     dataMap: Map<string, DataType>,
-    prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
+    prisma: PrismaService,
   ) {
     const data = this.prepareData(service, 'update', dataMap);
     if (!data.length) return;
@@ -195,7 +182,7 @@ export class TemporaryDatabaseService {
   private async performDelete(
     service: string,
     dataMap: Map<string, DataType>,
-    prisma: PrismaServiceMongoDB | PrismaServiceMySQL,
+    prisma: PrismaService,
   ) {
     const data = this.prepareData(service, 'delete', dataMap);
     if (!data.length) return;

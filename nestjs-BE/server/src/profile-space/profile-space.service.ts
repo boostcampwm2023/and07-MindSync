@@ -1,7 +1,7 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { UpdateProfileSpaceDto } from './dto/update-profile-space.dto';
 import { BaseService } from 'src/base/base.service';
-import { PrismaServiceMySQL } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { TemporaryDatabaseService } from 'src/temporary-database/temporary-database.service';
 import {
   PROFILE_SPACE_CACHE_SIZE,
@@ -25,7 +25,7 @@ export class ProfileSpaceService extends BaseService<UpdateProfileSpaceDto> {
   private readonly userCache: LRUCache;
   private readonly spaceCache: LRUCache;
   constructor(
-    protected prisma: PrismaServiceMySQL,
+    protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,
     private readonly profilesService: ProfilesService,
   ) {
