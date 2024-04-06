@@ -16,23 +16,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,19 +39,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.components.BackIconButton
+import boostcamp.and07.mindsync.ui.components.EditIconButton
+import boostcamp.and07.mindsync.ui.components.MSButton
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
-import boostcamp.and07.mindsync.ui.theme.Gray3
 import boostcamp.and07.mindsync.ui.theme.Gray4
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import boostcamp.and07.mindsync.ui.theme.Red2
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -68,15 +65,70 @@ fun ProfileScreen(
     showImagePicker: () -> Unit,
 ) {
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
-    val nicknameColor = remember { mutableStateOf(Gray4) }
+    var nicknameColor by remember { mutableStateOf(Gray4) }
     val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     HandleProfileEvents(
         profileViewModel = profileViewModel,
         onBack = onBack,
-        nicknameColor = nicknameColor,
-        snackBarHostState = snackBarHostState,
+        updateNicknameColor = { changedColor ->
+            nicknameColor = changedColor
+        },
+        showSnackBar = { errorMessage ->
+            coroutineScope.launch {
+                snackBarHostState.showSnackbar(
+                    message = errorMessage,
+                    duration = SnackbarDuration.Short,
+                )
+            }
+        },
     )
+
+    ProfileContent(
+        uiState = uiState,
+        showImagePicker = showImagePicker,
+        nicknameColor = nicknameColor,
+        showDialog = showDialog,
+        updateProfile = updateProfile,
+        updateNickname = updateNickname,
+        editNickname = editNickname,
+    )
+}
+
+@Composable
+private fun HandleProfileEvents(
+    profileViewModel: ProfileViewModel,
+    onBack: () -> Unit,
+    updateNicknameColor: (Color) -> Unit,
+    showSnackBar: (String) -> Unit,
+) {
+    LaunchedEffect(profileViewModel.event) {
+        profileViewModel.event.collectLatest { event ->
+            when (event) {
+                is ProfileUiEvent.NavigateToBack -> onBack()
+
+                is ProfileUiEvent.ShowMessage -> showSnackBar(event.message)
+
+                is ProfileUiEvent.UpdateProfileNickName -> updateNicknameColor(Blue1)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileContent(
+    onBack: () -> Unit = { },
+    uiState: ProfileUiState = ProfileUiState(),
+    showImagePicker: () -> Unit = { },
+    nicknameColor: Color = Gray4,
+    showDialog: (Boolean) -> Unit = { },
+    updateProfile: (String) -> Unit = { },
+    updateNickname: (CharSequence) -> Unit = { },
+    editNickname: (CharSequence) -> Unit = { },
+    snackBarHostState: SnackbarHostState = SnackbarHostState(),
+) {
     Scaffold(
+        topBar = { ProfileTopAppBar(onBack) },
         snackbarHost = {
             SnackbarHost(hostState = snackBarHostState)
         },
@@ -89,107 +141,58 @@ fun ProfileScreen(
             val guidelineTop = maxHeight * 0.15f
             val guidelineStart = maxWidth * 0.1f
             val guidelineEnd = maxWidth * 0.1f
-            ProfileContent(
-                profileViewModel = profileViewModel,
-                guidelineTop = guidelineTop,
-                uiState = uiState,
-                showImagePicker = showImagePicker,
-                nicknameColor = nicknameColor,
-                showDialog = showDialog,
-                guidelineStart = guidelineStart,
-                guidelineEnd = guidelineEnd,
-                updateProfile = updateProfile,
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = guidelineTop),
+            ) {
+                ProfileImage(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally),
+                    imageUri = uiState.imageUri,
+                    showImagePicker = showImagePicker,
+                )
 
-            if (uiState.isShownNicknameDialog) {
-                NickNameDialog(
-                    uiState = uiState,
-                    editNickname = editNickname,
-                    closeDialog = { showDialog(false) },
-                    updateNickname = { updateNickname(it) },
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Nickname(
+                        modifier = Modifier.weight(1f),
+                        nickname = uiState.nickname,
+                        nicknameColor = nicknameColor,
+                    )
+                    NicknameEditButton(
+                        modifier = Modifier.weight(0.2f),
+                        showDialog = showDialog,
+                    )
+                    Spacer(modifier = Modifier.weight(0.8f))
+                }
+
+                ModifyButton(
+                    modifier = Modifier
+                        .padding(
+                            top = 30.dp,
+                            start = guidelineStart,
+                            end = guidelineEnd,
+                        )
+                        .fillMaxWidth(),
+                    profileImageName = stringResource(id = R.string.profile_image_name),
+                    updateProfile = updateProfile,
+                    isModify = uiState.isModify,
                 )
             }
         }
     }
-}
 
-@Composable
-private fun HandleProfileEvents(
-    profileViewModel: ProfileViewModel,
-    onBack: () -> Unit,
-    nicknameColor: MutableState<Color>,
-    snackBarHostState: SnackbarHostState,
-) {
-    LaunchedEffect(profileViewModel.event) {
-        profileViewModel.event.collectLatest { event ->
-            when (event) {
-                is ProfileUiEvent.NavigateToBack -> onBack()
-
-                is ProfileUiEvent.ShowMessage -> snackBarHostState.showSnackbar(
-                    message = event.message,
-                    duration = SnackbarDuration.Short,
-                )
-
-                is ProfileUiEvent.UpdateProfileNickName -> nicknameColor.value = Blue1
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProfileContent(
-    profileViewModel: ProfileViewModel,
-    guidelineTop: Dp,
-    uiState: ProfileUiState,
-    showImagePicker: () -> Unit,
-    nicknameColor: MutableState<Color>,
-    showDialog: (Boolean) -> Unit,
-    guidelineStart: Dp,
-    guidelineEnd: Dp,
-    updateProfile: (String) -> Unit,
-) {
-    ProfileTopAppBar { profileViewModel.onClickBack() }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = guidelineTop),
-    ) {
-        ProfileImage(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally),
-            imageUri = uiState.imageUri,
-            showImagePicker = showImagePicker,
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Nickname(
-                modifier = Modifier.weight(1f),
-                nickname = uiState.nickname,
-                nicknameColor = nicknameColor.value,
-            )
-            NicknameEditButton(
-                modifier = Modifier.weight(0.2f),
-                showDialog = showDialog,
-            )
-            Spacer(modifier = Modifier.weight(0.8f))
-        }
-
-        ModifyButton(
-            modifier = Modifier
-                .padding(
-                    top = 30.dp,
-                    start = guidelineStart,
-                    end = guidelineEnd,
-                )
-                .fillMaxWidth(),
-            profileImageName = stringResource(id = R.string.profile_image_name),
-            updateProfile = updateProfile,
-            isModify = uiState.isModify,
+    if (uiState.isShownNicknameDialog) {
+        NickNameDialog(
+            uiState = uiState,
+            editNickname = editNickname,
+            closeDialog = { showDialog(false) },
+            updateNickname = { updateNickname(it) },
         )
     }
 }
@@ -201,14 +204,9 @@ private fun ProfileTopAppBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(
+        BackIconButton(
             onClick = { onBack() },
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = null,
-            )
-        }
+        )
         Text(
             text = stringResource(id = R.string.profile_my_page),
             style = MaterialTheme.typography.displayMedium,
@@ -279,15 +277,10 @@ private fun NicknameEditButton(
     modifier: Modifier = Modifier,
     showDialog: (Boolean) -> Unit,
 ) {
-    IconButton(
+    EditIconButton(
         modifier = modifier,
         onClick = { showDialog(true) },
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_outlined_drawing),
-            contentDescription = null,
-        )
-    }
+    )
 }
 
 @Composable
@@ -297,37 +290,21 @@ private fun ModifyButton(
     updateProfile: (String) -> Unit,
     isModify: Boolean,
 ) {
-    Button(
-        onClick = { updateProfile(profileImageName) },
+    MSButton(
         modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Red2,
-            disabledContainerColor = Gray3,
-        ),
-        enabled = isModify,
-    ) {
-        Text(
-            text = stringResource(id = R.string.profile_modify),
-            style = MaterialTheme.typography.displaySmall,
-            color = Color.White,
-        )
-    }
+        onClick = { updateProfile(profileImageName) },
+        backgroundColor = Red2,
+        isEnabled = isModify,
+        text = stringResource(id = R.string.profile_modify),
+        textStyle = MaterialTheme.typography.displaySmall,
+        fontColor = Color.White,
+    )
 }
 
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
     MindSyncTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            ProfileScreen(
-                viewModel(),
-                onBack = { /*TODO*/ },
-                updateNickname = { },
-                updateProfile = { },
-                editNickname = { },
-                showDialog = { },
-                showImagePicker = { },
-            )
-        }
+        ProfileContent()
     }
 }
