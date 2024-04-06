@@ -89,7 +89,7 @@ class NodeView(
             }
         }
     }
-    
+
     private fun resetStateAndRefreshTree() {
         attachedNode = null
         lineView.updateTree(tree)

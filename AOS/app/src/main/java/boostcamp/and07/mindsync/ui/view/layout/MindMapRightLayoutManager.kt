@@ -10,7 +10,10 @@ class MindMapRightLayoutManager {
     private val horizontalSpacing = Dp(50f)
     private val verticalSpacing = Dp(50f)
 
-    fun arrangeNode(tree: Tree, rootNode: Node? = null) {
+    fun arrangeNode(
+        tree: Tree,
+        rootNode: Node? = null,
+    ) {
         val root = rootNode ?: tree.getRootNode()
         val totalHeight = measureChildHeight(root, tree)
         val newHead =

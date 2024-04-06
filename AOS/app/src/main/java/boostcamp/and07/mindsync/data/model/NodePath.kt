@@ -5,8 +5,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class NodePath(open val centerX: Dp, open val centerY: Dp) {
-    abstract fun adjustPath(horizontalSpacing: Dp, totalHeight: Dp): NodePath
-    protected fun calculateNewCenterY(horizontalSpacing: Dp, totalHeight: Dp): Dp {
+    abstract fun adjustPath(
+        horizontalSpacing: Dp,
+        totalHeight: Dp,
+    ): NodePath
+
+    protected fun calculateNewCenterY(
+        horizontalSpacing: Dp,
+        totalHeight: Dp,
+    ): Dp {
         return centerY + totalHeight / 2 + horizontalSpacing
     }
 }
@@ -25,7 +32,10 @@ data class RectanglePath(
 
     fun bottomY() = centerY + (height / (Dp(2f)))
 
-    override fun adjustPath(horizontalSpacing: Dp, totalHeight: Dp): RectanglePath {
+    override fun adjustPath(
+        horizontalSpacing: Dp,
+        totalHeight: Dp,
+    ): RectanglePath {
         return this.copy(centerY = calculateNewCenterY(horizontalSpacing, totalHeight))
     }
 }
@@ -35,7 +45,10 @@ data class CirclePath(
     override val centerY: Dp,
     val radius: Dp,
 ) : NodePath(centerX, centerY) {
-    override fun adjustPath(horizontalSpacing: Dp, totalHeight: Dp): CirclePath {
+    override fun adjustPath(
+        horizontalSpacing: Dp,
+        totalHeight: Dp,
+    ): CirclePath {
         return this.copy(centerY = calculateNewCenterY(horizontalSpacing, totalHeight))
     }
 }
