@@ -29,10 +29,11 @@ fun MSButton(
         modifier = modifier,
         onClick = onClick,
         shape = shape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor,
-            disabledContainerColor = disableColor,
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = backgroundColor,
+                disabledContainerColor = disableColor,
+            ),
         enabled = isEnabled,
     ) {
         Text(
@@ -45,8 +46,9 @@ fun MSButton(
 
 @Preview
 @Composable
-fun ButtonPreview() = MSPreview {
-    MSButton(
-        onClick = { },
-    )
-}
+fun ButtonPreview() =
+    MSPreview {
+        MSButton(
+            onClick = { },
+        )
+    }

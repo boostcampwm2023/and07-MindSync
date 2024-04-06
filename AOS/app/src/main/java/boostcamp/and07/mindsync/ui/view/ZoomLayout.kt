@@ -38,8 +38,8 @@ class ZoomLayout(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     lateinit var mindMapContainer: MindMapContainer
 
     fun initializeZoomLayout() {
-        nodeView = NodeView(mindMapContainer, context, attrs = null)
-        lineView = LineView(context, attrs = null)
+        lineView = LineView(mindMapContainer, context, attrs = null)
+        nodeView = NodeView(lineView, mindMapContainer, context, attrs = null)
         addView(lineView)
         addView(nodeView)
     }

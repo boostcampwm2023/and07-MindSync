@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 
 abstract class BaseComposeActivity : ComponentActivity() {
-
     @Composable
     abstract fun Content()
 

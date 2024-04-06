@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -10,16 +7,11 @@ plugins {
     id("kotlinx-serialization")
     id("com.google.gms.google-services")
 }
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
     namespace = "boostcamp.and07.mindsync"
     compileSdk = 34
 
-    val properties = Properties()
-    properties.load(project.rootProject.file("local.properties").inputStream())
     val url = properties["BASE_URL"] ?: ""
     val googleServerClientId = properties["GOOGLE_SERVER_CLIENT_ID"] ?: ""
     val kakaoClientId = properties["KAKAO_CLIENT_ID"] ?: ""
@@ -39,24 +31,7 @@ android {
         buildConfigField("String", "KAKAO_CLIENT_ID", "$kakaoClientId")
         manifestPlaceholders["KAKAO_CLIENT_ID"] = removeQuotationKakaoClientId
     }
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
+
     buildFeatures {
         viewBinding = true
         dataBinding = true

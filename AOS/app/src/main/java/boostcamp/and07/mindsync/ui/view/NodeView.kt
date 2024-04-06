@@ -11,7 +11,6 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
 import boostcamp.and07.mindsync.data.model.RectangleNode
-import boostcamp.and07.mindsync.data.model.RectanglePath
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.Dp
 import boostcamp.and07.mindsync.ui.util.Px
@@ -21,7 +20,8 @@ import boostcamp.and07.mindsync.ui.view.layout.MindMapRightLayoutManager
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class NodeView(
-    val mindMapContainer: MindMapContainer,
+    private val lineView: LineView,
+    private val mindMapContainer: MindMapContainer,
     context: Context,
     attrs: AttributeSet?,
 ) : View(context, attrs) {
@@ -67,20 +67,33 @@ class NodeView(
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (mindMapContainer.isMoving) {
-                    mindMapContainer.isMoving = false
-                    mindMapContainer.selectNode?.let { selectedNode ->
-                        findIncludedNode(event.x, event.y)
-                        attachNode(selectedNode)
-                        attachedNode?.let { attachedNode ->
-                            mindMapContainer.update(tree, selectedNode, attachedNode)
-                        }
-                    }
+                    stopNodeMovement()
+                    updateTreeIfNodeAttached(event)
                 }
-                attachedNode = null
-                invalidate()
+                resetStateAndRefreshTree()
             }
         }
         return false
+    }
+
+    private fun stopNodeMovement() {
+        mindMapContainer.isMoving = false
+    }
+
+    private fun updateTreeIfNodeAttached(event: MotionEvent) {
+        mindMapContainer.selectNode?.let { selectedNode ->
+            findIncludedNode(event.x, event.y)
+            attachNode(selectedNode)
+            attachedNode?.let { attachedNode ->
+                mindMapContainer.update(tree, selectedNode, attachedNode)
+            }
+        }
+    }
+
+    private fun resetStateAndRefreshTree() {
+        attachedNode = null
+        lineView.updateTree(tree)
+        invalidate()
     }
 
     private fun attachNode(selectedNode: Node) {
@@ -127,8 +140,11 @@ class NodeView(
         mindMapContainer.selectNode?.let { selectedNode ->
             if (selectedNode is CircleNode) return
             traverseMovedNode(tree.getRootNode(), selectedNode, dx, dy)
+
             mindMapContainer.update(tree)
+            rightLayoutManager.arrangeNode(tree, selectedNode as RectangleNode)
         }
+        lineView.updateTree(tree)
         invalidate()
     }
 
@@ -142,40 +158,9 @@ class NodeView(
             val centerX = Dp(Px(dx).toDp(context))
             val centerY = Dp(Px(dy).toDp(context))
             tree.updateNode(target.id, target.description, target.children, centerX, centerY)
-
-            target.children.forEach { nodeId ->
-                val childNode = tree.getNode(nodeId)
-                traverseChildNode(
-                    target,
-                    childNode,
-                    target.path.centerX + (target.path as RectanglePath).width / 2 + DEFAULT_SPACING_VALUE,
-                )
-            }
         }
-
         node.children.forEach { nodeId ->
             traverseMovedNode(tree.getNode(nodeId), target, dx, dy)
-        }
-    }
-
-    private fun traverseChildNode(
-        target: Node,
-        node: Node,
-        childNodeSpacing: Dp,
-    ) {
-        tree.updateNode(
-            node.id,
-            node.description,
-            node.children,
-            childNodeSpacing,
-            target.path.centerY,
-        )
-        node.children.forEach { nodeId ->
-            traverseChildNode(
-                node,
-                tree.getNode(nodeId),
-                childNodeSpacing + CHILD_NODE_SPACING_VALUE,
-            )
         }
     }
 
@@ -390,8 +375,6 @@ class NodeView(
     }
 
     companion object {
-        private const val DEFAULT_SPACING_VALUE = 50f
-        private const val CHILD_NODE_SPACING_VALUE = 7f
         private const val ATTACH_CIRCLE_NODE_RANGE_VALUE = 15f
         private const val ROUNDED_CORNER_RADIUS = 8f
     }

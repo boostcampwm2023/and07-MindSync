@@ -10,20 +10,21 @@ class MindMapRightLayoutManager {
     private val horizontalSpacing = Dp(50f)
     private val verticalSpacing = Dp(50f)
 
-    fun arrangeNode(tree: Tree) {
-        val root = tree.getRootNode()
+    fun arrangeNode(
+        tree: Tree,
+        rootNode: Node? = null,
+    ) {
+        val root = rootNode ?: tree.getRootNode()
         val totalHeight = measureChildHeight(root, tree)
         val newHead =
             if (root.path.centerX.dpVal <= (totalHeight / 2).dpVal) {
-                val newPath =
-                    root.path.copy(
-                        centerY = totalHeight / 2 + horizontalSpacing,
-                    )
-                root.copy(path = newPath)
+                root.adjustPosition(horizontalSpacing, totalHeight)
             } else {
                 root
             }
-        tree.setRootNode(newHead)
+        if (rootNode == null) {
+            tree.setRootNode(newHead as CircleNode)
+        }
         recurArrangeNode(newHead, tree)
     }
 

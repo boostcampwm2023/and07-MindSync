@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 
 @Composable
-fun MSPreview(isDarkTheme: Boolean = false, content: @Composable () -> Unit) {
+fun MSPreview(
+    isDarkTheme: Boolean = false,
+    content: @Composable () -> Unit,
+) {
     MindSyncTheme(darkTheme = isDarkTheme, content = content)
 }

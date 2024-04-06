@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
@@ -33,11 +32,15 @@ class ProfileFragment : BaseComposeFragment() {
 
     private lateinit var imagePickerHandler: ImagePickerHandler
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
-        imagePickerHandler = ImagePickerHandler(requireActivity()) { uri ->
-            createImage(uri)
-        }
+        imagePickerHandler =
+            ImagePickerHandler(requireActivity()) { uri ->
+                createImage(uri)
+            }
     }
 
     @Composable

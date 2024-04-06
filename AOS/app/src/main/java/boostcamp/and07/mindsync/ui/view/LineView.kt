@@ -15,13 +15,13 @@ import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
 
 class LineView constructor(
+    private val mindMapContainer: MindMapContainer,
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
     private val drawInfo = DrawInfo(context)
     private val path = Path()
     private lateinit var tree: Tree
-    private val paint = Paint()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -52,30 +52,44 @@ class LineView constructor(
         toNode: Node,
         canvas: Canvas,
     ) {
-        val linePaint =
-            when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                Configuration.UI_MODE_NIGHT_YES -> {
-                    drawInfo.darkModeLinePaint
-                }
+        val linePaint = getLinePaintForMode()
 
-                Configuration.UI_MODE_NIGHT_NO -> {
-                    drawInfo.linePaint
-                }
+        val path = createPath(fromNode, toNode)
+        drawPathConditionally(toNode, canvas, path, linePaint)
+    }
 
-                else -> drawInfo.linePaint
-            }
+    private fun createPath(
+        fromNode: Node,
+        toNode: Node,
+    ): Path {
         val startX = getNodeEdgeX(fromNode, true)
         val startY = fromNode.path.centerY.toPx(context)
         val endX = getNodeEdgeX(toNode, false)
         val endY = toNode.path.centerY.toPx(context)
         val midX = (startX + endX) / 2
-        val path =
-            path.apply {
-                reset()
-                moveTo(startX, startY)
-                cubicTo(midX, startY, midX, endY, endX, endY)
-            }
-        canvas.drawPath(path, linePaint)
+        return path.apply {
+            reset()
+            moveTo(startX, startY)
+            cubicTo(midX, startY, midX, endY, endX, endY)
+        }
+    }
+
+    private fun getLinePaintForMode(): Paint {
+        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> drawInfo.darkModeLinePaint
+            else -> drawInfo.linePaint
+        }
+    }
+
+    private fun drawPathConditionally(
+        toNode: Node,
+        canvas: Canvas,
+        path: Path,
+        linePaint: Paint,
+    ) {
+        if (!mindMapContainer.isMoving || mindMapContainer.selectNode?.id != toNode.id) {
+            canvas.drawPath(path, linePaint)
+        }
     }
 
     private fun getNodeEdgeX(

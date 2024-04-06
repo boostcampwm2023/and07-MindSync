@@ -46,17 +46,19 @@ fun NickNameDialog(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val dialogWidth = screenWidth * 0.8f
-    var textFieldValue = remember {
-        mutableStateOf(
-            TextFieldValue(
-                text = uiState.nickname,
-                selection = TextRange(uiState.nickname.length),
-            ),
-        )
-    }
-    val focusRequester = remember {
-        FocusRequester()
-    }
+    var textFieldValue =
+        remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = uiState.nickname,
+                    selection = TextRange(uiState.nickname.length),
+                ),
+            )
+        }
+    val focusRequester =
+        remember {
+            FocusRequester()
+        }
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -67,10 +69,11 @@ fun NickNameDialog(
         },
     ) {
         Column(
-            modifier = Modifier
-                .background(Color.White, RoundedCornerShape(20.dp))
-                .width(dialogWidth)
-                .padding(start = 10.dp, top = 20.dp, end = 10.dp),
+            modifier =
+                Modifier
+                    .background(Color.White, RoundedCornerShape(20.dp))
+                    .width(dialogWidth)
+                    .padding(start = 10.dp, top = 20.dp, end = 10.dp),
         ) {
             Text(
                 text = stringResource(id = R.string.profile_nickname_modify),
@@ -80,10 +83,14 @@ fun NickNameDialog(
 
             OutlinedTextField(
                 value = textFieldValue.value,
-                onValueChange = { textFieldValue.value = it; editNickname(it.text) },
-                modifier = Modifier
-                    .padding(5.dp)
-                    .focusRequester(focusRequester),
+                onValueChange = {
+                    textFieldValue.value = it
+                    editNickname(it.text)
+                },
+                modifier =
+                    Modifier
+                        .padding(5.dp)
+                        .focusRequester(focusRequester),
                 placeholder = {
                     Text(text = stringResource(id = R.string.profile_name_limit))
                 },
@@ -109,12 +116,16 @@ fun NickNameDialog(
                 }
 
                 TextButton(
-                    onClick = { updateNickname(uiState.editingNickname); closeDialog() },
-                    modifier = Modifier,
-                    enabled = when (uiState.editingNickname.length) {
-                        in 1..20 -> true
-                        else -> false
+                    onClick = {
+                        updateNickname(uiState.editingNickname)
+                        closeDialog()
                     },
+                    modifier = Modifier,
+                    enabled =
+                        when (uiState.editingNickname.length) {
+                            in 1..20 -> true
+                            else -> false
+                        },
                 ) {
                     Text(
                         text = stringResource(id = R.string.profile_modify),
