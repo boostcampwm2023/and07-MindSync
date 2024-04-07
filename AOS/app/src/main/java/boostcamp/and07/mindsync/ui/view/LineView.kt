@@ -7,9 +7,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
-import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
-import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.ui.util.toPx
 import boostcamp.and07.mindsync.ui.view.model.DrawInfo
@@ -97,11 +95,11 @@ class LineView constructor(
         isStart: Boolean,
     ): Float {
         val nodeCenterX = node.path.centerX.toPx(context)
-        val widthOffset =
-            when (node) {
-                is CircleNode -> node.path.radius.toPx(context)
-                is RectangleNode -> node.path.width.toPx(context) / 2
-            }
+        val widthOffset = if (node.isRectangle()) {
+            node.path.width.toPx(context) / 2
+        } else {
+            node.path.radius.toPx(context)
+        }
         return if (isStart) nodeCenterX + widthOffset else nodeCenterX - widthOffset
     }
 }
