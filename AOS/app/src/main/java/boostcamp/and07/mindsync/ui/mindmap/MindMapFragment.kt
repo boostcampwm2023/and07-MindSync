@@ -7,9 +7,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.crdt.OperationType
-import boostcamp.and07.mindsync.data.model.CircleNode
 import boostcamp.and07.mindsync.data.model.Node
-import boostcamp.and07.mindsync.data.model.RectangleNode
 import boostcamp.and07.mindsync.data.model.Tree
 import boostcamp.and07.mindsync.data.util.NodeGenerator
 import boostcamp.and07.mindsync.databinding.FragmentMindMapBinding
@@ -98,15 +96,18 @@ class MindMapFragment :
         editDescriptionDialog.setSubmitListener { description ->
             when (operationType) {
                 OperationType.ADD -> {
-                    mindMapViewModel.addNode(selectedNode, NodeGenerator.makeNode(description, selectedNode.id))
+                    mindMapViewModel.addNode(
+                        selectedNode,
+                        NodeGenerator.makeNode(description, selectedNode.id),
+                    )
                 }
 
                 OperationType.UPDATE -> {
-                    val newNode =
-                        when (selectedNode) {
-                            is CircleNode -> selectedNode.copy(description = description)
-                            is RectangleNode -> selectedNode.copy(description = description)
-                        }
+                    val newNode = if (selectedNode.isRectangle()) {
+                        selectedNode.copy(description = description)
+                    } else {
+                        selectedNode.copy(description = description)
+                    }
                     mindMapViewModel.updateNode(newNode)
                 }
 
