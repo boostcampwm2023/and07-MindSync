@@ -103,11 +103,12 @@ class MindMapFragment :
                 }
 
                 OperationType.UPDATE -> {
-                    val newNode = if (selectedNode.isRectangle()) {
-                        selectedNode.copy(description = description)
-                    } else {
-                        selectedNode.copy(description = description)
-                    }
+                    val newNode =
+                        if (selectedNode.isRectangle()) {
+                            selectedNode.copy(description = description)
+                        } else {
+                            selectedNode.copy(description = description)
+                        }
                     mindMapViewModel.updateNode(newNode)
                 }
 

@@ -254,7 +254,7 @@ class NodeView(
             return (
                 x in node.path.leftX().toPx(context)..node.path.rightX().toPx(context) &&
                     y in node.path.topY().toPx(context)..node.path.bottomY().toPx(context)
-                )
+            )
         } else {
             return (
                 x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(
@@ -263,7 +263,7 @@ class NodeView(
                     y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(
                         context,
                     )
-                )
+            )
         }
     }
 
@@ -344,9 +344,10 @@ class NodeView(
             drawInfo.textPaint.color = Color.WHITE
             if (lines.size > 1) {
                 var y =
-                    node.path.centerY.toPx(context) - node.path.radius.toPx(context) + drawInfo.padding.toPx(
-                        context,
-                    )
+                    node.path.centerY.toPx(context) - node.path.radius.toPx(context) +
+                        drawInfo.padding.toPx(
+                            context,
+                        )
                 for (line in lines) {
                     drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                     canvas.drawText(

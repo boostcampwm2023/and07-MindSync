@@ -34,11 +34,12 @@ class MindMapRightLayoutManager {
     ) {
         val childHeightSum = measureChildHeight(currentNode, tree)
 
-        val nodeWidth = if (currentNode.isRectangle()) {
-            currentNode.path.width
-        } else {
-            currentNode.path.radius
-        }
+        val nodeWidth =
+            if (currentNode.isRectangle()) {
+                currentNode.path.width
+            } else {
+                currentNode.path.radius
+            }
 
         val criteriaX = currentNode.path.centerX + nodeWidth / 2 + horizontalSpacing
         var startX: Dp
@@ -49,18 +50,20 @@ class MindMapRightLayoutManager {
             val childHeight = measureChildHeight(child, tree)
             val newY = startY + (childHeight / 2)
 
-            startX = if (child.isRectangle()) {
-                criteriaX + (child.path.width / 2)
-            } else {
-                criteriaX + (child.path.radius / 2)
-            }
-            val newChild = if (child.isRectangle()) {
-                val newPath = child.path.copy(centerX = startX, centerY = newY)
-                child.copy(path = newPath)
-            } else {
-                val newPath = child.path.copy(centerX = startX, centerY = newY)
-                child.copy(path = newPath)
-            }
+            startX =
+                if (child.isRectangle()) {
+                    criteriaX + (child.path.width / 2)
+                } else {
+                    criteriaX + (child.path.radius / 2)
+                }
+            val newChild =
+                if (child.isRectangle()) {
+                    val newPath = child.path.copy(centerX = startX, centerY = newY)
+                    child.copy(path = newPath)
+                } else {
+                    val newPath = child.path.copy(centerX = startX, centerY = newY)
+                    child.copy(path = newPath)
+                }
 
             tree.setNode(childId, newChild)
             recurArrangeNode(newChild, tree)

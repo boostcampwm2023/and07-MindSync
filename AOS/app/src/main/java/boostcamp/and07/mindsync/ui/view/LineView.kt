@@ -95,11 +95,12 @@ class LineView constructor(
         isStart: Boolean,
     ): Float {
         val nodeCenterX = node.path.centerX.toPx(context)
-        val widthOffset = if (node.isRectangle()) {
-            node.path.width.toPx(context) / 2
-        } else {
-            node.path.radius.toPx(context)
-        }
+        val widthOffset =
+            if (node.isRectangle()) {
+                node.path.width.toPx(context) / 2
+            } else {
+                node.path.radius.toPx(context)
+            }
         return if (isStart) nodeCenterX + widthOffset else nodeCenterX - widthOffset
     }
 }
