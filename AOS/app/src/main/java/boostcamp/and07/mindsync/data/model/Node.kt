@@ -2,6 +2,8 @@ package boostcamp.and07.mindsync.data.model
 
 import boostcamp.and07.mindsync.ui.util.Dp
 import kotlinx.serialization.Serializable
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 @Serializable
 sealed class Node(
@@ -15,6 +17,15 @@ sealed class Node(
         horizontalSpacing: Dp,
         totalHeight: Dp,
     ): Node
+
+    @OptIn(ExperimentalContracts::class)
+    fun isRectangle(): Boolean {
+        contract {
+            returns(true) implies (this@Node is RectangleNode)
+            returns(false) implies (this@Node is CircleNode)
+        }
+        return this is RectangleNode
+    }
 }
 
 data class CircleNode(
