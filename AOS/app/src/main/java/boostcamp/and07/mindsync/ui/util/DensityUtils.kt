@@ -4,8 +4,9 @@ import android.content.Context
 import android.util.TypedValue
 import kotlinx.serialization.Serializable
 
+@JvmInline
 @Serializable
-data class Dp(val dpVal: Float) {
+value class Dp(val dpVal: Float) {
     operator fun plus(dpValue: Dp): Dp {
         return Dp(dpVal + dpValue.dpVal)
     }
@@ -67,7 +68,8 @@ data class Dp(val dpVal: Float) {
     }
 }
 
-data class Px(val pxVal: Float) {
+@JvmInline
+value class Px(val pxVal: Float) {
     operator fun plus(pxValue: Px): Px {
         return Px(pxVal + pxValue.pxVal)
     }
