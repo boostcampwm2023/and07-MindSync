@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.dialog.LoadingDialogScreen
 import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
@@ -63,6 +64,7 @@ fun AddSpaceScreen(
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
+    val isConnected by addSpaceViewModel.isConnected.collectAsStateWithLifecycle()
     HandleAddSpaceEvents(
         addSpaceViewModel = addSpaceViewModel,
         onBack = onBackClicked,
@@ -73,10 +75,13 @@ fun AddSpaceScreen(
     ) { innerPadding ->
         BoxWithConstraints(
             modifier =
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth(),
+            Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
         ) {
+            if (isConnected.not()) {
+                LoadingDialogScreen()
+            }
             AddSpaceContent(
                 uiState = uiState,
                 onBackClicked = onBackClicked,
@@ -110,36 +115,36 @@ fun AddSpaceContent(
     }
     Row(
         modifier =
-            Modifier
-                .padding(top = 50.dp)
-                .fillMaxWidth(),
+        Modifier
+            .padding(top = 50.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.Absolute.Center,
     ) {
         AddSpaceInfo()
     }
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 150.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 150.dp),
         horizontalArrangement = Arrangement.Absolute.Center,
     ) {
         AddSpaceThumbnail(onImageClicked = imageLauncher, imageUrl = uiState.spaceThumbnail)
     }
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 300.dp, start = 20.dp, end = 20.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 300.dp, start = 20.dp, end = 20.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         InputSpaceNameField(uiState = uiState, updateSpaceName = updateSpaceName)
     }
     Row(
         modifier =
-            Modifier
-                .padding(top = 450.dp)
-                .fillMaxWidth(),
+        Modifier
+            .padding(top = 450.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
     ) {
         SpaceNameInputButton(createSpace = createSpace, uiState.spaceName)
@@ -169,9 +174,9 @@ fun AddSpaceTopBar(onBackClicked: () -> Unit) {
     Row {
         IconButton(
             modifier =
-                Modifier
-                    .size(25.dp)
-                    .padding(1.dp),
+            Modifier
+                .size(25.dp)
+                .padding(1.dp),
             onClick = onBackClicked,
         ) {
             Image(
@@ -203,8 +208,8 @@ fun AddSpaceThumbnail(
 ) {
     Box(
         modifier =
-            Modifier
-                .size(120.dp),
+        Modifier
+            .size(120.dp),
     ) {
         AsyncImage(
             model = imageUrl,
@@ -212,13 +217,13 @@ fun AddSpaceThumbnail(
             placeholder = painterResource(id = R.drawable.ic_placeholder),
             error = painterResource(id = R.drawable.ic_placeholder),
             modifier =
-                Modifier
-                    .clickable {
-                        onImageClicked.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                        )
-                    }
-                    .clip(CircleShape),
+            Modifier
+                .clickable {
+                    onImageClicked.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                    )
+                }
+                .clip(CircleShape),
             contentScale = ContentScale.Crop,
         )
         Box(
@@ -282,9 +287,9 @@ fun SpaceNameInputButton(
         enabled = spaceName.length in 1..20,
         modifier = Modifier.width(264.dp),
         colors =
-            ButtonDefaults.buttonColors(
-                disabledContainerColor = Color.LightGray,
-            ),
+        ButtonDefaults.buttonColors(
+            disabledContainerColor = Color.LightGray,
+        ),
     ) {
         Text(text = stringResource(id = R.string.check_message))
     }

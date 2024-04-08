@@ -45,6 +45,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.components.BackIconButton
 import boostcamp.and07.mindsync.ui.components.EditIconButton
 import boostcamp.and07.mindsync.ui.components.MSButton
+import boostcamp.and07.mindsync.ui.dialog.LoadingDialogScreen
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.Gray4
@@ -68,6 +69,7 @@ fun ProfileScreen(
     var nicknameColor by remember { mutableStateOf(Gray4) }
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val isConnected by profileViewModel.isConnected.collectAsStateWithLifecycle()
     HandleProfileEvents(
         profileViewModel = profileViewModel,
         onBack = onBack,
@@ -92,6 +94,7 @@ fun ProfileScreen(
         updateProfile = updateProfile,
         updateNickname = updateNickname,
         editNickname = editNickname,
+        isConneceted = isConnected
     )
 }
 
@@ -126,6 +129,7 @@ private fun ProfileContent(
     updateNickname: (CharSequence) -> Unit = { },
     editNickname: (CharSequence) -> Unit = { },
     snackBarHostState: SnackbarHostState = SnackbarHostState(),
+    isConneceted: Boolean = false,
 ) {
     Scaffold(
         topBar = { ProfileTopAppBar(onBack) },
@@ -135,31 +139,31 @@ private fun ProfileContent(
     ) { innerPadding ->
         BoxWithConstraints(
             modifier =
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth(),
+            Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
         ) {
             val guidelineTop = maxHeight * 0.15f
             val guidelineStart = maxWidth * 0.1f
             val guidelineEnd = maxWidth * 0.1f
             Column(
                 modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = guidelineTop),
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = guidelineTop),
             ) {
                 ProfileImage(
                     modifier =
-                        Modifier
-                            .align(Alignment.CenterHorizontally),
+                    Modifier
+                        .align(Alignment.CenterHorizontally),
                     imageUri = uiState.imageUri,
                     showImagePicker = showImagePicker,
                 )
 
                 Row(
                     modifier =
-                        Modifier
-                            .padding(top = 16.dp),
+                    Modifier
+                        .padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
@@ -177,13 +181,13 @@ private fun ProfileContent(
 
                 ModifyButton(
                     modifier =
-                        Modifier
-                            .padding(
-                                top = 30.dp,
-                                start = guidelineStart,
-                                end = guidelineEnd,
-                            )
-                            .fillMaxWidth(),
+                    Modifier
+                        .padding(
+                            top = 30.dp,
+                            start = guidelineStart,
+                            end = guidelineEnd,
+                        )
+                        .fillMaxWidth(),
                     profileImageName = stringResource(id = R.string.profile_image_name),
                     updateProfile = updateProfile,
                     isModify = uiState.isModify,
@@ -200,6 +204,9 @@ private fun ProfileContent(
             updateNickname = { updateNickname(it) },
         )
     }
+    if (isConneceted.not()) {
+        LoadingDialogScreen()
+    }
 }
 
 @Composable
@@ -214,8 +221,8 @@ private fun ProfileTopAppBar(onBack: () -> Unit) {
             text = stringResource(id = R.string.profile_my_page),
             style = MaterialTheme.typography.displayMedium,
             modifier =
-                Modifier
-                    .padding(start = 14.dp),
+            Modifier
+                .padding(start = 14.dp),
         )
     }
 }
@@ -228,30 +235,30 @@ private fun ProfileImage(
 ) {
     Box(
         modifier =
-            modifier
-                .size(120.dp),
+        modifier
+            .size(120.dp),
     ) {
         AsyncImage(
             model = imageUri,
             contentDescription = null,
             modifier =
-                Modifier
-                    .clip(CircleShape)
-                    .clickable {
-                        showImagePicker()
-                    },
+            Modifier
+                .clip(CircleShape)
+                .clickable {
+                    showImagePicker()
+                },
             contentScale = ContentScale.Crop,
         )
 
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier
-                    .size(30.dp)
-                    .offset(y = 10.dp)
-                    .clip(shape = RoundedCornerShape(5.dp))
-                    .background(color = Blue1)
-                    .align(Alignment.TopEnd),
+            Modifier
+                .size(30.dp)
+                .offset(y = 10.dp)
+                .clip(shape = RoundedCornerShape(5.dp))
+                .background(color = Blue1)
+                .align(Alignment.TopEnd),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_add_board),

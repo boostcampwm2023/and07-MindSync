@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.ui.dialog.AddBoardDialogScreen
+import boostcamp.and07.mindsync.ui.dialog.LoadingDialogScreen
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 import java.io.File
@@ -58,6 +59,7 @@ fun BoardListScreen(
     updateBoardName: (CharSequence) -> Unit,
 ) {
     val uiState by boardListViewModel.boardUiState.collectAsStateWithLifecycle()
+    val isConnected by boardListViewModel.isConnected.collectAsStateWithLifecycle()
     Scaffold(bottomBar = {
         BoardListBottomBar(
             uiState = uiState,
@@ -68,9 +70,9 @@ fun BoardListScreen(
     }) { innerPadding ->
         BoxWithConstraints(
             modifier =
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth(),
+            Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
         ) {
             BoardListComponent(
                 uiState = uiState,
@@ -85,6 +87,9 @@ fun BoardListScreen(
                     createImage = onAcceptClicked,
                     closeDialog = { showDialog(false) },
                 )
+            }
+            if (isConnected.not()) {
+                LoadingDialogScreen()
             }
         }
     }
@@ -153,12 +158,12 @@ fun BoardThumbnail(
         placeholder = painterResource(id = R.drawable.ic_placeholder),
         error = painterResource(id = R.drawable.ic_placeholder),
         modifier =
-            Modifier
-                .size(width = 100.dp, height = 100.dp)
-                .clip(CircleShape)
-                .clickable {
-                    navigateToMindMap(board.id, board.name)
-                },
+        Modifier
+            .size(width = 100.dp, height = 100.dp)
+            .clip(CircleShape)
+            .clickable {
+                navigateToMindMap(board.id, board.name)
+            },
         contentScale = ContentScale.Crop,
     )
 }
