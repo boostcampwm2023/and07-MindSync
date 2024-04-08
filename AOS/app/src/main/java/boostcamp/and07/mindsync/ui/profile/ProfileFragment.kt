@@ -5,9 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.navigation.navGraphViewModels
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.data.network.NetworkManager
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.ui.base.BaseComposeFragment
@@ -26,8 +26,11 @@ class ProfileFragment : BaseComposeFragment() {
     @Inject
     lateinit var loginEveRepository: LogoutEventRepository
 
+    @Inject
+    lateinit var networkManager: NetworkManager
+
     private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.nav_profile) {
-        ProfileViewModelFactory(profileRepository, loginEveRepository)
+        ProfileViewModelFactory(profileRepository, loginEveRepository, networkManager)
     }
 
     private lateinit var imagePickerHandler: ImagePickerHandler
