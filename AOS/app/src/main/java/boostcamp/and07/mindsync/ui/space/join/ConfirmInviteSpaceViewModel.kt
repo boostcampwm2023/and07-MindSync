@@ -1,9 +1,11 @@
 package boostcamp.and07.mindsync.ui.space.join
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.model.Space
+import boostcamp.and07.mindsync.data.network.NetworkManager
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profilespace.ProfileSpaceRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,9 @@ class ConfirmInviteSpaceViewModel
     @Inject
     constructor(
         private val profileSpaceRepository: ProfileSpaceRepository,
-    ) : ViewModel() {
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository,networkManager) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
         private val _event = MutableSharedFlow<SpaceUiEvent>()
