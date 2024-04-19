@@ -125,9 +125,11 @@ export class AuthService extends BaseService<TokenData> {
   }
 
   async findUser(usersService: UsersService, email: string, provider: string) {
-    const key = usersService.generateKey({ email, provider });
-    const findUserData = await usersService.getDataFromCacheOrDB(key);
-    return findUserData?.uuid;
+    const userData = await usersService.findUserByEmailAndProvider(
+      email,
+      provider,
+    );
+    return userData?.uuid;
   }
 
   async createUser(
@@ -135,8 +137,8 @@ export class AuthService extends BaseService<TokenData> {
     usersService: UsersService,
     profilesService: ProfilesService,
   ) {
-    const createdData = await usersService.create(data);
-    const userUuid = createdData.data.uuid;
+    const createdUser = await usersService.createUser(data);
+    const userUuid = createdUser.uuid;
     const profileData = {
       user_id: userUuid,
       image: BASE_IMAGE_URL,
