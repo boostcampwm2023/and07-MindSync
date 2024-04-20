@@ -11,7 +11,7 @@ model User {
   uuid     String      @id @db.VarChar(32)
   email    String
   provider String
-  profiles PROFILE_TB[]
+  profiles Profile[]
   refresh_tokens REFRESH_TOKEN_TB[]
   @@unique([email, provider])
 }
@@ -23,7 +23,7 @@ model REFRESH_TOKEN_TB {
   user        User   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
 }
 
-model PROFILE_TB {
+model Profile {
   uuid     String @id @db.VarChar(32)
   user_id  String @unique @db.VarChar(32)
   image    String
@@ -44,7 +44,7 @@ model PROFILE_SPACE_TB {
   space_uuid   String     @db.VarChar(32)
   profile_uuid String     @db.VarChar(32)
   space        SPACE_TB   @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
-  profile      PROFILE_TB @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
+  profile      Profile @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
   @@unique([space_uuid, profile_uuid])
 }
 
