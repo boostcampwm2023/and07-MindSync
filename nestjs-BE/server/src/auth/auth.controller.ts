@@ -6,6 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ProfilesService } from 'src/profiles/profiles.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import customEnv from 'src/config/env';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -33,18 +34,21 @@ export class AuthController {
     );
     if (!kakaoUserAccount) throw new NotFoundException();
     const email = kakaoUserAccount.email;
-    let userUuid = await this.authService.findUser(
-      this.usersService,
+    const user = await this.usersService.findUserByEmailAndProvider(
       email,
       'kakao',
     );
+    let userUuid = user?.uuid;
     if (!userUuid) {
       const data = { email, provider: 'kakao' };
-      userUuid = await this.authService.createUser(
-        data,
-        this.usersService,
-        this.profilesService,
-      );
+      const createdUser = await this.usersService.createUser(data);
+      userUuid = createdUser.uuid;
+      const profileData = {
+        user_id: createdUser.uuid,
+        image: customEnv.BASE_IMAGE_URL,
+        nickname: '익명의 사용자',
+      };
+      await this.profilesService.create(profileData);
     }
     return this.authService.login(userUuid);
   }

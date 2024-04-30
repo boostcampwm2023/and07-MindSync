@@ -10,12 +10,7 @@ import {
   REFRESH_TOKEN_EXPIRY_DAYS,
 } from 'src/config/magic-number';
 import generateUuid from 'src/utils/uuid';
-import { UsersService } from 'src/users/users.service';
-import { ProfilesService } from 'src/profiles/profiles.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import customEnv from 'src/config/env';
 import { ResponseUtils } from 'src/utils/response';
-const { BASE_IMAGE_URL } = customEnv;
 
 export interface TokenData {
   uuid: string;
@@ -122,30 +117,6 @@ export class AuthService extends BaseService<TokenData> {
         'Refresh token expired. Please log in again.',
       );
     }
-  }
-
-  async findUser(usersService: UsersService, email: string, provider: string) {
-    const userData = await usersService.findUserByEmailAndProvider(
-      email,
-      provider,
-    );
-    return userData?.uuid;
-  }
-
-  async createUser(
-    data: CreateUserDto,
-    usersService: UsersService,
-    profilesService: ProfilesService,
-  ) {
-    const createdUser = await usersService.createUser(data);
-    const userUuid = createdUser.uuid;
-    const profileData = {
-      user_id: userUuid,
-      image: BASE_IMAGE_URL,
-      nickname: '익명의 사용자',
-    };
-    profilesService.create(profileData);
-    return userUuid;
   }
 
   remove(refreshToken: string) {
