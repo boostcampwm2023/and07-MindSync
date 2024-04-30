@@ -7,7 +7,7 @@ datasource db {
   url      = env("MYSQL_DATABASE_URL")
 }
 
-model USER_TB {
+model User {
   uuid     String      @id @db.VarChar(32)
   email    String
   provider String
@@ -20,7 +20,7 @@ model REFRESH_TOKEN_TB {
   uuid        String    @id @db.VarChar(32)
   expiry_date DateTime
   user_id     String
-  user        USER_TB   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
+  user        User   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
 }
 
 model PROFILE_TB {
@@ -28,7 +28,7 @@ model PROFILE_TB {
   user_id  String @unique @db.VarChar(32)
   image    String
   nickname String @db.VarChar(20)
-  user     USER_TB @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
+  user     User @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
   spaces   PROFILE_SPACE_TB[]
 }
 
@@ -55,4 +55,3 @@ model INVITE_CODE_TB {
   expiry_date DateTime
   space       SPACE_TB @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
 }
-
