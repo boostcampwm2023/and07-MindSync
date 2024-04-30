@@ -10,9 +10,7 @@ RUN npm ci
 
 COPY ./ ./
 
-RUN npx prisma generate --schema=./prisma/mysql.schema.prisma
-
-RUN npx prisma generate --schema=./prisma/mongodb.schema.prisma
+RUN npx prisma migrate dev
 
 EXPOSE 3000
 
