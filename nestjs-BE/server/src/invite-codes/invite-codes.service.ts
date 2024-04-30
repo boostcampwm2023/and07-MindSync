@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
 import { BaseService } from 'src/base/base.service';
-import { PrismaServiceMySQL } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { TemporaryDatabaseService } from 'src/temporary-database/temporary-database.service';
 import {
   INVITE_CODE_CACHE_SIZE,
@@ -20,7 +20,7 @@ export interface InviteCodeData extends CreateInviteCodeDto {
 @Injectable()
 export class InviteCodesService extends BaseService<InviteCodeData> {
   constructor(
-    protected prisma: PrismaServiceMySQL,
+    protected prisma: PrismaService,
     protected temporaryDatabaseService: TemporaryDatabaseService,
     protected spacesService: SpacesService,
   ) {
