@@ -138,11 +138,12 @@ class NodeView(
         dy: Float,
     ) {
         mindMapContainer.selectNode?.let { selectedNode ->
-            if (selectedNode is CircleNode) return
-            traverseMovedNode(tree.getRootNode(), selectedNode, dx, dy)
+            if (selectedNode.isRectangle()) {
+                traverseMovedNode(tree.getRootNode(), selectedNode, dx, dy)
 
-            mindMapContainer.update(tree)
-            rightLayoutManager.arrangeNode(tree, selectedNode as RectangleNode)
+                mindMapContainer.update(tree)
+                rightLayoutManager.arrangeNode(tree, selectedNode)
+            }
         }
         lineView.updateTree(tree)
         invalidate()
@@ -200,16 +201,15 @@ class NodeView(
 
     private fun drawAttachedNode(canvas: Canvas) {
         attachedNode?.let { attachedNode ->
-            val height =
-                when (attachedNode) {
-                    is RectangleNode -> attachedNode.path.height
-                    is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
-                }
-            val width =
-                when (attachedNode) {
-                    is RectangleNode -> attachedNode.path.width
-                    is CircleNode -> attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
-                }
+            val height: Dp
+            val width: Dp
+            if (attachedNode.isRectangle()) {
+                height = attachedNode.path.height
+                width = attachedNode.path.width
+            } else {
+                height = attachedNode.path.radius + Dp(ATTACH_CIRCLE_NODE_RANGE_VALUE)
+                width = height
+            }
             val radius = maxOf(height.toPx(context), width.toPx(context))
             canvas.drawCircle(
                 attachedNode.path.centerX.toPx(context),
@@ -225,27 +225,23 @@ class NodeView(
         canvas: Canvas,
         node: Node,
     ) {
-        when (node) {
-            is CircleNode -> {
-                canvas.drawCircle(
-                    node.path.centerX.toPx(context),
-                    node.path.centerY.toPx(context),
-                    node.path.radius.toPx(context),
-                    drawInfo.strokePaint,
-                )
-            }
-
-            is RectangleNode -> {
-                canvas.drawRoundRect(
-                    node.path.leftX().toPx(context),
-                    node.path.topY().toPx(context),
-                    node.path.rightX().toPx(context),
-                    node.path.bottomY().toPx(context),
-                    Dp(ROUNDED_CORNER_RADIUS).toPx(context),
-                    Dp(ROUNDED_CORNER_RADIUS).toPx(context),
-                    drawInfo.strokePaint,
-                )
-            }
+        if (node.isRectangle()) {
+            canvas.drawRoundRect(
+                node.path.leftX().toPx(context),
+                node.path.topY().toPx(context),
+                node.path.rightX().toPx(context),
+                node.path.bottomY().toPx(context),
+                Dp(ROUNDED_CORNER_RADIUS).toPx(context),
+                Dp(ROUNDED_CORNER_RADIUS).toPx(context),
+                drawInfo.strokePaint,
+            )
+        } else {
+            canvas.drawCircle(
+                node.path.centerX.toPx(context),
+                node.path.centerY.toPx(context),
+                node.path.radius.toPx(context),
+                drawInfo.strokePaint,
+            )
         }
     }
 
@@ -254,24 +250,17 @@ class NodeView(
         x: Float,
         y: Float,
     ): Boolean {
-        when (node) {
-            is CircleNode -> {
-                if (x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
-                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
-                ) {
-                    return true
-                }
-            }
-
-            is RectangleNode -> {
-                if (x in node.path.leftX().toPx(context)..node.path.rightX().toPx(context) &&
+        if (node.isRectangle()) {
+            return (
+                x in node.path.leftX().toPx(context)..node.path.rightX().toPx(context) &&
                     y in node.path.topY().toPx(context)..node.path.bottomY().toPx(context)
-                ) {
-                    return true
-                }
-            }
+            )
+        } else {
+            return (
+                x in (node.path.centerX - node.path.radius).toPx(context)..(node.path.centerX + node.path.radius).toPx(context) &&
+                    y in (node.path.centerY - node.path.radius).toPx(context)..(node.path.centerY + node.path.radius).toPx(context)
+            )
         }
-        return false
     }
 
     private fun drawNode(
@@ -279,9 +268,10 @@ class NodeView(
         node: Node,
         depth: Int,
     ) {
-        when (node) {
-            is CircleNode -> drawCircleNode(canvas, node)
-            is RectangleNode -> drawRectangleNode(canvas, node, depth)
+        if (node.isRectangle()) {
+            drawRectangleNode(canvas, node, depth)
+        } else {
+            drawCircleNode(canvas, node)
         }
         drawText(canvas, node)
     }
@@ -321,55 +311,56 @@ class NodeView(
     ) {
         val lines = node.description.split("\n")
         val bounds = Rect()
-        when (node) {
-            is CircleNode -> {
-                drawInfo.textPaint.color = Color.WHITE
-                if (lines.size > 1) {
-                    var y =
-                        node.path.centerY.toPx(context) - node.path.radius.toPx(context) + drawInfo.padding.toPx(context)
-                    for (line in lines) {
-                        drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
-                        canvas.drawText(
-                            line,
-                            node.path.centerX.toPx(context),
-                            y + bounds.height(),
-                            drawInfo.textPaint,
-                        )
-                        y += bounds.height() + drawInfo.lineHeight.dpVal
-                    }
-                } else {
+        if (node.isRectangle()) {
+            drawInfo.textPaint.color = Color.BLACK
+            if (lines.size > 1) {
+                var y =
+                    node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(
+                        context,
+                    ) / 2
+                for (line in lines) {
+                    drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                     canvas.drawText(
-                        node.description,
+                        line,
                         node.path.centerX.toPx(context),
-                        node.path.centerY.toPx(context) + drawInfo.lineHeight.dpVal / 2,
+                        y + bounds.height(),
                         drawInfo.textPaint,
                     )
+                    y += bounds.height() + drawInfo.lineHeight.dpVal
                 }
+            } else {
+                canvas.drawText(
+                    node.description,
+                    node.path.centerX.toPx(context),
+                    node.path.centerY.toPx(context) + drawInfo.lineHeight.dpVal / 2,
+                    drawInfo.textPaint,
+                )
             }
-
-            is RectangleNode -> {
-                drawInfo.textPaint.color = Color.BLACK
-                if (lines.size > 1) {
-                    var y =
-                        node.path.centerY.toPx(context) - node.path.height.toPx(context) / 2 + drawInfo.padding.toPx(context) / 2
-                    for (line in lines) {
-                        drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
-                        canvas.drawText(
-                            line,
-                            node.path.centerX.toPx(context),
-                            y + bounds.height(),
-                            drawInfo.textPaint,
+        } else {
+            drawInfo.textPaint.color = Color.WHITE
+            if (lines.size > 1) {
+                var y =
+                    node.path.centerY.toPx(context) - node.path.radius.toPx(context) +
+                        drawInfo.padding.toPx(
+                            context,
                         )
-                        y += bounds.height() + drawInfo.lineHeight.dpVal
-                    }
-                } else {
+                for (line in lines) {
+                    drawInfo.textPaint.getTextBounds(line, 0, line.length, bounds)
                     canvas.drawText(
-                        node.description,
+                        line,
                         node.path.centerX.toPx(context),
-                        node.path.centerY.toPx(context) + drawInfo.lineHeight.dpVal / 2,
+                        y + bounds.height(),
                         drawInfo.textPaint,
                     )
+                    y += bounds.height() + drawInfo.lineHeight.dpVal
                 }
+            } else {
+                canvas.drawText(
+                    node.description,
+                    node.path.centerX.toPx(context),
+                    node.path.centerY.toPx(context) + drawInfo.lineHeight.dpVal / 2,
+                    drawInfo.textPaint,
+                )
             }
         }
     }
