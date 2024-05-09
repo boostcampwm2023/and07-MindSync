@@ -29,21 +29,21 @@ model Profile {
   image    String
   nickname String @db.VarChar(20)
   user     User @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
-  spaces   PROFILE_SPACE_TB[]
+  spaces   Profile_space[]
 }
 
-model SPACE_TB {
+model Space {
   uuid     String @id @db.VarChar(32)
   name     String @db.VarChar(20)
   icon     String
-  profiles PROFILE_SPACE_TB[]
+  profiles Profile_space[]
   invite_codes INVITE_CODE_TB[]
 }
 
-model PROFILE_SPACE_TB {
+model Profile_space {
   space_uuid   String     @db.VarChar(32)
   profile_uuid String     @db.VarChar(32)
-  space        SPACE_TB   @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
+  space        Space      @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
   profile      Profile    @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
   @@unique([space_uuid, profile_uuid])
 }
@@ -53,5 +53,5 @@ model INVITE_CODE_TB {
   invite_code String   @unique @db.VarChar(10)
   space_uuid  String   @db.VarChar(32)
   expiry_date DateTime
-  space       SPACE_TB @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
+  space       Space    @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
 }
