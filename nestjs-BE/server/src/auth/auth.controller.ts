@@ -48,7 +48,7 @@ export class AuthController {
         image: customEnv.BASE_IMAGE_URL,
         nickname: '익명의 사용자',
       };
-      await this.profilesService.create(profileData);
+      await this.profilesService.createProfile(profileData);
     }
     return this.authService.login(userUuid);
   }
