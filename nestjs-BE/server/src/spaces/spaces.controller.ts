@@ -8,6 +8,8 @@ import {
   UseInterceptors,
   UploadedFile,
   Request as Req,
+  NotFoundException,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
@@ -18,6 +20,7 @@ import { UploadService } from 'src/upload/upload.service';
 import { ProfileSpaceService } from 'src/profile-space/profile-space.service';
 import { RequestWithUser } from 'src/utils/interface';
 import customEnv from 'src/config/env';
+import { ProfilesService } from 'src/profiles/profiles.service';
 const { APP_ICON_URL } = customEnv;
 
 @Controller('spaces')
@@ -27,6 +30,7 @@ export class SpacesController {
     private readonly spacesService: SpacesService,
     private readonly uploadService: UploadService,
     private readonly profileSpaceService: ProfileSpaceService,
+    private readonly profilesService: ProfilesService,
   ) {}
 
   @Post()
@@ -41,20 +45,15 @@ export class SpacesController {
     @Body() createSpaceDto: CreateSpaceDto,
     @Req() req: RequestWithUser,
   ) {
+    const profile = await this.profilesService.findProfile(req.user.uuid);
+    if (!profile) throw new NotFoundException();
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : APP_ICON_URL;
     createSpaceDto.icon = iconUrl;
-    const response = await this.spacesService.create(createSpaceDto);
-    const { uuid: spaceUuid } = response.data;
-    const userUuid = req.user.uuid;
-    const { joinData, profileData } =
-      await this.profileSpaceService.processData(userUuid, spaceUuid);
-    this.profileSpaceService.create(joinData, false);
-    const spaceData = response.data;
-    const data = { profileData, spaceData };
-    await this.profileSpaceService.put(userUuid, spaceUuid, data);
-    return response;
+    const space = await this.spacesService.createSpace(createSpaceDto);
+    await this.profileSpaceService.joinSpace(profile.uuid, space.uuid);
+    return { statusCode: 201, message: 'Created', data: space };
   }
 
   @Get(':space_uuid')
@@ -67,8 +66,10 @@ export class SpacesController {
     status: 404,
     description: 'Space not found.',
   })
-  findOne(@Param('space_uuid') spaceUuid: string) {
-    return this.spacesService.findOne(spaceUuid);
+  async findOne(@Param('space_uuid') spaceUuid: string) {
+    const space = await this.spacesService.findSpace(spaceUuid);
+    if (!space) throw new NotFoundException();
+    return { statusCode: 200, message: 'Success', data: space };
   }
 
   @Patch(':space_uuid')
@@ -89,11 +90,17 @@ export class SpacesController {
   async update(
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
-    @Body() updateSpaceDto: UpdateSpaceDto,
+    @Body(new ValidationPipe({ whitelist: true }))
+    updateSpaceDto: UpdateSpaceDto,
   ) {
     if (icon) {
       updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
     }
-    return this.spacesService.update(spaceUuid, updateSpaceDto);
+    const space = await this.spacesService.updateSpace(
+      spaceUuid,
+      updateSpaceDto,
+    );
+    if (!space) throw new NotFoundException();
+    return { statusCode: 200, message: 'Success', data: space };
   }
 }

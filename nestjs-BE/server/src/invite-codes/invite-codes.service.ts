@@ -39,7 +39,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
 
   async createCode(createInviteCodeDto: CreateInviteCodeDto) {
     const { space_uuid: spaceUuid } = createInviteCodeDto;
-    await this.spacesService.findOne(spaceUuid);
+    await this.spacesService.findSpace(spaceUuid);
     const inviteCodeData = await this.generateInviteCode(createInviteCodeDto);
     super.create(inviteCodeData);
     const { invite_code } = inviteCodeData;
@@ -49,10 +49,7 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
   async findSpace(inviteCode: string) {
     const inviteCodeData = await this.getInviteCodeData(inviteCode);
     this.checkExpiry(inviteCode, inviteCodeData.expiry_date);
-    const spaceResponse = await this.spacesService.findOne(
-      inviteCodeData.space_uuid,
-    );
-    return spaceResponse;
+    return this.spacesService.findSpace(inviteCodeData.space_uuid);
   }
 
   private async generateInviteCode(createInviteCodeDto: CreateInviteCodeDto) {

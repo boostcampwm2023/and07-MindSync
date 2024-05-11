@@ -40,7 +40,8 @@ export class InviteCodesController {
     status: 410,
     description: 'Invite code has expired',
   })
-  findSpace(@Param('inviteCode') inviteCode: string) {
-    return this.inviteCodesService.findSpace(inviteCode);
+  async findSpace(@Param('inviteCode') inviteCode: string) {
+    const space = await this.inviteCodesService.findSpace(inviteCode);
+    return { statusCode: 200, message: 'Success', data: space };
   }
 }
