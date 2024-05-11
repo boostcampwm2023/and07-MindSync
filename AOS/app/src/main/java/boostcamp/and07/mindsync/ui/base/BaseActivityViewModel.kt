@@ -17,47 +17,47 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class BaseActivityViewModel
-@Inject
-constructor(
-    private val logoutEventRepository: LogoutEventRepository,
-    private val networkManager: NetworkManager,
-) : ViewModel() {
-    private val _events = MutableSharedFlow<ViewEvent>()
-    val events: SharedFlow<ViewEvent> = _events.asSharedFlow()
-    private val _isConnected = MutableStateFlow(false)
-    val isConnected: StateFlow<Boolean> = _isConnected
+    @Inject
+    constructor(
+        private val logoutEventRepository: LogoutEventRepository,
+        private val networkManager: NetworkManager,
+    ) : ViewModel() {
+        private val _events = MutableSharedFlow<ViewEvent>()
+        val events: SharedFlow<ViewEvent> = _events.asSharedFlow()
+        private val _isConnected = MutableStateFlow(false)
+        val isConnected: StateFlow<Boolean> = _isConnected
 
-    init {
-        networkManager.registerNetworkCallback()
-        observerNetworkConnection()
-    }
+        init {
+            networkManager.registerNetworkCallback()
+            observerNetworkConnection()
+        }
 
-    private fun sendLogoutEvent() {
-        viewModelScope.launch {
-            logoutEventRepository.logout().collect { logoutEvent ->
-                if (logoutEvent) {
-                    _events.emit(ViewEvent.Logout)
+        private fun sendLogoutEvent() {
+            viewModelScope.launch {
+                logoutEventRepository.logout().collect { logoutEvent ->
+                    if (logoutEvent) {
+                        _events.emit(ViewEvent.Logout)
+                    }
                 }
             }
         }
-    }
 
-    private fun observerNetworkConnection() {
-        viewModelScope.launch {
-            networkManager.isConnected.collectLatest { isConnected ->
-                _isConnected.update { isConnected }
+        private fun observerNetworkConnection() {
+            viewModelScope.launch {
+                networkManager.isConnected.collectLatest { isConnected ->
+                    _isConnected.update { isConnected }
+                }
             }
         }
-    }
 
-    fun logout() {
-        viewModelScope.launch {
-            logoutEventRepository.logout()
+        fun logout() {
+            viewModelScope.launch {
+                logoutEventRepository.logout()
+            }
+        }
+
+        override fun onCleared() {
+            super.onCleared()
+            networkManager.unRegisterNetworkCallback()
         }
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        networkManager.unRegisterNetworkCallback()
-    }
-}

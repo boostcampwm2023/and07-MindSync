@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class DisConnectedNetworkDialog(private val isConnected: StateFlow<Boolean>) :
     DialogFragment() {
-
     private var _binding: DialogDisconnectNetworkBinding? = null
     private val binding get() = _binding!!
 

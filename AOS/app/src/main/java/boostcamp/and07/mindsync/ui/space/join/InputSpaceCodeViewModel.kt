@@ -21,43 +21,43 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InputSpaceCodeViewModel
-@Inject
-constructor(
-    private val spaceRepository: SpaceRepository,
-    logoutEventRepository: LogoutEventRepository,
-    networkManager: NetworkManager,
-) : BaseActivityViewModel(logoutEventRepository,networkManager) {
-    private val _uiState = MutableStateFlow(SpaceUiState())
-    val uiState: StateFlow<SpaceUiState> = _uiState
-    private val _event = MutableSharedFlow<SpaceUiEvent>()
-    val event = _event.asSharedFlow()
-    private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { _, throwable ->
-            viewModelScope.launch {
-                _event.emit(
-                    SpaceUiEvent.ShowMessage(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_INVITE_CODE_WRONG.message),
+    @Inject
+    constructor(
+        private val spaceRepository: SpaceRepository,
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
+        private val _uiState = MutableStateFlow(SpaceUiState())
+        val uiState: StateFlow<SpaceUiState> = _uiState
+        private val _event = MutableSharedFlow<SpaceUiEvent>()
+        val event = _event.asSharedFlow()
+        private val coroutineExceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                viewModelScope.launch {
+                    _event.emit(
+                        SpaceUiEvent.ShowMessage(SpaceExceptionMessage.ERROR_MESSAGE_SPACE_INVITE_CODE_WRONG.message),
+                    )
+                }
+            }
+
+        fun onSpaceInviteCodeChanged(
+            inviteSpaceCode: CharSequence,
+            start: Int,
+            before: Int,
+            count: Int,
+        ) {
+            _uiState.update { uiState ->
+                uiState.copy(
+                    spaceInviteCode = inviteSpaceCode.toString(),
                 )
             }
         }
 
-    fun onSpaceInviteCodeChanged(
-        inviteSpaceCode: CharSequence,
-        start: Int,
-        before: Int,
-        count: Int,
-    ) {
-        _uiState.update { uiState ->
-            uiState.copy(
-                spaceInviteCode = inviteSpaceCode.toString(),
-            )
-        }
-    }
-
-    fun compareInviteCode() {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            spaceRepository.joinInviteCode(_uiState.value.spaceInviteCode).collectLatest { space ->
-                _event.emit(SpaceUiEvent.NavigationToConfirmSpace(space))
+        fun compareInviteCode() {
+            viewModelScope.launch(coroutineExceptionHandler) {
+                spaceRepository.joinInviteCode(_uiState.value.spaceInviteCode).collectLatest { space ->
+                    _event.emit(SpaceUiEvent.NavigationToConfirmSpace(space))
+                }
             }
         }
     }
-}

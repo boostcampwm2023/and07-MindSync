@@ -21,73 +21,73 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel
-@Inject
-constructor(
-    private val loginRepository: LoginRepository,
-    private val tokenRepository: TokenRepository,
-    logoutEventRepository: LogoutEventRepository,
-    networkManager: NetworkManager,
-) :
+    @Inject
+    constructor(
+        private val loginRepository: LoginRepository,
+        private val tokenRepository: TokenRepository,
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
+    ) :
     BaseActivityViewModel(logoutEventRepository, networkManager) {
-    private val _loginEvent = MutableSharedFlow<LoginEvent>()
-    val loginEvent = _loginEvent.asSharedFlow()
+        private val _loginEvent = MutableSharedFlow<LoginEvent>()
+        val loginEvent = _loginEvent.asSharedFlow()
 
-    private fun getTokenWithKakao(kakaoUserId: Long) {
-        viewModelScope.launch {
-            loginRepository.loginWithKakao(kakaoUserId)
-                .onSuccess { result ->
-                    Log.d("LoginViewModel", "getTokenWithKakao: ${result.accessToken}")
-                    tokenRepository.saveAccessToken(result.accessToken)
-                    tokenRepository.saveRefreshToken(result.refreshToken)
-                    _loginEvent.emit(LoginEvent.Success)
-                }.onFailure {
-                    _loginEvent.emit(
-                        LoginEvent.Error("${NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message}\n${it.message}}"),
-                    )
-                }
-        }
-    }
-
-    fun successGoogleLogin() {
-        Log.d("LoginActivity", "successGoogleLogin: success!")
-        // TODO : server token 요청하기
-    }
-
-    fun successKakaoLoin() {
-        UserApiClient.instance.me { user, error ->
-            if (error != null) {
-                Log.e("LoginActivity", "사용자 정보 요청 실패", error)
-            } else if (user != null) {
-                user.id?.let { userId ->
-                    getTokenWithKakao(userId)
-                }
-            }
-        }
-    }
-
-    fun handleGoogleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-        try {
-            val account = completedTask.getResult(ApiException::class.java)
-
-            val name = account.displayName
-            val token = account.idToken
-
-            // TODO : server token 요청하기
-        } catch (e: ApiException) {
+        private fun getTokenWithKakao(kakaoUserId: Long) {
             viewModelScope.launch {
-                _loginEvent.emit(LoginEvent.Error("google login error: ${e.message}\n${e.stackTrace}\n${e.cause}"))
+                loginRepository.loginWithKakao(kakaoUserId)
+                    .onSuccess { result ->
+                        Log.d("LoginViewModel", "getTokenWithKakao: ${result.accessToken}")
+                        tokenRepository.saveAccessToken(result.accessToken)
+                        tokenRepository.saveRefreshToken(result.refreshToken)
+                        _loginEvent.emit(LoginEvent.Success)
+                    }.onFailure {
+                        _loginEvent.emit(
+                            LoginEvent.Error("${NetworkExceptionMessage.ERROR_MESSAGE_CANT_GET_TOKEN.message}\n${it.message}}"),
+                        )
+                    }
             }
         }
-    }
 
-    fun getResultCallBack(): (OAuthToken?, Throwable?) -> Unit =
-        { token, error ->
-            if (error != null) {
-                viewModelScope.launch {
-                    _loginEvent.emit(LoginEvent.Error(NetworkExceptionMessage.ERROR_MESSAGE_KAKAO_RESULT_NULL.message))
+        fun successGoogleLogin() {
+            Log.d("LoginActivity", "successGoogleLogin: success!")
+            // TODO : server token 요청하기
+        }
+
+        fun successKakaoLoin() {
+            UserApiClient.instance.me { user, error ->
+                if (error != null) {
+                    Log.e("LoginActivity", "사용자 정보 요청 실패", error)
+                } else if (user != null) {
+                    user.id?.let { userId ->
+                        getTokenWithKakao(userId)
+                    }
                 }
-            } else if (token != null) {
-                successKakaoLoin()
             }
         }
-}
+
+        fun handleGoogleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+            try {
+                val account = completedTask.getResult(ApiException::class.java)
+
+                val name = account.displayName
+                val token = account.idToken
+
+                // TODO : server token 요청하기
+            } catch (e: ApiException) {
+                viewModelScope.launch {
+                    _loginEvent.emit(LoginEvent.Error("google login error: ${e.message}\n${e.stackTrace}\n${e.cause}"))
+                }
+            }
+        }
+
+        fun getResultCallBack(): (OAuthToken?, Throwable?) -> Unit =
+            { token, error ->
+                if (error != null) {
+                    viewModelScope.launch {
+                        _loginEvent.emit(LoginEvent.Error(NetworkExceptionMessage.ERROR_MESSAGE_KAKAO_RESULT_NULL.message))
+                    }
+                } else if (token != null) {
+                    successKakaoLoin()
+                }
+            }
+    }

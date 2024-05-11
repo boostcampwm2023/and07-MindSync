@@ -29,14 +29,16 @@ fun DisConnectedNetworkDialogScreen() {
 
     Dialog(onDismissRequest = {}) {
         Column(
-            modifier = Modifier
-                .width(dialogWidth)
-                .height(screenHeight),
+            modifier =
+                Modifier
+                    .width(dialogWidth)
+                    .height(screenHeight),
             verticalArrangement = Arrangement.Center,
         ) {
             Row(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(

@@ -26,7 +26,7 @@ class ConfirmInviteSpaceViewModel
         private val profileSpaceRepository: ProfileSpaceRepository,
         logoutEventRepository: LogoutEventRepository,
         networkManager: NetworkManager,
-    ) : BaseActivityViewModel(logoutEventRepository,networkManager) {
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
         private val _event = MutableSharedFlow<SpaceUiEvent>()

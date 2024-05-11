@@ -27,8 +27,8 @@ class AddSpaceViewModel
     constructor(
         private val spaceRepository: SpaceRepository,
         logoutEventRepository: LogoutEventRepository,
-        networkManager: NetworkManager
-    ) : BaseActivityViewModel(logoutEventRepository,networkManager) {
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
         private val _event = MutableSharedFlow<SpaceUiEvent>()

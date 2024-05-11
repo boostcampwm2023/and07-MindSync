@@ -8,4 +8,4 @@ class AddInviteSpaceViewModel(
     logoutEventRepository: LogoutEventRepository,
     networkManager: NetworkManager,
 ) :
-    BaseActivityViewModel(logoutEventRepository,networkManager)
+    BaseActivityViewModel(logoutEventRepository, networkManager)
