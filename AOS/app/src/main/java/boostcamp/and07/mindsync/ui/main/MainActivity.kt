@@ -18,6 +18,7 @@ import boostcamp.and07.mindsync.databinding.ActivityMainBinding
 import boostcamp.and07.mindsync.ui.base.BaseActivity
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.boardlist.UsersAdapter
+import boostcamp.and07.mindsync.ui.dialog.DisConnectedNetworkDialog
 import boostcamp.and07.mindsync.ui.profile.ProfileActivity
 import boostcamp.and07.mindsync.ui.space.list.SpaceListFragmentDirections
 import boostcamp.and07.mindsync.ui.util.ThrottleDuration
@@ -54,6 +55,7 @@ class MainActivity :
         setSideBarNavigation()
         setBinding()
         observeEvent()
+        showDisconnectedNetworkDialog()
     }
 
     override fun getViewModel(): BaseActivityViewModel {
@@ -77,6 +79,22 @@ class MainActivity :
                     if (event is MainUiEvent.LeaveSpace) {
                         showMessage(getString(R.string.space_leave_room_message, event.spaceName))
                         navController.navigate(R.id.spaceListFragment)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showDisconnectedNetworkDialog() {
+        val dialog = DisConnectedNetworkDialog(mainViewModel.isConnected)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.isConnected.collectLatest { isConnected ->
+                    if (isConnected.not()) {
+                        dialog.show(
+                            this@MainActivity.supportFragmentManager,
+                            "DisConnectedNetworkDialog",
+                        )
                     }
                 }
             }
@@ -213,7 +231,11 @@ class MainActivity :
         spaceAdapter.setSideBarClickListener(
             object : SpaceClickListener {
                 override fun onClickSpace(space: Space) {
-                    navController.navigate(SpaceListFragmentDirections.actionToBoardListFragment(spaceId = space.id))
+                    navController.navigate(
+                        SpaceListFragmentDirections.actionToBoardListFragment(
+                            spaceId = space.id,
+                        ),
+                    )
                     mainViewModel.updateCurrentSpace(space)
                 }
             },
