@@ -39,7 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.ui.dialog.AddBoardDialogScreen
-import boostcamp.and07.mindsync.ui.dialog.LoadingDialogScreen
+import boostcamp.and07.mindsync.ui.dialog.DisConnectedNetworkDialogScreen
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 import java.io.File
@@ -89,7 +89,7 @@ fun BoardListScreen(
                 )
             }
             if (isConnected.not()) {
-                LoadingDialogScreen()
+                DisConnectedNetworkDialogScreen()
             }
         }
     }

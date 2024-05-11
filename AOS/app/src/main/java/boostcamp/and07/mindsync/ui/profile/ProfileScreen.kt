@@ -45,7 +45,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.components.BackIconButton
 import boostcamp.and07.mindsync.ui.components.EditIconButton
 import boostcamp.and07.mindsync.ui.components.MSButton
-import boostcamp.and07.mindsync.ui.dialog.LoadingDialogScreen
+import boostcamp.and07.mindsync.ui.dialog.DisConnectedNetworkDialogScreen
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.Gray4
@@ -205,7 +205,7 @@ private fun ProfileContent(
         )
     }
     if (isConneceted.not()) {
-        LoadingDialogScreen()
+        DisConnectedNetworkDialogScreen()
     }
 }
 
