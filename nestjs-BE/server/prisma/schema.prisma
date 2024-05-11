@@ -12,11 +12,11 @@ model User {
   email    String
   provider String
   profiles Profile[]
-  refresh_tokens REFRESH_TOKEN_TB[]
+  refresh_tokens RefreshToken[]
   @@unique([email, provider])
 }
 
-model REFRESH_TOKEN_TB {
+model RefreshToken {
   uuid        String    @id @db.VarChar(32)
   expiry_date DateTime
   user_id     String
@@ -37,7 +37,7 @@ model Space {
   name     String @db.VarChar(20)
   icon     String
   profiles Profile_space[]
-  invite_codes INVITE_CODE_TB[]
+  invite_codes InviteCode[]
 }
 
 model Profile_space {
@@ -48,7 +48,7 @@ model Profile_space {
   @@unique([space_uuid, profile_uuid])
 }
 
-model INVITE_CODE_TB {
+model InviteCode {
   uuid        String   @id     @db.VarChar(32)
   invite_code String   @unique @db.VarChar(10)
   space_uuid  String   @db.VarChar(32)
