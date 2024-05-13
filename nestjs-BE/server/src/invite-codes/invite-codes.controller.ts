@@ -1,12 +1,25 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { SpacesService } from 'src/spaces/spaces.service';
 
 @Controller('inviteCodes')
 @ApiTags('inviteCodes')
 export class InviteCodesController {
-  constructor(private readonly inviteCodesService: InviteCodesService) {}
+  constructor(
+    private readonly inviteCodesService: InviteCodesService,
+    private readonly spacesService: SpacesService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create invite code' })
@@ -22,8 +35,17 @@ export class InviteCodesController {
     status: 404,
     description: 'Space not found.',
   })
-  create(@Body() createInviteCodeDto: CreateInviteCodeDto) {
-    return this.inviteCodesService.createCode(createInviteCodeDto);
+  async create(@Body() createInviteCodeDto: CreateInviteCodeDto) {
+    const spaceUuid = createInviteCodeDto.space_uuid;
+    const space = await this.spacesService.findSpace(spaceUuid);
+    if (!space) throw new NotFoundException();
+    const inviteCode =
+      await this.inviteCodesService.createInviteCode(spaceUuid);
+    return {
+      statusCode: 201,
+      message: 'Created',
+      data: { invite_code: inviteCode.invite_code },
+    };
   }
 
   @Get(':inviteCode')
@@ -41,7 +63,14 @@ export class InviteCodesController {
     description: 'Invite code has expired',
   })
   async findSpace(@Param('inviteCode') inviteCode: string) {
-    const space = await this.inviteCodesService.findSpace(inviteCode);
+    const inviteCodeData =
+      await this.inviteCodesService.findInviteCode(inviteCode);
+    if (!inviteCodeData) throw new NotFoundException();
+    if (this.inviteCodesService.checkExpiry(inviteCodeData.expiry_date)) {
+      this.inviteCodesService.deleteInviteCode(inviteCode);
+      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
+    }
+    const space = await this.spacesService.findSpace(inviteCodeData.space_uuid);
     return { statusCode: 200, message: 'Success', data: space };
   }
 }
