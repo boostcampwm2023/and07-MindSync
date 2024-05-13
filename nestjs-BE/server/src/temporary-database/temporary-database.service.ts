@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import { TokenData } from 'src/auth/auth.service';
 import { CreateProfileSpaceDto } from 'src/profile-space/dto/create-profile-space.dto';
 import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
@@ -16,7 +15,6 @@ type DeleteDataType = {
 };
 
 export type InsertDataType =
-  | TokenData
   | CreateProfileSpaceDto
   | UpdateProfileDto
   | UpdateUserDto;
@@ -50,7 +48,7 @@ export class TemporaryDatabaseService {
   }
 
   private initializeDatabase() {
-    const services = ['REFRESH_TOKEN_TB'];
+    const services = [];
     const operations = ['insert', 'update', 'delete'];
 
     services.forEach((service) => {

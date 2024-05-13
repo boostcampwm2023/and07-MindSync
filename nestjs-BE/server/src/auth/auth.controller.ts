@@ -1,4 +1,10 @@
-import { Controller, Post, Body, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
@@ -7,6 +13,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ProfilesService } from 'src/profiles/profiles.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import customEnv from 'src/config/env';
+import { RefreshTokensService } from './refresh-tokens.service';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -15,6 +22,7 @@ export class AuthController {
     private authService: AuthService,
     private usersService: UsersService,
     private profilesService: ProfilesService,
+    private refreshTokensService: RefreshTokensService,
   ) {}
 
   @Post('kakao-oauth')
@@ -50,7 +58,8 @@ export class AuthController {
       };
       await this.profilesService.createProfile(profileData);
     }
-    return this.authService.login(userUuid);
+    const tokenData = await this.authService.login(userUuid);
+    return { statusCode: 200, message: 'Success', data: tokenData };
   }
 
   @Post('token')
@@ -64,15 +73,23 @@ export class AuthController {
     status: 401,
     description: 'Refresh token expired. Please log in again.',
   })
-  renewAccessToken(@Body() refreshTokenDto: RefreshTokenDto) {
+  async renewAccessToken(@Body() refreshTokenDto: RefreshTokenDto) {
     const refreshToken = refreshTokenDto.refresh_token;
-    return this.authService.renewAccessToken(refreshToken);
+    const accessToken = await this.authService.renewAccessToken(refreshToken);
+    return {
+      statusCode: 200,
+      message: 'Success',
+      data: { access_token: accessToken },
+    };
   }
 
   @Post('logout')
   @Public()
-  logout(@Body() refreshTokenDto: RefreshTokenDto) {
+  async logout(@Body() refreshTokenDto: RefreshTokenDto) {
     const refreshToken = refreshTokenDto.refresh_token;
-    return this.authService.remove(refreshToken);
+    const token =
+      await this.refreshTokensService.deleteRefreshToken(refreshToken);
+    if (!token) throw new BadRequestException();
+    return { statusCode: 204, message: 'No Content' };
   }
 }

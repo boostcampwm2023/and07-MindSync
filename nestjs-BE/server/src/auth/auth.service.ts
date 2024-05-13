@@ -1,42 +1,17 @@
-import { Injectable, UnauthorizedException, HttpStatus } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TemporaryDatabaseService } from 'src/temporary-database/temporary-database.service';
-import { BaseService } from 'src/base/base.service';
-import {
-  REFRESH_TOKEN_CACHE_SIZE,
-  REFRESH_TOKEN_EXPIRY_DAYS,
-} from 'src/config/magic-number';
-import generateUuid from 'src/utils/uuid';
-import { ResponseUtils } from 'src/utils/response';
-
-export interface TokenData {
-  uuid: string;
-  expiry_date: Date;
-  user_id: string;
-}
+import { RefreshTokensService } from './refresh-tokens.service';
 
 @Injectable()
-export class AuthService extends BaseService<TokenData> {
+export class AuthService {
   constructor(
     private jwtService: JwtService,
+    private refreshTokensService: RefreshTokensService,
     protected prisma: PrismaService,
-    protected temporaryDatabaseService: TemporaryDatabaseService,
-  ) {
-    super({
-      prisma,
-      temporaryDatabaseService,
-      cacheSize: REFRESH_TOKEN_CACHE_SIZE,
-      className: 'REFRESH_TOKEN_TB',
-      field: 'uuid',
-    });
-  }
-
-  generateKey(data: TokenData): string {
-    return data.uuid;
-  }
+  ) {}
 
   async getKakaoAccount(kakaoUserId: number) {
     const url = `https://kapi.kakao.com/v2/user/me`;
@@ -63,65 +38,29 @@ export class AuthService extends BaseService<TokenData> {
     return accessToken;
   }
 
-  private async createRefreshToken(): Promise<Record<string, string>> {
-    const refreshTokenUuid = generateUuid();
-    const refreshToken = await this.jwtService.signAsync(
-      { uuid: refreshTokenUuid },
-      { secret: jwtConstants.refreshSecret, expiresIn: '14d' },
-    );
-    return { refreshToken, refreshTokenUuid };
-  }
-
-  private createRefreshTokenData(refreshTokenUuid: string, userUuid: string) {
-    const currentDate = new Date();
-    const expiryDate = new Date(currentDate);
-    expiryDate.setDate(currentDate.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
-    const refreshTokenData: TokenData = {
-      uuid: refreshTokenUuid,
-      expiry_date: expiryDate,
-      user_id: userUuid,
-    };
-    return refreshTokenData;
-  }
-
   async login(userUuid: string) {
-    const { refreshToken, refreshTokenUuid } = await this.createRefreshToken();
     const accessToken = await this.createAccessToken(userUuid);
-    const refreshTokenData = this.createRefreshTokenData(
-      refreshTokenUuid,
-      userUuid,
-    );
-    super.create(refreshTokenData, false);
-    const tokenData = {
+    const refreshToken =
+      await this.refreshTokensService.createRefreshToken(userUuid);
+    return {
       access_token: accessToken,
-      refresh_token: refreshToken,
+      refresh_token: refreshToken.token,
     };
-    return ResponseUtils.createResponse(HttpStatus.OK, tokenData);
   }
 
-  async renewAccessToken(refreshToken: string) {
-    const decodedToken = this.jwtService.decode(refreshToken);
-    const uuid = decodedToken?.uuid;
+  async renewAccessToken(refreshToken: string): Promise<string> {
     try {
       this.jwtService.verify(refreshToken, {
         secret: jwtConstants.refreshSecret,
       });
-      const { data: tokenData } = await super.findOne(uuid);
-      const accessToken = await this.createAccessToken(tokenData.user_id);
-      return ResponseUtils.createResponse(HttpStatus.OK, {
-        access_token: accessToken,
-      });
+      const token =
+        await this.refreshTokensService.findRefreshToken(refreshToken);
+      const accessToken = await this.createAccessToken(token.user_id);
+      return accessToken;
     } catch (error) {
-      super.remove(uuid);
       throw new UnauthorizedException(
         'Refresh token expired. Please log in again.',
       );
     }
-  }
-
-  remove(refreshToken: string) {
-    const decodedToken = this.jwtService.decode(refreshToken);
-    const uuid = decodedToken?.uuid;
-    return super.remove(uuid);
   }
 }
