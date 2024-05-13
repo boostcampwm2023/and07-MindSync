@@ -17,10 +17,12 @@ model User {
 }
 
 model RefreshToken {
-  uuid        String    @id @db.VarChar(32)
+  id          Int       @id @default(autoincrement())
+  token       String    @db.VarChar(210)
   expiry_date DateTime
   user_id     String
   user        User   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
+  @@unique([token])
 }
 
 model Profile {
