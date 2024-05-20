@@ -6,6 +6,8 @@ import {
   UseInterceptors,
   UploadedFile,
   Request as Req,
+  ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilesService } from './profiles.service';
@@ -32,8 +34,10 @@ export class ProfilesController {
     status: 401,
     description: 'Unauthorized.',
   })
-  findOne(@Req() req: RequestWithUser) {
-    return this.profilesService.findOne(req.user.uuid);
+  async findProfile(@Req() req: RequestWithUser) {
+    const profile = await this.profilesService.findProfile(req.user.uuid);
+    if (!profile) throw new NotFoundException();
+    return { statusCode: 200, message: 'Success', data: profile };
   }
 
   @Patch()
@@ -50,11 +54,17 @@ export class ProfilesController {
   async update(
     @UploadedFile() image: Express.Multer.File,
     @Req() req: RequestWithUser,
-    @Body() updateProfileDto: UpdateProfileDto,
+    @Body(new ValidationPipe({ whitelist: true }))
+    updateProfileDto: UpdateProfileDto,
   ) {
     if (image) {
       updateProfileDto.image = await this.uploadService.uploadFile(image);
     }
-    return this.profilesService.update(req.user.uuid, updateProfileDto);
+    const profile = await this.profilesService.updateProfile(
+      req.user.uuid,
+      updateProfileDto,
+    );
+    if (!profile) throw new NotFoundException();
+    return { statusCode: 200, message: 'Success', data: profile };
   }
 }

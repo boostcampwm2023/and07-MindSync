@@ -6,12 +6,17 @@ import {
   Delete,
   Param,
   Request as Req,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  ConflictException,
 } from '@nestjs/common';
 import { ProfileSpaceService } from './profile-space.service';
 import { CreateProfileSpaceDto } from './dto/create-profile-space.dto';
 import { RequestWithUser } from 'src/utils/interface';
 import { SpacesService } from 'src/spaces/spaces.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ProfilesService } from 'src/profiles/profiles.service';
 
 @Controller('profileSpace')
 @ApiTags('profileSpace')
@@ -19,6 +24,7 @@ export class ProfileSpaceController {
   constructor(
     private readonly profileSpaceService: ProfileSpaceService,
     private readonly spacesService: SpacesService,
+    private readonly profilesService: ProfilesService,
   ) {}
 
   @Post('join')
@@ -35,14 +41,16 @@ export class ProfileSpaceController {
     @Body() createProfileSpaceDto: CreateProfileSpaceDto,
     @Req() req: RequestWithUser,
   ) {
-    const userUuid = req.user.uuid;
-    const { space_uuid } = createProfileSpaceDto;
-    const { joinData, profileData } =
-      await this.profileSpaceService.processData(userUuid, space_uuid);
-    const responseData = await this.profileSpaceService.create(joinData, false);
-    const data = await this.spacesService.processData(space_uuid, profileData);
-    await this.profileSpaceService.put(userUuid, space_uuid, data);
-    return responseData;
+    const profile = await this.profilesService.findProfile(req.user.uuid);
+    if (!profile) throw new NotFoundException();
+    const profileSpace = await this.profileSpaceService.joinSpace(
+      profile.uuid,
+      createProfileSpaceDto.space_uuid,
+    );
+    if (!profileSpace) {
+      throw new HttpException('Data already exists.', HttpStatus.CONFLICT);
+    }
+    return { statusCode: 201, message: 'Created', data: profileSpace };
   }
 
   @Delete('leave/:space_uuid')
@@ -58,29 +66,40 @@ export class ProfileSpaceController {
     @Param('space_uuid') spaceUuid: string,
     @Req() req: RequestWithUser,
   ) {
-    const userUuid = req.user.uuid;
-    const { joinData, profileData } =
-      await this.profileSpaceService.processData(userUuid, spaceUuid);
-    await this.spacesService.processData(spaceUuid, profileData);
-    const isSpaceEmpty = await this.profileSpaceService.delete(
-      userUuid,
+    const profile = await this.profilesService.findProfile(req.user.uuid);
+    if (!profile) throw new NotFoundException();
+    const space = await this.spacesService.findSpace(spaceUuid);
+    if (!space) throw new NotFoundException();
+    const profileSpace = await this.profileSpaceService.leaveSpace(
+      profile.uuid,
       spaceUuid,
-      profileData,
     );
-    if (isSpaceEmpty) return this.spacesService.remove(spaceUuid);
-    const key = this.profileSpaceService.generateKey(joinData);
-    return this.profileSpaceService.remove(key);
+    if (!profileSpace) throw new ConflictException();
+    const isSpaceEmpty = await this.profileSpaceService.isSpaceEmpty(spaceUuid);
+    if (isSpaceEmpty) {
+      await this.spacesService.deleteSpace(spaceUuid);
+    }
+    return { statusCode: 204, message: 'No Content' };
   }
 
   @Get('spaces')
-  @ApiOperation({ summary: 'Get user’s spaces' })
+  @ApiOperation({ summary: "Get user's spaces" })
   @ApiResponse({
     status: 200,
     description: 'Returns a list of spaces.',
   })
-  getSpaces(@Req() req: RequestWithUser) {
-    const userUuid = req.user.uuid;
-    return this.profileSpaceService.retrieveUserSpaces(userUuid);
+  async getSpaces(@Req() req: RequestWithUser) {
+    const profile = await this.profilesService.findProfile(req.user.uuid);
+    if (!profile) throw new NotFoundException();
+    const profileSpaces =
+      await this.profileSpaceService.findProfileSpacesByProfileUuid(
+        profile.uuid,
+      );
+    const spaceUuids = profileSpaces.map(
+      (profileSpace) => profileSpace.space_uuid,
+    );
+    const spaces = await this.spacesService.findSpaces(spaceUuids);
+    return { statusCode: 200, message: 'Success', data: spaces };
   }
 
   @Get('users/:space_uuid')
@@ -93,7 +112,15 @@ export class ProfileSpaceController {
     status: 404,
     description: 'Space not found.',
   })
-  getUsers(@Param('space_uuid') spaceUuid: string) {
-    return this.profileSpaceService.retrieveSpaceUsers(spaceUuid);
+  async getProfiles(@Param('space_uuid') spaceUuid: string) {
+    const space = await this.spacesService.findSpace(spaceUuid);
+    if (!space) throw new NotFoundException();
+    const profileSpaces =
+      await this.profileSpaceService.findProfileSpacesBySpaceUuid(space.uuid);
+    const profileUuids = profileSpaces.map(
+      (profileSpace) => profileSpace.profile_uuid,
+    );
+    const profiles = await this.profilesService.findProfiles(profileUuids);
+    return { statusCode: 200, message: 'Success', data: profiles };
   }
 }

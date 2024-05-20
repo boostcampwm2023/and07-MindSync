@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { InsertDataType } from 'src/temporary-database/temporary-database.service';
+
 type TokenDataType = {
   access_token: string;
   refresh_token?: string;
@@ -8,11 +8,7 @@ type InviteDataType = {
   invite_code: string;
 };
 
-type ExtendedDataType =
-  | InsertDataType
-  | TokenDataType
-  | InviteDataType
-  | InsertDataType[];
+type ExtendedDataType = TokenDataType | InviteDataType;
 
 export class ResponseUtils {
   private static messages = new Map([

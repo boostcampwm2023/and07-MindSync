@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaServiceMySQL } from '../prisma/prisma.service';
-import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
-import { BaseService } from '../base/base.service';
-import { USER_CACHE_SIZE } from '../config/magic-number';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '@prisma/client';
+import generateUuid from '../utils/uuid';
 
 @Injectable()
-export class UsersService extends BaseService<UpdateUserDto> {
-  constructor(
-    protected prisma: PrismaServiceMySQL,
-    protected temporaryDatabaseService: TemporaryDatabaseService,
-  ) {
-    super({
-      prisma,
-      temporaryDatabaseService,
-      cacheSize: USER_CACHE_SIZE,
-      className: 'USER_TB',
-      field: 'email_provider',
+export class UsersService {
+  constructor(protected prisma: PrismaService) {}
+
+  async findUserByEmailAndProvider(
+    email: string,
+    provider: string,
+  ): Promise<User> {
+    return this.prisma.user.findUnique({
+      where: { email_provider: { email, provider } },
     });
   }
 
-  generateKey(data: UpdateUserDto) {
-    return `email:${data.email}+provider:${data.provider}`;
+  async createUser(data: CreateUserDto): Promise<User> {
+    return this.prisma.user.create({
+      data: {
+        uuid: generateUuid(),
+        email: data.email,
+        provider: data.provider,
+      },
+    });
   }
 }

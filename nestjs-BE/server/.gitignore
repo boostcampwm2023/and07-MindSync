@@ -32,7 +32,3 @@ lerna-debug.log*
 
 # Environment Variable File
 .env
-
-# csv, prisma
-/operations
-/prisma/generated
