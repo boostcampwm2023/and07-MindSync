@@ -10,8 +10,6 @@ RUN npm ci
 
 COPY ./ ./
 
-RUN npx prisma migrate dev
-
 EXPOSE 3000
 
-CMD ["npm", "start"]
+ENTRYPOINT ["./entrypoint.sh"]
