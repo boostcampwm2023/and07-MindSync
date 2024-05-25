@@ -13,8 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { UploadService } from 'src/upload/upload.service';
-import { RequestWithUser } from 'src/utils/interface';
+import { UploadService } from '../upload/upload.service';
+import { RequestWithUser } from '../utils/interface';
 
 @Controller('profiles')
 @ApiTags('profiles')
