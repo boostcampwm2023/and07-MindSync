@@ -3,13 +3,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { Profile, Prisma } from '@prisma/client';
-import generateUuid from 'src/utils/uuid';
+import generateUuid from '../utils/uuid';
 
 @Injectable()
 export class ProfilesService {
-  constructor(protected prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-  async findProfile(userUuid: string): Promise<Profile> {
+  async findProfile(userUuid: string): Promise<Profile | null> {
     return this.prisma.profile.findUnique({ where: { user_id: userUuid } });
   }
 
@@ -33,7 +33,7 @@ export class ProfilesService {
   async updateProfile(
     userUuid: string,
     updateProfileDto: UpdateProfileDto,
-  ): Promise<Profile> {
+  ): Promise<Profile | null> {
     try {
       return await this.prisma.profile.update({
         where: { user_id: userUuid },
