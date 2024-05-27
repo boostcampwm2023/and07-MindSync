@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { RefreshTokensService } from './refresh-tokens.service';
 
 @Injectable()
@@ -55,6 +55,11 @@ export class AuthService {
       });
       const token =
         await this.refreshTokensService.findRefreshToken(refreshToken);
+      if (!token) {
+        throw new UnauthorizedException(
+          'Refresh token expired. Please log in again.',
+        );
+      }
       const accessToken = await this.createAccessToken(token.user_id);
       return accessToken;
     } catch (error) {
