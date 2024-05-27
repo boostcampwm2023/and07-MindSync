@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import generateUuid from 'src/utils/uuid';
+import { PrismaService } from '../prisma/prisma.service';
+import generateUuid from '../utils/uuid';
 import { jwtConstants } from './constants';
 import { Prisma, RefreshToken } from '@prisma/client';
-import { REFRESH_TOKEN_EXPIRY_DAYS } from 'src/config/magic-number';
+import { REFRESH_TOKEN_EXPIRY_DAYS } from '../config/magic-number';
 
 @Injectable()
 export class RefreshTokensService {
@@ -23,13 +23,13 @@ export class RefreshTokensService {
     });
   }
 
-  async findRefreshToken(refreshToken: string): Promise<RefreshToken> {
+  async findRefreshToken(refreshToken: string): Promise<RefreshToken | null> {
     return this.prisma.refreshToken.findUnique({
       where: { token: refreshToken },
     });
   }
 
-  async deleteRefreshToken(refreshToken: string): Promise<RefreshToken> {
+  async deleteRefreshToken(refreshToken: string): Promise<RefreshToken | null> {
     try {
       return await this.prisma.refreshToken.delete({
         where: { token: refreshToken },
