@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ProfilesService } from 'src/profiles/profiles.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, Profile_space } from '@prisma/client';
 
 @Injectable()
 export class ProfileSpaceService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly profilesService: ProfilesService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findProfileSpacesByProfileUuid(
     profileUuid: string,
@@ -29,7 +25,7 @@ export class ProfileSpaceService {
   async joinSpace(
     profileUuid: string,
     spaceUuid: string,
-  ): Promise<Profile_space> {
+  ): Promise<Profile_space | null> {
     try {
       return await this.prisma.profile_space.create({
         data: { space_uuid: spaceUuid, profile_uuid: profileUuid },
@@ -46,7 +42,7 @@ export class ProfileSpaceService {
   async leaveSpace(
     profileUuid: string,
     spaceUuid: string,
-  ): Promise<Profile_space> {
+  ): Promise<Profile_space | null> {
     try {
       return await this.prisma.profile_space.delete({
         where: {

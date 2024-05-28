@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { MAX_NAME_LENGTH } from 'src/config/magic-number';
+import { MAX_NAME_LENGTH } from '../../config/magic-number';
 
 export class CreateSpaceDto {
   @IsString()
