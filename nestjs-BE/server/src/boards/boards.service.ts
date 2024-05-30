@@ -16,7 +16,7 @@ export class BoardsService {
     const { boardName, spaceId } = createBoardDto;
     const uuid = v4();
     const now = new Date();
-    const createdBoard = new this.boardModel({
+    const board = this.boardModel.create({
       boardName,
       imageUrl,
       spaceId,
@@ -24,7 +24,7 @@ export class BoardsService {
       createdAt: now,
       restoredAt: now,
     });
-    return createdBoard.save();
+    return board;
   }
 
   async findBySpaceId(spaceId: string): Promise<Board[]> {
