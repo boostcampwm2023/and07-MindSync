@@ -32,7 +32,7 @@ export class Tree<T> {
     targetNode.parentId = parentId;
   }
 
-  removeNode(targetId: string): Node<T> {
+  removeNode(targetId: string): Node<T> | undefined {
     const targetNode = this.nodes.get(targetId);
     if (!targetNode) return;
 

@@ -1,7 +1,7 @@
 export class Node<T> {
   targetId: string;
   parentId: string;
-  description: T;
+  description: T | null;
   children = new Array<string>();
 
   constructor(
