@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
+import boostcamp.and07.mindsync.ui.dialog.DisConnectedNetworkDialogScreen
 import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.theme.Blue1
@@ -63,6 +64,7 @@ fun AddSpaceScreen(
 ) {
     val uiState by addSpaceViewModel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
+    val isConnected by addSpaceViewModel.isConnected.collectAsStateWithLifecycle()
     HandleAddSpaceEvents(
         addSpaceViewModel = addSpaceViewModel,
         onBack = onBackClicked,
@@ -77,6 +79,9 @@ fun AddSpaceScreen(
                     .padding(innerPadding)
                     .fillMaxWidth(),
         ) {
+            if (isConnected.not()) {
+                DisConnectedNetworkDialogScreen()
+            }
             AddSpaceContent(
                 uiState = uiState,
                 onBackClicked = onBackClicked,

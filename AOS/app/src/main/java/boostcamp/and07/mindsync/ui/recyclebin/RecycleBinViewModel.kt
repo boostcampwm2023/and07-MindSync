@@ -1,9 +1,11 @@
 package boostcamp.and07.mindsync.ui.recyclebin
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import boostcamp.and07.mindsync.data.model.Board
+import boostcamp.and07.mindsync.data.network.NetworkManager
 import boostcamp.and07.mindsync.data.repository.boardlist.BoardListRepository
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +22,9 @@ class RecycleBinViewModel
     @Inject
     constructor(
         private val boardListRepository: BoardListRepository,
-    ) : ViewModel() {
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _uiState = MutableStateFlow(RecycleBinUiState())
         val uiState: StateFlow<RecycleBinUiState> = _uiState
         private val _uiEvent = MutableSharedFlow<RecycleBinUiEvent>()

@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.ui.login
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.network.NetworkManager
 import boostcamp.and07.mindsync.data.repository.login.LoginRepository
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.login.TokenRepository
@@ -24,9 +25,10 @@ class LoginViewModel
     constructor(
         private val loginRepository: LoginRepository,
         private val tokenRepository: TokenRepository,
-        private val logoutEventRepository: LogoutEventRepository,
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
     ) :
-    BaseActivityViewModel(logoutEventRepository) {
+    BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _loginEvent = MutableSharedFlow<LoginEvent>()
         val loginEvent = _loginEvent.asSharedFlow()
 

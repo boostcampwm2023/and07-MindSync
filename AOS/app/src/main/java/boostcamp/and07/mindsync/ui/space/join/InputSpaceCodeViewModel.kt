@@ -1,8 +1,10 @@
 package boostcamp.and07.mindsync.ui.space.join
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.network.NetworkManager
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.space.SpaceUiEvent
 import boostcamp.and07.mindsync.ui.space.SpaceUiState
 import boostcamp.and07.mindsync.ui.util.SpaceExceptionMessage
@@ -22,7 +24,9 @@ class InputSpaceCodeViewModel
     @Inject
     constructor(
         private val spaceRepository: SpaceRepository,
-    ) : ViewModel() {
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
         private val _event = MutableSharedFlow<SpaceUiEvent>()

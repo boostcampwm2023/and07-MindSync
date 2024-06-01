@@ -1,6 +1,7 @@
 package boostcamp.and07.mindsync.ui.space.generate
 
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.network.NetworkManager
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.space.SpaceRepository
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
@@ -26,7 +27,8 @@ class AddSpaceViewModel
     constructor(
         private val spaceRepository: SpaceRepository,
         logoutEventRepository: LogoutEventRepository,
-    ) : BaseActivityViewModel(logoutEventRepository) {
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _uiState = MutableStateFlow(SpaceUiState())
         val uiState: StateFlow<SpaceUiState> = _uiState
         private val _event = MutableSharedFlow<SpaceUiEvent>()

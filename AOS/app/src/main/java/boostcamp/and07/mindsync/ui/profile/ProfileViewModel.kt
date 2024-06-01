@@ -2,6 +2,7 @@ package boostcamp.and07.mindsync.ui.profile
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.network.NetworkManager
 import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
 import boostcamp.and07.mindsync.data.repository.profile.ProfileRepository
 import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
@@ -25,8 +26,9 @@ class ProfileViewModel
     constructor(
         private val profileRepository: ProfileRepository,
         logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
     ) :
-    BaseActivityViewModel(logoutEventRepository) {
+    BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _uiState = MutableStateFlow(ProfileUiState())
         val uiState: StateFlow<ProfileUiState> = _uiState
         private val _event = MutableSharedFlow<ProfileUiEvent>()

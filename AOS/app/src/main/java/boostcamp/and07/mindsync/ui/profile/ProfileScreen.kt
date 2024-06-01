@@ -45,6 +45,7 @@ import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.ui.components.BackIconButton
 import boostcamp.and07.mindsync.ui.components.EditIconButton
 import boostcamp.and07.mindsync.ui.components.MSButton
+import boostcamp.and07.mindsync.ui.dialog.DisConnectedNetworkDialogScreen
 import boostcamp.and07.mindsync.ui.dialog.NickNameDialog
 import boostcamp.and07.mindsync.ui.theme.Blue1
 import boostcamp.and07.mindsync.ui.theme.Gray4
@@ -68,6 +69,7 @@ fun ProfileScreen(
     var nicknameColor by remember { mutableStateOf(Gray4) }
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val isConnected by profileViewModel.isConnected.collectAsStateWithLifecycle()
     HandleProfileEvents(
         profileViewModel = profileViewModel,
         onBack = onBack,
@@ -92,6 +94,7 @@ fun ProfileScreen(
         updateProfile = updateProfile,
         updateNickname = updateNickname,
         editNickname = editNickname,
+        isConneceted = isConnected,
     )
 }
 
@@ -126,6 +129,7 @@ private fun ProfileContent(
     updateNickname: (CharSequence) -> Unit = { },
     editNickname: (CharSequence) -> Unit = { },
     snackBarHostState: SnackbarHostState = SnackbarHostState(),
+    isConneceted: Boolean = false,
 ) {
     Scaffold(
         topBar = { ProfileTopAppBar(onBack) },
@@ -199,6 +203,9 @@ private fun ProfileContent(
             closeDialog = { showDialog(false) },
             updateNickname = { updateNickname(it) },
         )
+    }
+    if (isConneceted.not()) {
+        DisConnectedNetworkDialogScreen()
     }
 }
 

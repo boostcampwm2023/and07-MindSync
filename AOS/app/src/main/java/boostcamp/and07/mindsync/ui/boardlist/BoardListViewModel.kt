@@ -1,9 +1,11 @@
 package boostcamp.and07.mindsync.ui.boardlist
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import boostcamp.and07.mindsync.data.network.NetworkManager
 import boostcamp.and07.mindsync.data.repository.boardlist.BoardListRepository
+import boostcamp.and07.mindsync.data.repository.login.LogoutEventRepository
+import boostcamp.and07.mindsync.ui.base.BaseActivityViewModel
 import boostcamp.and07.mindsync.ui.util.fileToMultiPart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -23,7 +25,9 @@ class BoardListViewModel
     constructor(
         private val savedStateHandle: SavedStateHandle,
         private val boardListRepository: BoardListRepository,
-    ) : ViewModel() {
+        logoutEventRepository: LogoutEventRepository,
+        networkManager: NetworkManager,
+    ) : BaseActivityViewModel(logoutEventRepository, networkManager) {
         private val _boardUiState = MutableStateFlow(BoardListUiState())
         val boardUiState: StateFlow<BoardListUiState> = _boardUiState
         private val _boardUiEvent = MutableSharedFlow<BoardListUiEvent>()

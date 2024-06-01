@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boostcamp.and07.mindsync.R
 import boostcamp.and07.mindsync.data.model.Board
 import boostcamp.and07.mindsync.ui.dialog.AddBoardDialogScreen
+import boostcamp.and07.mindsync.ui.dialog.DisConnectedNetworkDialogScreen
 import boostcamp.and07.mindsync.ui.theme.MindSyncTheme
 import coil.compose.AsyncImage
 import java.io.File
@@ -58,6 +59,7 @@ fun BoardListScreen(
     updateBoardName: (CharSequence) -> Unit,
 ) {
     val uiState by boardListViewModel.boardUiState.collectAsStateWithLifecycle()
+    val isConnected by boardListViewModel.isConnected.collectAsStateWithLifecycle()
     Scaffold(bottomBar = {
         BoardListBottomBar(
             uiState = uiState,
@@ -85,6 +87,9 @@ fun BoardListScreen(
                     createImage = onAcceptClicked,
                     closeDialog = { showDialog(false) },
                 )
+            }
+            if (isConnected.not()) {
+                DisConnectedNetworkDialogScreen()
             }
         }
     }

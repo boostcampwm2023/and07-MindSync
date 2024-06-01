@@ -7,4 +7,5 @@
     <string name="space_list_onboarding_message">스페이스를 추가해서\n다른사람들과 함께\n마인드맵을 그려보세요!</string>
     <string name="space_list_add_space">스페이스 추가하기</string>
     <string name="app_start">MindSync 시작하기</string>
+    <string name="disconnected_network_message">네트워크 연결이 끊겼습니다.</string>
 </resources>
