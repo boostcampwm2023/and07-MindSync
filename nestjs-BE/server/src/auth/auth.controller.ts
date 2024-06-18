@@ -8,11 +8,11 @@ import {
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { ProfilesService } from 'src/profiles/profiles.service';
+import { ProfilesService } from '../profiles/profiles.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import customEnv from 'src/config/env';
+import customEnv from '../config/env';
 import { RefreshTokensService } from './refresh-tokens.service';
 
 @Controller('auth')

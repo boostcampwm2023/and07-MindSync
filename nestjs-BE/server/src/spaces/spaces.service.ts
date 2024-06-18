@@ -3,13 +3,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { Prisma, Space } from '@prisma/client';
 import { CreateSpaceDto } from './dto/create-space.dto';
-import generateUuid from 'src/utils/uuid';
+import generateUuid from '../utils/uuid';
 
 @Injectable()
 export class SpacesService {
   constructor(protected prisma: PrismaService) {}
 
-  async findSpace(spaceUuid: string): Promise<Space> {
+  async findSpace(spaceUuid: string): Promise<Space | null> {
     return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
   }
 
@@ -30,7 +30,7 @@ export class SpacesService {
   async updateSpace(
     spaceUuid: string,
     updateSpaceDto: UpdateSpaceDto,
-  ): Promise<Space> {
+  ): Promise<Space | null> {
     try {
       return await this.prisma.space.update({
         where: { uuid: spaceUuid },

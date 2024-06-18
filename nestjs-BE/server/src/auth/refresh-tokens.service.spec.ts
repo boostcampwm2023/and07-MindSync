@@ -1,0 +1,119 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { RefreshTokensService } from './refresh-tokens.service';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
+jest.useFakeTimers();
+
+describe('RefreshTokensService', () => {
+  let service: RefreshTokensService;
+  let prisma: DeepMockProxy<PrismaClient>;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [JwtModule],
+      providers: [RefreshTokensService, PrismaService],
+    })
+      .overrideProvider(PrismaService)
+      .useValue(mockDeep<PrismaClient>())
+      .overrideProvider(JwtService)
+      .useValue(mockDeep<JwtService>())
+      .compile();
+
+    service = module.get<RefreshTokensService>(RefreshTokensService);
+    prisma = module.get(PrismaService);
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+  });
+
+  it('getExpiryDate check time diff', () => {
+    const currentDate = new Date();
+    const expiryDate = service.getExpiryDate();
+    const twoWeeksInMilliseconds = 2 * 7 * 24 * 60 * 60 * 1000;
+
+    const timeDiff = expiryDate.getTime() - currentDate.getTime();
+
+    expect(twoWeeksInMilliseconds == timeDiff).toBeTruthy();
+  });
+
+  it('findRefreshToken found token', async () => {
+    const testToken = {
+      id: 0,
+      token: 'Token',
+      expiry_date: service.getExpiryDate(),
+      user_id: 'UserId',
+    };
+    prisma.refreshToken.findUnique.mockResolvedValue(testToken);
+
+    const token = service.findRefreshToken(testToken.token);
+
+    await expect(token).resolves.toEqual(testToken);
+  });
+
+  it('findRefreshToken not found token', async () => {
+    prisma.refreshToken.findUnique.mockResolvedValue(null);
+
+    const token = service.findRefreshToken('Token');
+
+    await expect(token).resolves.toBeNull();
+  });
+
+  it('createRefreshToken created', async () => {
+    const testToken = {
+      id: 0,
+      token: 'Token',
+      expiry_date: service.getExpiryDate(),
+      user_id: 'userId',
+    };
+    prisma.refreshToken.create.mockResolvedValue(testToken);
+
+    const token = service.createRefreshToken('userId');
+
+    await expect(token).resolves.toEqual(testToken);
+  });
+
+  it('createUser user already exists', async () => {
+    prisma.refreshToken.create.mockRejectedValue(
+      new PrismaClientKnownRequestError(
+        'Unique constraint failed on the constraint: `RefreshToken_token_key`',
+        { code: 'P2025', clientVersion: '' },
+      ),
+    );
+
+    const token = service.createRefreshToken('userId');
+
+    await expect(token).rejects.toThrow(PrismaClientKnownRequestError);
+  });
+
+  it('deleteRefreshToken deleted', async () => {
+    const testToken = {
+      id: 0,
+      token: 'Token',
+      expiry_date: service.getExpiryDate(),
+      user_id: 'userId',
+    };
+    prisma.refreshToken.delete.mockResolvedValue(testToken);
+
+    const token = service.deleteRefreshToken(testToken.token);
+
+    await expect(token).resolves.toEqual(testToken);
+  });
+
+  it('deleteRefreshToken not found', async () => {
+    prisma.refreshToken.delete.mockRejectedValue(
+      new PrismaClientKnownRequestError(
+        'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
+        { code: 'P2025', clientVersion: '' },
+      ),
+    );
+
+    const token = service.deleteRefreshToken('Token');
+
+    await expect(token).resolves.toBeNull();
+  });
+});

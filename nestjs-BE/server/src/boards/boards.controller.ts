@@ -23,7 +23,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from 'src/auth/public.decorator';
+import { Public } from '../auth/public.decorator';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
 import {
@@ -35,8 +35,8 @@ import {
   RestoreBoardSuccess,
 } from './swagger/boards.type';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadService } from 'src/upload/upload.service';
-import customEnv from 'src/config/env';
+import { UploadService } from '../upload/upload.service';
+import customEnv from '../config/env';
 
 const BOARD_EXPIRE_DAY = 7;
 
@@ -99,7 +99,7 @@ export class BoardsController {
   @Get('list')
   async findBySpaceId(@Query('spaceId') spaceId: string) {
     const boardList = await this.boardsService.findBySpaceId(spaceId);
-    const responseData = boardList.reduce((list, board) => {
+    const responseData = boardList.reduce<Array<any>>((list, board) => {
       let isDeleted = false;
 
       if (board.deletedAt && board.deletedAt > board.restoredAt) {

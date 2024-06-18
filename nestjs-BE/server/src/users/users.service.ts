@@ -6,12 +6,12 @@ import generateUuid from '../utils/uuid';
 
 @Injectable()
 export class UsersService {
-  constructor(protected prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   async findUserByEmailAndProvider(
     email: string,
     provider: string,
-  ): Promise<User> {
+  ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { email_provider: { email, provider } },
     });

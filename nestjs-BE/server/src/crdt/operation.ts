@@ -1,10 +1,11 @@
 import { Clock } from './clock';
+import { Node } from './node';
 import { Tree } from './tree';
 
 export interface OperationLog<T> {
   operation: Operation<T>;
   oldParentId?: string;
-  oldDescription?: T;
+  oldDescription?: T | null;
 }
 
 export interface OperationInput {
@@ -83,8 +84,8 @@ export class OperationAdd<T> extends Operation<T> {
   ): OperationAdd<T> {
     const input: OperationAddInput<T> = {
       id: serializedOperation.id,
-      parentId: serializedOperation.parentId,
-      description: serializedOperation.description,
+      parentId: serializedOperation.parentId as string,
+      description: serializedOperation.description as T,
       clock: new Clock(
         serializedOperation.clock.id,
         serializedOperation.clock.counter,
@@ -100,14 +101,14 @@ export class OperationDelete<T> extends Operation<T> {
   }
 
   doOperation(tree: Tree<T>): OperationLog<T> {
-    const node = tree.get(this.id);
+    const node = tree.get(this.id) as Node<T>;
     const oldParentId = node.parentId;
     tree.removeNode(this.id);
     return { operation: this, oldParentId: oldParentId };
   }
 
   undoOperation(tree: Tree<T>, log: OperationLog<T>): void {
-    tree.attachNode(log.operation.id, log.oldParentId);
+    tree.attachNode(log.operation.id, log.oldParentId as string);
   }
 
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
@@ -138,7 +139,7 @@ export class OperationMove<T> extends Operation<T> {
   }
 
   doOperation(tree: Tree<T>): OperationLog<T> {
-    const node = tree.get(this.id);
+    const node = tree.get(this.id) as Node<T>;
     const oldParentId = node.parentId;
 
     if (tree.isAncestor(this.parentId, this.id)) {
@@ -152,7 +153,7 @@ export class OperationMove<T> extends Operation<T> {
 
   undoOperation(tree: Tree<T>, log: OperationLog<T>): void {
     tree.removeNode(log.operation.id);
-    tree.attachNode(log.operation.id, log.oldParentId);
+    tree.attachNode(log.operation.id, log.oldParentId as string);
   }
 
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
@@ -165,7 +166,7 @@ export class OperationMove<T> extends Operation<T> {
   ): OperationMove<T> {
     const input: OperationMoveInput = {
       id: serializedOperation.id,
-      parentId: serializedOperation.parentId,
+      parentId: serializedOperation.parentId as string,
       clock: new Clock(
         serializedOperation.clock.id,
         serializedOperation.clock.counter,
@@ -184,14 +185,14 @@ export class OperationUpdate<T> extends Operation<T> {
   }
 
   doOperation(tree: Tree<T>): OperationLog<T> {
-    const node = tree.get(this.id);
+    const node = tree.get(this.id) as Node<T>;
     const oldDescription = node.description;
     tree.updateNode(this.id, this.description);
     return { operation: this, oldDescription: oldDescription };
   }
 
   undoOperation(tree: Tree<T>, log: OperationLog<T>): void {
-    tree.updateNode(log.operation.id, log.oldDescription);
+    tree.updateNode(log.operation.id, log.oldDescription as T);
   }
 
   redoOperation(tree: Tree<T>, log: OperationLog<T>): OperationLog<T> {
@@ -204,7 +205,7 @@ export class OperationUpdate<T> extends Operation<T> {
   ): OperationUpdate<T> {
     const input: OperationUpdateInput<T> = {
       id: serializedOperation.id,
-      description: serializedOperation.description,
+      description: serializedOperation.description as T,
       clock: new Clock(
         serializedOperation.clock.id,
         serializedOperation.clock.counter,

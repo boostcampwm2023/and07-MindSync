@@ -1,4 +1,5 @@
 import { CrdtTree } from './crdt-tree';
+import { Node } from './node';
 
 it('crdt tree 동기화', () => {
   const tree1 = new CrdtTree<string>('1');
@@ -71,6 +72,5 @@ it('crdt tree 순환', () => {
   const op6 = tree.generateOperationMove('b', 'a');
 
   tree.applyOperations([op1, op2, op3, op4, op5, op6]);
-
-  expect(tree.tree.get('b').parentId).toEqual('root');
+  expect((tree.tree.get('b') as Node<string>).parentId).toEqual('root');
 });

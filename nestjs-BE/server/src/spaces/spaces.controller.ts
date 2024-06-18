@@ -16,11 +16,11 @@ import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { UploadService } from 'src/upload/upload.service';
-import { ProfileSpaceService } from 'src/profile-space/profile-space.service';
-import { RequestWithUser } from 'src/utils/interface';
-import customEnv from 'src/config/env';
-import { ProfilesService } from 'src/profiles/profiles.service';
+import { UploadService } from '../upload/upload.service';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
+import { RequestWithUser } from '../utils/interface';
+import customEnv from '../config/env';
+import { ProfilesService } from '../profiles/profiles.service';
 const { APP_ICON_URL } = customEnv;
 
 @Controller('spaces')
