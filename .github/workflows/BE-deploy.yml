@@ -2,7 +2,7 @@ name: BE-deploy
 on:
   push:
     branches:
-      - "BE-develop"
+      - "release"
     paths:
       - "nestjs-BE/**"
 jobs:
