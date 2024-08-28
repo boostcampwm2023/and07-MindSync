@@ -2,7 +2,9 @@ name: BE-deploy
 on:
   push:
     branches:
-      - "BE-develop"
+      - "release"
+    paths:
+      - "nestjs-BE/**"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +31,6 @@ jobs:
           echo "BASE_IMAGE_URL=$BASE_IMAGE_URL" >> ./nestjs-BE/server/.env
           echo "BUCKET_NAME=$BUCKET_NAME" >> ./nestjs-BE/server/.env
           echo "APP_ICON_URL=$APP_ICON_URL" >> ./nestjs-BE/server/.env
-          echo "CSV_FOLDER=$CSV_FOLDER" >> ./nestjs-BE/server/.env
           docker build -t ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync ./nestjs-BE/server
           docker push ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync:latest
         env:
@@ -47,7 +48,6 @@ jobs:
           BASE_IMAGE_URL: ${{ secrets.BASE_IMAGE_URL }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           APP_ICON_URL: ${{ secrets.APP_ICON_URL }}
-          CSV_FOLDER: ${{ secrets.CSV_FOLDER }}
 
   deploy:
     needs: build
@@ -61,12 +61,12 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           script: |
-            echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
-            docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
-            docker stop mindsync_server || true
-            docker rm mindsync_server || true
-            docker run -d \
+            echo ${{ secrets.PACKAGE_ACCESS_TOKEN }} | sudo docker login ghcr.io -u ${{ secrets.PACKAGE_USERNAME }} --password-stdin
+            sudo docker pull ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync
+            sudo docker stop mindsync_server || true
+            sudo docker rm mindsync_server || true
+            sudo docker run -d \
               --name mindsync_server \
               -p ${{ secrets.SERVER_PORT }}:${{ secrets.CONTAINER_PORT }} \
-              -v temporary-volume:${{ secrets.CSV_FOLDER }} \
+              --net mybridge \
               ghcr.io/${{ secrets.PACKAGE_USERNAME }}/mindsync

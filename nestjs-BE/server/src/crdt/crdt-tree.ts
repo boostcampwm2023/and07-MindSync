@@ -94,7 +94,7 @@ export class CrdtTree<T> {
     const lastOperation =
       this.operationLogs[this.operationLogs.length - 1].operation;
     if (operation.clock.compare(lastOperation.clock) === COMPARE.LESS) {
-      const prevLog = this.operationLogs.pop();
+      const prevLog = this.operationLogs.pop() as OperationLog<T>;
       prevLog.operation.undoOperation(this.tree, prevLog);
       this.applyOperation(operation);
       const redoLog = prevLog.operation.redoOperation(this.tree, prevLog);

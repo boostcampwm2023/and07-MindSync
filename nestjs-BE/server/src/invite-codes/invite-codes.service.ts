@@ -1,70 +1,47 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
-import { BaseService } from 'src/base/base.service';
-import { PrismaServiceMySQL } from 'src/prisma/prisma.service';
-import { TemporaryDatabaseService } from 'src/temporary-database/temporary-database.service';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  INVITE_CODE_CACHE_SIZE,
   INVITE_CODE_EXPIRY_HOURS,
   INVITE_CODE_LENGTH,
 } from 'src/config/magic-number';
-import { SpacesService } from 'src/spaces/spaces.service';
-import { ResponseUtils } from 'src/utils/response';
-
-export interface InviteCodeData extends CreateInviteCodeDto {
-  uuid?: string;
-  invite_code: string;
-  expiry_date: Date;
-}
+import { InviteCode, Prisma } from '@prisma/client';
+import generateUuid from 'src/utils/uuid';
 
 @Injectable()
-export class InviteCodesService extends BaseService<InviteCodeData> {
-  constructor(
-    protected prisma: PrismaServiceMySQL,
-    protected temporaryDatabaseService: TemporaryDatabaseService,
-    protected spacesService: SpacesService,
-  ) {
-    super({
-      prisma,
-      temporaryDatabaseService,
-      cacheSize: INVITE_CODE_CACHE_SIZE,
-      className: 'INVITE_CODE_TB',
-      field: 'invite_code',
+export class InviteCodesService {
+  constructor(protected prisma: PrismaService) {}
+
+  async findInviteCode(inviteCode: string): Promise<InviteCode> {
+    return this.prisma.inviteCode.findUnique({
+      where: { invite_code: inviteCode },
     });
   }
 
-  generateKey(data: InviteCodeData): string {
-    return data.invite_code;
+  async createInviteCode(spaceUuid: string): Promise<InviteCode> {
+    return this.prisma.inviteCode.create({
+      data: {
+        uuid: generateUuid(),
+        invite_code: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
+        space_uuid: spaceUuid,
+        expiry_date: this.calculateExpiryDate(),
+      },
+    });
   }
 
-  async createCode(createInviteCodeDto: CreateInviteCodeDto) {
-    const { space_uuid: spaceUuid } = createInviteCodeDto;
-    await this.spacesService.findOne(spaceUuid);
-    const inviteCodeData = await this.generateInviteCode(createInviteCodeDto);
-    super.create(inviteCodeData);
-    const { invite_code } = inviteCodeData;
-    return ResponseUtils.createResponse(HttpStatus.CREATED, { invite_code });
-  }
-
-  async findSpace(inviteCode: string) {
-    const inviteCodeData = await this.getInviteCodeData(inviteCode);
-    this.checkExpiry(inviteCode, inviteCodeData.expiry_date);
-    const spaceResponse = await this.spacesService.findOne(
-      inviteCodeData.space_uuid,
-    );
-    return spaceResponse;
-  }
-
-  private async generateInviteCode(createInviteCodeDto: CreateInviteCodeDto) {
-    const uniqueInviteCode =
-      await this.generateUniqueInviteCode(INVITE_CODE_LENGTH);
-    const expiryDate = this.calculateExpiryDate();
-
-    return {
-      ...createInviteCodeDto,
-      invite_code: uniqueInviteCode,
-      expiry_date: expiryDate,
-    };
+  async deleteInviteCode(inviteCode: string): Promise<InviteCode> {
+    try {
+      return await this.prisma.inviteCode.delete({
+        where: {
+          invite_code: inviteCode,
+        },
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        return null;
+      } else {
+        throw err;
+      }
+    }
   }
 
   private calculateExpiryDate(): Date {
@@ -74,19 +51,9 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
     return expiryDate;
   }
 
-  private async getInviteCodeData(inviteCode: string) {
-    const inviteCodeResponse = await super.findOne(inviteCode);
-    const { data: inviteCodeData } = inviteCodeResponse;
-    return inviteCodeData;
-  }
-
-  private checkExpiry(inviteCode: string, expiryDate: Date) {
-    const currentTimestamp = new Date().getTime();
-    const expiryTimestamp = new Date(expiryDate).getTime();
-    if (expiryTimestamp < currentTimestamp) {
-      super.remove(inviteCode);
-      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
-    }
+  checkExpiry(expiryDate: Date) {
+    const currentTimestamp = new Date();
+    return expiryDate < currentTimestamp ? true : false;
   }
 
   private generateShortInviteCode(length: number) {
@@ -103,11 +70,11 @@ export class InviteCodesService extends BaseService<InviteCodeData> {
 
   private async generateUniqueInviteCode(length: number): Promise<string> {
     let inviteCode: string;
-    let inviteCodeData: InviteCodeData;
+    let inviteCodeData: InviteCode;
 
     do {
       inviteCode = this.generateShortInviteCode(length);
-      inviteCodeData = await super.getDataFromCacheOrDB(inviteCode);
+      inviteCodeData = await this.findInviteCode(inviteCode);
     } while (inviteCodeData !== null);
 
     return inviteCode;

@@ -1,34 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaServiceMySQL } from '../prisma/prisma.service';
-import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
-import { BaseService } from '../base/base.service';
-import { SPACE_CACHE_SIZE } from 'src/config/magic-number';
+import { PrismaService } from '../prisma/prisma.service';
 import { UpdateSpaceDto } from './dto/update-space.dto';
-import { UpdateProfileDto } from 'src/profiles/dto/update-profile.dto';
+import { Prisma, Space } from '@prisma/client';
+import { CreateSpaceDto } from './dto/create-space.dto';
+import generateUuid from '../utils/uuid';
 
 @Injectable()
-export class SpacesService extends BaseService<UpdateSpaceDto> {
-  constructor(
-    protected prisma: PrismaServiceMySQL,
-    protected temporaryDatabaseService: TemporaryDatabaseService,
-  ) {
-    super({
-      prisma,
-      temporaryDatabaseService,
-      cacheSize: SPACE_CACHE_SIZE,
-      className: 'SPACE_TB',
-      field: 'uuid',
+export class SpacesService {
+  constructor(protected prisma: PrismaService) {}
+
+  async findSpace(spaceUuid: string): Promise<Space | null> {
+    return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
+  }
+
+  async findSpaces(spaceUuids: string[]): Promise<Space[]> {
+    return this.prisma.space.findMany({ where: { uuid: { in: spaceUuids } } });
+  }
+
+  async createSpace(createSpaceDto: CreateSpaceDto): Promise<Space> {
+    return this.prisma.space.create({
+      data: {
+        uuid: generateUuid(),
+        name: createSpaceDto.name,
+        icon: createSpaceDto.icon,
+      },
     });
   }
 
-  generateKey(data: UpdateSpaceDto): string {
-    return data.uuid;
+  async updateSpace(
+    spaceUuid: string,
+    updateSpaceDto: UpdateSpaceDto,
+  ): Promise<Space | null> {
+    try {
+      return await this.prisma.space.update({
+        where: { uuid: spaceUuid },
+        data: { ...updateSpaceDto },
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        return null;
+      } else {
+        throw err;
+      }
+    }
   }
 
-  async processData(spaceUuid: string, profileData: UpdateProfileDto) {
-    const spaceResponseData = await super.findOne(spaceUuid);
-    const spaceData = spaceResponseData.data;
-    const data = { profileData, spaceData };
-    return data;
+  async deleteSpace(spaceUuid: string): Promise<Space> {
+    return this.prisma.space.delete({ where: { uuid: spaceUuid } });
   }
 }

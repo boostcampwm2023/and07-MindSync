@@ -23,17 +23,6 @@ export class CreateBoardSuccess {
   data: CreatedBoard;
 }
 
-export class CreateBoardFailure {
-  @ApiProperty({ example: HttpStatus.CONFLICT, description: '응답 코드' })
-  statusCode: number;
-
-  @ApiProperty({ example: 'Board already exist.', description: '응답 메세지' })
-  message: string;
-
-  @ApiProperty({ example: 'Conflict', description: '응답 메세지' })
-  error: string;
-}
-
 export class BoardInSpace {
   @ApiProperty({ description: '보드 id' })
   boardId: string;

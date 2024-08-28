@@ -1,26 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaServiceMySQL } from '../prisma/prisma.service';
-import { TemporaryDatabaseService } from '../temporary-database/temporary-database.service';
-import { BaseService } from '../base/base.service';
-import { PROFILE_CACHE_SIZE } from 'src/config/magic-number';
+import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CreateProfileDto } from './dto/create-profile.dto';
+import { Profile, Prisma } from '@prisma/client';
+import generateUuid from '../utils/uuid';
 
 @Injectable()
-export class ProfilesService extends BaseService<UpdateProfileDto> {
-  constructor(
-    protected prisma: PrismaServiceMySQL,
-    protected temporaryDatabaseService: TemporaryDatabaseService,
-  ) {
-    super({
-      prisma,
-      temporaryDatabaseService,
-      cacheSize: PROFILE_CACHE_SIZE,
-      className: 'PROFILE_TB',
-      field: 'user_id',
+export class ProfilesService {
+  constructor(private prisma: PrismaService) {}
+
+  async findProfile(userUuid: string): Promise<Profile | null> {
+    return this.prisma.profile.findUnique({ where: { user_id: userUuid } });
+  }
+
+  async findProfiles(profileUuids: string[]): Promise<Profile[]> {
+    return this.prisma.profile.findMany({
+      where: { uuid: { in: profileUuids } },
     });
   }
 
-  generateKey(data: UpdateProfileDto): string {
-    return data.user_id;
+  async createProfile(data: CreateProfileDto): Promise<Profile> {
+    return this.prisma.profile.create({
+      data: {
+        uuid: generateUuid(),
+        user_id: data.user_id,
+        image: data.image,
+        nickname: data.nickname,
+      },
+    });
+  }
+
+  async updateProfile(
+    userUuid: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<Profile | null> {
+    try {
+      return await this.prisma.profile.update({
+        where: { user_id: userUuid },
+        data: { ...updateProfileDto },
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        return null;
+      } else {
+        throw err;
+      }
+    }
   }
 }

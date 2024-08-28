@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import customEnv from 'src/config/env';
+import customEnv from '../config/env';
 import { S3, Endpoint } from 'aws-sdk';
 import uuid from '../utils/uuid';
 const {

@@ -15,7 +15,6 @@ import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import {
   ApiBody,
-  ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -24,12 +23,11 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from 'src/auth/public.decorator';
+import { Public } from '../auth/public.decorator';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
 import {
   BoardListSuccess,
-  CreateBoardFailure,
   CreateBoardSuccess,
   DeleteBoardFailure,
   DeleteBoardSuccess,
@@ -37,8 +35,8 @@ import {
   RestoreBoardSuccess,
 } from './swagger/boards.type';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadService } from 'src/upload/upload.service';
-import customEnv from 'src/config/env';
+import { UploadService } from '../upload/upload.service';
+import customEnv from '../config/env';
 
 const BOARD_EXPIRE_DAY = 7;
 
@@ -59,10 +57,6 @@ export class BoardsController {
     type: CreateBoardSuccess,
     description: '보드 생성 완료',
   })
-  @ApiConflictResponse({
-    type: CreateBoardFailure,
-    description: '보드가 이미 존재함',
-  })
   @Public()
   @Post('create')
   @UseInterceptors(FileInterceptor('image'))
@@ -72,10 +66,6 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    await this.boardsService.findByNameAndSpaceId(
-      createBoardDto.boardName,
-      createBoardDto.spaceId,
-    );
     const imageUrl = image
       ? await this.uploadService.uploadFile(image)
       : customEnv.APP_ICON_URL;
@@ -109,7 +99,7 @@ export class BoardsController {
   @Get('list')
   async findBySpaceId(@Query('spaceId') spaceId: string) {
     const boardList = await this.boardsService.findBySpaceId(spaceId);
-    const responseData = boardList.reduce((list, board) => {
+    const responseData = boardList.reduce<Array<any>>((list, board) => {
       let isDeleted = false;
 
       if (board.deletedAt && board.deletedAt > board.restoredAt) {
