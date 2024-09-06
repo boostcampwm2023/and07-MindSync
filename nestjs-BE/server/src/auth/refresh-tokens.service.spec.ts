@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RefreshTokensService } from './refresh-tokens.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -10,21 +8,31 @@ jest.useFakeTimers();
 
 describe('RefreshTokensService', () => {
   let service: RefreshTokensService;
-  let prisma: DeepMockProxy<PrismaClient>;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [JwtModule],
-      providers: [RefreshTokensService, PrismaService],
+      providers: [
+        RefreshTokensService,
+        {
+          provide: PrismaService,
+          useValue: {
+            refreshToken: {
+              findUnique: jest.fn(),
+              create: jest.fn(),
+              delete: jest.fn(),
+            },
+          },
+        },
+      ],
     })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
       .overrideProvider(JwtService)
-      .useValue(mockDeep<JwtService>())
+      .useValue({ sign: jest.fn() })
       .compile();
 
     service = module.get<RefreshTokensService>(RefreshTokensService);
-    prisma = module.get(PrismaService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -48,7 +56,7 @@ describe('RefreshTokensService', () => {
       expiry_date: service.getExpiryDate(),
       user_id: 'UserId',
     };
-    prisma.refreshToken.findUnique.mockResolvedValue(testToken);
+    jest.spyOn(prisma.refreshToken, 'findUnique').mockResolvedValue(testToken);
 
     const token = service.findRefreshToken(testToken.token);
 
@@ -56,7 +64,7 @@ describe('RefreshTokensService', () => {
   });
 
   it('findRefreshToken not found token', async () => {
-    prisma.refreshToken.findUnique.mockResolvedValue(null);
+    jest.spyOn(prisma.refreshToken, 'findUnique').mockResolvedValue(null);
 
     const token = service.findRefreshToken('Token');
 
@@ -70,7 +78,7 @@ describe('RefreshTokensService', () => {
       expiry_date: service.getExpiryDate(),
       user_id: 'userId',
     };
-    prisma.refreshToken.create.mockResolvedValue(testToken);
+    jest.spyOn(prisma.refreshToken, 'create').mockResolvedValue(testToken);
 
     const token = service.createRefreshToken('userId');
 
@@ -78,12 +86,14 @@ describe('RefreshTokensService', () => {
   });
 
   it('createUser user already exists', async () => {
-    prisma.refreshToken.create.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'Unique constraint failed on the constraint: `RefreshToken_token_key`',
-        { code: 'P2025', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.refreshToken, 'create')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'Unique constraint failed on the constraint: `RefreshToken_token_key`',
+          { code: 'P2025', clientVersion: '' },
+        ),
+      );
 
     const token = service.createRefreshToken('userId');
 
@@ -97,7 +107,7 @@ describe('RefreshTokensService', () => {
       expiry_date: service.getExpiryDate(),
       user_id: 'userId',
     };
-    prisma.refreshToken.delete.mockResolvedValue(testToken);
+    jest.spyOn(prisma.refreshToken, 'delete').mockResolvedValue(testToken);
 
     const token = service.deleteRefreshToken(testToken.token);
 
@@ -105,12 +115,14 @@ describe('RefreshTokensService', () => {
   });
 
   it('deleteRefreshToken not found', async () => {
-    prisma.refreshToken.delete.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
-        { code: 'P2025', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.refreshToken, 'delete')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'An operation failed because it depends on one or more records that were required but not found. Record to delete not found.',
+          { code: 'P2025', clientVersion: '' },
+        ),
+      );
 
     const token = service.deleteRefreshToken('Token');
 

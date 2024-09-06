@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient, RefreshToken } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { RefreshToken } from '@prisma/client';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { RefreshTokensService } from './refresh-tokens.service';
 
@@ -10,27 +8,31 @@ const fetchSpy = jest.spyOn(global, 'fetch');
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: DeepMockProxy<PrismaClient>;
-  let jwtService: DeepMockProxy<JwtService>;
-  let refreshTokensService: DeepMockProxy<RefreshTokensService>;
+  let jwtService: JwtService;
+  let refreshTokensService: RefreshTokensService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [JwtModule],
-      providers: [AuthService, PrismaService, RefreshTokensService],
+      providers: [
+        AuthService,
+        {
+          provide: RefreshTokensService,
+          useValue: {
+            createRefreshToken: jest.fn(),
+            findRefreshToken: jest.fn(),
+          },
+        },
+      ],
     })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
       .overrideProvider(JwtService)
-      .useValue(mockDeep<JwtService>())
-      .overrideProvider(RefreshTokensService)
-      .useValue(mockDeep<RefreshToken>())
+      .useValue({ signAsync: jest.fn(), verify: jest.fn() })
       .compile();
 
     service = module.get<AuthService>(AuthService);
-    prisma = module.get(PrismaService);
-    jwtService = module.get(JwtService);
-    refreshTokensService = module.get(RefreshTokensService);
+    jwtService = module.get<JwtService>(JwtService);
+    refreshTokensService =
+      module.get<RefreshTokensService>(RefreshTokensService);
   });
 
   afterEach(() => {
@@ -38,8 +40,8 @@ describe('AuthService', () => {
   });
 
   it('login success', async () => {
-    jwtService.signAsync.mockResolvedValue('access token');
-    refreshTokensService.createRefreshToken.mockResolvedValue({
+    jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
+    jest.spyOn(refreshTokensService, 'createRefreshToken').mockResolvedValue({
       token: 'refresh token',
     } as unknown as RefreshToken);
 
@@ -52,9 +54,9 @@ describe('AuthService', () => {
   });
 
   it('renewAccessToken success', async () => {
-    jwtService.verify.mockReturnValue({});
-    jwtService.signAsync.mockResolvedValue('access token');
-    refreshTokensService.findRefreshToken.mockResolvedValue({
+    jest.spyOn(jwtService, 'verify').mockReturnValue({});
+    jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
+    jest.spyOn(refreshTokensService, 'findRefreshToken').mockResolvedValue({
       user_id: 'user uuid',
     } as RefreshToken);
 
@@ -64,7 +66,7 @@ describe('AuthService', () => {
   });
 
   it('renewAccessToken fail', async () => {
-    jwtService.verify.mockImplementation(() => {
+    jest.spyOn(jwtService, 'verify').mockImplementation(() => {
       throw new Error();
     });
 

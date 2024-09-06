@@ -1,30 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { UploadService } from '../upload/upload.service';
 import { RequestWithUser } from '../utils/interface';
 import { NotFoundException } from '@nestjs/common';
 
 describe('ProfilesController', () => {
   let controller: ProfilesController;
-  let profilesService: DeepMockProxy<ProfilesService>;
-  let uploadService: DeepMockProxy<UploadService>;
+  let profilesService: ProfilesService;
+  let uploadService: UploadService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProfilesController],
-      providers: [ProfilesService, UploadService],
-    })
-      .overrideProvider(ProfilesService)
-      .useValue(mockDeep<ProfilesService>())
-      .overrideProvider(UploadService)
-      .useValue(mockDeep<UploadService>())
-      .compile();
+      providers: [
+        {
+          provide: ProfilesService,
+          useValue: { findProfile: jest.fn(), updateProfile: jest.fn() },
+        },
+        { provide: UploadService, useValue: { uploadFile: jest.fn() } },
+      ],
+    }).compile();
 
     controller = module.get<ProfilesController>(ProfilesController);
-    profilesService = module.get(ProfilesService);
-    uploadService = module.get(UploadService);
+    profilesService = module.get<ProfilesService>(ProfilesService);
+    uploadService = module.get<UploadService>(UploadService);
   });
 
   it('findProfile found profile', async () => {
@@ -35,7 +35,7 @@ describe('ProfilesController', () => {
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
-    profilesService.findProfile.mockResolvedValue(testProfile);
+    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(testProfile);
 
     const response = controller.findProfile(requestMock);
 
@@ -51,7 +51,7 @@ describe('ProfilesController', () => {
 
   it('findProfile not found profile', async () => {
     const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
-    profilesService.findProfile.mockResolvedValue(null);
+    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(null);
 
     const response = controller.findProfile(requestMock);
 
@@ -71,8 +71,8 @@ describe('ProfilesController', () => {
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
-    uploadService.uploadFile.mockResolvedValue(testImageUrl);
-    profilesService.updateProfile.mockResolvedValue(testProfile);
+    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
+    jest.spyOn(profilesService, 'updateProfile').mockResolvedValue(testProfile);
 
     const response = controller.update(imageMock, requestMock, bodyMock);
 
@@ -96,8 +96,8 @@ describe('ProfilesController', () => {
       nickname: 'test nickname',
     };
     const testImageUrl = 'www.test.com/image';
-    uploadService.uploadFile.mockResolvedValue(testImageUrl);
-    profilesService.updateProfile.mockResolvedValue(null);
+    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
+    jest.spyOn(profilesService, 'updateProfile').mockResolvedValue(null);
 
     const response = controller.update(imageMock, requestMock, bodyMock);
 

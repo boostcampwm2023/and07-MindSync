@@ -3,12 +3,11 @@ import { BoardsService } from './boards.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { Board, BoardDocument } from './schemas/board.schema';
 import { Model, Query } from 'mongoose';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { CreateBoardDto } from './dto/create-board.dto';
 
 describe('BoardsService', () => {
   let service: BoardsService;
-  let model: DeepMockProxy<Model<Board>>;
+  let model: Model<Board>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,7 +15,7 @@ describe('BoardsService', () => {
         BoardsService,
         {
           provide: getModelToken(Board.name),
-          useValue: mockDeep<Model<Board>>(),
+          useValue: { create: jest.fn(), find: jest.fn() },
         },
       ],
     }).compile();
@@ -31,9 +30,9 @@ describe('BoardsService', () => {
       spaceId: 'space uuid',
     } as CreateBoardDto;
     const imageMock = 'www.test.com/image';
-    model.create.mockResolvedValue(
-      'created board' as unknown as BoardDocument[],
-    );
+    jest
+      .spyOn(model, 'create')
+      .mockResolvedValue('created board' as unknown as BoardDocument[]);
 
     const board = service.create(data, imageMock);
 
@@ -42,7 +41,7 @@ describe('BoardsService', () => {
   });
 
   it('findBySpaceId', async () => {
-    model.find.mockReturnValue({
+    jest.spyOn(model, 'find').mockReturnValue({
       exec: async () => {
         return 'board list' as unknown as Board[];
       },

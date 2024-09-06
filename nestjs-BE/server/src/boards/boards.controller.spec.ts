@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
 import { UploadService } from '../upload/upload.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
@@ -11,23 +10,33 @@ import { UpdateWriteOpResult } from 'mongoose';
 
 describe('BoardsController', () => {
   let controller: BoardsController;
-  let boardsService: DeepMockProxy<BoardsService>;
-  let uploadService: DeepMockProxy<UploadService>;
+  let boardsService: BoardsService;
+  let uploadService: UploadService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BoardsController],
-      providers: [BoardsService, UploadService],
-    })
-      .overrideProvider(BoardsService)
-      .useValue(mockDeep<BoardsService>())
-      .overrideProvider(UploadService)
-      .useValue(mockDeep<UploadService>())
-      .compile();
+      providers: [
+        {
+          provide: BoardsService,
+          useValue: {
+            create: jest.fn(),
+            deleteBoard: jest.fn(),
+            restoreBoard: jest.fn(),
+          },
+        },
+        {
+          provide: UploadService,
+          useValue: {
+            uploadFile: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
 
     controller = module.get<BoardsController>(BoardsController);
-    boardsService = module.get(BoardsService);
-    uploadService = module.get(UploadService);
+    boardsService = module.get<BoardsService>(BoardsService);
+    uploadService = module.get<UploadService>(UploadService);
   });
 
   it('createBoard created board', async () => {
@@ -36,8 +45,8 @@ describe('BoardsController', () => {
       spaceId: 'space uuid',
     } as CreateBoardDto;
     const imageMock = { filename: 'image' } as Express.Multer.File;
-    uploadService.uploadFile.mockResolvedValue('image url');
-    boardsService.create.mockResolvedValue({
+    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue('image url');
+    jest.spyOn(boardsService, 'create').mockResolvedValue({
       uuid: 'board uuid',
       createdAt: 'created date' as unknown as Date,
     } as Board);
@@ -61,7 +70,7 @@ describe('BoardsController', () => {
       boardName: 'board name',
       spaceId: 'space uuid',
     } as CreateBoardDto;
-    boardsService.create.mockResolvedValue({
+    jest.spyOn(boardsService, 'create').mockResolvedValue({
       uuid: 'board uuid',
       createdAt: 'created date' as unknown as Date,
     } as Board);
@@ -85,7 +94,7 @@ describe('BoardsController', () => {
 
   it('deleteBoard success', async () => {
     const bodyMock = { boardId: 'board uuid' };
-    boardsService.deleteBoard.mockResolvedValue({
+    jest.spyOn(boardsService, 'deleteBoard').mockResolvedValue({
       matchedCount: 1,
     } as UpdateWriteOpResult);
 
@@ -99,7 +108,7 @@ describe('BoardsController', () => {
 
   it('deleteBoard fail', async () => {
     const bodyMock = { boardId: 'board uuid' };
-    boardsService.deleteBoard.mockResolvedValue({
+    jest.spyOn(boardsService, 'deleteBoard').mockResolvedValue({
       matchedCount: 0,
     } as UpdateWriteOpResult);
 
@@ -110,7 +119,7 @@ describe('BoardsController', () => {
 
   it('restoreBoard success', async () => {
     const bodyMock = { boardId: 'board uuid' };
-    boardsService.restoreBoard.mockResolvedValue({
+    jest.spyOn(boardsService, 'restoreBoard').mockResolvedValue({
       matchedCount: 1,
     } as UpdateWriteOpResult);
 
@@ -124,7 +133,7 @@ describe('BoardsController', () => {
 
   it('restoreBoard fail', async () => {
     const bodyMock = { boardId: 'board uuid' };
-    boardsService.restoreBoard.mockResolvedValue({
+    jest.spyOn(boardsService, 'restoreBoard').mockResolvedValue({
       matchedCount: 0,
     } as UpdateWriteOpResult);
 

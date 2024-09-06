@@ -1,25 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesService } from './profiles.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import generateUuid from '../utils/uuid';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 describe('ProfilesService', () => {
   let profilesService: ProfilesService;
-  let prisma: DeepMockProxy<PrismaClient>;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProfilesService, PrismaService],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
-      .compile();
+      providers: [
+        ProfilesService,
+        {
+          provide: PrismaService,
+          useValue: {
+            profile: {
+              findUnique: jest.fn(),
+              findMany: jest.fn(),
+              create: jest.fn(),
+              update: jest.fn(),
+            },
+          },
+        },
+      ],
+    }).compile();
 
     profilesService = module.get<ProfilesService>(ProfilesService);
-    prisma = module.get(PrismaService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('findProfile found profile', async () => {
@@ -30,7 +38,7 @@ describe('ProfilesService', () => {
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
-    prisma.profile.findUnique.mockResolvedValue(testProfile);
+    jest.spyOn(prisma.profile, 'findUnique').mockResolvedValue(testProfile);
 
     const user = profilesService.findProfile(userId);
 
@@ -39,7 +47,7 @@ describe('ProfilesService', () => {
 
   it('findProfile not found profile', async () => {
     const userId = generateUuid();
-    prisma.profile.findUnique.mockResolvedValue(null);
+    jest.spyOn(prisma.profile, 'findUnique').mockResolvedValue(null);
 
     const user = profilesService.findProfile(userId);
 
@@ -59,7 +67,7 @@ describe('ProfilesService', () => {
         nickname: `nickname${index}`,
       };
     });
-    prisma.profile.findMany.mockResolvedValue(testProfiles);
+    jest.spyOn(prisma.profile, 'findMany').mockResolvedValue(testProfiles);
 
     const profiles = profilesService.findProfiles(profileUuids);
 
@@ -68,7 +76,7 @@ describe('ProfilesService', () => {
 
   it('findProfiles not found profiles', async () => {
     const profileUuids = [];
-    prisma.profile.findMany.mockResolvedValue([]);
+    jest.spyOn(prisma.profile, 'findMany').mockResolvedValue([]);
 
     const profiles = profilesService.findProfiles(profileUuids);
 
@@ -82,7 +90,7 @@ describe('ProfilesService', () => {
       nickname: 'test nickname',
     };
     const testProfile = { uuid: generateUuid(), ...data };
-    prisma.profile.create.mockResolvedValue(testProfile);
+    jest.spyOn(prisma.profile, 'create').mockResolvedValue(testProfile);
 
     const profile = profilesService.createProfile(data);
 
@@ -95,12 +103,14 @@ describe('ProfilesService', () => {
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
-    prisma.profile.create.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'Foreign key constraint failed on the field: `user_id`',
-        { code: 'P2003', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.profile, 'create')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'Foreign key constraint failed on the field: `user_id`',
+          { code: 'P2003', clientVersion: '' },
+        ),
+      );
 
     const profile = profilesService.createProfile(data);
 
@@ -114,7 +124,7 @@ describe('ProfilesService', () => {
     };
     const uuid = generateUuid();
     const testProfile = { uuid: generateUuid(), user_id: uuid, ...data };
-    prisma.profile.update.mockResolvedValue(testProfile);
+    jest.spyOn(prisma.profile, 'update').mockResolvedValue(testProfile);
 
     const profile = profilesService.updateProfile(uuid, data);
 
@@ -126,12 +136,14 @@ describe('ProfilesService', () => {
       image: 'www.test.com',
       nickname: 'test nickname',
     };
-    prisma.profile.update.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
-        { code: 'P2025', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.profile, 'update')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
+          { code: 'P2025', clientVersion: '' },
+        ),
+      );
 
     const profile = profilesService.updateProfile(generateUuid(), data);
 

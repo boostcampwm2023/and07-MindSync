@@ -1,29 +1,39 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SpacesService } from './spaces.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient, Space } from '@prisma/client';
+import { Space } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
-  let prisma: DeepMockProxy<PrismaClient>;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SpacesService, PrismaService],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
-      .compile();
+      providers: [
+        SpacesService,
+        {
+          provide: PrismaService,
+          useValue: {
+            space: {
+              findUnique: jest.fn(),
+              findMany: jest.fn(),
+              create: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
+            },
+          },
+        },
+      ],
+    }).compile();
 
     spacesService = module.get<SpacesService>(SpacesService);
-    prisma = module.get(PrismaService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('findSpace found space', async () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
-    prisma.space.findUnique.mockResolvedValue(spaceMock);
+    jest.spyOn(prisma.space, 'findUnique').mockResolvedValue(spaceMock);
 
     const space = spacesService.findSpace('space uuid');
 
@@ -31,7 +41,7 @@ describe('SpacesService', () => {
   });
 
   it('findSpace not found space', async () => {
-    prisma.space.findUnique.mockResolvedValue(null);
+    jest.spyOn(prisma.space, 'findUnique').mockResolvedValue(null);
 
     const space = spacesService.findSpace('bad space uuid');
 
@@ -43,7 +53,7 @@ describe('SpacesService', () => {
       { uuid: 'space uuid 1' },
       { uuid: 'space uuid 2' },
     ] as Space[];
-    prisma.space.findMany.mockResolvedValue(spaceUuidsMock);
+    jest.spyOn(prisma.space, 'findMany').mockResolvedValue(spaceUuidsMock);
 
     const spaces = spacesService.findSpaces(['space uuid 1', 'space uuid 2']);
 
@@ -51,7 +61,7 @@ describe('SpacesService', () => {
   });
 
   it('findSpaces not found spaces', async () => {
-    prisma.space.findMany.mockResolvedValue([]);
+    jest.spyOn(prisma.space, 'findMany').mockResolvedValue([]);
 
     const spaces = spacesService.findSpaces(['space uuid 1', 'space uuid 2']);
 
@@ -61,7 +71,7 @@ describe('SpacesService', () => {
   it('createSpace created space', async () => {
     const data = { name: 'new space name', icon: 'new icon' };
     const spaceMock = { uuid: 'space uuid', ...data };
-    prisma.space.create.mockResolvedValue(spaceMock);
+    jest.spyOn(prisma.space, 'create').mockResolvedValue(spaceMock);
 
     const space = spacesService.createSpace(data);
 
@@ -71,7 +81,7 @@ describe('SpacesService', () => {
   it('updateSpace updated space', async () => {
     const data = { name: 'new space name', icon: 'new space icon' };
     const spaceMock = { uuid: 'space uuid', ...data };
-    prisma.space.update.mockResolvedValue(spaceMock);
+    jest.spyOn(prisma.space, 'update').mockResolvedValue(spaceMock);
 
     const space = spacesService.updateSpace('space uuid', data);
 
@@ -80,12 +90,14 @@ describe('SpacesService', () => {
 
   it('updateSpace fail', async () => {
     const data = { name: 'new space name', icon: 'new space icon' };
-    prisma.space.update.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
-        { code: 'P2025', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.space, 'update')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
+          { code: 'P2025', clientVersion: '' },
+        ),
+      );
 
     const space = spacesService.updateSpace('space uuid', data);
 
@@ -94,7 +106,7 @@ describe('SpacesService', () => {
 
   it('deleteSpace deleted spaced', async () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
-    prisma.space.delete.mockResolvedValue(spaceMock);
+    jest.spyOn(prisma.space, 'delete').mockResolvedValue(spaceMock);
 
     const space = spacesService.deleteSpace('space uuid');
 
@@ -102,12 +114,14 @@ describe('SpacesService', () => {
   });
 
   it('deleteSpace fail', async () => {
-    prisma.space.delete.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'An operation failed because it depends on one or more records that were required but not found. Record to delete not found.',
-        { code: 'P2025', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.space, 'delete')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'An operation failed because it depends on one or more records that were required but not found. Record to delete not found.',
+          { code: 'P2025', clientVersion: '' },
+        ),
+      );
 
     const space = spacesService.deleteSpace('space uuid');
 

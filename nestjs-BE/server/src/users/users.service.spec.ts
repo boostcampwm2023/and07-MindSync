@@ -1,25 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
 import generateUuid from '../utils/uuid';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 describe('UsersService', () => {
   let usersService: UsersService;
-  let prisma: DeepMockProxy<PrismaClient>;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService, PrismaService],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
-      .compile();
+      providers: [
+        UsersService,
+        {
+          provide: PrismaService,
+          useValue: {
+            user: {
+              findUnique: jest.fn(),
+              create: jest.fn(),
+            },
+          },
+        },
+      ],
+    }).compile();
 
     usersService = module.get<UsersService>(UsersService);
-    prisma = module.get(PrismaService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('findUserByEmailAndProvider found user', async () => {
@@ -28,7 +34,7 @@ describe('UsersService', () => {
       email: 'test@test.com',
       provider: 'kakao',
     };
-    prisma.user.findUnique.mockResolvedValue(testUser);
+    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(testUser);
 
     const user = usersService.findUserByEmailAndProvider(
       'test@test.com',
@@ -39,7 +45,7 @@ describe('UsersService', () => {
   });
 
   it('findUserByEmailAndProvider not found user', async () => {
-    prisma.user.findUnique.mockResolvedValue(null);
+    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
 
     const user = usersService.findUserByEmailAndProvider(
       'test@test.com',
@@ -55,7 +61,7 @@ describe('UsersService', () => {
       email: 'test@test.com',
       provider: 'kakao',
     };
-    prisma.user.create.mockResolvedValue(testUser);
+    jest.spyOn(prisma.user, 'create').mockResolvedValue(testUser);
 
     const user = usersService.createUser({
       email: 'test@test.com',
@@ -66,12 +72,14 @@ describe('UsersService', () => {
   });
 
   it('createUser user already exists', async () => {
-    prisma.user.create.mockRejectedValue(
-      new PrismaClientKnownRequestError(
-        'Unique constraint failed on the constraint: `User_email_provider_key`',
-        { code: 'P2025', clientVersion: '' },
-      ),
-    );
+    jest
+      .spyOn(prisma.user, 'create')
+      .mockRejectedValue(
+        new PrismaClientKnownRequestError(
+          'Unique constraint failed on the constraint: `User_email_provider_key`',
+          { code: 'P2025', clientVersion: '' },
+        ),
+      );
 
     const user = usersService.createUser({
       email: 'test@test.com',

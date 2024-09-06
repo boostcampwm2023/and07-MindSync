@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { PrismaService } from '../prisma/prisma.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient, RefreshToken, User } from '@prisma/client';
+import { RefreshToken, User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { RefreshTokensService } from './refresh-tokens.service';
@@ -11,37 +9,47 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let refreshTokensService: DeepMockProxy<RefreshTokensService>;
-  let usersService: DeepMockProxy<UsersService>;
-  let authService: DeepMockProxy<AuthService>;
+  let refreshTokensService: RefreshTokensService;
+  let usersService: UsersService;
+  let authService: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        AuthService,
-        PrismaService,
-        UsersService,
-        ProfilesService,
-        RefreshTokensService,
+        {
+          provide: AuthService,
+          useValue: {
+            getKakaoAccount: jest.fn(),
+            login: jest.fn(),
+            renewAccessToken: jest.fn(),
+          },
+        },
+        {
+          provide: UsersService,
+          useValue: {
+            findUserByEmailAndProvider: jest.fn(),
+            createUser: jest.fn(),
+          },
+        },
+        {
+          provide: ProfilesService,
+          useValue: {
+            createProfile: jest.fn(),
+          },
+        },
+        {
+          provide: RefreshTokensService,
+          useValue: { deleteRefreshToken: jest.fn() },
+        },
       ],
-    })
-      .overrideProvider(AuthService)
-      .useValue(mockDeep<AuthService>())
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
-      .overrideProvider(UsersService)
-      .useValue(mockDeep<UsersService>())
-      .overrideProvider(ProfilesService)
-      .useValue(mockDeep<ProfilesService>())
-      .overrideProvider(RefreshTokensService)
-      .useValue(mockDeep<RefreshTokensService>())
-      .compile();
+    }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    refreshTokensService = module.get(RefreshTokensService);
-    authService = module.get(AuthService);
-    usersService = module.get(UsersService);
+    refreshTokensService =
+      module.get<RefreshTokensService>(RefreshTokensService);
+    authService = module.get<AuthService>(AuthService);
+    usersService = module.get<UsersService>(UsersService);
   });
 
   it('kakaoLogin user have been logged in', async () => {
@@ -51,11 +59,13 @@ describe('AuthController', () => {
       refresh_token: 'refresh token',
       access_token: 'access token',
     };
-    authService.getKakaoAccount.mockResolvedValue(kakaoUserAccountMock);
-    usersService.findUserByEmailAndProvider.mockResolvedValue({
+    jest
+      .spyOn(authService, 'getKakaoAccount')
+      .mockResolvedValue(kakaoUserAccountMock);
+    jest.spyOn(usersService, 'findUserByEmailAndProvider').mockResolvedValue({
       uuid: 'user uuid',
     } as User);
-    authService.login.mockResolvedValue(tokenMock);
+    jest.spyOn(authService, 'login').mockResolvedValue(tokenMock);
 
     const response = controller.kakaoLogin(requestMock);
 
@@ -74,9 +84,13 @@ describe('AuthController', () => {
       refresh_token: 'refresh token',
       access_token: 'access token',
     };
-    authService.getKakaoAccount.mockResolvedValue(kakaoUserAccountMock);
-    usersService.createUser.mockResolvedValue({ uuid: 'user uuid' } as User);
-    authService.login.mockResolvedValue(tokenMock);
+    jest
+      .spyOn(authService, 'getKakaoAccount')
+      .mockResolvedValue(kakaoUserAccountMock);
+    jest
+      .spyOn(usersService, 'createUser')
+      .mockResolvedValue({ uuid: 'user uuid' } as User);
+    jest.spyOn(authService, 'login').mockResolvedValue(tokenMock);
 
     const response = controller.kakaoLogin(requestMock);
 
@@ -90,7 +104,7 @@ describe('AuthController', () => {
 
   it('kakaoLogin kakao login fail', async () => {
     const requestMock = { kakaoUserId: 0 };
-    authService.getKakaoAccount.mockResolvedValue(null);
+    jest.spyOn(authService, 'getKakaoAccount').mockResolvedValue(null);
 
     const response = controller.kakaoLogin(requestMock);
 
@@ -99,7 +113,9 @@ describe('AuthController', () => {
 
   it('renewAccessToken respond new access token', async () => {
     const requestMock = { refresh_token: 'refresh token' };
-    authService.renewAccessToken.mockResolvedValue('new access token');
+    jest
+      .spyOn(authService, 'renewAccessToken')
+      .mockResolvedValue('new access token');
 
     const response = controller.renewAccessToken(requestMock);
 
@@ -112,7 +128,7 @@ describe('AuthController', () => {
 
   it('renewAccessToken received expired token', async () => {
     const requestMock = { refresh_token: 'refresh token' };
-    authService.renewAccessToken.mockRejectedValue(new Error());
+    jest.spyOn(authService, 'renewAccessToken').mockRejectedValue(new Error());
 
     const response = controller.renewAccessToken(requestMock);
 
@@ -122,7 +138,9 @@ describe('AuthController', () => {
   it('logout received token deleted', async () => {
     const requestMock = { refresh_token: 'refresh token' };
     const token = {} as RefreshToken;
-    refreshTokensService.deleteRefreshToken.mockResolvedValue(token);
+    jest
+      .spyOn(refreshTokensService, 'deleteRefreshToken')
+      .mockResolvedValue(token);
 
     const response = controller.logout(requestMock);
 
@@ -134,7 +152,9 @@ describe('AuthController', () => {
 
   it('logout received token not found', async () => {
     const requestMock = { refresh_token: 'bad refresh token' };
-    refreshTokensService.deleteRefreshToken.mockResolvedValue(null);
+    jest
+      .spyOn(refreshTokensService, 'deleteRefreshToken')
+      .mockResolvedValue(null);
 
     const response = controller.logout(requestMock);
 

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
 import { ProfilesService } from '../profiles/profiles.service';
@@ -15,34 +14,32 @@ const { APP_ICON_URL } = customEnv;
 
 describe('SpacesController', () => {
   let controller: SpacesController;
-  let spacesService: DeepMockProxy<SpacesService>;
-  let uploadService: DeepMockProxy<UploadService>;
-  let profilesService: DeepMockProxy<ProfilesService>;
+  let spacesService: SpacesService;
+  let uploadService: UploadService;
+  let profilesService: ProfilesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SpacesController],
       providers: [
-        SpacesService,
-        UploadService,
-        ProfileSpaceService,
-        ProfilesService,
+        {
+          provide: SpacesService,
+          useValue: {
+            createSpace: jest.fn(),
+            findSpace: jest.fn(),
+            updateSpace: jest.fn(),
+          },
+        },
+        { provide: UploadService, useValue: { uploadFile: jest.fn() } },
+        { provide: ProfileSpaceService, useValue: { joinSpace: jest.fn() } },
+        { provide: ProfilesService, useValue: { findProfile: jest.fn() } },
       ],
-    })
-      .overrideProvider(SpacesService)
-      .useValue(mockDeep<SpacesService>())
-      .overrideProvider(UploadService)
-      .useValue(mockDeep<UploadService>())
-      .overrideProvider(ProfileSpaceService)
-      .useValue(mockDeep<ProfileSpaceService>())
-      .overrideProvider(ProfilesService)
-      .useValue(mockDeep<ProfilesService>())
-      .compile();
+    }).compile();
 
     controller = module.get<SpacesController>(SpacesController);
-    spacesService = module.get(SpacesService);
-    uploadService = module.get(UploadService);
-    profilesService = module.get(ProfilesService);
+    spacesService = module.get<SpacesService>(SpacesService);
+    uploadService = module.get<UploadService>(UploadService);
+    profilesService = module.get<ProfilesService>(ProfilesService);
   });
 
   it('create created', async () => {
@@ -51,9 +48,11 @@ describe('SpacesController', () => {
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const profileMock = { uuid: 'profile uuid' } as Profile;
     const spaceMock = { uuid: 'space uuid' } as Space;
-    profilesService.findProfile.mockResolvedValue(profileMock);
-    uploadService.uploadFile.mockResolvedValue('www.test.com/image');
-    spacesService.createSpace.mockResolvedValue(spaceMock);
+    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(profileMock);
+    jest
+      .spyOn(uploadService, 'uploadFile')
+      .mockResolvedValue('www.test.com/image');
+    jest.spyOn(spacesService, 'createSpace').mockResolvedValue(spaceMock);
 
     const response = controller.create(iconMock, bodyMock, requestMock);
 
@@ -72,7 +71,7 @@ describe('SpacesController', () => {
   it('create not found profile', async () => {
     const bodyMock = { name: 'new space name' } as CreateSpaceDto;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    profilesService.findProfile.mockResolvedValue(null);
+    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(null);
 
     const response = controller.create(
       null as unknown as Express.Multer.File,
@@ -88,8 +87,8 @@ describe('SpacesController', () => {
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const profileMock = { uuid: 'profile uuid' } as Profile;
     const spaceMock = { uuid: 'space uuid' } as Space;
-    profilesService.findProfile.mockResolvedValue(profileMock);
-    spacesService.createSpace.mockResolvedValue(spaceMock);
+    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(profileMock);
+    jest.spyOn(spacesService, 'createSpace').mockResolvedValue(spaceMock);
 
     const response = controller.create(
       null as unknown as Express.Multer.File,
@@ -111,7 +110,7 @@ describe('SpacesController', () => {
 
   it('findOne found space', async () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
-    spacesService.findSpace.mockResolvedValue(spaceMock);
+    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(spaceMock);
 
     const response = controller.findOne('space uuid');
 
@@ -123,7 +122,7 @@ describe('SpacesController', () => {
   });
 
   it('findOne not found space', async () => {
-    spacesService.findSpace.mockResolvedValue(null);
+    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(null);
 
     const response = controller.findOne('space uuid');
 
@@ -134,8 +133,10 @@ describe('SpacesController', () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
-    spacesService.updateSpace.mockResolvedValue(spaceMock);
-    uploadService.uploadFile.mockResolvedValue('www.test.com/image');
+    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
+    jest
+      .spyOn(uploadService, 'uploadFile')
+      .mockResolvedValue('www.test.com/image');
 
     const response = controller.update(iconMock, 'space uuid', bodyMock);
 
@@ -150,7 +151,7 @@ describe('SpacesController', () => {
   it('update icon not requested', async () => {
     const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
-    spacesService.updateSpace.mockResolvedValue(spaceMock);
+    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
 
     const response = controller.update(
       null as unknown as Express.Multer.File,
@@ -169,7 +170,7 @@ describe('SpacesController', () => {
   it('update fail', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
-    spacesService.updateSpace.mockResolvedValue(null);
+    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(null);
 
     const response = controller.update(iconMock, 'space uuid', bodyMock);
 
