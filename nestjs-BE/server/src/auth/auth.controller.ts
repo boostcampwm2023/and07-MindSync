@@ -41,24 +41,15 @@ export class AuthController {
       kakaoUserDto.kakaoUserId,
     );
     if (!kakaoUserAccount) throw new NotFoundException();
-    const email = kakaoUserAccount.email;
-    const user = await this.usersService.findUserByEmailAndProvider(
-      email,
-      'kakao',
-    );
-    let userUuid = user?.uuid;
-    if (!userUuid) {
-      const data = { email, provider: 'kakao' };
-      const createdUser = await this.usersService.createUser(data);
-      userUuid = createdUser.uuid;
-      const profileData = {
-        user_id: createdUser.uuid,
-        image: customEnv.BASE_IMAGE_URL,
-        nickname: '익명의 사용자',
-      };
-      await this.profilesService.createProfile(profileData);
-    }
-    const tokenData = await this.authService.login(userUuid);
+    const userData = { email: kakaoUserAccount.email, provider: 'kakao' };
+    const user = await this.usersService.getOrCreateUser(userData);
+    const profileData = {
+      user_id: user.uuid,
+      image: customEnv.BASE_IMAGE_URL,
+      nickname: '익명의 사용자',
+    };
+    await this.profilesService.getOrCreateProfile(profileData);
+    const tokenData = await this.authService.login(user.uuid);
     return { statusCode: 200, message: 'Success', data: tokenData };
   }
 
