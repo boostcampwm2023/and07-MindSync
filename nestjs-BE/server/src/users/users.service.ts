@@ -17,9 +17,11 @@ export class UsersService {
     });
   }
 
-  async createUser(data: CreateUserDto): Promise<User> {
-    return this.prisma.user.create({
-      data: {
+  async getOrCreateUser(data: CreateUserDto): Promise<User> {
+    return this.prisma.user.upsert({
+      where: { email_provider: { email: data.email, provider: data.provider } },
+      update: {},
+      create: {
         uuid: generateUuid(),
         email: data.email,
         provider: data.provider,

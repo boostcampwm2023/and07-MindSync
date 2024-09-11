@@ -19,9 +19,11 @@ export class ProfilesService {
     });
   }
 
-  async createProfile(data: CreateProfileDto): Promise<Profile> {
-    return this.prisma.profile.create({
-      data: {
+  async getOrCreateProfile(data: CreateProfileDto): Promise<Profile> {
+    return this.prisma.profile.upsert({
+      where: { user_id: data.user_id },
+      update: {},
+      create: {
         uuid: generateUuid(),
         user_id: data.user_id,
         image: data.image,

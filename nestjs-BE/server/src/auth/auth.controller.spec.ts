@@ -29,13 +29,13 @@ describe('AuthController', () => {
           provide: UsersService,
           useValue: {
             findUserByEmailAndProvider: jest.fn(),
-            createUser: jest.fn(),
+            getOrCreateUser: jest.fn(),
           },
         },
         {
           provide: ProfilesService,
           useValue: {
-            createProfile: jest.fn(),
+            getOrCreateProfile: jest.fn(),
           },
         },
         {
@@ -62,7 +62,7 @@ describe('AuthController', () => {
     jest
       .spyOn(authService, 'getKakaoAccount')
       .mockResolvedValue(kakaoUserAccountMock);
-    jest.spyOn(usersService, 'findUserByEmailAndProvider').mockResolvedValue({
+    jest.spyOn(usersService, 'getOrCreateUser').mockResolvedValue({
       uuid: 'user uuid',
     } as User);
     jest.spyOn(authService, 'login').mockResolvedValue(tokenMock);
@@ -74,32 +74,6 @@ describe('AuthController', () => {
       message: 'Success',
       data: tokenMock,
     });
-    expect(usersService.createUser).not.toHaveBeenCalled();
-  });
-
-  it('kakaoLogin user login first time', async () => {
-    const requestMock = { kakaoUserId: 0 };
-    const kakaoUserAccountMock = { email: 'kakao email' };
-    const tokenMock = {
-      refresh_token: 'refresh token',
-      access_token: 'access token',
-    };
-    jest
-      .spyOn(authService, 'getKakaoAccount')
-      .mockResolvedValue(kakaoUserAccountMock);
-    jest
-      .spyOn(usersService, 'createUser')
-      .mockResolvedValue({ uuid: 'user uuid' } as User);
-    jest.spyOn(authService, 'login').mockResolvedValue(tokenMock);
-
-    const response = controller.kakaoLogin(requestMock);
-
-    await expect(response).resolves.toEqual({
-      statusCode: 200,
-      message: 'Success',
-      data: tokenMock,
-    });
-    expect(usersService.createUser).toHaveBeenCalled();
   });
 
   it('kakaoLogin kakao login fail', async () => {
