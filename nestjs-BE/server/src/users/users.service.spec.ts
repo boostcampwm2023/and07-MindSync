@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
 import generateUuid from '../utils/uuid';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -17,7 +16,7 @@ describe('UsersService', () => {
           useValue: {
             user: {
               findUnique: jest.fn(),
-              create: jest.fn(),
+              upsert: jest.fn(),
             },
           },
         },
@@ -55,37 +54,19 @@ describe('UsersService', () => {
     await expect(user).resolves.toBeNull();
   });
 
-  it('createUser created', async () => {
+  it('getOrCreateUser', async () => {
     const testUser = {
       uuid: generateUuid(),
       email: 'test@test.com',
       provider: 'kakao',
     };
-    jest.spyOn(prisma.user, 'create').mockResolvedValue(testUser);
+    jest.spyOn(prisma.user, 'upsert').mockResolvedValue(testUser);
 
-    const user = usersService.createUser({
+    const user = usersService.getOrCreateUser({
       email: 'test@test.com',
       provider: 'kakao',
     });
 
     await expect(user).resolves.toEqual(testUser);
-  });
-
-  it('createUser user already exists', async () => {
-    jest
-      .spyOn(prisma.user, 'create')
-      .mockRejectedValue(
-        new PrismaClientKnownRequestError(
-          'Unique constraint failed on the constraint: `User_email_provider_key`',
-          { code: 'P2025', clientVersion: '' },
-        ),
-      );
-
-    const user = usersService.createUser({
-      email: 'test@test.com',
-      provider: 'kakao',
-    });
-
-    await expect(user).rejects.toThrow(PrismaClientKnownRequestError);
   });
 });

@@ -18,7 +18,7 @@ describe('ProfilesService', () => {
             profile: {
               findUnique: jest.fn(),
               findMany: jest.fn(),
-              create: jest.fn(),
+              upsert: jest.fn(),
               update: jest.fn(),
             },
           },
@@ -83,38 +83,18 @@ describe('ProfilesService', () => {
     await expect(profiles).resolves.toEqual([]);
   });
 
-  it('createProfile created', async () => {
+  it('getOrCreateProfile', async () => {
     const data = {
       user_id: generateUuid(),
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
-    const testProfile = { uuid: generateUuid(), ...data };
-    jest.spyOn(prisma.profile, 'create').mockResolvedValue(testProfile);
+    const profileMock = { uuid: generateUuid(), ...data };
+    jest.spyOn(prisma.profile, 'upsert').mockResolvedValue(profileMock);
 
-    const profile = profilesService.createProfile(data);
+    const profile = profilesService.getOrCreateProfile(data);
 
-    await expect(profile).resolves.toEqual(testProfile);
-  });
-
-  it("createProfile user_id doesn't exists", async () => {
-    const data = {
-      user_id: generateUuid(),
-      image: 'www.test.com/image',
-      nickname: 'test nickname',
-    };
-    jest
-      .spyOn(prisma.profile, 'create')
-      .mockRejectedValue(
-        new PrismaClientKnownRequestError(
-          'Foreign key constraint failed on the field: `user_id`',
-          { code: 'P2003', clientVersion: '' },
-        ),
-      );
-
-    const profile = profilesService.createProfile(data);
-
-    await expect(profile).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(profile).resolves.toEqual(profileMock);
   });
 
   it('updateProfile updated', async () => {
