@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
-import { PrismaService } from '../prisma/prisma.service';
 import { RefreshTokensService } from './refresh-tokens.service';
 
 @Injectable()
@@ -10,7 +9,6 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private refreshTokensService: RefreshTokensService,
-    protected prisma: PrismaService,
   ) {}
 
   async getKakaoAccount(kakaoUserId: number) {
