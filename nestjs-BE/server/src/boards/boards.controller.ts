@@ -36,7 +36,7 @@ import {
 } from './swagger/boards.type';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from '../upload/upload.service';
-import customEnv from '../config/env';
+import { ConfigService } from '@nestjs/config';
 
 const BOARD_EXPIRE_DAY = 7;
 
@@ -46,6 +46,7 @@ export class BoardsController {
   constructor(
     private boardsService: BoardsService,
     private uploadService: UploadService,
+    private configService: ConfigService,
   ) {}
 
   @ApiOperation({
@@ -68,7 +69,7 @@ export class BoardsController {
   ) {
     const imageUrl = image
       ? await this.uploadService.uploadFile(image)
-      : customEnv.APP_ICON_URL;
+      : this.configService.get<string>('APP_ICON_URL');
     const document = await this.boardsService.create(createBoardDto, imageUrl);
     const responseData = {
       boardId: document.uuid,

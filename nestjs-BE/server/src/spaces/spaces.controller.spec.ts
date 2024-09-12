@@ -9,17 +9,18 @@ import { NotFoundException } from '@nestjs/common';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
-import customEnv from '../config/env';
-const { APP_ICON_URL } = customEnv;
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('SpacesController', () => {
   let controller: SpacesController;
   let spacesService: SpacesService;
   let uploadService: UploadService;
   let profilesService: ProfilesService;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot()],
       controllers: [SpacesController],
       providers: [
         {
@@ -40,6 +41,7 @@ describe('SpacesController', () => {
     spacesService = module.get<SpacesService>(SpacesService);
     uploadService = module.get<UploadService>(UploadService);
     profilesService = module.get<ProfilesService>(ProfilesService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('create created', async () => {
@@ -104,7 +106,7 @@ describe('SpacesController', () => {
     expect(uploadService.uploadFile).not.toHaveBeenCalled();
     expect(spacesService.createSpace).toHaveBeenCalledWith({
       ...bodyMock,
-      icon: APP_ICON_URL,
+      icon: configService.get<string>('APP_ICON_URL'),
     });
   });
 

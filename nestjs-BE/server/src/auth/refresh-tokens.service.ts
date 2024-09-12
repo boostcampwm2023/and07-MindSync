@@ -2,15 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import generateUuid from '../utils/uuid';
-import { jwtConstants } from './constants';
 import { Prisma, RefreshToken } from '@prisma/client';
 import { REFRESH_TOKEN_EXPIRY_DAYS } from '../config/magic-number';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RefreshTokensService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async createRefreshToken(userUuid: string): Promise<RefreshToken> {
@@ -46,7 +47,10 @@ export class RefreshTokensService {
   createToken(): string {
     const refreshToken = this.jwtService.sign(
       { uuid: generateUuid() },
-      { secret: jwtConstants.refreshSecret, expiresIn: '14d' },
+      {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: '14d',
+      },
     );
     return refreshToken;
   }

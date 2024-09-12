@@ -5,16 +5,18 @@ import { UploadService } from '../upload/upload.service';
 import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
-import customEnv from '../config/env';
 import { UpdateWriteOpResult } from 'mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('BoardsController', () => {
   let controller: BoardsController;
   let boardsService: BoardsService;
   let uploadService: UploadService;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       controllers: [BoardsController],
       providers: [
         {
@@ -37,6 +39,7 @@ describe('BoardsController', () => {
     controller = module.get<BoardsController>(BoardsController);
     boardsService = module.get<BoardsService>(BoardsService);
     uploadService = module.get<UploadService>(UploadService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('createBoard created board', async () => {
@@ -86,7 +89,7 @@ describe('BoardsController', () => {
       data: {
         boardId: 'board uuid',
         date: 'created date',
-        imageUrl: customEnv.APP_ICON_URL,
+        imageUrl: configService.get<string>('APP_ICON_URL'),
       },
     });
     expect(uploadService.uploadFile).not.toHaveBeenCalled();

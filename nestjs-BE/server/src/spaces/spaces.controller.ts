@@ -19,9 +19,8 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from '../upload/upload.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { RequestWithUser } from '../utils/interface';
-import customEnv from '../config/env';
 import { ProfilesService } from '../profiles/profiles.service';
-const { APP_ICON_URL } = customEnv;
+import { ConfigService } from '@nestjs/config';
 
 @Controller('spaces')
 @ApiTags('spaces')
@@ -31,6 +30,7 @@ export class SpacesController {
     private readonly uploadService: UploadService,
     private readonly profileSpaceService: ProfileSpaceService,
     private readonly profilesService: ProfilesService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post()
@@ -49,7 +49,7 @@ export class SpacesController {
     if (!profile) throw new NotFoundException();
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
-      : APP_ICON_URL;
+      : this.configService.get<string>('APP_ICON_URL');
     createSpaceDto.icon = iconUrl;
     const space = await this.spacesService.createSpace(createSpaceDto);
     await this.profileSpaceService.joinSpace(profile.uuid, space.uuid);

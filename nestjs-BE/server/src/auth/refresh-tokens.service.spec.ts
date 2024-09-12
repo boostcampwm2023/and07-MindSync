@@ -3,6 +3,7 @@ import { RefreshTokensService } from './refresh-tokens.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ConfigModule } from '@nestjs/config';
 
 jest.useFakeTimers();
 
@@ -12,7 +13,7 @@ describe('RefreshTokensService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [JwtModule],
+      imports: [JwtModule, ConfigModule.forRoot()],
       providers: [
         RefreshTokensService,
         {

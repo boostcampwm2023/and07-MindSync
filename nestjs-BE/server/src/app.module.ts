@@ -13,10 +13,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { InviteCodesModule } from './invite-codes/invite-codes.module';
 import { ProfileSpaceModule } from './profile-space/profile-space.module';
 import { BoardTreesModule } from './board-trees/board-trees.module';
-import customEnv from './config/env';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UsersModule,
     PrismaModule,
@@ -25,7 +26,13 @@ import customEnv from './config/env';
     SpacesModule,
     BoardsModule,
     UploadModule,
-    MongooseModule.forRoot(customEnv.MONGODB_DATABASE_URI),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_DATABASE_URI'),
+      }),
+    }),
     InviteCodesModule,
     ProfileSpaceModule,
     BoardTreesModule,
