@@ -11,7 +11,7 @@ import {
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { SpacesService } from 'src/spaces/spaces.service';
+import { SpacesService } from '../spaces/spaces.service';
 
 @Controller('inviteCodes')
 @ApiTags('inviteCodes')
