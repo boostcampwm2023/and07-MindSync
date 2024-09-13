@@ -12,8 +12,8 @@ import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ProfilesService } from '../profiles/profiles.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import customEnv from '../config/env';
 import { RefreshTokensService } from './refresh-tokens.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -23,6 +23,7 @@ export class AuthController {
     private usersService: UsersService,
     private profilesService: ProfilesService,
     private refreshTokensService: RefreshTokensService,
+    private configService: ConfigService,
   ) {}
 
   @Post('kakao-oauth')
@@ -45,7 +46,7 @@ export class AuthController {
     const user = await this.usersService.getOrCreateUser(userData);
     const profileData = {
       user_id: user.uuid,
-      image: customEnv.BASE_IMAGE_URL,
+      image: this.configService.get<string>('BASE_IMAGE_URL'),
       nickname: '익명의 사용자',
     };
     await this.profilesService.getOrCreateProfile(profileData);

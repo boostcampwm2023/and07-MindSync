@@ -6,6 +6,7 @@ import { UsersService } from '../users/users.service';
 import { RefreshTokensService } from './refresh-tokens.service';
 import { ProfilesService } from '../profiles/profiles.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -15,6 +16,7 @@ describe('AuthController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot()],
       controllers: [AuthController],
       providers: [
         {

@@ -1,14 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants, kakaoOauthConstants } from './constants';
 import { stringify } from 'qs';
 import { RefreshTokensService } from './refresh-tokens.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private refreshTokensService: RefreshTokensService,
+    private configService: ConfigService,
   ) {}
 
   async getKakaoAccount(kakaoUserId: number) {
@@ -17,7 +18,9 @@ export class AuthService {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Authorization: `KakaoAK ${kakaoOauthConstants.adminKey}`,
+        Authorization: `KakaoAK ${this.configService.get<string>(
+          'KAKAO_ADMIN_KEY',
+        )}`,
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
       body: stringify(queryParams),
@@ -30,7 +33,7 @@ export class AuthService {
   private async createAccessToken(userUuid: string): Promise<string> {
     const payload = { sub: userUuid };
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: jwtConstants.accessSecret,
+      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       expiresIn: '5m',
     });
     return accessToken;
@@ -49,7 +52,7 @@ export class AuthService {
   async renewAccessToken(refreshToken: string): Promise<string> {
     try {
       this.jwtService.verify(refreshToken, {
-        secret: jwtConstants.refreshSecret,
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
       const token =
         await this.refreshTokensService.findRefreshToken(refreshToken);
