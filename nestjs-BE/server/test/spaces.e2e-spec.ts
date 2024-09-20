@@ -150,4 +150,31 @@ describe('SpacesController (e2e)', () => {
         expect(res.body.data.icon).toMatch(imageRegExp);
       });
   });
+
+  it('/spaces/{space_uuid} (GET) not logged in', () => {
+    return request(app.getHttpServer())
+      .get('/spaces/space-uuid')
+      .expect(HttpStatus.UNAUTHORIZED)
+      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
+  });
+
+  it('/spaces/{space_uuid} (GET) not existing space', () => {
+    return request(app.getHttpServer())
+      .get('/spaces/wrong-space-uuid')
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
+  });
+
+  it('/spaces/{space_uuid} (GET) space found', () => {
+    return request(app.getHttpServer())
+      .get('/spaces/space-uuid')
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.OK)
+      .expect({
+        message: 'Success',
+        statusCode: HttpStatus.OK,
+        data: testSpace,
+      });
+  });
 });
