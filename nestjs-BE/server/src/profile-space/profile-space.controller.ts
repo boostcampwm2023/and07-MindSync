@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { ProfileSpaceService } from './profile-space.service';
 import { CreateProfileSpaceDto } from './dto/create-profile-space.dto';
-import { RequestWithUser } from 'src/utils/interface';
-import { SpacesService } from 'src/spaces/spaces.service';
+import { RequestWithUser } from '../utils/interface';
+import { SpacesService } from '../spaces/spaces.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { ProfilesService } from 'src/profiles/profiles.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Controller('profileSpace')
 @ApiTags('profileSpace')

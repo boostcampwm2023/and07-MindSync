@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import {
   INVITE_CODE_EXPIRY_HOURS,
   INVITE_CODE_LENGTH,
-} from 'src/config/magic-number';
+} from '../config/magic-number';
 import { InviteCode, Prisma } from '@prisma/client';
-import generateUuid from 'src/utils/uuid';
+import generateUuid from '../utils/uuid';
 
 @Injectable()
 export class InviteCodesService {

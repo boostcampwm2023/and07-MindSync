@@ -10,7 +10,7 @@ import {
   OperationDelete,
   OperationMove,
   OperationUpdate,
-} from 'src/crdt/operation';
+} from '../crdt/operation';
 
 @WebSocketGateway({ namespace: 'board' })
 export class BoardTreesGateway {
