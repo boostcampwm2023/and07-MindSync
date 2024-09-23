@@ -8,12 +8,17 @@ datasource db {
 }
 
 model User {
-  uuid     String      @id @db.VarChar(32)
-  email    String
-  provider String
-  profiles Profile[]
-  refresh_tokens RefreshToken[]
-  @@unique([email, provider])
+  uuid            String      @id @db.VarChar(36)
+  kakaoUser       KakaoUser?
+  profiles        Profile[]
+  refresh_tokens  RefreshToken[]
+}
+
+model KakaoUser {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  userUuid  String  @unique
+  user      User    @relation(fields: [userUuid], references: [uuid])
 }
 
 model RefreshToken {
