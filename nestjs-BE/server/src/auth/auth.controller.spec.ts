@@ -54,7 +54,7 @@ describe('AuthController', () => {
     usersService = module.get<UsersService>(UsersService);
   });
 
-  it('kakaoLogin user have been logged in', async () => {
+  it('kakaoLogin', async () => {
     const requestMock = { kakaoUserId: 0 };
     const kakaoUserAccountMock = { email: 'kakao email' };
     const tokenMock = {

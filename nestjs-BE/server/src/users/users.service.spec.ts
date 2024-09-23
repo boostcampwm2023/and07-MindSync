@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
-import generateUuid from '../utils/uuid';
+import { v4 as uuid } from 'uuid';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -9,64 +9,40 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        {
-          provide: PrismaService,
-          useValue: {
-            user: {
-              findUnique: jest.fn(),
-              upsert: jest.fn(),
-            },
-          },
-        },
-      ],
+      providers: [UsersService, PrismaService],
     }).compile();
 
     usersService = module.get<UsersService>(UsersService);
     prisma = module.get<PrismaService>(PrismaService);
-  });
 
-  it('findUserByEmailAndProvider found user', async () => {
-    const testUser = {
-      uuid: generateUuid(),
-      email: 'test@test.com',
-      provider: 'kakao',
-    };
-    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(testUser);
-
-    const user = usersService.findUserByEmailAndProvider(
-      'test@test.com',
-      'kakao',
-    );
-
-    await expect(user).resolves.toEqual(testUser);
-  });
-
-  it('findUserByEmailAndProvider not found user', async () => {
-    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-
-    const user = usersService.findUserByEmailAndProvider(
-      'test@test.com',
-      'kakao',
-    );
-
-    await expect(user).resolves.toBeNull();
+    await prisma.kakaoUser.deleteMany({});
+    await prisma.user.deleteMany({});
   });
 
   it('getOrCreateUser', async () => {
-    const testUser = {
-      uuid: generateUuid(),
-      email: 'test@test.com',
-      provider: 'kakao',
-    };
-    jest.spyOn(prisma.user, 'upsert').mockResolvedValue(testUser);
-
-    const user = usersService.getOrCreateUser({
-      email: 'test@test.com',
-      provider: 'kakao',
+    const testUserUuid = uuid();
+    const testEmail = 'test@email.com';
+    const testUser = { uuid: testUserUuid };
+    await prisma.user.create({
+      data: { uuid: testUserUuid },
+    });
+    await prisma.kakaoUser.create({
+      data: {
+        email: testEmail,
+        userUuid: testUserUuid,
+      },
     });
 
+    const user = usersService.getOrCreateUser({ email: testEmail });
     await expect(user).resolves.toEqual(testUser);
+  });
+
+  it("getOrCreateUser user doesn't exist", async () => {
+    const testEmail = 'test@email.com';
+
+    const user = await usersService.getOrCreateUser({ email: testEmail });
+    expect(user.uuid).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
   });
 });
