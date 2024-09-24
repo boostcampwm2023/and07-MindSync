@@ -8,57 +8,56 @@ datasource db {
 }
 
 model User {
-  uuid            String      @id @db.VarChar(36)
+  uuid            String      @id @db.Char(36)
   kakaoUser       KakaoUser?
   profiles        Profile[]
-  refresh_tokens  RefreshToken[]
+  refreshTokens   RefreshToken[]
 }
 
 model KakaoUser {
   id        Int     @id @default(autoincrement())
   email     String  @unique
   userUuid  String  @unique
-  user      User    @relation(fields: [userUuid], references: [uuid])
+  user      User    @relation(fields: [userUuid], references: [uuid], onDelete: Cascade)
 }
 
 model RefreshToken {
   id          Int       @id @default(autoincrement())
-  token       String    @db.VarChar(210)
-  expiry_date DateTime
-  user_id     String
-  user        User   @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
-  @@unique([token])
+  token       String    @db.VarChar(210) @unique
+  expiryDate  DateTime
+  userUuid    String    @db.Char(36)
+  user        User      @relation(fields: [userUuid], references: [uuid], onDelete: Cascade)
 }
 
 model Profile {
-  uuid      String  @id @db.VarChar(36)
-  userId    String  @unique @db.VarChar(36)
+  uuid      String  @id @db.Char(36)
+  userUuid  String  @unique @db.Char(36)
   image     String
   nickname  String  @db.VarChar(20)
-  user      User    @relation(fields: [userId], references: [uuid], onDelete: Cascade)
-  spaces    Profile_space[]
+  user      User    @relation(fields: [userUuid], references: [uuid], onDelete: Cascade)
+  spaces    ProfileSpace[]
 }
 
 model Space {
-  uuid     String @id @db.VarChar(32)
-  name     String @db.VarChar(20)
-  icon     String
-  profiles Profile_space[]
-  invite_codes InviteCode[]
+  uuid          String          @id @db.Char(36)
+  name          String          @db.VarChar(20)
+  icon          String
+  profileSpaces ProfileSpace[]
+  inviteCodes   InviteCode[]
 }
 
-model Profile_space {
-  space_uuid   String     @db.VarChar(32)
-  profile_uuid String     @db.VarChar(32)
-  space        Space      @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
-  profile      Profile    @relation(fields: [profile_uuid], references: [uuid], onDelete: Cascade)
-  @@unique([space_uuid, profile_uuid])
+model ProfileSpace {
+  spaceUuid   String  @db.Char(36)
+  profileUuid String  @db.Char(36)
+  space       Space   @relation(fields: [spaceUuid], references: [uuid], onDelete: Cascade)
+  profile     Profile @relation(fields: [profileUuid], references: [uuid], onDelete: Cascade)
+  @@unique([spaceUuid, profileUuid])
 }
 
 model InviteCode {
-  uuid        String   @id     @db.VarChar(32)
-  invite_code String   @unique @db.VarChar(10)
-  space_uuid  String   @db.VarChar(32)
-  expiry_date DateTime
-  space       Space    @relation(fields: [space_uuid], references: [uuid], onDelete: Cascade)
+  uuid        String   @id     @db.Char(36)
+  inviteCode  String   @unique @db.VarChar(10)
+  spaceUuid   String   @db.Char(36)
+  expiryDate  DateTime
+  space       Space    @relation(fields: [spaceUuid], references: [uuid], onDelete: Cascade)
 }
