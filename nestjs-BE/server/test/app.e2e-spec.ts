@@ -5,10 +5,12 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { sign } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { v4 as uuid } from 'uuid';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let configService: ConfigService;
+  let testUserUuid: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,17 +25,12 @@ describe('AppController (e2e)', () => {
     const prisma: PrismaService =
       moduleFixture.get<PrismaService>(PrismaService);
 
-    const testUser = { email: 'test@email.com', provider: 'kakao' };
-    prisma.user.upsert({
-      where: {
-        email_provider: { email: testUser.email, provider: testUser.provider },
-      },
-      update: {},
-      create: {
-        uuid: 'test uuid',
-        email: testUser.email,
-        provider: testUser.provider,
-      },
+    await prisma.kakaoUser.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    testUserUuid = uuid();
+    await prisma.user.create({
+      data: { uuid: testUserUuid },
     });
   });
 
@@ -56,22 +53,8 @@ describe('AppController (e2e)', () => {
   });
 
   it('/login-test (GET) expired access token', () => {
-    const invalidToken = sign(
-      { sub: 'test uuid' },
-      configService.get<string>('JWT_ACCESS_SECRET'),
-      { expiresIn: '-5m' },
-    );
-
-    return request(app.getHttpServer())
-      .get('/login-test')
-      .auth(invalidToken, { type: 'bearer' })
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: 401 });
-  });
-
-  it('/login-test (GET) expired access token', () => {
     const expiredToken = sign(
-      { sub: 'test uuid' },
+      { sub: testUserUuid },
       configService.get<string>('JWT_ACCESS_SECRET'),
       { expiresIn: '-5m' },
     );
@@ -99,7 +82,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/login-test (GET) wrong secret access token', () => {
-    const invalidToken = sign({ sub: 'test uuid' }, 'wrong jwt access token', {
+    const invalidToken = sign({ sub: testUserUuid }, 'wrong jwt access token', {
       expiresIn: '5m',
     });
 
@@ -112,7 +95,7 @@ describe('AppController (e2e)', () => {
 
   it('/login-test (GET) logged in', async () => {
     const testToken = sign(
-      { sub: 'test uuid' },
+      { sub: testUserUuid },
       configService.get<string>('JWT_ACCESS_SECRET'),
       { expiresIn: '5m' },
     );

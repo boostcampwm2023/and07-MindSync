@@ -42,7 +42,7 @@ export class AuthController {
       kakaoUserDto.kakaoUserId,
     );
     if (!kakaoUserAccount) throw new NotFoundException();
-    const userData = { email: kakaoUserAccount.email, provider: 'kakao' };
+    const userData = { email: kakaoUserAccount.email };
     const user = await this.usersService.getOrCreateUser(userData);
     const profileData = {
       user_id: user.uuid,

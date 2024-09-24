@@ -10,7 +10,7 @@ export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
   async findProfile(userUuid: string): Promise<Profile | null> {
-    return this.prisma.profile.findUnique({ where: { user_id: userUuid } });
+    return this.prisma.profile.findUnique({ where: { userId: userUuid } });
   }
 
   async findProfiles(profileUuids: string[]): Promise<Profile[]> {
@@ -21,11 +21,11 @@ export class ProfilesService {
 
   async getOrCreateProfile(data: CreateProfileDto): Promise<Profile> {
     return this.prisma.profile.upsert({
-      where: { user_id: data.user_id },
+      where: { userId: data.user_id },
       update: {},
       create: {
         uuid: generateUuid(),
-        user_id: data.user_id,
+        userId: data.user_id,
         image: data.image,
         nickname: data.nickname,
       },
@@ -38,7 +38,7 @@ export class ProfilesService {
   ): Promise<Profile | null> {
     try {
       return await this.prisma.profile.update({
-        where: { user_id: userUuid },
+        where: { userId: userUuid },
         data: { ...updateProfileDto },
       });
     } catch (err) {
