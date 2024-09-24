@@ -31,12 +31,12 @@ model RefreshToken {
 }
 
 model Profile {
-  uuid     String @id @db.VarChar(32)
-  user_id  String @unique @db.VarChar(32)
-  image    String
-  nickname String @db.VarChar(20)
-  user     User @relation(fields: [user_id], references: [uuid], onDelete: Cascade)
-  spaces   Profile_space[]
+  uuid      String  @id @db.VarChar(36)
+  userId    String  @unique @db.VarChar(36)
+  image     String
+  nickname  String  @db.VarChar(20)
+  user      User    @relation(fields: [userId], references: [uuid], onDelete: Cascade)
+  spaces    Profile_space[]
 }
 
 model Space {

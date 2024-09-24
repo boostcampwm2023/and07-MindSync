@@ -6,38 +6,44 @@ import * as request from 'supertest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { sign } from 'jsonwebtoken';
-import { Profile, Space } from '@prisma/client';
+import { Space } from '@prisma/client';
+import { PrismaModule } from '../src/prisma/prisma.module';
+import { v4 as uuid } from 'uuid';
 
 describe('SpacesController (e2e)', () => {
   let app: INestApplication;
   let testToken: string;
   let testSpace: Space;
-  let testProfile: Profile;
   let configService: ConfigService;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
+      imports: [ConfigModule, PrismaModule],
     }).compile();
 
     const configService: ConfigService =
       module.get<ConfigService>(ConfigService);
+    prisma = module.get<PrismaService>(PrismaService);
+
+    await prisma.profile.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+    await prisma.profile.create({
+      data: {
+        uuid: uuid(),
+        userId: testUser.uuid,
+        image: 'test image',
+        nickname: 'test nickname',
+      },
+    });
+
     testToken = sign(
-      { sub: 'test uuid' },
+      { sub: testUser.uuid },
       configService.get<string>('JWT_ACCESS_SECRET'),
       { expiresIn: '5m' },
     );
-    testSpace = {
-      uuid: 'space-uuid',
-      name: 'test space',
-      icon: 'test space icon',
-    };
-    testProfile = {
-      uuid: 'profile uuid',
-      user_id: 'test uuid',
-      image: configService.get<string>('BASE_IMAGE_URL'),
-      nickname: 'test nickname',
-    };
   });
 
   beforeEach(async () => {
@@ -57,38 +63,10 @@ describe('SpacesController (e2e)', () => {
       moduleFixture.get<PrismaService>(PrismaService);
     configService = moduleFixture.get<ConfigService>(ConfigService);
 
-    const testUser = { email: 'test@email.com', provider: 'kakao' };
-    await prisma.user.upsert({
-      where: {
-        email_provider: { email: testUser.email, provider: testUser.provider },
-      },
-      update: {},
-      create: {
-        uuid: 'test uuid',
-        email: testUser.email,
-        provider: testUser.provider,
-      },
-    });
-    await prisma.profile.upsert({
-      where: { user_id: 'test uuid' },
-      update: {},
-      create: {
-        uuid: testProfile.uuid,
-        user_id: testProfile.user_id,
-        image: testProfile.image,
-        nickname: testProfile.nickname,
-      },
-    });
-    await prisma.space.upsert({
-      where: {
-        uuid: testSpace.uuid,
-      },
-      update: {},
-      create: {
-        uuid: testSpace.uuid,
-        name: testSpace.name,
-        icon: testSpace.icon,
-      },
+    await prisma.space.deleteMany({});
+
+    testSpace = await prisma.space.create({
+      data: { uuid: 'space-uuid', name: 'test space', icon: 'test icon' },
     });
   });
 
