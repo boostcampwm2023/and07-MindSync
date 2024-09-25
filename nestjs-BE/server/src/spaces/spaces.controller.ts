@@ -42,7 +42,8 @@ export class SpacesController {
   })
   async create(
     @UploadedFile() icon: Express.Multer.File,
-    @Body() createSpaceDto: CreateSpaceDto,
+    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
+    createSpaceDto: CreateSpaceDto,
     @Req() req: RequestWithUser,
   ) {
     const profile = await this.profilesService.findProfile(req.user.uuid);
@@ -90,7 +91,7 @@ export class SpacesController {
   async update(
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
-    @Body(new ValidationPipe({ whitelist: true }))
+    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
     updateSpaceDto: UpdateSpaceDto,
   ) {
     if (icon) {
