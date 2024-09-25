@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { Prisma, Space } from '@prisma/client';
 import { CreateSpaceDto } from './dto/create-space.dto';
-import generateUuid from '../utils/uuid';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class SpacesService {
@@ -20,7 +20,7 @@ export class SpacesService {
   async createSpace(createSpaceDto: CreateSpaceDto): Promise<Space> {
     return this.prisma.space.create({
       data: {
-        uuid: generateUuid(),
+        uuid: uuid(),
         name: createSpaceDto.name,
         icon: createSpaceDto.icon,
       },
