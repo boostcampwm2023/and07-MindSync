@@ -33,7 +33,7 @@ describe('SpacesController (e2e)', () => {
     await prisma.profile.create({
       data: {
         uuid: uuid(),
-        userId: testUser.uuid,
+        userUuid: testUser.uuid,
         image: 'test image',
         nickname: 'test nickname',
       },
@@ -66,7 +66,7 @@ describe('SpacesController (e2e)', () => {
     await prisma.space.deleteMany({});
 
     testSpace = await prisma.space.create({
-      data: { uuid: 'space-uuid', name: 'test space', icon: 'test icon' },
+      data: { uuid: uuid(), name: 'test space', icon: 'test icon' },
     });
   });
 
@@ -98,7 +98,9 @@ describe('SpacesController (e2e)', () => {
       .expect((res) => {
         expect(res.body.message).toBe('Created');
         expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-        expect(res.body.data.uuid).toMatch(/^[0-9a-f]{32}$/);
+        expect(res.body.data.uuid).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+        );
         expect(res.body.data.name).toBe('new test space');
         expect(res.body.data.icon).toBe(
           configService.get<string>('APP_ICON_URL'),
@@ -123,7 +125,9 @@ describe('SpacesController (e2e)', () => {
       .expect((res) => {
         expect(res.body.message).toBe('Created');
         expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-        expect(res.body.data.uuid).toMatch(/^[0-9a-f]{32}$/);
+        expect(res.body.data.uuid).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+        );
         expect(res.body.data.name).toBe('new test space');
         expect(res.body.data.icon).toMatch(imageRegExp);
       });
