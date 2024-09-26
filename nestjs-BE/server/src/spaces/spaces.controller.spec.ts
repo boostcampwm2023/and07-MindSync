@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SpacesController } from './spaces.controller';
+import { SpacesControllerV2 } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
@@ -11,8 +11,8 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-describe('SpacesController', () => {
-  let controller: SpacesController;
+describe('SpacesControllerV2', () => {
+  let controller: SpacesControllerV2;
   let spacesService: SpacesService;
   let uploadService: UploadService;
   let profilesService: ProfilesService;
@@ -21,7 +21,7 @@ describe('SpacesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forRoot()],
-      controllers: [SpacesController],
+      controllers: [SpacesControllerV2],
       providers: [
         {
           provide: SpacesService,
@@ -37,7 +37,7 @@ describe('SpacesController', () => {
       ],
     }).compile();
 
-    controller = module.get<SpacesController>(SpacesController);
+    controller = module.get<SpacesControllerV2>(SpacesControllerV2);
     spacesService = module.get<SpacesService>(SpacesService);
     uploadService = module.get<UploadService>(UploadService);
     profilesService = module.get<ProfilesService>(ProfilesService);
