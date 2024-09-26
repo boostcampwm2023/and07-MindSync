@@ -5,7 +5,7 @@ import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
 import { ProfilesService } from '../profiles/profiles.service';
 import { Profile, Space } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
@@ -112,9 +112,17 @@ describe('SpacesControllerV2', () => {
 
   it('findOne found space', async () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
-    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(spaceMock);
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
 
-    const response = controller.findOne('space uuid');
+    const response = controller.findOne(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
 
     await expect(response).resolves.toEqual({
       statusCode: 200,
@@ -123,10 +131,53 @@ describe('SpacesControllerV2', () => {
     });
   });
 
-  it('findOne not found space', async () => {
-    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(null);
+  it("findOne profile user doesn't have", async () => {
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
 
-    const response = controller.findOne('space uuid');
+    const response = controller.findOne(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
+
+    await expect(response).rejects.toThrow(ForbiddenException);
+  });
+
+  it('findOne profile not joined space', async () => {
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+
+    const response = controller.findOne(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
+
+    await expect(response).rejects.toThrow(ForbiddenException);
+  });
+
+  it('findOne not found space', async () => {
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+
+    const response = controller.findOne(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
 
     await expect(response).rejects.toThrow(NotFoundException);
   });
