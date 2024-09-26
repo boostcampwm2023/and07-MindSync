@@ -65,7 +65,7 @@ describe('SpacesControllerV2', () => {
     });
     expect(uploadService.uploadFile).toHaveBeenCalled();
     expect(spacesService.createSpace).toHaveBeenCalledWith({
-      ...bodyMock,
+      name: bodyMock.name,
       icon: 'www.test.com/image',
     });
   });
