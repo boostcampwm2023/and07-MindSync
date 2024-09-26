@@ -13,6 +13,10 @@ export class ProfilesService {
     return this.prisma.profile.findUnique({ where: { userUuid } });
   }
 
+  async findProfileByProfileUuid(uuid: string): Promise<Profile | null> {
+    return this.prisma.profile.findUnique({ where: { uuid } });
+  }
+
   async findProfiles(profileUuids: string[]): Promise<Profile[]> {
     return this.prisma.profile.findMany({
       where: { uuid: { in: profileUuids } },

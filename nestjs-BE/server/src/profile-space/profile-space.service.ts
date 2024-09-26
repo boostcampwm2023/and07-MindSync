@@ -22,6 +22,15 @@ export class ProfileSpaceService {
     });
   }
 
+  async findProfileSpaceByBothUuid(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<ProfileSpace | null> {
+    return this.prisma.profileSpace.findUnique({
+      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
+    });
+  }
+
   async joinSpace(
     profileUuid: string,
     spaceUuid: string,
