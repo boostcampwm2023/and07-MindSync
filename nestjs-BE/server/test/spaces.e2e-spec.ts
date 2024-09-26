@@ -6,7 +6,7 @@ import * as request from 'supertest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { sign } from 'jsonwebtoken';
-import { Space } from '@prisma/client';
+import { Profile, Space } from '@prisma/client';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { v4 as uuid } from 'uuid';
 
@@ -14,6 +14,7 @@ describe('SpacesController (e2e)', () => {
   let app: INestApplication;
   let testToken: string;
   let testSpace: Space;
+  let testProfile: Profile;
   let configService: ConfigService;
   let prisma: PrismaService;
 
@@ -30,7 +31,7 @@ describe('SpacesController (e2e)', () => {
     await prisma.user.deleteMany({});
 
     const testUser = await prisma.user.create({ data: { uuid: uuid() } });
-    await prisma.profile.create({
+    testProfile = await prisma.profile.create({
       data: {
         uuid: uuid(),
         userUuid: testUser.uuid,
@@ -64,6 +65,7 @@ describe('SpacesController (e2e)', () => {
     configService = moduleFixture.get<ConfigService>(ConfigService);
 
     await prisma.space.deleteMany({});
+    await prisma.profileSpace.deleteMany({});
 
     testSpace = await prisma.space.create({
       data: { uuid: uuid(), name: 'test space', icon: 'test icon' },
@@ -133,30 +135,83 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/spaces/{space_uuid} (GET) not logged in', () => {
+  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) space found', async () => {
+    await prisma.profileSpace.create({
+      data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
+    });
+
     return request(app.getHttpServer())
-      .get('/spaces/space-uuid')
+      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.OK)
+      .expect({
+        message: 'OK',
+        statusCode: HttpStatus.OK,
+        data: testSpace,
+      });
+  });
+
+  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) query profile_uuid needed', async () => {
+    return request(app.getHttpServer())
+      .get(`/v2/spaces/${testSpace.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
+  });
+
+  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) not logged in', async () => {
+    await prisma.profileSpace.create({
+      data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
+    });
+
+    return request(app.getHttpServer())
+      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .expect(HttpStatus.UNAUTHORIZED)
       .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
   });
 
-  it('/spaces/{space_uuid} (GET) not existing space', () => {
+  it("/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) profile user doesn't have", async () => {
+    const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+    const newProfile = await prisma.profile.create({
+      data: {
+        uuid: uuid(),
+        userUuid: newUser.uuid,
+        image: 'test image',
+        nickname: 'test nickname',
+      },
+    });
+    await prisma.profileSpace.create({
+      data: { spaceUuid: testSpace.uuid, profileUuid: newProfile.uuid },
+    });
+
     return request(app.getHttpServer())
-      .get('/spaces/wrong-space-uuid')
+      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) profile not existing', async () => {
+    return request(app.getHttpServer())
+      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) findOne profile not joined space', () => {
+    return request(app.getHttpServer())
+      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) not existing space', () => {
+    return request(app.getHttpServer())
+      .get(`/v2/spaces/${uuid()}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.NOT_FOUND)
       .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
-  });
-
-  it('/spaces/{space_uuid} (GET) space found', () => {
-    return request(app.getHttpServer())
-      .get('/spaces/space-uuid')
-      .auth(testToken, { type: 'bearer' })
-      .expect(HttpStatus.OK)
-      .expect({
-        message: 'Success',
-        statusCode: HttpStatus.OK,
-        data: testSpace,
-      });
   });
 });
