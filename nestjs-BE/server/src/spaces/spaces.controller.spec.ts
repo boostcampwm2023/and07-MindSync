@@ -20,7 +20,7 @@ describe('SpacesControllerV2', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot()],
+      imports: [ConfigModule],
       controllers: [SpacesControllerV2],
       providers: [
         {
