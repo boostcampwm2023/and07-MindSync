@@ -4,7 +4,7 @@ import { MAX_NAME_LENGTH } from '../../config/magic-number';
 import { Expose } from 'class-transformer';
 import { v4 as uuid } from 'uuid';
 
-export class CreateSpaceDto {
+export class CreateSpaceRequestV2Dto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(MAX_NAME_LENGTH)
@@ -21,5 +21,24 @@ export class CreateSpaceDto {
     example: 'space-icon.png',
     description: 'Profile icon for the space',
   })
+  icon: string;
+}
+
+export class CreateSpaceRequestDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(MAX_NAME_LENGTH)
+  @ApiProperty({ example: 'Sample Space', description: 'Name of the space' })
+  name: string;
+
+  @ApiProperty({
+    example: 'space-icon.png',
+    description: 'Profile icon for the space',
+  })
+  icon: string;
+}
+
+export class CreateSpacePrismaDto {
+  name: string;
   icon: string;
 }

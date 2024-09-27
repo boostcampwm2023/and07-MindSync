@@ -12,7 +12,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UpdateSpaceDto } from './dto/update-space.dto';
-import { CreateSpaceDto } from './dto/create-space.dto';
+import { CreateSpaceRequestV2Dto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -74,7 +74,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceDto;
+    } as CreateSpaceRequestV2Dto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     jest
@@ -103,7 +103,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: 'wrong profile uuid',
-    } as CreateSpaceDto;
+    } as CreateSpaceRequestV2Dto;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
 
     jest
@@ -127,7 +127,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceDto;
+    } as CreateSpaceRequestV2Dto;
 
     jest
       .spyOn(profilesService, 'findProfileByProfileUuid')
@@ -149,7 +149,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceDto;
+    } as CreateSpaceRequestV2Dto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     jest

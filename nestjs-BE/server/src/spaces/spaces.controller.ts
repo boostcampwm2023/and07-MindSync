@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
-import { CreateSpaceDto } from './dto/create-space.dto';
+import {
+  CreateSpaceRequestDto,
+  CreateSpaceRequestV2Dto,
+} from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from '../upload/upload.service';
@@ -54,7 +57,7 @@ export class SpacesControllerV2 {
         disableErrorMessages: true,
       }),
     )
-    createSpaceDto: CreateSpaceDto,
+    createSpaceDto: CreateSpaceRequestV2Dto,
     @Req() req: RequestWithUser,
   ) {
     if (!createSpaceDto.profileUuid) throw new BadRequestException();
@@ -177,7 +180,7 @@ export class SpacesController {
   async create(
     @UploadedFile() icon: Express.Multer.File,
     @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    createSpaceDto: CreateSpaceDto,
+    createSpaceDto: CreateSpaceRequestDto,
     @Req() req: RequestWithUser,
   ) {
     const profile = await this.profilesService.findProfile(req.user.uuid);
