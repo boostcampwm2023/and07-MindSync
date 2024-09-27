@@ -66,7 +66,7 @@ describe('SpacesController (e2e)', () => {
     await app.close();
   });
 
-  it('/spaces (POST)', () => {
+  it('/v2/spaces (POST)', () => {
     const newSpace = {
       name: 'new test space',
       icon: './test/base_image.png',
@@ -98,7 +98,7 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/spaces (POST) without space image', () => {
+  it('/v2/spaces (POST) without space image', () => {
     const newSpace = { name: 'new test space' };
 
     return request(app.getHttpServer())
@@ -119,7 +119,7 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/spaces (POST) without profile uuid', () => {
+  it('/v2/spaces (POST) without profile uuid', () => {
     const newSpace = {
       name: 'new test space',
       icon: './test/base_image.png',
@@ -135,7 +135,7 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
-  it('/spaces (POST) without space name', () => {
+  it('/v2/spaces (POST) without space name', () => {
     const newSpace = {
       icon: './test/base_image.png',
       iconContentType: 'image/png',
@@ -150,14 +150,14 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
-  it('/spaces (POST) not logged in', () => {
+  it('/v2/spaces (POST) not logged in', () => {
     return request(app.getHttpServer())
       .post('/v2/spaces')
       .expect(HttpStatus.UNAUTHORIZED)
       .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
   });
 
-  it("/spaces (POST) profile user doesn't have", async () => {
+  it("/v2/spaces (POST) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
       icon: './test/base_image.png',
@@ -183,7 +183,7 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
   });
 
-  it('/spaces (POST) profilie not found', () => {
+  it('/v2/spaces (POST) profilie not found', () => {
     const newSpace = {
       name: 'new test space',
       icon: './test/base_image.png',
