@@ -76,40 +76,6 @@ describe('SpacesController (e2e)', () => {
     await app.close();
   });
 
-  it('/spaces (POST) not logged in', () => {
-    return request(app.getHttpServer())
-      .post('/spaces')
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
-  });
-
-  it('/spaces (POST) without space name', () => {
-    return request(app.getHttpServer())
-      .post('/spaces')
-      .auth(testToken, { type: 'bearer' })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
-  });
-
-  it('/spaces (POST) without space image', () => {
-    return request(app.getHttpServer())
-      .post('/spaces')
-      .auth(testToken, { type: 'bearer' })
-      .send({ name: 'new test space' })
-      .expect(HttpStatus.CREATED)
-      .expect((res) => {
-        expect(res.body.message).toBe('Created');
-        expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-        expect(res.body.data.uuid).toMatch(
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-        );
-        expect(res.body.data.name).toBe('new test space');
-        expect(res.body.data.icon).toBe(
-          configService.get<string>('APP_ICON_URL'),
-        );
-      });
-  });
-
   it('/spaces (POST)', () => {
     const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
       'S3_BUCKET_NAME',
@@ -133,6 +99,40 @@ describe('SpacesController (e2e)', () => {
         expect(res.body.data.name).toBe('new test space');
         expect(res.body.data.icon).toMatch(imageRegExp);
       });
+  });
+
+  it('/spaces (POST) without space image', () => {
+    return request(app.getHttpServer())
+      .post('/spaces')
+      .auth(testToken, { type: 'bearer' })
+      .send({ name: 'new test space' })
+      .expect(HttpStatus.CREATED)
+      .expect((res) => {
+        expect(res.body.message).toBe('Created');
+        expect(res.body.statusCode).toBe(HttpStatus.CREATED);
+        expect(res.body.data.uuid).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+        );
+        expect(res.body.data.name).toBe('new test space');
+        expect(res.body.data.icon).toBe(
+          configService.get<string>('APP_ICON_URL'),
+        );
+      });
+  });
+
+  it('/spaces (POST) without space name', () => {
+    return request(app.getHttpServer())
+      .post('/spaces')
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
+  });
+
+  it('/spaces (POST) not logged in', () => {
+    return request(app.getHttpServer())
+      .post('/spaces')
+      .expect(HttpStatus.UNAUTHORIZED)
+      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
   });
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) space found', async () => {
