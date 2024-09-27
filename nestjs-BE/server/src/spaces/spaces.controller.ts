@@ -98,7 +98,7 @@ export class SpacesControllerV2 {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Space not found.',
+    description: 'Space not found. Profile not found',
   })
   async findOne(
     @Param('space_uuid') spaceUuid: string,
