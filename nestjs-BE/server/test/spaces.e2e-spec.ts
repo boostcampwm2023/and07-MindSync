@@ -7,7 +7,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { sign } from 'jsonwebtoken';
 import { Profile, Space } from '@prisma/client';
-import { PrismaModule } from '../src/prisma/prisma.module';
 import { v4 as uuid } from 'uuid';
 
 describe('SpacesController (e2e)', () => {
@@ -20,12 +19,19 @@ describe('SpacesController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule, PrismaModule],
+      imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
+        SpacesModule,
+        AuthModule,
+      ],
     }).compile();
 
-    const configService: ConfigService =
-      module.get<ConfigService>(ConfigService);
+    app = module.createNestApplication();
+
+    await app.init();
+
     prisma = module.get<PrismaService>(PrismaService);
+    configService = module.get<ConfigService>(ConfigService);
 
     await prisma.profile.deleteMany({});
     await prisma.user.deleteMany({});
@@ -48,22 +54,6 @@ describe('SpacesController (e2e)', () => {
   });
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        SpacesModule,
-        AuthModule,
-      ],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-
-    await app.init();
-
-    const prisma: PrismaService =
-      moduleFixture.get<PrismaService>(PrismaService);
-    configService = moduleFixture.get<ConfigService>(ConfigService);
-
     await prisma.space.deleteMany({});
     await prisma.profileSpace.deleteMany({});
 
@@ -72,7 +62,7 @@ describe('SpacesController (e2e)', () => {
     });
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
