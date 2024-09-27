@@ -47,12 +47,24 @@ export class SpacesControllerV2 {
   })
   async create(
     @UploadedFile() icon: Express.Multer.File,
-    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        disableErrorMessages: true,
+      }),
+    )
     createSpaceDto: CreateSpaceDto,
     @Req() req: RequestWithUser,
   ) {
-    const profile = await this.profilesService.findProfile(req.user.uuid);
+    if (!createSpaceDto.profileUuid) throw new BadRequestException();
+    const profile = await this.profilesService.findProfileByProfileUuid(
+      createSpaceDto.profileUuid,
+    );
     if (!profile) throw new NotFoundException();
+    if (req.user.uuid !== profile.userUuid) {
+      throw new ForbiddenException();
+    }
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : this.configService.get<string>('APP_ICON_URL');
