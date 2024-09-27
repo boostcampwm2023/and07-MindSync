@@ -67,6 +67,12 @@ describe('SpacesController (e2e)', () => {
   });
 
   it('/spaces (POST)', () => {
+    const newSpace = {
+      name: 'new test space',
+      icon: './test/base_image.png',
+      iconContentType: 'image/png',
+    };
+
     const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
       'S3_BUCKET_NAME',
     )}\\.s3\\.${configService.get<string>(
@@ -77,8 +83,8 @@ describe('SpacesController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/spaces')
       .auth(testToken, { type: 'bearer' })
-      .field('name', 'new test space')
-      .attach('icon', './test/base_image.png', { contentType: 'image/png' })
+      .field('name', newSpace.name)
+      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
       .expect(HttpStatus.CREATED)
       .expect((res) => {
         expect(res.body.message).toBe('Created');
@@ -86,16 +92,18 @@ describe('SpacesController (e2e)', () => {
         expect(res.body.data.uuid).toMatch(
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
         );
-        expect(res.body.data.name).toBe('new test space');
+        expect(res.body.data.name).toBe(newSpace.name);
         expect(res.body.data.icon).toMatch(imageRegExp);
       });
   });
 
   it('/spaces (POST) without space image', () => {
+    const newSpace = { name: 'new test space' };
+
     return request(app.getHttpServer())
       .post('/spaces')
       .auth(testToken, { type: 'bearer' })
-      .send({ name: 'new test space' })
+      .send({ name: newSpace.name })
       .expect(HttpStatus.CREATED)
       .expect((res) => {
         expect(res.body.message).toBe('Created');
@@ -103,7 +111,7 @@ describe('SpacesController (e2e)', () => {
         expect(res.body.data.uuid).toMatch(
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
         );
-        expect(res.body.data.name).toBe('new test space');
+        expect(res.body.data.name).toBe(newSpace.name);
         expect(res.body.data.icon).toBe(
           configService.get<string>('APP_ICON_URL'),
         );
