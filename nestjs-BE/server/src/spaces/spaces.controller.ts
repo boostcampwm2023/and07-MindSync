@@ -105,8 +105,8 @@ export class SpacesControllerV2 {
     if (!profileUuid) throw new BadRequestException();
     const profile =
       await this.profilesService.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new ForbiddenException();
-    if (req.user.uuid != profile.userUuid) {
+    if (!profile) throw new NotFoundException();
+    if (req.user.uuid !== profile.userUuid) {
       throw new ForbiddenException();
     }
     const space = await this.spacesService.findSpace(spaceUuid);

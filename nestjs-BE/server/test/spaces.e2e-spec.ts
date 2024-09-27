@@ -260,8 +260,8 @@ describe('SpacesController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
       .auth(testToken, { type: 'bearer' })
-      .expect(HttpStatus.FORBIDDEN)
-      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) findOne profile not joined space', () => {

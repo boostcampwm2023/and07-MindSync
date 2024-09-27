@@ -288,6 +288,27 @@ describe('SpacesControllerV2', () => {
     await expect(response).rejects.toThrow(NotFoundException);
   });
 
+  it('findOne profile not found', async () => {
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(null);
+
+    const response = controller.findOne(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
+
+    await expect(response).rejects.toThrow(NotFoundException);
+  });
+
   it('update update space', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
