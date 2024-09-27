@@ -47,4 +47,13 @@ describe('SpacesService', () => {
 
     await expect(space).resolves.toBeNull();
   });
+
+  it('updateSpace fail', async () => {
+    const data = { name: 'new space name', icon: 'new space icon' };
+    jest.spyOn(prisma.space, 'update').mockRejectedValue(new Error());
+
+    const space = spacesService.updateSpace('space uuid', data);
+
+    await expect(space).rejects.toThrow(Error);
+  });
 });
