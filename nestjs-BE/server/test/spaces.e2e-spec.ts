@@ -81,9 +81,10 @@ describe('SpacesController (e2e)', () => {
     const imageRegExp = new RegExp(imageUrlPattern);
 
     return request(app.getHttpServer())
-      .post('/spaces')
+      .post('/v2/spaces')
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
+      .field('profile_uuid', testProfile.uuid)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
       .expect(HttpStatus.CREATED)
       .expect((res) => {
@@ -101,9 +102,9 @@ describe('SpacesController (e2e)', () => {
     const newSpace = { name: 'new test space' };
 
     return request(app.getHttpServer())
-      .post('/spaces')
+      .post('/v2/spaces')
       .auth(testToken, { type: 'bearer' })
-      .send({ name: newSpace.name })
+      .send({ name: newSpace.name, profile_uuid: testProfile.uuid })
       .expect(HttpStatus.CREATED)
       .expect((res) => {
         expect(res.body.message).toBe('Created');
@@ -118,19 +119,85 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/spaces (POST) without space name', () => {
+  it('/spaces (POST) without profile uuid', () => {
+    const newSpace = {
+      name: 'new test space',
+      icon: './test/base_image.png',
+      iconContentType: 'image/png',
+    };
+
     return request(app.getHttpServer())
-      .post('/spaces')
+      .post('/v2/spaces')
       .auth(testToken, { type: 'bearer' })
+      .field('name', newSpace.name)
+      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
+  });
+
+  it('/spaces (POST) without space name', () => {
+    const newSpace = {
+      icon: './test/base_image.png',
+      iconContentType: 'image/png',
+    };
+
+    return request(app.getHttpServer())
+      .post('/v2/spaces')
+      .auth(testToken, { type: 'bearer' })
+      .field('profile_uuid', testProfile.uuid)
+      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
       .expect(HttpStatus.BAD_REQUEST)
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
   it('/spaces (POST) not logged in', () => {
     return request(app.getHttpServer())
-      .post('/spaces')
+      .post('/v2/spaces')
       .expect(HttpStatus.UNAUTHORIZED)
       .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
+  });
+
+  it("/spaces (POST) profile user doesn't have", async () => {
+    const newSpace = {
+      name: 'new test space',
+      icon: './test/base_image.png',
+      iconContentType: 'image/png',
+    };
+    const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+    const newProfile = await prisma.profile.create({
+      data: {
+        uuid: uuid(),
+        userUuid: newUser.uuid,
+        image: 'test image',
+        nickname: 'test nickname',
+      },
+    });
+
+    return request(app.getHttpServer())
+      .post('/v2/spaces')
+      .auth(testToken, { type: 'bearer' })
+      .field('name', newSpace.name)
+      .field('profile_uuid', newProfile.uuid)
+      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/spaces (POST) profilie not found', () => {
+    const newSpace = {
+      name: 'new test space',
+      icon: './test/base_image.png',
+      iconContentType: 'image/png',
+    };
+
+    return request(app.getHttpServer())
+      .post('/v2/spaces')
+      .auth(testToken, { type: 'bearer' })
+      .field('name', newSpace.name)
+      .field('profile_uuid', uuid())
+      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) space found', async () => {
