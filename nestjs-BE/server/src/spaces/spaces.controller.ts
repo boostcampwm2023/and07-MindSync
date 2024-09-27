@@ -45,8 +45,24 @@ export class SpacesControllerV2 {
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Create space' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'The space has been successfully created.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed. Space name needed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: "User doesn't logged in.",
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "Profile user doesn't have.",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found.',
   })
   async create(
     @UploadedFile() icon: Express.Multer.File,
