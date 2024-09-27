@@ -141,15 +141,20 @@ describe('SpacesControllerV2', () => {
   });
 
   it('create icon not requested', async () => {
-    const profileMock = { uuid: 'profile uuid' } as Profile;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
     } as CreateSpaceDto;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(profileMock);
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(profileMock);
     jest.spyOn(spacesService, 'createSpace').mockResolvedValue(spaceMock);
 
     const response = controller.create(
