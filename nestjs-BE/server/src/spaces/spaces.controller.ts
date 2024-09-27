@@ -74,7 +74,7 @@ export class SpacesControllerV2 {
     createSpaceDto.icon = iconUrl;
     const space = await this.spacesService.createSpace(createSpaceDto);
     await this.profileSpaceService.joinSpace(profile.uuid, space.uuid);
-    return { statusCode: 201, message: 'Created', data: space };
+    return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 
   @Get(':space_uuid')
@@ -120,7 +120,7 @@ export class SpacesControllerV2 {
         spaceUuid,
       );
     if (!profileSpace) throw new ForbiddenException();
-    return { statusCode: 200, message: 'OK', data: space };
+    return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 
   @Patch(':space_uuid')
@@ -152,7 +152,7 @@ export class SpacesControllerV2 {
       updateSpaceDto,
     );
     if (!space) throw new NotFoundException();
-    return { statusCode: 200, message: 'Success', data: space };
+    return { statusCode: HttpStatus.OK, message: 'Success', data: space };
   }
 }
 
