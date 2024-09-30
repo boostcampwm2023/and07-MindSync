@@ -11,7 +11,7 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { UpdateSpaceDto } from './dto/update-space.dto';
+import { UpdateSpaceRequestV2Dto } from './dto/update-space.dto';
 import { CreateSpaceRequestV2Dto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -311,49 +311,212 @@ describe('SpacesControllerV2', () => {
 
   it('update update space', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
+    const iconUrlMock = 'www.test.com/image';
     const spaceMock = { uuid: 'space uuid' } as Space;
-    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
-    jest
-      .spyOn(uploadService, 'uploadFile')
-      .mockResolvedValue('www.test.com/image');
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileMock.uuid,
+    };
 
-    const response = controller.update(iconMock, 'space uuid', bodyMock);
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(profileMock);
+    jest
+      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
+      .mockResolvedValue(profileSpaceMock);
+    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(iconUrlMock);
+    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
+
+    const response = controller.update(
+      iconMock,
+      spaceMock.uuid,
+      profileMock.uuid,
+      bodyMock,
+      requestMock,
+    );
 
     await expect(response).resolves.toEqual({
-      statusCode: 200,
-      message: 'Success',
+      statusCode: HttpStatus.OK,
+      message: 'OK',
       data: spaceMock,
     });
     expect(uploadService.uploadFile).toHaveBeenCalled();
+    expect(spacesService.updateSpace).toHaveBeenCalledWith(spaceMock.uuid, {
+      name: bodyMock.name,
+      icon: iconUrlMock,
+    });
   });
 
   it('update icon not requested', async () => {
-    const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
     const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileMock.uuid,
+    };
+
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(profileMock);
+    jest
+      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
+      .mockResolvedValue(profileSpaceMock);
     jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
 
     const response = controller.update(
       null as unknown as Express.Multer.File,
-      'space uuid',
+      spaceMock.uuid,
+      profileMock.uuid,
       bodyMock,
+      requestMock,
     );
 
     await expect(response).resolves.toEqual({
-      statusCode: 200,
-      message: 'Success',
+      statusCode: HttpStatus.OK,
+      message: 'OK',
       data: spaceMock,
     });
     expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(spacesService.updateSpace).toHaveBeenCalledWith(spaceMock.uuid, {
+      name: bodyMock.name,
+    });
   });
 
-  it('update fail', async () => {
+  it('update name not requested', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
-    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(null);
+    const iconUrlMock = 'www.test.com/image';
+    const bodyMock = {} as UpdateSpaceRequestV2Dto;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileMock.uuid,
+    };
 
-    const response = controller.update(iconMock, 'space uuid', bodyMock);
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(profileMock);
+    jest
+      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
+      .mockResolvedValue(profileSpaceMock);
+    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
+    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(iconUrlMock);
+
+    const response = controller.update(
+      iconMock,
+      spaceMock.uuid,
+      profileMock.uuid,
+      bodyMock,
+      requestMock,
+    );
+
+    await expect(response).resolves.toEqual({
+      statusCode: HttpStatus.OK,
+      message: 'OK',
+      data: spaceMock,
+    });
+    expect(uploadService.uploadFile).toHaveBeenCalled();
+    expect(spacesService.updateSpace).toHaveBeenCalledWith(spaceMock.uuid, {
+      icon: iconUrlMock,
+    });
+  });
+
+  it("update profile user doesn't have", async () => {
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: 'new user uuid',
+    } as Profile;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(profileMock);
+
+    const response = controller.update(
+      iconMock,
+      spaceMock.uuid,
+      profileMock.uuid,
+      bodyMock,
+      requestMock,
+    );
+
+    await expect(response).rejects.toThrow(ForbiddenException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(spacesService.updateSpace).not.toHaveBeenCalled();
+  });
+
+  it('update profile not joined space', async () => {
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(profileMock);
+    jest
+      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
+      .mockResolvedValue(null);
+
+    const response = controller.update(
+      iconMock,
+      spaceMock.uuid,
+      profileMock.uuid,
+      bodyMock,
+      requestMock,
+    );
+
+    await expect(response).rejects.toThrow(ForbiddenException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(spacesService.updateSpace).not.toHaveBeenCalled();
+  });
+
+  it('update profile not found', async () => {
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profileMock = {
+      uuid: 'profile uuid',
+      userUuid: requestMock.user.uuid,
+    } as Profile;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+
+    jest
+      .spyOn(profilesService, 'findProfileByProfileUuid')
+      .mockResolvedValue(null);
+
+    const response = controller.update(
+      iconMock,
+      spaceMock.uuid,
+      profileMock.uuid,
+      bodyMock,
+      requestMock,
+    );
 
     await expect(response).rejects.toThrow(NotFoundException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(spacesService.updateSpace).not.toHaveBeenCalled();
   });
 });
