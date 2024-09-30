@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateSpaceDto } from './dto/update-space.dto';
+import { UpdateSpacePrismaDto } from './dto/update-space.dto';
 import { Prisma, Space } from '@prisma/client';
 import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { v4 as uuid } from 'uuid';
@@ -29,7 +29,7 @@ export class SpacesService {
 
   async updateSpace(
     spaceUuid: string,
-    updateSpaceDto: UpdateSpaceDto,
+    updateSpaceDto: UpdateSpacePrismaDto,
   ): Promise<Space | null> {
     try {
       return await this.prisma.space.update({

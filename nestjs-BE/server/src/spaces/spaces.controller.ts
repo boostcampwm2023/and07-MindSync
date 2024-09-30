@@ -22,7 +22,10 @@ import {
   CreateSpaceRequestDto,
   CreateSpaceRequestV2Dto,
 } from './dto/create-space.dto';
-import { UpdateSpaceDto } from './dto/update-space.dto';
+import {
+  UpdateSpaceRequestDto,
+  UpdateSpaceRequestV2Dto,
+} from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from '../upload/upload.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
@@ -158,7 +161,7 @@ export class SpacesControllerV2 {
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
     @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    updateSpaceDto: UpdateSpaceDto,
+    updateSpaceDto: UpdateSpaceRequestV2Dto,
   ) {
     if (icon) {
       updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
@@ -245,7 +248,7 @@ export class SpacesController {
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
     @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    updateSpaceDto: UpdateSpaceDto,
+    updateSpaceDto: UpdateSpaceRequestDto,
   ) {
     if (icon) {
       updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
