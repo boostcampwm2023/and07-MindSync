@@ -160,9 +160,24 @@ export class SpacesControllerV2 {
   async update(
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
+    @Query('profile_uuid') profileUuid: string,
     @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
     updateSpaceDto: UpdateSpaceRequestV2Dto,
+    @Req() req: RequestWithUser,
   ) {
+    if (!profileUuid) throw new BadRequestException();
+    const profile =
+      await this.profilesService.findProfileByProfileUuid(profileUuid);
+    if (!profile) throw new NotFoundException();
+    if (req.user.uuid !== profile.userUuid) {
+      throw new ForbiddenException();
+    }
+    const profileSpace =
+      await this.profileSpaceService.findProfileSpaceByBothUuid(
+        profileUuid,
+        spaceUuid,
+      );
+    if (!profileSpace) throw new ForbiddenException();
     if (icon) {
       updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
     }
@@ -171,7 +186,7 @@ export class SpacesControllerV2 {
       updateSpaceDto,
     );
     if (!space) throw new NotFoundException();
-    return { statusCode: HttpStatus.OK, message: 'Success', data: space };
+    return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 }
 
