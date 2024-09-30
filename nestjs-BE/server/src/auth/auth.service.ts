@@ -61,7 +61,7 @@ export class AuthService {
           'Refresh token expired. Please log in again.',
         );
       }
-      const accessToken = await this.createAccessToken(token.user_id);
+      const accessToken = await this.createAccessToken(token.userUuid);
       return accessToken;
     } catch (error) {
       throw new UnauthorizedException(

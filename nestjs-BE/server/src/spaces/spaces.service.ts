@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateSpaceDto } from './dto/update-space.dto';
+import { UpdateSpacePrismaDto } from './dto/update-space.dto';
 import { Prisma, Space } from '@prisma/client';
-import { CreateSpaceDto } from './dto/create-space.dto';
-import generateUuid from '../utils/uuid';
+import { CreateSpacePrismaDto } from './dto/create-space.dto';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class SpacesService {
@@ -17,10 +17,10 @@ export class SpacesService {
     return this.prisma.space.findMany({ where: { uuid: { in: spaceUuids } } });
   }
 
-  async createSpace(createSpaceDto: CreateSpaceDto): Promise<Space> {
+  async createSpace(createSpaceDto: CreateSpacePrismaDto): Promise<Space> {
     return this.prisma.space.create({
       data: {
-        uuid: generateUuid(),
+        uuid: uuid(),
         name: createSpaceDto.name,
         icon: createSpaceDto.icon,
       },
@@ -29,7 +29,7 @@ export class SpacesService {
 
   async updateSpace(
     spaceUuid: string,
-    updateSpaceDto: UpdateSpaceDto,
+    updateSpaceDto: UpdateSpacePrismaDto,
   ): Promise<Space | null> {
     try {
       return await this.prisma.space.update({

@@ -1,8 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 import { MAX_NAME_LENGTH } from '../../config/magic-number';
 
-export class UpdateSpaceDto {
+export class UpdateSpaceRequestV2Dto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(MAX_NAME_LENGTH)
+  @ApiProperty({
+    example: 'new space',
+    description: 'Updated space name',
+    required: false,
+  })
+  name: string;
+
+  @IsOptional()
+  @ApiProperty({
+    example: 'new image',
+    description: 'Updated space icon',
+    required: false,
+  })
+  icon: string;
+}
+
+export class UpdateSpaceRequestDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(MAX_NAME_LENGTH)
@@ -18,5 +39,10 @@ export class UpdateSpaceDto {
     description: 'Updated space icon',
     required: false,
   })
+  icon: string;
+}
+
+export class UpdateSpacePrismaDto {
+  name: string;
   icon: string;
 }

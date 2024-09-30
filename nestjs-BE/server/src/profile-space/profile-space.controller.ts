@@ -96,7 +96,7 @@ export class ProfileSpaceController {
         profile.uuid,
       );
     const spaceUuids = profileSpaces.map(
-      (profileSpace) => profileSpace.space_uuid,
+      (profileSpace) => profileSpace.spaceUuid,
     );
     const spaces = await this.spacesService.findSpaces(spaceUuids);
     return { statusCode: 200, message: 'Success', data: spaces };
@@ -118,7 +118,7 @@ export class ProfileSpaceController {
     const profileSpaces =
       await this.profileSpaceService.findProfileSpacesBySpaceUuid(space.uuid);
     const profileUuids = profileSpaces.map(
-      (profileSpace) => profileSpace.profile_uuid,
+      (profileSpace) => profileSpace.profileUuid,
     );
     const profiles = await this.profilesService.findProfiles(profileUuids);
     return { statusCode: 200, message: 'Success', data: profiles };

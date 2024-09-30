@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Profile_space } from '@prisma/client';
+import { Prisma, ProfileSpace } from '@prisma/client';
 
 @Injectable()
 export class ProfileSpaceService {
@@ -8,27 +8,36 @@ export class ProfileSpaceService {
 
   async findProfileSpacesByProfileUuid(
     profileUuid: string,
-  ): Promise<Profile_space[]> {
-    return this.prisma.profile_space.findMany({
-      where: { profile_uuid: profileUuid },
+  ): Promise<ProfileSpace[]> {
+    return this.prisma.profileSpace.findMany({
+      where: { profileUuid: profileUuid },
     });
   }
 
   async findProfileSpacesBySpaceUuid(
     spaceUuid: string,
-  ): Promise<Profile_space[]> {
-    return this.prisma.profile_space.findMany({
-      where: { space_uuid: spaceUuid },
+  ): Promise<ProfileSpace[]> {
+    return this.prisma.profileSpace.findMany({
+      where: { spaceUuid: spaceUuid },
+    });
+  }
+
+  async findProfileSpaceByBothUuid(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<ProfileSpace | null> {
+    return this.prisma.profileSpace.findUnique({
+      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
     });
   }
 
   async joinSpace(
     profileUuid: string,
     spaceUuid: string,
-  ): Promise<Profile_space | null> {
+  ): Promise<ProfileSpace | null> {
     try {
-      return await this.prisma.profile_space.create({
-        data: { space_uuid: spaceUuid, profile_uuid: profileUuid },
+      return await this.prisma.profileSpace.create({
+        data: { spaceUuid: spaceUuid, profileUuid: profileUuid },
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -42,13 +51,13 @@ export class ProfileSpaceService {
   async leaveSpace(
     profileUuid: string,
     spaceUuid: string,
-  ): Promise<Profile_space | null> {
+  ): Promise<ProfileSpace | null> {
     try {
-      return await this.prisma.profile_space.delete({
+      return await this.prisma.profileSpace.delete({
         where: {
-          space_uuid_profile_uuid: {
-            space_uuid: spaceUuid,
-            profile_uuid: profileUuid,
+          spaceUuid_profileUuid: {
+            spaceUuid: spaceUuid,
+            profileUuid: profileUuid,
           },
         },
       });
@@ -62,9 +71,9 @@ export class ProfileSpaceService {
   }
 
   async isSpaceEmpty(spaceUuid: string) {
-    const first = await this.prisma.profile_space.findFirst({
+    const first = await this.prisma.profileSpace.findFirst({
       where: {
-        space_uuid: spaceUuid,
+        spaceUuid: spaceUuid,
       },
     });
     return first ? false : true;
