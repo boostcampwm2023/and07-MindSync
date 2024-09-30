@@ -18,8 +18,8 @@ export class RefreshTokensService {
     return this.prisma.refreshToken.create({
       data: {
         token: this.createToken(),
-        expiry_date: this.getExpiryDate(),
-        user_id: userUuid,
+        expiryDate: this.getExpiryDate(),
+        userUuid,
       },
     });
   }

@@ -34,7 +34,7 @@ describe('ProfilesService', () => {
     const userId = generateUuid();
     const testProfile = {
       uuid: generateUuid(),
-      user_id: userId,
+      userUuid: userId,
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
@@ -62,7 +62,7 @@ describe('ProfilesService', () => {
     const testProfiles = profileUuids.map((uuid, index) => {
       return {
         uuid,
-        user_id: generateUuid(),
+        userUuid: generateUuid(),
         image: 'www.test.com/image',
         nickname: `nickname${index}`,
       };
@@ -85,7 +85,7 @@ describe('ProfilesService', () => {
 
   it('getOrCreateProfile', async () => {
     const data = {
-      user_id: generateUuid(),
+      userUuid: generateUuid(),
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
@@ -103,7 +103,7 @@ describe('ProfilesService', () => {
       nickname: 'test nickname',
     };
     const uuid = generateUuid();
-    const testProfile = { uuid: generateUuid(), user_id: uuid, ...data };
+    const testProfile = { uuid: generateUuid(), userUuid: uuid, ...data };
     jest.spyOn(prisma.profile, 'update').mockResolvedValue(testProfile);
 
     const profile = profilesService.updateProfile(uuid, data);

@@ -45,7 +45,7 @@ export class AuthController {
     const userData = { email: kakaoUserAccount.email };
     const user = await this.usersService.getOrCreateUser(userData);
     const profileData = {
-      user_id: user.uuid,
+      userUuid: user.uuid,
       image: this.configService.get<string>('BASE_IMAGE_URL'),
       nickname: '익명의 사용자',
     };

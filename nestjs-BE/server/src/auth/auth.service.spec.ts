@@ -58,7 +58,7 @@ describe('AuthService', () => {
     jest.spyOn(jwtService, 'verify').mockReturnValue({});
     jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
     jest.spyOn(refreshTokensService, 'findRefreshToken').mockResolvedValue({
-      user_id: 'user uuid',
+      userUuid: 'user uuid',
     } as RefreshToken);
 
     const token = service.renewAccessToken('refresh token');
