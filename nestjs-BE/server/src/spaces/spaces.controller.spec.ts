@@ -224,7 +224,7 @@ describe('SpacesControllerV2', () => {
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const profileMock = {
       uuid: 'profile uuid',
-      userUuid: 'new profile uuid',
+      userUuid: 'wrong user uuid',
     } as Profile;
 
     jest
