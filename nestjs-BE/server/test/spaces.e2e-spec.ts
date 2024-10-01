@@ -8,6 +8,8 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { sign } from 'jsonwebtoken';
 import { Profile, Space } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
+import { readFile } from 'fs/promises';
+import { resolve } from 'path';
 
 describe('SpacesController (e2e)', () => {
   let app: INestApplication;
@@ -383,18 +385,18 @@ describe('SpacesController (e2e)', () => {
   });
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) unauthorized', async () => {
-    const newSpace = {
-      name: 'new test space',
-      icon: './test/base_image.png',
-      iconContentType: 'image/png',
-    };
+    const icon = await readFile(resolve(__dirname, './base_image.png'));
+    const newSpace = { name: 'new test space', icon };
 
     return request(app.getHttpServer())
       .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .field('name', newSpace.name)
-      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
+      .attach('icon', newSpace.icon)
       .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
+      .expect({
+        message: 'Unauthorized',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
   });
 
   it("/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile user doesn't have", async () => {
