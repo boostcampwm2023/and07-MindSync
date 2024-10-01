@@ -18,6 +18,7 @@ describe('SpacesController (e2e)', () => {
   let testProfile: Profile;
   let configService: ConfigService;
   let prisma: PrismaService;
+  const testImagePath = resolve(__dirname, './base_image.png');
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -75,7 +76,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces (POST)', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -128,7 +129,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces (POST) without profile uuid', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -143,7 +144,7 @@ describe('SpacesController (e2e)', () => {
 
   it('/v2/spaces (POST) without space name', () => {
     const newSpace = {
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -166,7 +167,7 @@ describe('SpacesController (e2e)', () => {
   it("/v2/spaces (POST) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -192,7 +193,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces (POST) profilie not found', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -289,7 +290,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) update success', async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     await prisma.profileSpace.create({
@@ -319,7 +320,7 @@ describe('SpacesController (e2e)', () => {
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) request without name', async () => {
     const newSpace = {
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
@@ -371,7 +372,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile uuid needed', async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -402,7 +403,7 @@ describe('SpacesController (e2e)', () => {
   it("/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -430,7 +431,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not joined space', async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -455,7 +456,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not found', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
