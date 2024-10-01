@@ -31,7 +31,7 @@ describe('ProfilesController', () => {
     const requestMock = { user: { uuid: 'user test uuid' } } as RequestWithUser;
     const testProfile = {
       uuid: 'profile test uuid',
-      user_id: requestMock.user.uuid,
+      userUuid: requestMock.user.uuid,
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
@@ -67,7 +67,7 @@ describe('ProfilesController', () => {
     const testImageUrl = 'www.test.com/image';
     const testProfile = {
       uuid: 'profile test uuid',
-      user_id: requestMock.user.uuid,
+      userUuid: requestMock.user.uuid,
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };

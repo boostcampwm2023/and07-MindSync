@@ -11,9 +11,9 @@ import generateUuid from '../utils/uuid';
 export class InviteCodesService {
   constructor(protected prisma: PrismaService) {}
 
-  async findInviteCode(inviteCode: string): Promise<InviteCode> {
+  async findInviteCode(inviteCode: string): Promise<InviteCode | null> {
     return this.prisma.inviteCode.findUnique({
-      where: { invite_code: inviteCode },
+      where: { inviteCode: inviteCode },
     });
   }
 
@@ -21,18 +21,18 @@ export class InviteCodesService {
     return this.prisma.inviteCode.create({
       data: {
         uuid: generateUuid(),
-        invite_code: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
-        space_uuid: spaceUuid,
-        expiry_date: this.calculateExpiryDate(),
+        inviteCode: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
+        spaceUuid: spaceUuid,
+        expiryDate: this.calculateExpiryDate(),
       },
     });
   }
 
-  async deleteInviteCode(inviteCode: string): Promise<InviteCode> {
+  async deleteInviteCode(inviteCode: string): Promise<InviteCode | null> {
     try {
       return await this.prisma.inviteCode.delete({
         where: {
-          invite_code: inviteCode,
+          inviteCode: inviteCode,
         },
       });
     } catch (err) {
@@ -70,7 +70,7 @@ export class InviteCodesService {
 
   private async generateUniqueInviteCode(length: number): Promise<string> {
     let inviteCode: string;
-    let inviteCodeData: InviteCode;
+    let inviteCodeData: InviteCode | null;
 
     do {
       inviteCode = this.generateShortInviteCode(length);

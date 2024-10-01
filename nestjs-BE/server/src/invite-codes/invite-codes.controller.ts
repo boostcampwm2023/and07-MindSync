@@ -44,7 +44,7 @@ export class InviteCodesController {
     return {
       statusCode: 201,
       message: 'Created',
-      data: { invite_code: inviteCode.invite_code },
+      data: { invite_code: inviteCode.inviteCode },
     };
   }
 
@@ -66,11 +66,11 @@ export class InviteCodesController {
     const inviteCodeData =
       await this.inviteCodesService.findInviteCode(inviteCode);
     if (!inviteCodeData) throw new NotFoundException();
-    if (this.inviteCodesService.checkExpiry(inviteCodeData.expiry_date)) {
+    if (this.inviteCodesService.checkExpiry(inviteCodeData.expiryDate)) {
       this.inviteCodesService.deleteInviteCode(inviteCode);
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
-    const space = await this.spacesService.findSpace(inviteCodeData.space_uuid);
+    const space = await this.spacesService.findSpace(inviteCodeData.spaceUuid);
     return { statusCode: 200, message: 'Success', data: space };
   }
 }
