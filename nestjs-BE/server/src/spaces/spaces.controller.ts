@@ -146,16 +146,24 @@ export class SpacesControllerV2 {
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Update space by space_uuid' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Space has been successfully updated.',
   })
   @ApiResponse({
-    status: 400,
-    description: 'Bad Request. Invalid input data.',
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed. ',
   })
   @ApiResponse({
-    status: 404,
-    description: 'Space not found.',
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "Profile user doesn't have. Profile not joined space.",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found.',
   })
   async update(
     @UploadedFile() icon: Express.Multer.File,
