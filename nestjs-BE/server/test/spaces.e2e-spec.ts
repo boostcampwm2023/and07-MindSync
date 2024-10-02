@@ -8,6 +8,8 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { sign } from 'jsonwebtoken';
 import { Profile, Space } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
+import { readFile } from 'fs/promises';
+import { resolve } from 'path';
 
 describe('SpacesController (e2e)', () => {
   let app: INestApplication;
@@ -16,6 +18,7 @@ describe('SpacesController (e2e)', () => {
   let testProfile: Profile;
   let configService: ConfigService;
   let prisma: PrismaService;
+  const testImagePath = resolve(__dirname, './base_image.png');
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -73,7 +76,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces (POST)', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -126,7 +129,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces (POST) without profile uuid', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -141,7 +144,7 @@ describe('SpacesController (e2e)', () => {
 
   it('/v2/spaces (POST) without space name', () => {
     const newSpace = {
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -164,7 +167,7 @@ describe('SpacesController (e2e)', () => {
   it("/v2/spaces (POST) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -190,7 +193,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces (POST) profilie not found', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -287,7 +290,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) update success', async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     await prisma.profileSpace.create({
@@ -317,7 +320,7 @@ describe('SpacesController (e2e)', () => {
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) request without name', async () => {
     const newSpace = {
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
@@ -369,7 +372,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile uuid needed', async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
@@ -383,24 +386,24 @@ describe('SpacesController (e2e)', () => {
   });
 
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) unauthorized', async () => {
-    const newSpace = {
-      name: 'new test space',
-      icon: './test/base_image.png',
-      iconContentType: 'image/png',
-    };
+    const icon = await readFile(resolve(__dirname, './base_image.png'));
+    const newSpace = { name: 'new test space', icon };
 
     return request(app.getHttpServer())
       .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .field('name', newSpace.name)
-      .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
+      .attach('icon', newSpace.icon)
       .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
+      .expect({
+        message: 'Unauthorized',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
   });
 
   it("/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -428,7 +431,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not joined space', async () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -453,7 +456,7 @@ describe('SpacesController (e2e)', () => {
   it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not found', () => {
     const newSpace = {
       name: 'new test space',
-      icon: './test/base_image.png',
+      icon: testImagePath,
       iconContentType: 'image/png',
     };
 
