@@ -10,6 +10,7 @@ import { Profile, Space } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
+import { ProfileSpaceModule } from '../src/profile-space/profile-space.module';
 
 describe('SpacesController (e2e)', () => {
   let app: INestApplication;
@@ -26,6 +27,7 @@ describe('SpacesController (e2e)', () => {
         ConfigModule.forRoot({ isGlobal: true }),
         SpacesModule,
         AuthModule,
+        ProfileSpaceModule,
       ],
     }).compile();
 
