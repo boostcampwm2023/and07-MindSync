@@ -1,3 +1,3 @@
-export class CreateUserDto {
+export class CreateUserPrismaDto {
   readonly email: string;
 }
