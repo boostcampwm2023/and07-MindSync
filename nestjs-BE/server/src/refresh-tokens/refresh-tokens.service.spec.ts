@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ConfigModule } from '@nestjs/config';
+import { getExpiryDate } from '../utils/date';
 
 jest.useFakeTimers();
 
@@ -40,21 +41,11 @@ describe('RefreshTokensService', () => {
     jest.clearAllTimers();
   });
 
-  it('getExpiryDate check time diff', () => {
-    const currentDate = new Date();
-    const expiryDate = service.getExpiryDate();
-    const twoWeeksInMilliseconds = 2 * 7 * 24 * 60 * 60 * 1000;
-
-    const timeDiff = expiryDate.getTime() - currentDate.getTime();
-
-    expect(twoWeeksInMilliseconds == timeDiff).toBeTruthy();
-  });
-
   it('findRefreshToken found token', async () => {
     const testToken = {
       id: 0,
       token: 'Token',
-      expiryDate: service.getExpiryDate(),
+      expiryDate: getExpiryDate(),
       userUuid: 'UserId',
     };
     jest.spyOn(prisma.refreshToken, 'findUnique').mockResolvedValue(testToken);
@@ -76,7 +67,7 @@ describe('RefreshTokensService', () => {
     const testToken = {
       id: 0,
       token: 'Token',
-      expiryDate: service.getExpiryDate(),
+      expiryDate: getExpiryDate(),
       userUuid: 'userId',
     };
     jest.spyOn(prisma.refreshToken, 'create').mockResolvedValue(testToken);
@@ -105,7 +96,7 @@ describe('RefreshTokensService', () => {
     const testToken = {
       id: 0,
       token: 'Token',
-      expiryDate: service.getExpiryDate(),
+      expiryDate: getExpiryDate(),
       userUuid: 'userId',
     };
     jest.spyOn(prisma.refreshToken, 'delete').mockResolvedValue(testToken);
