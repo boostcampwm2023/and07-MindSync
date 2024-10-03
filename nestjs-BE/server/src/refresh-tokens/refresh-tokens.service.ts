@@ -44,7 +44,7 @@ export class RefreshTokensService {
     }
   }
 
-  createToken(): string {
+  private createToken(): string {
     const refreshToken = this.jwtService.sign(
       { uuid: uuid() },
       {
