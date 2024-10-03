@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { stringify } from 'qs';
-import { RefreshTokensService } from './refresh-tokens.service';
+import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

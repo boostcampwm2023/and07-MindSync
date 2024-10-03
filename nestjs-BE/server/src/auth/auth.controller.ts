@@ -12,7 +12,7 @@ import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ProfilesService } from '../profiles/profiles.service';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { RefreshTokensService } from './refresh-tokens.service';
+import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
