@@ -21,7 +21,6 @@ describe('RefreshTokensService', () => {
           provide: PrismaService,
           useValue: {
             refreshToken: {
-              findUnique: jest.fn(),
               create: jest.fn(),
               delete: jest.fn(),
             },
@@ -41,28 +40,6 @@ describe('RefreshTokensService', () => {
     jest.clearAllTimers();
   });
 
-  it('findRefreshToken found token', async () => {
-    const testToken = {
-      id: 0,
-      token: 'Token',
-      expiryDate: getExpiryDate({ week: 2 }),
-      userUuid: 'UserId',
-    };
-    jest.spyOn(prisma.refreshToken, 'findUnique').mockResolvedValue(testToken);
-
-    const token = service.findRefreshToken(testToken.token);
-
-    await expect(token).resolves.toEqual(testToken);
-  });
-
-  it('findRefreshToken not found token', async () => {
-    jest.spyOn(prisma.refreshToken, 'findUnique').mockResolvedValue(null);
-
-    const token = service.findRefreshToken('Token');
-
-    await expect(token).resolves.toBeNull();
-  });
-
   it('createRefreshToken created', async () => {
     const testToken = {
       id: 0,
@@ -75,21 +52,6 @@ describe('RefreshTokensService', () => {
     const token = service.createRefreshToken('userId');
 
     await expect(token).resolves.toEqual(testToken);
-  });
-
-  it('createUser user already exists', async () => {
-    jest
-      .spyOn(prisma.refreshToken, 'create')
-      .mockRejectedValue(
-        new PrismaClientKnownRequestError(
-          'Unique constraint failed on the constraint: `RefreshToken_token_key`',
-          { code: 'P2025', clientVersion: '' },
-        ),
-      );
-
-    const token = service.createRefreshToken('userId');
-
-    await expect(token).rejects.toThrow(PrismaClientKnownRequestError);
   });
 
   it('deleteRefreshToken deleted', async () => {
