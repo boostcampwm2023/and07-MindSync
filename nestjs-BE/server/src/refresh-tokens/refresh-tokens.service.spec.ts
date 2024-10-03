@@ -72,7 +72,7 @@ describe('RefreshTokensService', () => {
       expiryDate: getExpiryDate({ week: 2 }),
       userUuid: 'userId',
     };
-    jest.spyOn(prisma.refreshToken, 'delete').mockResolvedValue(testToken);
+    (prisma.refreshToken.delete as jest.Mock).mockResolvedValue(testToken);
 
     const token = service.deleteRefreshToken(testToken.token);
 
@@ -80,14 +80,12 @@ describe('RefreshTokensService', () => {
   });
 
   it('deleteRefreshToken not found', async () => {
-    jest
-      .spyOn(prisma.refreshToken, 'delete')
-      .mockRejectedValue(
-        new PrismaClientKnownRequestError(
-          'An operation failed because it depends on one or more records that were required but not found. Record to delete not found.',
-          { code: 'P2025', clientVersion: '' },
-        ),
-      );
+    (prisma.refreshToken.delete as jest.Mock).mockRejectedValue(
+      new PrismaClientKnownRequestError(
+        'An operation failed because it depends on one or more records that were required but not found. Record to delete not found.',
+        { code: 'P2025', clientVersion: '' },
+      ),
+    );
 
     const token = service.deleteRefreshToken('Token');
 
