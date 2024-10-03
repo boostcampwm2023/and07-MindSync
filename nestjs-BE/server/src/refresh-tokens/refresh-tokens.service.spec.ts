@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RefreshTokensService } from './refresh-tokens.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ConfigModule } from '@nestjs/config';
 import { getExpiryDate } from '../utils/date';
+import { v4 as uuid } from 'uuid';
 
 jest.useFakeTimers();
 
@@ -27,10 +28,7 @@ describe('RefreshTokensService', () => {
           },
         },
       ],
-    })
-      .overrideProvider(JwtService)
-      .useValue({ sign: jest.fn() })
-      .compile();
+    }).compile();
 
     service = module.get<RefreshTokensService>(RefreshTokensService);
     prisma = module.get<PrismaService>(PrismaService);
@@ -41,17 +39,30 @@ describe('RefreshTokensService', () => {
   });
 
   it('createRefreshToken created', async () => {
-    const testToken = {
-      id: 0,
-      token: 'Token',
-      expiryDate: getExpiryDate({ week: 2 }),
-      userUuid: 'userId',
-    };
-    jest.spyOn(prisma.refreshToken, 'create').mockResolvedValue(testToken);
+    const TWO_WEEK = 14;
 
-    const token = service.createRefreshToken('userId');
+    const testUserUuid = uuid();
+    const twoWeek = new Date();
+    twoWeek.setDate(twoWeek.getDate() + TWO_WEEK);
 
-    await expect(token).resolves.toEqual(testToken);
+    (prisma.refreshToken.create as jest.Mock).mockImplementation(
+      async ({ data }) => {
+        return {
+          id: 0,
+          token: data.token,
+          expiryDate: data.expiryDate,
+          userUuid: data.userUuid,
+        };
+      },
+    );
+
+    const token = await service.createRefreshToken(testUserUuid);
+
+    expect(token.token).toMatch(
+      /^[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+$/,
+    );
+    expect(token.expiryDate.toISOString()).toBe(twoWeek.toISOString());
+    expect(token.userUuid).toBe(testUserUuid);
   });
 
   it('deleteRefreshToken deleted', async () => {
