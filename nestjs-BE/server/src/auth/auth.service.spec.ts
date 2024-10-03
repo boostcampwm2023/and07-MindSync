@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { RefreshToken } from '@prisma/client';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { RefreshTokensService } from './refresh-tokens.service';
+import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 import { ConfigModule } from '@nestjs/config';
 
 const fetchSpy = jest.spyOn(global, 'fetch');

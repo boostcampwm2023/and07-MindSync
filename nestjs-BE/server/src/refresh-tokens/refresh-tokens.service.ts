@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
-import generateUuid from '../utils/uuid';
+import { v4 as uuid } from 'uuid';
 import { Prisma, RefreshToken } from '@prisma/client';
-import { REFRESH_TOKEN_EXPIRY_DAYS } from '../config/magic-number';
 import { ConfigService } from '@nestjs/config';
+import { getExpiryDate } from '../utils/date';
 
 @Injectable()
 export class RefreshTokensService {
@@ -18,7 +18,7 @@ export class RefreshTokensService {
     return this.prisma.refreshToken.create({
       data: {
         token: this.createToken(),
-        expiryDate: this.getExpiryDate(),
+        expiryDate: getExpiryDate({ week: 2 }),
         userUuid,
       },
     });
@@ -44,21 +44,14 @@ export class RefreshTokensService {
     }
   }
 
-  createToken(): string {
+  private createToken(): string {
     const refreshToken = this.jwtService.sign(
-      { uuid: generateUuid() },
+      { uuid: uuid() },
       {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
         expiresIn: '14d',
       },
     );
     return refreshToken;
-  }
-
-  getExpiryDate(): Date {
-    const currentDate = new Date();
-    const expiryDate = new Date(currentDate);
-    expiryDate.setDate(currentDate.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
-    return expiryDate;
   }
 }

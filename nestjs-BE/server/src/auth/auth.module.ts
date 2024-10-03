@@ -8,16 +8,21 @@ import { JwtStrategy } from './jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ProfilesModule } from '../profiles/profiles.module';
-import { RefreshTokensService } from './refresh-tokens.service';
+import { RefreshTokensModule } from '../refresh-tokens/refresh-tokens.module';
 
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule, ProfilesModule],
+  imports: [
+    UsersModule,
+    PassportModule,
+    JwtModule,
+    ProfilesModule,
+    RefreshTokensModule,
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
-    RefreshTokensService,
   ],
   exports: [AuthService],
 })
