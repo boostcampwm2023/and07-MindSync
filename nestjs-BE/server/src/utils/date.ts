@@ -1,8 +1,15 @@
-import { REFRESH_TOKEN_EXPIRY_DAYS } from '../config/magic-number';
+const WEEK_DAY = 7;
 
-export function getExpiryDate(): Date {
-  const currentDate = new Date();
-  const expiryDate = new Date(currentDate);
-  expiryDate.setDate(currentDate.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
+export function getExpiryDate({
+  week = 0,
+  day = 0,
+}: {
+  week?: number;
+  day?: number;
+}): Date {
+  const expiryDate = new Date();
+
+  expiryDate.setDate(expiryDate.getDate() + week * WEEK_DAY + day);
+
   return expiryDate;
 }

@@ -45,7 +45,7 @@ describe('RefreshTokensService', () => {
     const testToken = {
       id: 0,
       token: 'Token',
-      expiryDate: getExpiryDate(),
+      expiryDate: getExpiryDate({ week: 2 }),
       userUuid: 'UserId',
     };
     jest.spyOn(prisma.refreshToken, 'findUnique').mockResolvedValue(testToken);
@@ -67,7 +67,7 @@ describe('RefreshTokensService', () => {
     const testToken = {
       id: 0,
       token: 'Token',
-      expiryDate: getExpiryDate(),
+      expiryDate: getExpiryDate({ week: 2 }),
       userUuid: 'userId',
     };
     jest.spyOn(prisma.refreshToken, 'create').mockResolvedValue(testToken);
@@ -96,7 +96,7 @@ describe('RefreshTokensService', () => {
     const testToken = {
       id: 0,
       token: 'Token',
-      expiryDate: getExpiryDate(),
+      expiryDate: getExpiryDate({ week: 2 }),
       userUuid: 'userId',
     };
     jest.spyOn(prisma.refreshToken, 'delete').mockResolvedValue(testToken);
