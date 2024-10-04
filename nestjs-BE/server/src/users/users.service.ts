@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserPrismaDto } from './dto/create-user.dto';
-import { User } from '@prisma/client';
+import { Space, User } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
@@ -34,5 +34,13 @@ export class UsersService {
       });
       return user;
     });
+  }
+
+  async findUserJoinedSpaces(userUuid: string): Promise<Space[]> {
+    const spaces = await this.prisma.space.findMany({
+      where: { profileSpaces: { some: { profile: { userUuid } } } },
+    });
+
+    return spaces;
   }
 }
