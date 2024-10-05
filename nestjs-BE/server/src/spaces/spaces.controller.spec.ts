@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SpacesControllerV2 } from './spaces.controller';
+import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
@@ -11,13 +11,13 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { UpdateSpaceRequestV2Dto } from './dto/update-space.dto';
-import { CreateSpaceRequestV2Dto } from './dto/create-space.dto';
+import { UpdateSpaceRequestDto } from './dto/update-space.dto';
+import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-describe('SpacesControllerV2', () => {
-  let controller: SpacesControllerV2;
+describe('SpacesController', () => {
+  let controller: SpacesController;
   let spacesService: SpacesService;
   let uploadService: UploadService;
   let profilesService: ProfilesService;
@@ -27,7 +27,7 @@ describe('SpacesControllerV2', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
-      controllers: [SpacesControllerV2],
+      controllers: [SpacesController],
       providers: [
         {
           provide: SpacesService,
@@ -55,7 +55,7 @@ describe('SpacesControllerV2', () => {
       ],
     }).compile();
 
-    controller = module.get<SpacesControllerV2>(SpacesControllerV2);
+    controller = module.get<SpacesController>(SpacesController);
     spacesService = module.get<SpacesService>(SpacesService);
     uploadService = module.get<UploadService>(UploadService);
     profilesService = module.get<ProfilesService>(ProfilesService);
@@ -74,7 +74,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceRequestV2Dto;
+    } as CreateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     jest
@@ -103,7 +103,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: 'wrong profile uuid',
-    } as CreateSpaceRequestV2Dto;
+    } as CreateSpaceRequestDto;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
 
     jest
@@ -127,7 +127,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceRequestV2Dto;
+    } as CreateSpaceRequestDto;
 
     jest
       .spyOn(profilesService, 'findProfileByProfileUuid')
@@ -149,7 +149,7 @@ describe('SpacesControllerV2', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceRequestV2Dto;
+    } as CreateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     jest
@@ -318,7 +318,7 @@ describe('SpacesControllerV2', () => {
       uuid: 'profile uuid',
       userUuid: requestMock.user.uuid,
     } as Profile;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
     const profileSpaceMock = {
       spaceUuid: spaceMock.uuid,
       profileUuid: profileMock.uuid,
@@ -354,7 +354,7 @@ describe('SpacesControllerV2', () => {
   });
 
   it('update icon not requested', async () => {
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const profileMock = {
@@ -396,7 +396,7 @@ describe('SpacesControllerV2', () => {
   it('update name not requested', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const iconUrlMock = 'www.test.com/image';
-    const bodyMock = {} as UpdateSpaceRequestV2Dto;
+    const bodyMock = {} as UpdateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const profileMock = {
@@ -444,7 +444,7 @@ describe('SpacesControllerV2', () => {
       uuid: 'profile uuid',
       userUuid: 'new user uuid',
     } as Profile;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
     jest
       .spyOn(profilesService, 'findProfileByProfileUuid')
@@ -471,7 +471,7 @@ describe('SpacesControllerV2', () => {
       uuid: 'profile uuid',
       userUuid: requestMock.user.uuid,
     } as Profile;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
     jest
       .spyOn(profilesService, 'findProfileByProfileUuid')
@@ -501,7 +501,7 @@ describe('SpacesControllerV2', () => {
       uuid: 'profile uuid',
       userUuid: requestMock.user.uuid,
     } as Profile;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestV2Dto;
+    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
     jest
       .spyOn(profilesService, 'findProfileByProfileUuid')

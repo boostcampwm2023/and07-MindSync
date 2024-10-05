@@ -75,7 +75,7 @@ describe('SpacesController (e2e)', () => {
     await app.close();
   });
 
-  it('/v2/spaces (POST)', () => {
+  it('/spaces (POST)', () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -90,7 +90,7 @@ describe('SpacesController (e2e)', () => {
     const imageRegExp = new RegExp(imageUrlPattern);
 
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .field('profile_uuid', testProfile.uuid)
@@ -107,11 +107,11 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/v2/spaces (POST) without space image', () => {
+  it('/spaces (POST) without space image', () => {
     const newSpace = { name: 'new test space' };
 
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .auth(testToken, { type: 'bearer' })
       .send({ name: newSpace.name, profile_uuid: testProfile.uuid })
       .expect(HttpStatus.CREATED)
@@ -128,7 +128,7 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/v2/spaces (POST) without profile uuid', () => {
+  it('/spaces (POST) without profile uuid', () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -136,7 +136,7 @@ describe('SpacesController (e2e)', () => {
     };
 
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
@@ -144,14 +144,14 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
-  it('/v2/spaces (POST) without space name', () => {
+  it('/spaces (POST) without space name', () => {
     const newSpace = {
       icon: testImagePath,
       iconContentType: 'image/png',
     };
 
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .auth(testToken, { type: 'bearer' })
       .field('profile_uuid', testProfile.uuid)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
@@ -159,14 +159,14 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
-  it('/v2/spaces (POST) not logged in', () => {
+  it('/spaces (POST) not logged in', () => {
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .expect(HttpStatus.UNAUTHORIZED)
       .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
   });
 
-  it("/v2/spaces (POST) profile user doesn't have", async () => {
+  it("/spaces (POST) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -183,7 +183,7 @@ describe('SpacesController (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .field('profile_uuid', newProfile.uuid)
@@ -192,7 +192,7 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
   });
 
-  it('/v2/spaces (POST) profilie not found', () => {
+  it('/spaces (POST) profilie not found', () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -200,7 +200,7 @@ describe('SpacesController (e2e)', () => {
     };
 
     return request(app.getHttpServer())
-      .post('/v2/spaces')
+      .post('/spaces')
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .field('profile_uuid', uuid())
@@ -209,13 +209,13 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) space found', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) space found', async () => {
     await prisma.profileSpace.create({
       data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
     });
 
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .get(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.OK)
       .expect({
@@ -225,26 +225,26 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) query profile_uuid needed', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) query profile_uuid needed', async () => {
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${testSpace.uuid}`)
+      .get(`/spaces/${testSpace.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.BAD_REQUEST)
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) not logged in', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) not logged in', async () => {
     await prisma.profileSpace.create({
       data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
     });
 
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .get(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .expect(HttpStatus.UNAUTHORIZED)
       .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
   });
 
-  it("/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) profile user doesn't have", async () => {
+  it("/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) profile user doesn't have", async () => {
     const newUser = await prisma.user.create({ data: { uuid: uuid() } });
     const newProfile = await prisma.profile.create({
       data: {
@@ -259,37 +259,37 @@ describe('SpacesController (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
+      .get(`/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.FORBIDDEN)
       .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) profile not existing', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) profile not existing', async () => {
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
+      .get(`/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.NOT_FOUND)
       .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) findOne profile not joined space', () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) findOne profile not joined space', () => {
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .get(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.FORBIDDEN)
       .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) not existing space', () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (GET) not existing space', () => {
     return request(app.getHttpServer())
-      .get(`/v2/spaces/${uuid()}?profile_uuid=${testProfile.uuid}`)
+      .get(`/spaces/${uuid()}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .expect(HttpStatus.NOT_FOUND)
       .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) update success', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) update success', async () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -306,7 +306,7 @@ describe('SpacesController (e2e)', () => {
     const imageRegExp = new RegExp(imageUrlPattern);
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
@@ -320,7 +320,7 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) request without name', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) request without name', async () => {
     const newSpace = {
       icon: testImagePath,
       iconContentType: 'image/png',
@@ -336,7 +336,7 @@ describe('SpacesController (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
       .expect(HttpStatus.OK)
@@ -349,14 +349,14 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) request without icon', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) request without icon', async () => {
     const newSpace = { name: 'new test space' };
     await prisma.profileSpace.create({
       data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
     });
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .send({ name: newSpace.name })
       .expect(HttpStatus.OK)
@@ -371,7 +371,7 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile uuid needed', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile uuid needed', async () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -379,7 +379,7 @@ describe('SpacesController (e2e)', () => {
     };
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
@@ -387,12 +387,12 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) unauthorized', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) unauthorized', async () => {
     const icon = await readFile(resolve(__dirname, './base_image.png'));
     const newSpace = { name: 'new test space', icon };
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon)
       .expect(HttpStatus.UNAUTHORIZED)
@@ -402,7 +402,7 @@ describe('SpacesController (e2e)', () => {
       });
   });
 
-  it("/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile user doesn't have", async () => {
+  it("/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile user doesn't have", async () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -422,7 +422,7 @@ describe('SpacesController (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
@@ -430,7 +430,7 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not joined space', async () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not joined space', async () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -447,7 +447,7 @@ describe('SpacesController (e2e)', () => {
     });
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
@@ -455,7 +455,7 @@ describe('SpacesController (e2e)', () => {
       .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
   });
 
-  it('/v2/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not found', () => {
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) profile not found', () => {
     const newSpace = {
       name: 'new test space',
       icon: testImagePath,
@@ -463,7 +463,7 @@ describe('SpacesController (e2e)', () => {
     };
 
     return request(app.getHttpServer())
-      .patch(`/v2/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
       .auth(testToken, { type: 'bearer' })
       .field('name', newSpace.name)
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
