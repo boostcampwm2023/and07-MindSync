@@ -25,7 +25,8 @@ describe('SpacesService', () => {
   it('updateSpace updated space', async () => {
     const data = { name: 'new space name', icon: 'new space icon' };
     const spaceMock = { uuid: 'space uuid', ...data };
-    jest.spyOn(prisma.space, 'update').mockResolvedValue(spaceMock);
+
+    (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
 
     const space = spacesService.updateSpace('space uuid', data);
 
@@ -34,14 +35,13 @@ describe('SpacesService', () => {
 
   it('updateSpace fail', async () => {
     const data = { name: 'new space name', icon: 'new space icon' };
-    jest
-      .spyOn(prisma.space, 'update')
-      .mockRejectedValue(
-        new PrismaClientKnownRequestError(
-          'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
-          { code: 'P2025', clientVersion: '' },
-        ),
-      );
+
+    (prisma.space.update as jest.Mock).mockRejectedValue(
+      new PrismaClientKnownRequestError('', {
+        code: 'P2025',
+        clientVersion: '',
+      }),
+    );
 
     const space = spacesService.updateSpace('space uuid', data);
 
@@ -50,7 +50,8 @@ describe('SpacesService', () => {
 
   it('updateSpace fail', async () => {
     const data = { name: 'new space name', icon: 'new space icon' };
-    jest.spyOn(prisma.space, 'update').mockRejectedValue(new Error());
+
+    (prisma.space.update as jest.Mock).mockRejectedValue(new Error());
 
     const space = spacesService.updateSpace('space uuid', data);
 
