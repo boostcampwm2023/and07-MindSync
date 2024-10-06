@@ -64,20 +64,16 @@ describe('UsersController (e2e)', () => {
       },
     });
     const spacePromises = Array.from({ length: SPACE_NUMBER }, async () => {
-      return prisma.space
-        .create({
-          data: { uuid: uuid(), name: 'test space', icon: 'test icon' },
-        })
-        .then(async (space) => {
-          return prisma.profileSpace
-            .create({
-              data: {
-                profileUuid: profile.uuid,
-                spaceUuid: space.uuid,
-              },
-            })
-            .then(() => space);
-        });
+      const space = await prisma.space.create({
+        data: { uuid: uuid(), name: 'test space', icon: 'test icon' },
+      });
+      await prisma.profileSpace.create({
+        data: {
+          profileUuid: profile.uuid,
+          spaceUuid: space.uuid,
+        },
+      });
+      return space;
     });
     const spaces = await Promise.all(spacePromises);
 
