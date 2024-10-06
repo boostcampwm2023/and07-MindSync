@@ -71,9 +71,9 @@ describe('SpacesController', () => {
     } as CreateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(iconUrlMock);
-    jest.spyOn(spacesService, 'createSpace').mockResolvedValue(spaceMock);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
+    (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
 
     const response = controller.create(iconMock, bodyMock, requestMock);
 
@@ -98,9 +98,9 @@ describe('SpacesController', () => {
     } as CreateSpaceRequestDto;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
 
-    jest
-      .spyOn(usersService, 'verifyUserProfile')
-      .mockRejectedValue(new NotFoundException());
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new NotFoundException(),
+    );
 
     const response = controller.create(iconMock, bodyMock, requestMock);
 
@@ -121,9 +121,9 @@ describe('SpacesController', () => {
       profileUuid: profileMock.uuid,
     } as CreateSpaceRequestDto;
 
-    jest
-      .spyOn(usersService, 'verifyUserProfile')
-      .mockRejectedValue(new ForbiddenException());
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new ForbiddenException(),
+    );
 
     const response = controller.create(iconMock, bodyMock, requestMock);
 
@@ -144,8 +144,8 @@ describe('SpacesController', () => {
     } as CreateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest.spyOn(spacesService, 'createSpace').mockResolvedValue(spaceMock);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
 
     const response = controller.create(
       null as unknown as Express.Multer.File,
@@ -178,11 +178,11 @@ describe('SpacesController', () => {
       profileUuid: profileMock.uuid,
     };
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(spaceMock);
-    jest
-      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
-      .mockResolvedValue(profileSpaceMock);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (spacesService.findSpace as jest.Mock).mockResolvedValue(spaceMock);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
 
     const response = controller.findOne(
       spaceMock.uuid,
@@ -215,9 +215,9 @@ describe('SpacesController', () => {
       userUuid: 'wrong user uuid',
     } as Profile;
 
-    jest
-      .spyOn(usersService, 'verifyUserProfile')
-      .mockRejectedValue(new ForbiddenException());
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new ForbiddenException(),
+    );
 
     const response = controller.findOne(
       spaceMock.uuid,
@@ -237,11 +237,11 @@ describe('SpacesController', () => {
       userUuid: requestMock.user.uuid,
     } as Profile;
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(spaceMock);
-    jest
-      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
-      .mockResolvedValue(null);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (spacesService.findSpace as jest.Mock).mockResolvedValue(spaceMock);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(null);
 
     const response = controller.findOne(
       spaceMock.uuid,
@@ -260,8 +260,8 @@ describe('SpacesController', () => {
       userUuid: requestMock.user.uuid,
     } as Profile;
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(null);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (spacesService.findSpace as jest.Mock).mockResolvedValue(null);
 
     const response = controller.findOne(
       spaceMock.uuid,
@@ -280,9 +280,9 @@ describe('SpacesController', () => {
       userUuid: requestMock.user.uuid,
     } as Profile;
 
-    jest
-      .spyOn(usersService, 'verifyUserProfile')
-      .mockRejectedValue(new NotFoundException());
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new NotFoundException(),
+    );
 
     const response = controller.findOne(
       spaceMock.uuid,
@@ -308,12 +308,12 @@ describe('SpacesController', () => {
       profileUuid: profileMock.uuid,
     };
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest
-      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
-      .mockResolvedValue(profileSpaceMock);
-    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(iconUrlMock);
-    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
+    (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
 
     const response = controller.update(
       iconMock,
@@ -348,11 +348,11 @@ describe('SpacesController', () => {
       profileUuid: profileMock.uuid,
     };
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest
-      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
-      .mockResolvedValue(profileSpaceMock);
-    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
 
     const response = controller.update(
       null as unknown as Express.Multer.File,
@@ -388,12 +388,12 @@ describe('SpacesController', () => {
       profileUuid: profileMock.uuid,
     };
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest
-      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
-      .mockResolvedValue(profileSpaceMock);
-    jest.spyOn(spacesService, 'updateSpace').mockResolvedValue(spaceMock);
-    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(iconUrlMock);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
 
     const response = controller.update(
       iconMock,
@@ -424,9 +424,9 @@ describe('SpacesController', () => {
     } as Profile;
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
-    jest
-      .spyOn(usersService, 'verifyUserProfile')
-      .mockRejectedValue(new ForbiddenException());
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new ForbiddenException(),
+    );
 
     const response = controller.update(
       iconMock,
@@ -451,10 +451,10 @@ describe('SpacesController', () => {
     } as Profile;
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
-    jest.spyOn(usersService, 'verifyUserProfile').mockResolvedValue(true);
-    jest
-      .spyOn(profileSpaceService, 'findProfileSpaceByBothUuid')
-      .mockResolvedValue(null);
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(null);
 
     const response = controller.update(
       iconMock,
@@ -479,9 +479,9 @@ describe('SpacesController', () => {
     } as Profile;
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
-    jest
-      .spyOn(usersService, 'verifyUserProfile')
-      .mockRejectedValue(new NotFoundException());
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new NotFoundException(),
+    );
 
     const response = controller.update(
       iconMock,
