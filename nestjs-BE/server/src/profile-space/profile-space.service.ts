@@ -6,6 +6,24 @@ import { Prisma, ProfileSpace } from '@prisma/client';
 export class ProfileSpaceService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async createProfileSpace(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<ProfileSpace | null> {
+    return this.prisma.profileSpace.create({
+      data: { spaceUuid, profileUuid },
+    });
+  }
+
+  async deleteProfileSpace(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<ProfileSpace | null> {
+    return this.prisma.profileSpace.delete({
+      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
+    });
+  }
+
   async findProfileSpacesByProfileUuid(
     profileUuid: string,
   ): Promise<ProfileSpace[]> {
