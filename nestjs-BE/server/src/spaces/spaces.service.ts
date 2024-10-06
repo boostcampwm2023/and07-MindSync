@@ -64,7 +64,7 @@ export class SpacesService {
     userUuid: string,
     profileUuid: string,
     spaceUuid: string,
-  ): Promise<void> {
+  ): Promise<Space> {
     await this.usersService.verifyUserProfile(userUuid, profileUuid);
     try {
       await this.profileSpaceService.createProfileSpace(profileUuid, spaceUuid);
@@ -82,6 +82,7 @@ export class SpacesService {
         throw err;
       }
     }
+    return this.findSpace(spaceUuid);
   }
 
   async leaveSpace(

@@ -35,6 +35,7 @@ describe('SpacesController', () => {
             createSpace: jest.fn(),
             findSpace: jest.fn(),
             updateSpace: jest.fn(),
+            joinSpace: jest.fn(),
           },
         },
         { provide: UploadService, useValue: { uploadFile: jest.fn() } },
@@ -494,5 +495,25 @@ describe('SpacesController', () => {
     await expect(response).rejects.toThrow(NotFoundException);
     expect(uploadService.uploadFile).not.toHaveBeenCalled();
     expect(spacesService.updateSpace).not.toHaveBeenCalled();
+  });
+
+  it('joinSpace', async () => {
+    const spaceMock = { uuid: 'space uuid' };
+    const bodyMock = { profileUuid: 'profile uuid' };
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+
+    (spacesService.joinSpace as jest.Mock).mockResolvedValue(spaceMock);
+
+    const response = controller.joinSpace(
+      spaceMock.uuid,
+      bodyMock,
+      requestMock,
+    );
+
+    await expect(response).resolves.toEqual({
+      statusCode: HttpStatus.CREATED,
+      message: 'Created',
+      data: spaceMock,
+    });
   });
 });

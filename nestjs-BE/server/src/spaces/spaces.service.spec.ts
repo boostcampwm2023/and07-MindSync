@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UsersService } from '../users/users.service';
+import { Space } from '@prisma/client';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
@@ -88,10 +89,13 @@ describe('SpacesService', () => {
     const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
+    const space = { uuid: spaceUuid } as Space;
+
+    jest.spyOn(spacesService, 'findSpace').mockResolvedValue(space);
 
     const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
 
-    await expect(res).resolves.toBeUndefined();
+    await expect(res).resolves.toEqual(space);
   });
 
   it('joinSpace profile not found', async () => {

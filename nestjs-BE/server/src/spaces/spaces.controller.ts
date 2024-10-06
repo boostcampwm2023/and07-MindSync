@@ -26,6 +26,7 @@ import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { RequestWithUser } from '../utils/interface';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
+import { JoinSpaceRequestDto } from './dto/join-space.dto';
 
 @Controller('spaces')
 @ApiTags('spaces')
@@ -179,5 +180,51 @@ export class SpacesController {
     );
     if (!space) throw new NotFoundException();
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
+  }
+
+  @Post(':space_uuid/join')
+  @ApiOperation({ summary: 'Join space' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Join data has been successfully created.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Profile user not own.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Conflict. You have already joined the space.',
+  })
+  async joinSpace(
+    @Param('space_uuid') spaceUuid: string,
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        disableErrorMessages: true,
+      }),
+    )
+    joinSpaceDto: JoinSpaceRequestDto,
+    @Req() req: RequestWithUser,
+  ) {
+    const space = await this.spacesService.joinSpace(
+      req.user.uuid,
+      joinSpaceDto.profileUuid,
+      spaceUuid,
+    );
+    return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 }
