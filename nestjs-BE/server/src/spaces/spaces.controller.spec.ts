@@ -37,6 +37,7 @@ describe('SpacesController', () => {
             updateSpace: jest.fn(),
             joinSpace: jest.fn(),
             leaveSpace: jest.fn(),
+            findProfilesInSpace: jest.fn(),
           },
         },
         { provide: UploadService, useValue: { uploadFile: jest.fn() } },
@@ -535,5 +536,43 @@ describe('SpacesController', () => {
       statusCode: HttpStatus.NO_CONTENT,
       message: 'No Content',
     });
+  });
+
+  it('findProfilesInSpace', async () => {
+    const spaceMock = { uuid: 'space uuid' };
+    const profileMock = { uuid: 'profile uuid' };
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const profilesMock = [];
+
+    (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue(
+      profilesMock,
+    );
+
+    const response = controller.findProfilesInSpace(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
+
+    await expect(response).resolves.toEqual({
+      statusCode: HttpStatus.OK,
+      message: 'OK',
+      data: profilesMock,
+    });
+  });
+
+  it('findProfilesInSpace space uuid needed', async () => {
+    const spaceMock = { uuid: 'space uuid' };
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+
+    (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue([]);
+
+    const response = controller.findProfilesInSpace(
+      spaceMock.uuid,
+      undefined,
+      requestMock,
+    );
+
+    await expect(response).rejects.toThrow(BadRequestException);
   });
 });

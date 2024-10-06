@@ -261,4 +261,41 @@ export class SpacesController {
     await this.spacesService.leaveSpace(req.user.uuid, profileUuid, spaceUuid);
     return { statusCode: HttpStatus.NO_CONTENT, message: 'No Content' };
   }
+
+  @Get(':space_uuid/profiles')
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Get profiles joined space.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully get profiles.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Profile user not own.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found. Profile not joined space.',
+  })
+  async findProfilesInSpace(
+    @Param('space_uuid') spaceUuid: string,
+    @Query('profile_uuid') profileUuid: string,
+    @Req() req: RequestWithUser,
+  ) {
+    if (!profileUuid) throw new BadRequestException();
+    const profiles = await this.spacesService.findProfilesInSpace(
+      req.user.uuid,
+      profileUuid,
+      spaceUuid,
+    );
+    return { statusCode: HttpStatus.OK, message: 'OK', data: profiles };
+  }
 }
