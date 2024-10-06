@@ -36,6 +36,7 @@ describe('SpacesController', () => {
             findSpace: jest.fn(),
             updateSpace: jest.fn(),
             joinSpace: jest.fn(),
+            leaveSpace: jest.fn(),
           },
         },
         { provide: UploadService, useValue: { uploadFile: jest.fn() } },
@@ -514,6 +515,25 @@ describe('SpacesController', () => {
       statusCode: HttpStatus.CREATED,
       message: 'Created',
       data: spaceMock,
+    });
+  });
+
+  it('leaveSpace', async () => {
+    const spaceMock = { uuid: 'space uuid' };
+    const profileMock = { uuid: 'profile uuid' };
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+
+    (spacesService.leaveSpace as jest.Mock).mockResolvedValue(undefined);
+
+    const response = controller.leaveSpace(
+      spaceMock.uuid,
+      profileMock.uuid,
+      requestMock,
+    );
+
+    await expect(response).resolves.toEqual({
+      statusCode: HttpStatus.NO_CONTENT,
+      message: 'No Content',
     });
   });
 });

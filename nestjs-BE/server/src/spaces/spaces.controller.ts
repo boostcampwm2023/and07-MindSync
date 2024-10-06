@@ -15,6 +15,8 @@ import {
   ForbiddenException,
   Query,
   BadRequestException,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
@@ -226,5 +228,37 @@ export class SpacesController {
       spaceUuid,
     );
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
+  }
+
+  @Delete(':space_uuid/profiles/:profile_uuid')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Leave space' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Successfully left the space.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Profile user not own.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found. Profile not joined space.',
+  })
+  async leaveSpace(
+    @Param('space_uuid') spaceUuid: string,
+    @Param('profile_uuid') profileUuid: string,
+    @Req() req: RequestWithUser,
+  ) {
+    await this.spacesService.leaveSpace(req.user.uuid, profileUuid, spaceUuid);
+    return { statusCode: HttpStatus.NO_CONTENT, message: 'No Content' };
   }
 }
