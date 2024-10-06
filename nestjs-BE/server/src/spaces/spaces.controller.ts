@@ -24,8 +24,8 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from '../upload/upload.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { RequestWithUser } from '../utils/interface';
-import { ProfilesService } from '../profiles/profiles.service';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
 
 @Controller('spaces')
 @ApiTags('spaces')
@@ -34,8 +34,8 @@ export class SpacesController {
     private readonly spacesService: SpacesService,
     private readonly uploadService: UploadService,
     private readonly profileSpaceService: ProfileSpaceService,
-    private readonly profilesService: ProfilesService,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Post()
@@ -74,19 +74,19 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     if (!createSpaceDto.profileUuid) throw new BadRequestException();
-    const profile = await this.profilesService.findProfileByProfileUuid(
+    await this.usersService.verifyUserProfile(
+      req.user.uuid,
       createSpaceDto.profileUuid,
     );
-    if (!profile) throw new NotFoundException();
-    if (req.user.uuid !== profile.userUuid) {
-      throw new ForbiddenException();
-    }
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : this.configService.get<string>('APP_ICON_URL');
     createSpaceDto.icon = iconUrl;
     const space = await this.spacesService.createSpace(createSpaceDto);
-    await this.profileSpaceService.joinSpace(profile.uuid, space.uuid);
+    await this.profileSpaceService.joinSpace(
+      createSpaceDto.profileUuid,
+      space.uuid,
+    );
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 
@@ -119,12 +119,7 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    const profile =
-      await this.profilesService.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new NotFoundException();
-    if (req.user.uuid !== profile.userUuid) {
-      throw new ForbiddenException();
-    }
+    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
     const space = await this.spacesService.findSpace(spaceUuid);
     if (!space) throw new NotFoundException();
     const profileSpace =
@@ -168,12 +163,7 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    const profile =
-      await this.profilesService.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new NotFoundException();
-    if (req.user.uuid !== profile.userUuid) {
-      throw new ForbiddenException();
-    }
+    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
     const profileSpace =
       await this.profileSpaceService.findProfileSpaceByBothUuid(
         profileUuid,
