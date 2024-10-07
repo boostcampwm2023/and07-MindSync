@@ -45,7 +45,7 @@ export class SpacesService {
         icon: iconUrl,
       },
     });
-    await this.profileSpaceService.joinSpace(profileUuid, space.uuid);
+    await this.profileSpaceService.createProfileSpace(profileUuid, space.uuid);
     return space;
   }
 

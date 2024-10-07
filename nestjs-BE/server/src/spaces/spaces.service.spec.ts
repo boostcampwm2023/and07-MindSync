@@ -38,7 +38,6 @@ describe('SpacesService', () => {
           useValue: {
             createProfileSpace: jest.fn(),
             deleteProfileSpace: jest.fn(),
-            joinSpace: jest.fn(),
             isSpaceEmpty: jest.fn(),
             isProfileInSpace: jest.fn(),
           },
