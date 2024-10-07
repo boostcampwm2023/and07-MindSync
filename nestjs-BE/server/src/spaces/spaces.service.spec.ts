@@ -34,6 +34,7 @@ describe('SpacesService', () => {
             createProfileSpace: jest.fn(),
             deleteProfileSpace: jest.fn(),
             isSpaceEmpty: jest.fn(),
+            isProfileInSpace: jest.fn(),
           },
         },
         {
@@ -262,6 +263,24 @@ describe('SpacesService', () => {
 
     (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
       new ForbiddenException(),
+    );
+
+    const res = spacesService.findProfilesInSpace(
+      userUuid,
+      profileUuid,
+      spaceUuid,
+    );
+
+    await expect(res).rejects.toThrow(ForbiddenException);
+  });
+
+  it('findProfilesInSpace profile not joined space', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const spaceUuid = 'space uuid';
+
+    (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
+      false,
     );
 
     const res = spacesService.findProfilesInSpace(

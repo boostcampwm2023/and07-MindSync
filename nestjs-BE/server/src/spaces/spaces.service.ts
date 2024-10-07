@@ -117,6 +117,11 @@ export class SpacesService {
     spaceUuid: string,
   ): Promise<Profile[]> {
     await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) throw new ForbiddenException();
     return this.prisma.profile.findMany({
       where: { spaces: { some: { spaceUuid } } },
     });

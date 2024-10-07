@@ -58,4 +58,14 @@ export class ProfileSpaceService {
     });
     return first ? false : true;
   }
+
+  async isProfileInSpace(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<boolean> {
+    const profileSpace = await this.prisma.profileSpace.findUnique({
+      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
+    });
+    return profileSpace ? true : false;
+  }
 }
