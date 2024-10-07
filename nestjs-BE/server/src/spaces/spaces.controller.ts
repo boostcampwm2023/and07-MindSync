@@ -273,11 +273,11 @@ export class SpacesController {
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Profile user not own.',
+    description: 'Profile user not own. Profile not joined space.',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Profile not found. Profile not joined space.',
+    description: 'Profile not found.',
   })
   async findProfilesInSpace(
     @Param('space_uuid') spaceUuid: string,
