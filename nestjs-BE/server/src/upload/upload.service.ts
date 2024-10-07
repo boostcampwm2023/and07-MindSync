@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import uuid from '../utils/uuid';
+import { v4 as uuid } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
