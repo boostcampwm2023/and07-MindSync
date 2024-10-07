@@ -24,10 +24,6 @@ export class SpacesService {
     return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
   }
 
-  async findSpaces(spaceUuids: string[]): Promise<Space[]> {
-    return this.prisma.space.findMany({ where: { uuid: { in: spaceUuids } } });
-  }
-
   async createSpace(createSpaceDto: CreateSpacePrismaDto): Promise<Space> {
     return this.prisma.space.create({
       data: {
