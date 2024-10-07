@@ -11,27 +11,42 @@ import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { v4 as uuid } from 'uuid';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UsersService } from '../users/users.service';
+import { UploadService } from '../upload/upload.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SpacesService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
     private readonly profileSpaceService: ProfileSpaceService,
     private readonly usersService: UsersService,
+    private readonly uploadService: UploadService,
   ) {}
 
   async findSpace(spaceUuid: string): Promise<Space | null> {
     return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
   }
 
-  async createSpace(createSpaceDto: CreateSpacePrismaDto): Promise<Space> {
-    return this.prisma.space.create({
+  async createSpace(
+    userUuid: string,
+    profileUuid: string,
+    icon: Express.Multer.File,
+    createSpaceDto: CreateSpacePrismaDto,
+  ): Promise<Space> {
+    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const iconUrl = icon
+      ? await this.uploadService.uploadFile(icon)
+      : this.configService.get<string>('APP_ICON_URL');
+    const space = await this.prisma.space.create({
       data: {
         uuid: uuid(),
         name: createSpaceDto.name,
-        icon: createSpaceDto.icon,
+        icon: iconUrl,
       },
     });
+    await this.profileSpaceService.joinSpace(profileUuid, space.uuid);
+    return space;
   }
 
   async updateSpace(

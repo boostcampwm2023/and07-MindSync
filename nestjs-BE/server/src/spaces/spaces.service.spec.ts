@@ -4,27 +4,32 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { SpacesService } from './spaces.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UsersService } from '../users/users.service';
 import { Space } from '@prisma/client';
+import { UploadService } from '../upload/upload.service';
+import { CreateSpacePrismaDto } from './dto/create-space.dto';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
   let prisma: PrismaService;
   let profileSpaceService: ProfileSpaceService;
   let usersService: UsersService;
+  let uploadService: UploadService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       providers: [
         SpacesService,
         {
           provide: PrismaService,
           useValue: {
-            space: { update: jest.fn() },
+            space: { create: jest.fn(), update: jest.fn() },
             profile: { findMany: jest.fn() },
           },
         },
@@ -33,6 +38,7 @@ describe('SpacesService', () => {
           useValue: {
             createProfileSpace: jest.fn(),
             deleteProfileSpace: jest.fn(),
+            joinSpace: jest.fn(),
             isSpaceEmpty: jest.fn(),
             isProfileInSpace: jest.fn(),
           },
@@ -41,6 +47,10 @@ describe('SpacesService', () => {
           provide: UsersService,
           useValue: { verifyUserProfile: jest.fn() },
         },
+        {
+          provide: UploadService,
+          useValue: { uploadFile: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -48,6 +58,104 @@ describe('SpacesService', () => {
     prisma = module.get<PrismaService>(PrismaService);
     profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
     usersService = module.get<UsersService>(UsersService);
+    uploadService = module.get<UploadService>(UploadService);
+  });
+
+  it('createSpace created', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const icon = { filename: 'icon' } as Express.Multer.File;
+    const createSpaceDto = {
+      name: 'new space name',
+    } as CreateSpacePrismaDto;
+    const iconUrlMock = 'www.test.com/image';
+    const spaceMock = { uuid: 'space uuid' } as Space;
+
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
+    (prisma.space.create as jest.Mock).mockResolvedValue(spaceMock);
+
+    const space = spacesService.createSpace(
+      userUuid,
+      profileUuid,
+      icon,
+      createSpaceDto,
+    );
+
+    await expect(space).resolves.toEqual(spaceMock);
+    expect(uploadService.uploadFile).toHaveBeenCalled();
+    expect(prisma.space.create).toHaveBeenCalled();
+  });
+
+  it('createSpace profile not found', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const icon = { filename: 'icon' } as Express.Multer.File;
+    const createSpaceDto = {
+      name: 'new space name',
+    } as CreateSpacePrismaDto;
+
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new NotFoundException(),
+    );
+
+    const space = spacesService.createSpace(
+      userUuid,
+      profileUuid,
+      icon,
+      createSpaceDto,
+    );
+
+    await expect(space).rejects.toThrow(NotFoundException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.create).not.toHaveBeenCalled();
+  });
+
+  it('createSpace profile user not own', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const icon = { filename: 'icon' } as Express.Multer.File;
+    const createSpaceDto = {
+      name: 'new space name',
+    } as CreateSpacePrismaDto;
+
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new ForbiddenException(),
+    );
+
+    const space = spacesService.createSpace(
+      userUuid,
+      profileUuid,
+      icon,
+      createSpaceDto,
+    );
+
+    await expect(space).rejects.toThrow(ForbiddenException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.create).not.toHaveBeenCalledWith();
+  });
+
+  it('createSpace icon not requested', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const createSpaceDto = {
+      name: 'new space name',
+    } as CreateSpacePrismaDto;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (prisma.space.create as jest.Mock).mockResolvedValue(spaceMock);
+
+    const space = spacesService.createSpace(
+      userUuid,
+      profileUuid,
+      undefined,
+      createSpaceDto,
+    );
+
+    await expect(space).resolves.toEqual(spaceMock);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.create).toHaveBeenCalled();
   });
 
   it('updateSpace updated space', async () => {

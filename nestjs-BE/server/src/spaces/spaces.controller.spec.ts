@@ -13,20 +13,17 @@ import {
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 
 describe('SpacesController', () => {
   let controller: SpacesController;
   let spacesService: SpacesService;
   let uploadService: UploadService;
-  let configService: ConfigService;
   let profileSpaceService: ProfileSpaceService;
   let usersService: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
       controllers: [SpacesController],
       providers: [
         {
@@ -45,7 +42,6 @@ describe('SpacesController', () => {
           provide: ProfileSpaceService,
           useValue: {
             findProfileSpaceByBothUuid: jest.fn(),
-            joinSpace: jest.fn(),
           },
         },
         { provide: UsersService, useValue: { verifyUserProfile: jest.fn() } },
@@ -55,14 +51,12 @@ describe('SpacesController', () => {
     controller = module.get<SpacesController>(SpacesController);
     spacesService = module.get<SpacesService>(SpacesService);
     uploadService = module.get<UploadService>(UploadService);
-    configService = module.get<ConfigService>(ConfigService);
     profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
     usersService = module.get<UsersService>(UsersService);
   });
 
   it('create created', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const iconUrlMock = 'www.test.com/image';
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
     const profileMock = {
       uuid: 'profile uuid',
@@ -74,99 +68,37 @@ describe('SpacesController', () => {
     } as CreateSpaceRequestDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
 
-    const response = controller.create(iconMock, bodyMock, requestMock);
+    const response = controller.createSpace(iconMock, bodyMock, requestMock);
 
     await expect(response).resolves.toEqual({
       statusCode: HttpStatus.CREATED,
       message: 'Created',
       data: spaceMock,
     });
-    expect(uploadService.uploadFile).toHaveBeenCalled();
-    expect(spacesService.createSpace).toHaveBeenCalledWith({
-      name: bodyMock.name,
-      profileUuid: bodyMock.profileUuid,
-      icon: iconUrlMock,
-    });
-  });
-
-  it('create not found profile', async () => {
-    const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const bodyMock = {
-      name: 'new space name',
-      profileUuid: 'wrong profile uuid',
-    } as CreateSpaceRequestDto;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new NotFoundException(),
+    expect(spacesService.createSpace).toHaveBeenCalledWith(
+      requestMock.user.uuid,
+      bodyMock.profileUuid,
+      iconMock,
+      bodyMock,
     );
-
-    const response = controller.create(iconMock, bodyMock, requestMock);
-
-    await expect(response).rejects.toThrow(NotFoundException);
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-    expect(spacesService.createSpace).not.toHaveBeenCalled();
   });
 
-  it("create profile user doesn't have", async () => {
-    const iconMock = { filename: 'icon' } as Express.Multer.File;
+  it('create profile uuid needed', async () => {
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: 'wrong user uuid',
-    } as Profile;
     const bodyMock = {
       name: 'new space name',
-      profileUuid: profileMock.uuid,
     } as CreateSpaceRequestDto;
 
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new ForbiddenException(),
-    );
-
-    const response = controller.create(iconMock, bodyMock, requestMock);
-
-    await expect(response).rejects.toThrow(ForbiddenException);
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-    expect(spacesService.createSpace).not.toHaveBeenCalledWith();
-  });
-
-  it('create icon not requested', async () => {
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-    const bodyMock = {
-      name: 'new space name',
-      profileUuid: profileMock.uuid,
-    } as CreateSpaceRequestDto;
-    const spaceMock = { uuid: 'space uuid' } as Space;
-
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
-
-    const response = controller.create(
-      null as unknown as Express.Multer.File,
+    const response = controller.createSpace(
+      undefined as Express.Multer.File,
       bodyMock,
       requestMock,
     );
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data: spaceMock,
-    });
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-    expect(spacesService.createSpace).toHaveBeenCalledWith({
-      name: bodyMock.name,
-      profileUuid: bodyMock.profileUuid,
-      icon: configService.get<string>('APP_ICON_URL'),
-    });
+    await expect(response).rejects.toThrow(BadRequestException);
+    expect(spacesService.createSpace).not.toHaveBeenCalled();
   });
 
   it('findOne found space', async () => {

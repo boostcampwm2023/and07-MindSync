@@ -17,7 +17,6 @@ import {
   BadRequestException,
   Delete,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
@@ -36,7 +35,6 @@ export class SpacesController {
     private readonly spacesService: SpacesService,
     private readonly uploadService: UploadService,
     private readonly profileSpaceService: ProfileSpaceService,
-    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -63,7 +61,7 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Profile not found.',
   })
-  async create(
+  async createSpace(
     @UploadedFile() icon: Express.Multer.File,
     @Body(
       new ValidationPipe({
@@ -76,18 +74,11 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     if (!createSpaceDto.profileUuid) throw new BadRequestException();
-    await this.usersService.verifyUserProfile(
+    const space = await this.spacesService.createSpace(
       req.user.uuid,
       createSpaceDto.profileUuid,
-    );
-    const iconUrl = icon
-      ? await this.uploadService.uploadFile(icon)
-      : this.configService.get<string>('APP_ICON_URL');
-    createSpaceDto.icon = iconUrl;
-    const space = await this.spacesService.createSpace(createSpaceDto);
-    await this.profileSpaceService.joinSpace(
-      createSpaceDto.profileUuid,
-      space.uuid,
+      icon,
+      createSpaceDto,
     );
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
