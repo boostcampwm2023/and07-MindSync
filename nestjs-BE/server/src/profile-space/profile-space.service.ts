@@ -6,19 +6,21 @@ import { Prisma, ProfileSpace } from '@prisma/client';
 export class ProfileSpaceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findProfileSpacesByProfileUuid(
+  async createProfileSpace(
     profileUuid: string,
-  ): Promise<ProfileSpace[]> {
-    return this.prisma.profileSpace.findMany({
-      where: { profileUuid: profileUuid },
+    spaceUuid: string,
+  ): Promise<ProfileSpace | null> {
+    return this.prisma.profileSpace.create({
+      data: { spaceUuid, profileUuid },
     });
   }
 
-  async findProfileSpacesBySpaceUuid(
+  async deleteProfileSpace(
+    profileUuid: string,
     spaceUuid: string,
-  ): Promise<ProfileSpace[]> {
-    return this.prisma.profileSpace.findMany({
-      where: { spaceUuid: spaceUuid },
+  ): Promise<ProfileSpace | null> {
+    return this.prisma.profileSpace.delete({
+      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
     });
   }
 
@@ -48,28 +50,6 @@ export class ProfileSpaceService {
     }
   }
 
-  async leaveSpace(
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<ProfileSpace | null> {
-    try {
-      return await this.prisma.profileSpace.delete({
-        where: {
-          spaceUuid_profileUuid: {
-            spaceUuid: spaceUuid,
-            profileUuid: profileUuid,
-          },
-        },
-      });
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        return null;
-      } else {
-        throw err;
-      }
-    }
-  }
-
   async isSpaceEmpty(spaceUuid: string) {
     const first = await this.prisma.profileSpace.findFirst({
       where: {
@@ -77,5 +57,15 @@ export class ProfileSpaceService {
       },
     });
     return first ? false : true;
+  }
+
+  async isProfileInSpace(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<boolean> {
+    const profileSpace = await this.prisma.profileSpace.findUnique({
+      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
+    });
+    return profileSpace ? true : false;
   }
 }

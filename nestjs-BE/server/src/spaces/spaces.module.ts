@@ -1,13 +1,13 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { SpacesService } from './spaces.service';
-import { SpacesController, SpacesControllerV2 } from './spaces.controller';
+import { SpacesController } from './spaces.controller';
 import { UploadModule } from '../upload/upload.module';
 import { ProfileSpaceModule } from '../profile-space/profile-space.module';
-import { ProfilesModule } from '../profiles/profiles.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [forwardRef(() => ProfileSpaceModule), ProfilesModule, UploadModule],
-  controllers: [SpacesController, SpacesControllerV2],
+  imports: [ProfileSpaceModule, UploadModule, UsersModule],
+  controllers: [SpacesController],
   providers: [SpacesService],
   exports: [SpacesService],
 })

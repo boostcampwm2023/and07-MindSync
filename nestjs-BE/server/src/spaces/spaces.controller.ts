@@ -15,33 +15,29 @@ import {
   ForbiddenException,
   Query,
   BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
-import {
-  CreateSpaceRequestDto,
-  CreateSpaceRequestV2Dto,
-} from './dto/create-space.dto';
-import {
-  UpdateSpaceRequestDto,
-  UpdateSpaceRequestV2Dto,
-} from './dto/update-space.dto';
+import { CreateSpaceRequestDto } from './dto/create-space.dto';
+import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from '../upload/upload.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { RequestWithUser } from '../utils/interface';
-import { ProfilesService } from '../profiles/profiles.service';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
+import { JoinSpaceRequestDto } from './dto/join-space.dto';
 
-@Controller('v2/spaces')
+@Controller('spaces')
 @ApiTags('spaces')
-export class SpacesControllerV2 {
+export class SpacesController {
   constructor(
     private readonly spacesService: SpacesService,
     private readonly uploadService: UploadService,
     private readonly profileSpaceService: ProfileSpaceService,
-    private readonly profilesService: ProfilesService,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Post()
@@ -76,23 +72,23 @@ export class SpacesControllerV2 {
         disableErrorMessages: true,
       }),
     )
-    createSpaceDto: CreateSpaceRequestV2Dto,
+    createSpaceDto: CreateSpaceRequestDto,
     @Req() req: RequestWithUser,
   ) {
     if (!createSpaceDto.profileUuid) throw new BadRequestException();
-    const profile = await this.profilesService.findProfileByProfileUuid(
+    await this.usersService.verifyUserProfile(
+      req.user.uuid,
       createSpaceDto.profileUuid,
     );
-    if (!profile) throw new NotFoundException();
-    if (req.user.uuid !== profile.userUuid) {
-      throw new ForbiddenException();
-    }
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : this.configService.get<string>('APP_ICON_URL');
     createSpaceDto.icon = iconUrl;
     const space = await this.spacesService.createSpace(createSpaceDto);
-    await this.profileSpaceService.joinSpace(profile.uuid, space.uuid);
+    await this.profileSpaceService.joinSpace(
+      createSpaceDto.profileUuid,
+      space.uuid,
+    );
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 
@@ -125,12 +121,7 @@ export class SpacesControllerV2 {
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    const profile =
-      await this.profilesService.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new NotFoundException();
-    if (req.user.uuid !== profile.userUuid) {
-      throw new ForbiddenException();
-    }
+    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
     const space = await this.spacesService.findSpace(spaceUuid);
     if (!space) throw new NotFoundException();
     const profileSpace =
@@ -170,16 +161,11 @@ export class SpacesControllerV2 {
     @Param('space_uuid') spaceUuid: string,
     @Query('profile_uuid') profileUuid: string,
     @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    updateSpaceDto: UpdateSpaceRequestV2Dto,
+    updateSpaceDto: UpdateSpaceRequestDto,
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    const profile =
-      await this.profilesService.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new NotFoundException();
-    if (req.user.uuid !== profile.userUuid) {
-      throw new ForbiddenException();
-    }
+    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
     const profileSpace =
       await this.profileSpaceService.findProfileSpaceByBothUuid(
         profileUuid,
@@ -196,91 +182,114 @@ export class SpacesControllerV2 {
     if (!space) throw new NotFoundException();
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
-}
 
-/*
-  OLD VERSION
-*/
-@Controller('spaces')
-@ApiTags('spaces')
-export class SpacesController {
-  constructor(
-    private readonly spacesService: SpacesService,
-    private readonly uploadService: UploadService,
-    private readonly profileSpaceService: ProfileSpaceService,
-    private readonly profilesService: ProfilesService,
-    private readonly configService: ConfigService,
-  ) {}
-
-  @Post()
-  @UseInterceptors(FileInterceptor('icon'))
-  @ApiOperation({ summary: 'Create space' })
+  @Post(':space_uuid/join')
+  @ApiOperation({ summary: 'Join space' })
   @ApiResponse({
-    status: 201,
-    description: 'The space has been successfully created.',
+    status: HttpStatus.CREATED,
+    description: 'Join data has been successfully created.',
   })
-  async create(
-    @UploadedFile() icon: Express.Multer.File,
-    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    createSpaceDto: CreateSpaceRequestDto,
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Profile user not own.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Conflict. You have already joined the space.',
+  })
+  async joinSpace(
+    @Param('space_uuid') spaceUuid: string,
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        disableErrorMessages: true,
+      }),
+    )
+    joinSpaceDto: JoinSpaceRequestDto,
     @Req() req: RequestWithUser,
   ) {
-    const profile = await this.profilesService.findProfile(req.user.uuid);
-    if (!profile) throw new NotFoundException();
-    const iconUrl = icon
-      ? await this.uploadService.uploadFile(icon)
-      : this.configService.get<string>('APP_ICON_URL');
-    createSpaceDto.icon = iconUrl;
-    const space = await this.spacesService.createSpace(createSpaceDto);
-    await this.profileSpaceService.joinSpace(profile.uuid, space.uuid);
-    return { statusCode: 201, message: 'Created', data: space };
-  }
-
-  @Get(':space_uuid')
-  @ApiOperation({ summary: 'Get space by space_uuid' })
-  @ApiResponse({
-    status: 200,
-    description: 'Return the space data.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Space not found.',
-  })
-  async findOne(@Param('space_uuid') spaceUuid: string) {
-    const space = await this.spacesService.findSpace(spaceUuid);
-    if (!space) throw new NotFoundException();
-    return { statusCode: 200, message: 'Success', data: space };
-  }
-
-  @Patch(':space_uuid')
-  @UseInterceptors(FileInterceptor('icon'))
-  @ApiOperation({ summary: 'Update space by space_uuid' })
-  @ApiResponse({
-    status: 200,
-    description: 'Space has been successfully updated.',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request. Invalid input data.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Space not found.',
-  })
-  async update(
-    @UploadedFile() icon: Express.Multer.File,
-    @Param('space_uuid') spaceUuid: string,
-    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    updateSpaceDto: UpdateSpaceRequestDto,
-  ) {
-    if (icon) {
-      updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
-    }
-    const space = await this.spacesService.updateSpace(
+    const space = await this.spacesService.joinSpace(
+      req.user.uuid,
+      joinSpaceDto.profileUuid,
       spaceUuid,
-      updateSpaceDto,
     );
-    if (!space) throw new NotFoundException();
-    return { statusCode: 200, message: 'Success', data: space };
+    return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
+  }
+
+  @Delete(':space_uuid/profiles/:profile_uuid')
+  @ApiOperation({ summary: 'Leave space' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Successfully left the space.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Profile user not own.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found. Profile not joined space.',
+  })
+  async leaveSpace(
+    @Param('space_uuid') spaceUuid: string,
+    @Param('profile_uuid') profileUuid: string,
+    @Req() req: RequestWithUser,
+  ) {
+    await this.spacesService.leaveSpace(req.user.uuid, profileUuid, spaceUuid);
+    return { statusCode: HttpStatus.OK, message: 'OK' };
+  }
+
+  @Get(':space_uuid/profiles')
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Get profiles joined space.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully get profiles.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Profile uuid needed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'User not logged in.',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Profile user not own. Profile not joined space.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Profile not found.',
+  })
+  async findProfilesInSpace(
+    @Param('space_uuid') spaceUuid: string,
+    @Query('profile_uuid') profileUuid: string,
+    @Req() req: RequestWithUser,
+  ) {
+    if (!profileUuid) throw new BadRequestException();
+    const profiles = await this.spacesService.findProfilesInSpace(
+      req.user.uuid,
+      profileUuid,
+      spaceUuid,
+    );
+    return { statusCode: HttpStatus.OK, message: 'OK', data: profiles };
   }
 }
