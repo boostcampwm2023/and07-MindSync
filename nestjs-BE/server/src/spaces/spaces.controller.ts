@@ -16,7 +16,6 @@ import {
   Query,
   BadRequestException,
   Delete,
-  HttpCode,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SpacesService } from './spaces.service';
@@ -231,7 +230,6 @@ export class SpacesController {
   }
 
   @Delete(':space_uuid/profiles/:profile_uuid')
-  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Leave space' })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
@@ -259,7 +257,7 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     await this.spacesService.leaveSpace(req.user.uuid, profileUuid, spaceUuid);
-    return { statusCode: HttpStatus.NO_CONTENT, message: 'No Content' };
+    return { statusCode: HttpStatus.OK, message: 'OK' };
   }
 
   @Get(':space_uuid/profiles')
