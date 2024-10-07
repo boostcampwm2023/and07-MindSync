@@ -660,4 +660,76 @@ describe('SpacesController (e2e)', () => {
       .expect(HttpStatus.NOT_FOUND)
       .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
+
+  it('/spaces/:space_uuid/profiles (GET)', async () => {
+    await prisma.profileSpace.create({
+      data: {
+        profileUuid: testProfile.uuid,
+        spaceUuid: testSpace.uuid,
+      },
+    });
+
+    return request(app.getHttpServer())
+      .get(
+        `/spaces/${testSpace.uuid}/profiles?profile_uuid=${testProfile.uuid}`,
+      )
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.OK)
+      .expect((res) => {
+        expect(res.body.message).toBe('OK');
+        expect(res.body.statusCode).toBe(HttpStatus.OK);
+        expect(res.body.data).toEqual(expect.arrayContaining([testProfile]));
+      });
+  });
+
+  it('/spaces/:space_uuid/profiles (GET) profile uuid needed', async () => {
+    return request(app.getHttpServer())
+      .get(`/spaces/${testSpace.uuid}/profiles`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
+  });
+
+  it('/spaces/:space_uuid/profiles (GET) user not logged in', async () => {
+    return request(app.getHttpServer())
+      .get(`/spaces/${testSpace.uuid}/profiles`)
+      .expect(HttpStatus.UNAUTHORIZED)
+      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
+  });
+
+  it('/spaces/:space_uuid/profiles (GET) profile user not own', async () => {
+    const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+    const newProfile = await prisma.profile.create({
+      data: {
+        uuid: uuid(),
+        userUuid: newUser.uuid,
+        image: 'test image',
+        nickname: 'test nickname',
+      },
+    });
+
+    return request(app.getHttpServer())
+      .get(`/spaces/${testSpace.uuid}/profiles?profile_uuid=${newProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/spaces/:space_uuid/profiles (GET) profile not joined space', async () => {
+    return request(app.getHttpServer())
+      .get(
+        `/spaces/${testSpace.uuid}/profiles?profile_uuid=${testProfile.uuid}`,
+      )
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/spaces/:space_uuid/profiles (GET) profile not found', async () => {
+    return request(app.getHttpServer())
+      .get(`/spaces/${testSpace.uuid}/profiles?profile_uuid=${uuid()}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
+  });
 });
