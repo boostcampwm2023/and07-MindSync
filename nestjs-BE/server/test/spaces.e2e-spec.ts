@@ -86,7 +86,7 @@ describe('SpacesController (e2e)', () => {
       'S3_BUCKET_NAME',
     )}\\.s3\\.${configService.get<string>(
       'AWS_REGION',
-    )}\\.amazonaws\\.com\\/[0-9a-f]{32}-`;
+    )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
     const imageRegExp = new RegExp(imageUrlPattern);
 
     return request(app.getHttpServer())
