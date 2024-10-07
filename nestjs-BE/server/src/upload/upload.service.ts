@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import uuid from '../utils/uuid';
+import { v4 as uuid } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -24,7 +24,11 @@ export class UploadService {
       Body: image.buffer,
     };
     await this.s3Client.send(new PutObjectCommand(params));
-    const publicUrl = `https://${params.Bucket}.s3.ap-northeast-2.amazonaws.com/${params.Key}`;
+    const publicUrl = `https://${
+      params.Bucket
+    }.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${
+      params.Key
+    }`;
     return publicUrl;
   }
 }
