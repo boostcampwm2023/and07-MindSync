@@ -584,4 +584,80 @@ describe('SpacesController (e2e)', () => {
         statusCode: HttpStatus.CONFLICT,
       });
   });
+
+  it('/spaces/:space_uuid/profiles/:profile_uuid (DELETE)', async () => {
+    await prisma.profileSpace.create({
+      data: {
+        profileUuid: testProfile.uuid,
+        spaceUuid: testSpace.uuid,
+      },
+    });
+
+    return request(app.getHttpServer())
+      .delete(`/spaces/${testSpace.uuid}/profiles/${testProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.OK)
+      .expect({ message: 'OK', statusCode: HttpStatus.OK });
+  });
+
+  it('/spaces/:space_uuid/profiles/:profile_uuid (DELETE) user not logged in', async () => {
+    await prisma.profileSpace.create({
+      data: {
+        profileUuid: testProfile.uuid,
+        spaceUuid: testSpace.uuid,
+      },
+    });
+
+    return request(app.getHttpServer())
+      .delete(`/spaces/${testSpace.uuid}/profiles/${testProfile.uuid}`)
+      .expect(HttpStatus.UNAUTHORIZED)
+      .expect({ message: 'Unauthorized', statusCode: HttpStatus.UNAUTHORIZED });
+  });
+
+  it('/spaces/:space_uuid/profiles/:profile_uuid (DELETE) profile user not own', async () => {
+    const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+    const newProfile = await prisma.profile.create({
+      data: {
+        uuid: uuid(),
+        userUuid: newUser.uuid,
+        image: 'test image',
+        nickname: 'test nickname',
+      },
+    });
+    await prisma.profileSpace.create({
+      data: {
+        profileUuid: testProfile.uuid,
+        spaceUuid: testSpace.uuid,
+      },
+    });
+
+    return request(app.getHttpServer())
+      .delete(`/spaces/${testSpace.uuid}/profiles/${newProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+  });
+
+  it('/spaces/:space_uuid/profiles/:profile_uuid (DELETE) profile user not own', async () => {
+    await prisma.profileSpace.create({
+      data: {
+        profileUuid: testProfile.uuid,
+        spaceUuid: testSpace.uuid,
+      },
+    });
+
+    return request(app.getHttpServer())
+      .delete(`/spaces/${testSpace.uuid}/profiles/${uuid()}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
+  });
+
+  it('/spaces/:space_uuid/profiles/:profile_uuid (DELETE) profile user not own', async () => {
+    return request(app.getHttpServer())
+      .delete(`/spaces/${testSpace.uuid}/profiles/${testProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
+  });
 });
