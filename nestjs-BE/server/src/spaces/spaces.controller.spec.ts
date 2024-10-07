@@ -533,8 +533,8 @@ describe('SpacesController', () => {
     );
 
     await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.NO_CONTENT,
-      message: 'No Content',
+      statusCode: HttpStatus.OK,
+      message: 'OK',
     });
   });
 
