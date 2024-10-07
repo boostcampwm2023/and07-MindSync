@@ -470,4 +470,118 @@ describe('SpacesController (e2e)', () => {
       .expect(HttpStatus.NOT_FOUND)
       .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
   });
+
+  it('/spaces/:space_uuid/join (POST)', async () => {
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ profile_uuid: testProfile.uuid })
+      .expect(HttpStatus.CREATED)
+      .expect({
+        message: 'Created',
+        statusCode: HttpStatus.CREATED,
+        data: testSpace,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) profile uuid needed', async () => {
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect({
+        message: 'Bad Request',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) profile uuid wrong type', async () => {
+    const number = 1;
+
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ profile_uuid: number })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect({
+        message: 'Bad Request',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) user not logged in', async () => {
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .send({ profile_uuid: testProfile.uuid })
+      .expect(HttpStatus.UNAUTHORIZED)
+      .expect({
+        message: 'Unauthorized',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) profile user not own', async () => {
+    const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+    const newProfile = await prisma.profile.create({
+      data: {
+        uuid: uuid(),
+        userUuid: newUser.uuid,
+        image: 'test image',
+        nickname: 'test nickname',
+      },
+    });
+
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ profile_uuid: newProfile.uuid })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({
+        message: 'Forbidden',
+        statusCode: HttpStatus.FORBIDDEN,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) space not exist', async () => {
+    return request(app.getHttpServer())
+      .post(`/spaces/${uuid()}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ profile_uuid: testProfile.uuid })
+      .expect(HttpStatus.FORBIDDEN)
+      .expect({
+        message: 'Forbidden',
+        statusCode: HttpStatus.FORBIDDEN,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) profile not found', async () => {
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ profile_uuid: uuid() })
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        message: 'Not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+  });
+
+  it('/spaces/:space_uuid/join (POST) already joined space', async () => {
+    await prisma.profileSpace.create({
+      data: {
+        spaceUuid: testSpace.uuid,
+        profileUuid: testProfile.uuid,
+      },
+    });
+
+    return request(app.getHttpServer())
+      .post(`/spaces/${testSpace.uuid}/join`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ profile_uuid: testProfile.uuid })
+      .expect(HttpStatus.CONFLICT)
+      .expect({
+        message: 'Conflict',
+        statusCode: HttpStatus.CONFLICT,
+      });
+  });
 });
