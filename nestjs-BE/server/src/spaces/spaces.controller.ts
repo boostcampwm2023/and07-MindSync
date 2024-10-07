@@ -236,10 +236,6 @@ export class SpacesController {
     description: 'Successfully left the space.',
   })
   @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Profile uuid needed.',
-  })
-  @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'User not logged in.',
   })
