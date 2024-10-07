@@ -17,17 +17,17 @@ import {
   BadRequestException,
   Delete,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { JoinSpaceRequestDto } from './dto/join-space.dto';
 import { UploadService } from '../upload/upload.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { RequestWithUser } from '../utils/interface';
-import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
-import { JoinSpaceRequestDto } from './dto/join-space.dto';
 
 @Controller('spaces')
 @ApiTags('spaces')
