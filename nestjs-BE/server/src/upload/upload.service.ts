@@ -24,7 +24,11 @@ export class UploadService {
       Body: image.buffer,
     };
     await this.s3Client.send(new PutObjectCommand(params));
-    const publicUrl = `https://${params.Bucket}.s3.ap-northeast-2.amazonaws.com/${params.Key}`;
+    const publicUrl = `https://${
+      params.Bucket
+    }.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${
+      params.Key
+    }`;
     return publicUrl;
   }
 }
