@@ -106,21 +106,17 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found. Profile not found',
   })
-  async findOne(
+  async findSpace(
     @Param('space_uuid') spaceUuid: string,
     @Query('profile_uuid') profileUuid: string,
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
-    const space = await this.spacesService.findSpace(spaceUuid);
-    if (!space) throw new NotFoundException();
-    const profileSpace =
-      await this.profileSpaceService.findProfileSpaceByBothUuid(
-        profileUuid,
-        spaceUuid,
-      );
-    if (!profileSpace) throw new ForbiddenException();
+    const space = await this.spacesService.findSpace(
+      req.user.uuid,
+      profileUuid,
+      spaceUuid,
+    );
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 

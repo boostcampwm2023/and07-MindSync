@@ -102,26 +102,15 @@ describe('SpacesController', () => {
   });
 
   it('findOne found space', async () => {
+    const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-    const profileSpaceMock = {
-      spaceUuid: spaceMock.uuid,
-      profileUuid: profileMock.uuid,
-    };
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
     (spacesService.findSpace as jest.Mock).mockResolvedValue(spaceMock);
-    (
-      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
-    ).mockResolvedValue(profileSpaceMock);
 
-    const response = controller.findOne(
+    const response = controller.findSpace(
       spaceMock.uuid,
-      profileMock.uuid,
+      profileUuid,
       requestMock,
     );
 
@@ -136,96 +125,13 @@ describe('SpacesController', () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
 
-    const response = controller.findOne(spaceMock.uuid, undefined, requestMock);
+    const response = controller.findSpace(
+      spaceMock.uuid,
+      undefined,
+      requestMock,
+    );
 
     await expect(response).rejects.toThrow(BadRequestException);
-    expect(usersService.verifyUserProfile).not.toHaveBeenCalled();
-  });
-
-  it("findOne profile user doesn't have", async () => {
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: 'wrong user uuid',
-    } as Profile;
-
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new ForbiddenException(),
-    );
-
-    const response = controller.findOne(
-      spaceMock.uuid,
-      profileMock.uuid,
-      requestMock,
-    );
-
-    await expect(response).rejects.toThrow(ForbiddenException);
-    expect(spacesService.findSpace).not.toHaveBeenCalled();
-  });
-
-  it('findOne profile not joined space', async () => {
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (spacesService.findSpace as jest.Mock).mockResolvedValue(spaceMock);
-    (
-      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
-    ).mockResolvedValue(null);
-
-    const response = controller.findOne(
-      spaceMock.uuid,
-      profileMock.uuid,
-      requestMock,
-    );
-
-    await expect(response).rejects.toThrow(ForbiddenException);
-  });
-
-  it('findOne not found space', async () => {
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (spacesService.findSpace as jest.Mock).mockResolvedValue(null);
-
-    const response = controller.findOne(
-      spaceMock.uuid,
-      profileMock.uuid,
-      requestMock,
-    );
-
-    await expect(response).rejects.toThrow(NotFoundException);
-  });
-
-  it('findOne profile not found', async () => {
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new NotFoundException(),
-    );
-
-    const response = controller.findOne(
-      spaceMock.uuid,
-      profileMock.uuid,
-      requestMock,
-    );
-
-    await expect(response).rejects.toThrow(NotFoundException);
   });
 
   it('update update space', async () => {

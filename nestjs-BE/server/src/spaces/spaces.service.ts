@@ -24,8 +24,25 @@ export class SpacesService {
     private readonly uploadService: UploadService,
   ) {}
 
-  async findSpace(spaceUuid: string): Promise<Space | null> {
+  async findSpaceBySpaceUuid(spaceUuid: string): Promise<Space | null> {
     return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
+  }
+
+  async findSpace(
+    userUuid: string,
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<Space> {
+    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const space = await this.findSpaceBySpaceUuid(spaceUuid);
+    if (!space) throw new NotFoundException();
+    const profileSpace =
+      await this.profileSpaceService.findProfileSpaceByBothUuid(
+        profileUuid,
+        spaceUuid,
+      );
+    if (!profileSpace) throw new ForbiddenException();
+    return space;
   }
 
   async createSpace(
@@ -93,7 +110,7 @@ export class SpacesService {
         throw err;
       }
     }
-    return this.findSpace(spaceUuid);
+    return this.findSpaceBySpaceUuid(spaceUuid);
   }
 
   async leaveSpace(
