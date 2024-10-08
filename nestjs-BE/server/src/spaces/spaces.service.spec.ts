@@ -412,79 +412,69 @@ describe('SpacesService', () => {
     await expect(space).rejects.toThrow(NotFoundException);
   });
 
-  it('joinSpace', async () => {
+  describe('joinSpace', () => {
     const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
     const space = { uuid: spaceUuid } as Space;
 
-    jest.spyOn(spacesService, 'findSpaceBySpaceUuid').mockResolvedValue(space);
+    beforeEach(() => {
+      jest
+        .spyOn(spacesService, 'findSpaceBySpaceUuid')
+        .mockResolvedValue(space);
+    });
 
-    const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+    it('join space', async () => {
+      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
 
-    await expect(res).resolves.toEqual(space);
-  });
+      await expect(res).resolves.toEqual(space);
+    });
 
-  it('joinSpace profile not found', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
+    it('profile not found', async () => {
+      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new NotFoundException(),
-    );
+      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
 
-    const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      await expect(res).rejects.toThrow(NotFoundException);
+    });
 
-    await expect(res).rejects.toThrow(NotFoundException);
-  });
+    it('profile user not own', async () => {
+      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+        new ForbiddenException(),
+      );
 
-  it('joinSpace profile user not own', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
+      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
 
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new ForbiddenException(),
-    );
+      await expect(res).rejects.toThrow(ForbiddenException);
+    });
 
-    const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+    it('conflict', async () => {
+      (profileSpaceService.createProfileSpace as jest.Mock).mockRejectedValue(
+        new PrismaClientKnownRequestError('', {
+          code: 'P2002',
+          clientVersion: '',
+        }),
+      );
 
-    await expect(res).rejects.toThrow(ForbiddenException);
-  });
+      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
 
-  it('joinSpace conflict', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
+      await expect(res).rejects.toThrow(ConflictException);
+    });
 
-    (profileSpaceService.createProfileSpace as jest.Mock).mockRejectedValue(
-      new PrismaClientKnownRequestError('', {
-        code: 'P2002',
-        clientVersion: '',
-      }),
-    );
+    it('space not found', async () => {
+      (profileSpaceService.createProfileSpace as jest.Mock).mockRejectedValue(
+        new PrismaClientKnownRequestError('', {
+          code: 'P2003',
+          clientVersion: '',
+        }),
+      );
 
-    const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
 
-    await expect(res).rejects.toThrow(ConflictException);
-  });
-
-  it('joinSpace space not found', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
-
-    (profileSpaceService.createProfileSpace as jest.Mock).mockRejectedValue(
-      new PrismaClientKnownRequestError('', {
-        code: 'P2003',
-        clientVersion: '',
-      }),
-    );
-
-    const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
-
-    await expect(res).rejects.toThrow(ForbiddenException);
+      await expect(res).rejects.toThrow(ForbiddenException);
+    });
   });
 
   describe('leaveSpace', () => {
