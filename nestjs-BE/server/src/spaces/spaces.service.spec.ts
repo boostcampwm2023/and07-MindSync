@@ -40,7 +40,7 @@ describe('SpacesService', () => {
           useValue: {
             createProfileSpace: jest.fn(),
             deleteProfileSpace: jest.fn(),
-            isSpaceEmpty: jest.fn(),
+            isSpaceEmpty: jest.fn(async () => true),
             isProfileInSpace: jest.fn(async () => true),
           },
         },
@@ -487,81 +487,66 @@ describe('SpacesService', () => {
     await expect(res).rejects.toThrow(ForbiddenException);
   });
 
-  it('leaveSpace', async () => {
+  describe('leaveSpace', () => {
     const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
 
-    jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
+    beforeEach(() => {
+      jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
+    });
 
-    const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+    it('leave space', async () => {
+      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
 
-    await expect(res).resolves.toBeUndefined();
-  });
+      await expect(res).resolves.toBeUndefined();
+    });
 
-  it('leaveSpace space delete fail', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
+    it('space delete fail', async () => {
+      jest.spyOn(spacesService, 'deleteSpace').mockRejectedValue(
+        new PrismaClientKnownRequestError('', {
+          code: 'P2025',
+          clientVersion: '',
+        }),
+      );
 
-    jest.spyOn(spacesService, 'deleteSpace').mockRejectedValue(
-      new PrismaClientKnownRequestError('', {
-        code: 'P2025',
-        clientVersion: '',
-      }),
-    );
+      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
 
-    const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      await expect(res).resolves.toBeUndefined();
+    });
 
-    await expect(res).resolves.toBeUndefined();
-  });
+    it('profile not found', async () => {
+      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
-  it('leaveSpace profile not found', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
+      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
 
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new NotFoundException(),
-    );
-    jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
+      await expect(res).rejects.toThrow(NotFoundException);
+    });
 
-    const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+    it('profile user not own', async () => {
+      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+        new ForbiddenException(),
+      );
 
-    await expect(res).rejects.toThrow(NotFoundException);
-  });
+      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
 
-  it('leaveSpace profile user not own', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
+      await expect(res).rejects.toThrow(ForbiddenException);
+    });
 
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new ForbiddenException(),
-    );
-    jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
+    it('profile not joined space', async () => {
+      (profileSpaceService.deleteProfileSpace as jest.Mock).mockRejectedValue(
+        new PrismaClientKnownRequestError('', {
+          code: 'P2025',
+          clientVersion: '',
+        }),
+      );
 
-    const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
 
-    await expect(res).rejects.toThrow(ForbiddenException);
-  });
-
-  it('leaveSpace profileSpace not found', async () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
-
-    (profileSpaceService.deleteProfileSpace as jest.Mock).mockRejectedValue(
-      new PrismaClientKnownRequestError('', {
-        code: 'P2025',
-        clientVersion: '',
-      }),
-    );
-    jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
-
-    const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
-
-    await expect(res).rejects.toThrow(NotFoundException);
+      await expect(res).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('findProfilesInSpace', () => {
