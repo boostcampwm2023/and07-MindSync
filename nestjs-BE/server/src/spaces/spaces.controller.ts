@@ -8,11 +8,9 @@ import {
   UseInterceptors,
   UploadedFile,
   Request as Req,
-  NotFoundException,
   ValidationPipe,
   Header,
   HttpStatus,
-  ForbiddenException,
   Query,
   BadRequestException,
   Delete,
@@ -23,20 +21,12 @@ import { SpacesService } from './spaces.service';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { JoinSpaceRequestDto } from './dto/join-space.dto';
-import { UploadService } from '../upload/upload.service';
-import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { RequestWithUser } from '../utils/interface';
-import { UsersService } from '../users/users.service';
 
 @Controller('spaces')
 @ApiTags('spaces')
 export class SpacesController {
-  constructor(
-    private readonly spacesService: SpacesService,
-    private readonly uploadService: UploadService,
-    private readonly profileSpaceService: ProfileSpaceService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly spacesService: SpacesService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('icon'))

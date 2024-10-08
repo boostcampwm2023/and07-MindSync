@@ -1,26 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
-import { ProfileSpaceService } from '../profile-space/profile-space.service';
-import { UploadService } from '../upload/upload.service';
 import { Profile, Space } from '@prisma/client';
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, HttpStatus } from '@nestjs/common';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';
-import { UsersService } from '../users/users.service';
 
 describe('SpacesController', () => {
   let controller: SpacesController;
   let spacesService: SpacesService;
-  let uploadService: UploadService;
-  let profileSpaceService: ProfileSpaceService;
-  let usersService: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,22 +26,11 @@ describe('SpacesController', () => {
             findProfilesInSpace: jest.fn(),
           },
         },
-        { provide: UploadService, useValue: { uploadFile: jest.fn() } },
-        {
-          provide: ProfileSpaceService,
-          useValue: {
-            findProfileSpaceByBothUuid: jest.fn(),
-          },
-        },
-        { provide: UsersService, useValue: { verifyUserProfile: jest.fn() } },
       ],
     }).compile();
 
     controller = module.get<SpacesController>(SpacesController);
     spacesService = module.get<SpacesService>(SpacesService);
-    uploadService = module.get<UploadService>(UploadService);
-    profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
-    usersService = module.get<UsersService>(UsersService);
   });
 
   it('create created', async () => {
