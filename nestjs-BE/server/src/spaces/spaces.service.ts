@@ -36,12 +36,11 @@ export class SpacesService {
     await this.usersService.verifyUserProfile(userUuid, profileUuid);
     const space = await this.findSpaceBySpaceUuid(spaceUuid);
     if (!space) throw new NotFoundException();
-    const profileSpace =
-      await this.profileSpaceService.findProfileSpaceByBothUuid(
-        profileUuid,
-        spaceUuid,
-      );
-    if (!profileSpace) throw new ForbiddenException();
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) throw new ForbiddenException();
     return space;
   }
 
@@ -74,12 +73,11 @@ export class SpacesService {
     updateSpaceDto: UpdateSpacePrismaDto,
   ): Promise<Space> {
     await this.usersService.verifyUserProfile(userUuid, profileUuid);
-    const profileSpace =
-      await this.profileSpaceService.findProfileSpaceByBothUuid(
-        profileUuid,
-        spaceUuid,
-      );
-    if (!profileSpace) throw new ForbiddenException();
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) throw new ForbiddenException();
     if (icon) {
       updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
     }
