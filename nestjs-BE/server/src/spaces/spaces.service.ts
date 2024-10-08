@@ -4,15 +4,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { ConfigService } from '@nestjs/config';
 import { Prisma, Profile, Space } from '@prisma/client';
-import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { v4 as uuid } from 'uuid';
+import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { CreateSpacePrismaDto } from './dto/create-space.dto';
+import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UsersService } from '../users/users.service';
 import { UploadService } from '../upload/upload.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SpacesService {

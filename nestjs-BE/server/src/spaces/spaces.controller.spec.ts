@@ -1,8 +1,8 @@
+import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { Profile, Space } from '@prisma/client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
-import { Profile, Space } from '@prisma/client';
-import { BadRequestException, HttpStatus } from '@nestjs/common';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { RequestWithUser } from '../utils/interface';

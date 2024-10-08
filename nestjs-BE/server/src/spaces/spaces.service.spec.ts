@@ -5,15 +5,15 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { SpacesService } from './spaces.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { ProfileSpaceService } from '../profile-space/profile-space.service';
-import { UsersService } from '../users/users.service';
 import { Space } from '@prisma/client';
-import { UploadService } from '../upload/upload.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { SpacesService } from './spaces.service';
 import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
+import { UsersService } from '../users/users.service';
+import { UploadService } from '../upload/upload.service';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
