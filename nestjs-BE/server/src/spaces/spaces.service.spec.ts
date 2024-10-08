@@ -500,6 +500,16 @@ describe('SpacesService', () => {
       const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
 
       await expect(res).resolves.toBeUndefined();
+      expect(spacesService.deleteSpace).toHaveBeenCalled();
+    });
+
+    it('leave space, other profile exist', async () => {
+      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+
+      (profileSpaceService.isSpaceEmpty as jest.Mock).mockResolvedValue(false);
+
+      await expect(res).resolves.toBeUndefined();
+      expect(spacesService.deleteSpace).not.toHaveBeenCalled();
     });
 
     it('space delete fail', async () => {
