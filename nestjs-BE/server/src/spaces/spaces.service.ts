@@ -148,7 +148,7 @@ export class SpacesService {
     }
     const isSpaceEmpty = await this.profileSpaceService.isSpaceEmpty(spaceUuid);
     try {
-      if (!isSpaceEmpty) await this.deleteSpace(spaceUuid);
+      if (isSpaceEmpty) await this.deleteSpace(spaceUuid);
     } catch (err) {}
   }
 
