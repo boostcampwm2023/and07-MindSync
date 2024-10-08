@@ -40,12 +40,12 @@ describe('SpacesService', () => {
             createProfileSpace: jest.fn(),
             deleteProfileSpace: jest.fn(),
             isSpaceEmpty: jest.fn(),
-            isProfileInSpace: jest.fn(),
+            isProfileInSpace: jest.fn(async () => true),
           },
         },
         {
           provide: UsersService,
-          useValue: { verifyUserProfile: jest.fn() },
+          useValue: { verifyUserProfile: jest.fn(async () => true) },
         },
         {
           provide: UploadService,
@@ -66,8 +66,6 @@ describe('SpacesService', () => {
     const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(true);
     jest
       .spyOn(spacesService, 'findSpaceBySpaceUuid')
       .mockResolvedValue(spaceMock);
@@ -106,7 +104,6 @@ describe('SpacesService', () => {
     const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
     (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
       false,
     );
@@ -129,7 +126,6 @@ describe('SpacesService', () => {
     const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
     jest.spyOn(spacesService, 'findSpaceBySpaceUuid').mockResolvedValue(null);
 
     const space = spacesService.findSpace(
@@ -170,7 +166,6 @@ describe('SpacesService', () => {
     const iconUrlMock = 'www.test.com/image';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
     (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (prisma.space.create as jest.Mock).mockResolvedValue(spaceMock);
 
@@ -242,7 +237,6 @@ describe('SpacesService', () => {
     } as CreateSpacePrismaDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
     (prisma.space.create as jest.Mock).mockResolvedValue(spaceMock);
 
     const space = spacesService.createSpace(
@@ -265,8 +259,6 @@ describe('SpacesService', () => {
     const iconUrlMock = 'www.test.com/image';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(true);
     (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
 
@@ -289,8 +281,6 @@ describe('SpacesService', () => {
     const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(true);
     (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
 
     const space = spacesService.updateSpace(
@@ -314,8 +304,6 @@ describe('SpacesService', () => {
     const iconUrlMock = 'www.test.com/image';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(true);
     (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
     (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
 
@@ -338,6 +326,7 @@ describe('SpacesService', () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
+
     (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
       new ForbiddenException(),
     );
@@ -362,7 +351,6 @@ describe('SpacesService', () => {
     const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
     (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
       false,
     );
@@ -412,8 +400,6 @@ describe('SpacesService', () => {
     const iconUrlMock = 'www.test.com/image';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(true);
     (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (prisma.space.update as jest.Mock).mockRejectedValue(
       new PrismaClientKnownRequestError('', {
