@@ -67,21 +67,36 @@ export class SpacesService {
   }
 
   async updateSpace(
+    userUuid: string,
+    profileUuid: string,
     spaceUuid: string,
+    icon: Express.Multer.File,
     updateSpaceDto: UpdateSpacePrismaDto,
-  ): Promise<Space | null> {
+  ): Promise<Space> {
+    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const profileSpace =
+      await this.profileSpaceService.findProfileSpaceByBothUuid(
+        profileUuid,
+        spaceUuid,
+      );
+    if (!profileSpace) throw new ForbiddenException();
+    if (icon) {
+      updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
+    }
+    let space: Space;
     try {
-      return await this.prisma.space.update({
+      space = await this.prisma.space.update({
         where: { uuid: spaceUuid },
-        data: { ...updateSpaceDto },
+        data: updateSpaceDto,
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        return null;
+        throw new NotFoundException();
       } else {
         throw err;
       }
     }
+    return space;
   }
 
   async deleteSpace(spaceUuid: string): Promise<Space> {

@@ -13,6 +13,7 @@ import { UsersService } from '../users/users.service';
 import { Space } from '@prisma/client';
 import { UploadService } from '../upload/upload.service';
 import { CreateSpacePrismaDto } from './dto/create-space.dto';
+import { UpdateSpacePrismaDto } from './dto/update-space.dto';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
@@ -265,20 +266,188 @@ describe('SpacesService', () => {
     expect(prisma.space.create).toHaveBeenCalled();
   });
 
-  it('updateSpace updated space', async () => {
-    const data = { name: 'new space name', icon: 'new space icon' };
-    const spaceMock = { uuid: 'space uuid', ...data };
+  it('updateSpace update space', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+    const iconUrlMock = 'www.test.com/image';
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileUuid,
+    };
 
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
 
-    const space = spacesService.updateSpace('space uuid', data);
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      iconMock,
+      updateSpaceDto,
+    );
 
     await expect(space).resolves.toEqual(spaceMock);
+    expect(uploadService.uploadFile).toHaveBeenCalled();
+    expect(prisma.space.update).toHaveBeenCalled();
+  });
+
+  it('updateSpace icon not requested', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileUuid,
+    };
+
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
+
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      undefined,
+      updateSpaceDto,
+    );
+
+    await expect(space).resolves.toEqual(spaceMock);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.update).toHaveBeenCalled();
+  });
+
+  it('updateSpace name not requested', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const updateSpaceDto = {} as UpdateSpacePrismaDto;
+    const iconUrlMock = 'www.test.com/image';
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileUuid,
+    };
+
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (prisma.space.update as jest.Mock).mockResolvedValue(spaceMock);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
+
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      iconMock,
+      updateSpaceDto,
+    );
+
+    await expect(space).resolves.toEqual(spaceMock);
+    expect(uploadService.uploadFile).toHaveBeenCalled();
+    expect(prisma.space.update).toHaveBeenCalled();
+  });
+
+  it('updateSpace profile user not own', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new ForbiddenException(),
+    );
+
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      iconMock,
+      updateSpaceDto,
+    );
+
+    await expect(space).rejects.toThrow(ForbiddenException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.update).not.toHaveBeenCalled();
+  });
+
+  it('updateSpace profile not joined space', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(null);
+
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      iconMock,
+      updateSpaceDto,
+    );
+
+    await expect(space).rejects.toThrow(ForbiddenException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.update).not.toHaveBeenCalled();
+  });
+
+  it('updateSpace profile not found', async () => {
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+    const spaceMock = { uuid: 'space uuid' } as Space;
+
+    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      new NotFoundException(),
+    );
+
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      iconMock,
+      updateSpaceDto,
+    );
+
+    await expect(space).rejects.toThrow(NotFoundException);
+    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    expect(prisma.space.update).not.toHaveBeenCalled();
   });
 
   it('updateSpace fail', async () => {
-    const data = { name: 'new space name', icon: 'new space icon' };
+    const userUuid = 'user uuid';
+    const profileUuid = 'profile uuid';
+    const iconMock = { filename: 'icon' } as Express.Multer.File;
+    const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+    const iconUrlMock = 'www.test.com/image';
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const profileSpaceMock = {
+      spaceUuid: spaceMock.uuid,
+      profileUuid: profileUuid,
+    };
 
+    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
+    (
+      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
+    ).mockResolvedValue(profileSpaceMock);
+    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (prisma.space.update as jest.Mock).mockRejectedValue(
       new PrismaClientKnownRequestError('', {
         code: 'P2025',
@@ -286,19 +455,15 @@ describe('SpacesService', () => {
       }),
     );
 
-    const space = spacesService.updateSpace('space uuid', data);
+    const space = spacesService.updateSpace(
+      userUuid,
+      profileUuid,
+      spaceMock.uuid,
+      iconMock,
+      updateSpaceDto,
+    );
 
-    await expect(space).resolves.toBeNull();
-  });
-
-  it('updateSpace fail', async () => {
-    const data = { name: 'new space name', icon: 'new space icon' };
-
-    (prisma.space.update as jest.Mock).mockRejectedValue(new Error());
-
-    const space = spacesService.updateSpace('space uuid', data);
-
-    await expect(space).rejects.toThrow(Error);
+    await expect(space).rejects.toThrow(NotFoundException);
   });
 
   it('joinSpace', async () => {

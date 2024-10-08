@@ -134,32 +134,20 @@ describe('SpacesController', () => {
     await expect(response).rejects.toThrow(BadRequestException);
   });
 
-  it('update update space', async () => {
+  it('updateSpace update space', async () => {
+    const spaceUuid = 'space uuid';
+    const profileUuid = 'profile uuid';
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const iconUrlMock = 'www.test.com/image';
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-    const profileSpaceMock = {
-      spaceUuid: spaceMock.uuid,
-      profileUuid: profileMock.uuid,
-    };
+    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const spaceMock = { uuid: spaceUuid } as Space;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (
-      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
-    ).mockResolvedValue(profileSpaceMock);
-    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
     (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
 
-    const response = controller.update(
+    const response = controller.updateSpace(
       iconMock,
-      spaceMock.uuid,
-      profileMock.uuid,
+      spaceUuid,
+      profileUuid,
       bodyMock,
       requestMock,
     );
@@ -169,171 +157,23 @@ describe('SpacesController', () => {
       message: 'OK',
       data: spaceMock,
     });
-    expect(uploadService.uploadFile).toHaveBeenCalled();
-    expect(spacesService.updateSpace).toHaveBeenCalledWith(spaceMock.uuid, {
-      name: bodyMock.name,
-      icon: iconUrlMock,
-    });
   });
 
-  it('update icon not requested', async () => {
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-    const profileSpaceMock = {
-      spaceUuid: spaceMock.uuid,
-      profileUuid: profileMock.uuid,
-    };
-
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (
-      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
-    ).mockResolvedValue(profileSpaceMock);
-    (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
-
-    const response = controller.update(
-      null as unknown as Express.Multer.File,
-      spaceMock.uuid,
-      profileMock.uuid,
-      bodyMock,
-      requestMock,
-    );
-
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: spaceMock,
-    });
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-    expect(spacesService.updateSpace).toHaveBeenCalledWith(spaceMock.uuid, {
-      name: bodyMock.name,
-    });
-  });
-
-  it('update name not requested', async () => {
+  it('updateSpace profile uuid needed', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const iconUrlMock = 'www.test.com/image';
-    const bodyMock = {} as UpdateSpaceRequestDto;
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-    const profileSpaceMock = {
-      spaceUuid: spaceMock.uuid,
-      profileUuid: profileMock.uuid,
-    };
-
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (
-      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
-    ).mockResolvedValue(profileSpaceMock);
-    (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
-    (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
-
-    const response = controller.update(
-      iconMock,
-      spaceMock.uuid,
-      profileMock.uuid,
-      bodyMock,
-      requestMock,
-    );
-
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: spaceMock,
-    });
-    expect(uploadService.uploadFile).toHaveBeenCalled();
-    expect(spacesService.updateSpace).toHaveBeenCalledWith(spaceMock.uuid, {
-      icon: iconUrlMock,
-    });
-  });
-
-  it("update profile user doesn't have", async () => {
-    const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: 'new user uuid',
-    } as Profile;
+    const spaceUuid = 'space uuid';
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new ForbiddenException(),
-    );
-
-    const response = controller.update(
-      iconMock,
-      spaceMock.uuid,
-      profileMock.uuid,
-      bodyMock,
-      requestMock,
-    );
-
-    await expect(response).rejects.toThrow(ForbiddenException);
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-    expect(spacesService.updateSpace).not.toHaveBeenCalled();
-  });
-
-  it('update profile not joined space', async () => {
-    const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const spaceMock = { uuid: 'space uuid' } as Space;
     const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
 
-    (usersService.verifyUserProfile as jest.Mock).mockResolvedValue(true);
-    (
-      profileSpaceService.findProfileSpaceByBothUuid as jest.Mock
-    ).mockResolvedValue(null);
-
-    const response = controller.update(
+    const response = controller.updateSpace(
       iconMock,
-      spaceMock.uuid,
-      profileMock.uuid,
+      spaceUuid,
+      undefined,
       bodyMock,
       requestMock,
     );
 
-    await expect(response).rejects.toThrow(ForbiddenException);
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-    expect(spacesService.updateSpace).not.toHaveBeenCalled();
-  });
-
-  it('update profile not found', async () => {
-    const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
-    const profileMock = {
-      uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
-    } as Profile;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-
-    (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
-      new NotFoundException(),
-    );
-
-    const response = controller.update(
-      iconMock,
-      spaceMock.uuid,
-      profileMock.uuid,
-      bodyMock,
-      requestMock,
-    );
-
-    await expect(response).rejects.toThrow(NotFoundException);
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
+    await expect(response).rejects.toThrow(BadRequestException);
     expect(spacesService.updateSpace).not.toHaveBeenCalled();
   });
 
