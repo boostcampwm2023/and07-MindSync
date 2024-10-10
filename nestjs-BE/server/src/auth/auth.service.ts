@@ -1,15 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { stringify } from 'qs';
 import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private refreshTokensService: RefreshTokensService,
     private configService: ConfigService,
+    private refreshTokensService: RefreshTokensService,
   ) {}
 
   async getKakaoAccount(kakaoUserId: number) {

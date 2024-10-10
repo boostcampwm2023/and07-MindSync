@@ -5,15 +5,15 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
-import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { UsersService } from '../users/users.service';
 import { ProfilesService } from '../profiles/profiles.service';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
-import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('auth')
