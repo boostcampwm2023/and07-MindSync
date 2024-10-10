@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, ProfileSpace } from '@prisma/client';
+import { ProfileSpace } from '@prisma/client';
 
 @Injectable()
 export class ProfileSpaceService {
@@ -22,32 +22,6 @@ export class ProfileSpaceService {
     return this.prisma.profileSpace.delete({
       where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
     });
-  }
-
-  async findProfileSpaceByBothUuid(
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<ProfileSpace | null> {
-    return this.prisma.profileSpace.findUnique({
-      where: { spaceUuid_profileUuid: { spaceUuid, profileUuid } },
-    });
-  }
-
-  async joinSpace(
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<ProfileSpace | null> {
-    try {
-      return await this.prisma.profileSpace.create({
-        data: { spaceUuid: spaceUuid, profileUuid: profileUuid },
-      });
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        return null;
-      } else {
-        throw err;
-      }
-    }
   }
 
   async isSpaceEmpty(spaceUuid: string) {

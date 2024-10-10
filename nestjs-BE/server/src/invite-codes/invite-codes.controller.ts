@@ -37,7 +37,7 @@ export class InviteCodesController {
   })
   async create(@Body() createInviteCodeDto: CreateInviteCodeDto) {
     const spaceUuid = createInviteCodeDto.space_uuid;
-    const space = await this.spacesService.findSpace(spaceUuid);
+    const space = await this.spacesService.findSpaceBySpaceUuid(spaceUuid);
     if (!space) throw new NotFoundException();
     const inviteCode =
       await this.inviteCodesService.createInviteCode(spaceUuid);
@@ -70,7 +70,9 @@ export class InviteCodesController {
       this.inviteCodesService.deleteInviteCode(inviteCode);
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
-    const space = await this.spacesService.findSpace(inviteCodeData.spaceUuid);
+    const space = await this.spacesService.findSpaceBySpaceUuid(
+      inviteCodeData.spaceUuid,
+    );
     return { statusCode: 200, message: 'Success', data: space };
   }
 }

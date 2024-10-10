@@ -4,56 +4,97 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { ConfigService } from '@nestjs/config';
 import { Prisma, Profile, Space } from '@prisma/client';
-import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { v4 as uuid } from 'uuid';
+import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { CreateSpacePrismaDto } from './dto/create-space.dto';
+import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UsersService } from '../users/users.service';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class SpacesService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
     private readonly profileSpaceService: ProfileSpaceService,
     private readonly usersService: UsersService,
+    private readonly uploadService: UploadService,
   ) {}
 
-  async findSpace(spaceUuid: string): Promise<Space | null> {
+  async findSpaceBySpaceUuid(spaceUuid: string): Promise<Space | null> {
     return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
   }
 
-  async findSpaces(spaceUuids: string[]): Promise<Space[]> {
-    return this.prisma.space.findMany({ where: { uuid: { in: spaceUuids } } });
+  async findSpace(
+    userUuid: string,
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<Space> {
+    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const space = await this.findSpaceBySpaceUuid(spaceUuid);
+    if (!space) throw new NotFoundException();
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) throw new ForbiddenException();
+    return space;
   }
 
-  async createSpace(createSpaceDto: CreateSpacePrismaDto): Promise<Space> {
-    return this.prisma.space.create({
+  async createSpace(
+    userUuid: string,
+    profileUuid: string,
+    icon: Express.Multer.File,
+    createSpaceDto: CreateSpacePrismaDto,
+  ): Promise<Space> {
+    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const iconUrl = icon
+      ? await this.uploadService.uploadFile(icon)
+      : this.configService.get<string>('APP_ICON_URL');
+    const space = await this.prisma.space.create({
       data: {
         uuid: uuid(),
         name: createSpaceDto.name,
-        icon: createSpaceDto.icon,
+        icon: iconUrl,
       },
     });
+    await this.profileSpaceService.createProfileSpace(profileUuid, space.uuid);
+    return space;
   }
 
   async updateSpace(
+    userUuid: string,
+    profileUuid: string,
     spaceUuid: string,
+    icon: Express.Multer.File,
     updateSpaceDto: UpdateSpacePrismaDto,
-  ): Promise<Space | null> {
+  ): Promise<Space> {
+    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) throw new ForbiddenException();
+    if (icon) {
+      updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
+    }
+    let space: Space;
     try {
-      return await this.prisma.space.update({
+      space = await this.prisma.space.update({
         where: { uuid: spaceUuid },
-        data: { ...updateSpaceDto },
+        data: updateSpaceDto,
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        return null;
+        throw new NotFoundException();
       } else {
         throw err;
       }
     }
+    return space;
   }
 
   async deleteSpace(spaceUuid: string): Promise<Space> {
@@ -82,7 +123,7 @@ export class SpacesService {
         throw err;
       }
     }
-    return this.findSpace(spaceUuid);
+    return this.findSpaceBySpaceUuid(spaceUuid);
   }
 
   async leaveSpace(
@@ -107,7 +148,7 @@ export class SpacesService {
     }
     const isSpaceEmpty = await this.profileSpaceService.isSpaceEmpty(spaceUuid);
     try {
-      if (!isSpaceEmpty) await this.deleteSpace(spaceUuid);
+      if (isSpaceEmpty) await this.deleteSpace(spaceUuid);
     } catch (err) {}
   }
 

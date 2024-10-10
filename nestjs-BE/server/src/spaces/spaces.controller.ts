@@ -8,37 +8,25 @@ import {
   UseInterceptors,
   UploadedFile,
   Request as Req,
-  NotFoundException,
   ValidationPipe,
   Header,
   HttpStatus,
-  ForbiddenException,
   Query,
   BadRequestException,
   Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { UploadService } from '../upload/upload.service';
-import { ProfileSpaceService } from '../profile-space/profile-space.service';
-import { RequestWithUser } from '../utils/interface';
-import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
 import { JoinSpaceRequestDto } from './dto/join-space.dto';
+import { RequestWithUser } from '../utils/interface';
 
 @Controller('spaces')
 @ApiTags('spaces')
 export class SpacesController {
-  constructor(
-    private readonly spacesService: SpacesService,
-    private readonly uploadService: UploadService,
-    private readonly profileSpaceService: ProfileSpaceService,
-    private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly spacesService: SpacesService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('icon'))
@@ -63,7 +51,7 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Profile not found.',
   })
-  async create(
+  async createSpace(
     @UploadedFile() icon: Express.Multer.File,
     @Body(
       new ValidationPipe({
@@ -76,18 +64,11 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     if (!createSpaceDto.profileUuid) throw new BadRequestException();
-    await this.usersService.verifyUserProfile(
+    const space = await this.spacesService.createSpace(
       req.user.uuid,
       createSpaceDto.profileUuid,
-    );
-    const iconUrl = icon
-      ? await this.uploadService.uploadFile(icon)
-      : this.configService.get<string>('APP_ICON_URL');
-    createSpaceDto.icon = iconUrl;
-    const space = await this.spacesService.createSpace(createSpaceDto);
-    await this.profileSpaceService.joinSpace(
-      createSpaceDto.profileUuid,
-      space.uuid,
+      icon,
+      createSpaceDto,
     );
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
@@ -115,21 +96,17 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found. Profile not found',
   })
-  async findOne(
+  async findSpace(
     @Param('space_uuid') spaceUuid: string,
     @Query('profile_uuid') profileUuid: string,
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
-    const space = await this.spacesService.findSpace(spaceUuid);
-    if (!space) throw new NotFoundException();
-    const profileSpace =
-      await this.profileSpaceService.findProfileSpaceByBothUuid(
-        profileUuid,
-        spaceUuid,
-      );
-    if (!profileSpace) throw new ForbiddenException();
+    const space = await this.spacesService.findSpace(
+      req.user.uuid,
+      profileUuid,
+      spaceUuid,
+    );
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 
@@ -156,7 +133,7 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Profile not found.',
   })
-  async update(
+  async updateSpace(
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
     @Query('profile_uuid') profileUuid: string,
@@ -165,21 +142,13 @@ export class SpacesController {
     @Req() req: RequestWithUser,
   ) {
     if (!profileUuid) throw new BadRequestException();
-    await this.usersService.verifyUserProfile(req.user.uuid, profileUuid);
-    const profileSpace =
-      await this.profileSpaceService.findProfileSpaceByBothUuid(
-        profileUuid,
-        spaceUuid,
-      );
-    if (!profileSpace) throw new ForbiddenException();
-    if (icon) {
-      updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
-    }
     const space = await this.spacesService.updateSpace(
+      req.user.uuid,
+      profileUuid,
       spaceUuid,
+      icon,
       updateSpaceDto,
     );
-    if (!space) throw new NotFoundException();
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 
