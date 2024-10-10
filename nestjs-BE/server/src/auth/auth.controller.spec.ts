@@ -88,7 +88,7 @@ describe('AuthController', () => {
   });
 
   it('renewAccessToken respond new access token', async () => {
-    const requestMock = { refresh_token: 'refresh token' };
+    const requestMock = { refreshToken: 'refresh token' };
     jest
       .spyOn(authService, 'renewAccessToken')
       .mockResolvedValue('new access token');
@@ -103,7 +103,7 @@ describe('AuthController', () => {
   });
 
   it('renewAccessToken received expired token', async () => {
-    const requestMock = { refresh_token: 'refresh token' };
+    const requestMock = { refreshToken: 'refresh token' };
     jest.spyOn(authService, 'renewAccessToken').mockRejectedValue(new Error());
 
     const response = controller.renewAccessToken(requestMock);
@@ -112,7 +112,7 @@ describe('AuthController', () => {
   });
 
   it('logout received token deleted', async () => {
-    const requestMock = { refresh_token: 'refresh token' };
+    const requestMock = { refreshToken: 'refresh token' };
     const token = {} as RefreshToken;
     jest
       .spyOn(refreshTokensService, 'deleteRefreshToken')
@@ -127,7 +127,7 @@ describe('AuthController', () => {
   });
 
   it('logout received token not found', async () => {
-    const requestMock = { refresh_token: 'bad refresh token' };
+    const requestMock = { refreshToken: 'bad refresh token' };
     jest
       .spyOn(refreshTokensService, 'deleteRefreshToken')
       .mockResolvedValue(null);

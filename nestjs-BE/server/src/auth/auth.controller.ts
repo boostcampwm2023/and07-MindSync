@@ -66,8 +66,9 @@ export class AuthController {
     description: 'Refresh token expired. Please log in again.',
   })
   async renewAccessToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    const refreshToken = refreshTokenDto.refresh_token;
-    const accessToken = await this.authService.renewAccessToken(refreshToken);
+    const accessToken = await this.authService.renewAccessToken(
+      refreshTokenDto.refreshToken,
+    );
     return {
       statusCode: 200,
       message: 'Success',
@@ -78,9 +79,9 @@ export class AuthController {
   @Post('logout')
   @Public()
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
-    const refreshToken = refreshTokenDto.refresh_token;
-    const token =
-      await this.refreshTokensService.deleteRefreshToken(refreshToken);
+    const token = await this.refreshTokensService.deleteRefreshToken(
+      refreshTokenDto.refreshToken,
+    );
     if (!token) throw new BadRequestException();
     return { statusCode: 204, message: 'No Content' };
   }
