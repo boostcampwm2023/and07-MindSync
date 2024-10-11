@@ -7,7 +7,6 @@ import { KakaoUserDto } from './dto/kakao-user.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UsersService } from '../users/users.service';
 import { ProfilesService } from '../profiles/profiles.service';
-import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -16,7 +15,6 @@ export class AuthController {
     private authService: AuthService,
     private usersService: UsersService,
     private profilesService: ProfilesService,
-    private refreshTokensService: RefreshTokensService,
     private configService: ConfigService,
   ) {}
 
@@ -73,9 +71,7 @@ export class AuthController {
   @Post('logout')
   @Public()
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
-    await this.refreshTokensService.deleteRefreshToken(
-      refreshTokenDto.refreshToken,
-    );
+    await this.authService.logout(refreshTokenDto.refreshToken);
     return { statusCode: 204, message: 'No Content' };
   }
 }

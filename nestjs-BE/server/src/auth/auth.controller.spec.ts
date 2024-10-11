@@ -1,16 +1,14 @@
 import { NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RefreshToken, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 import { ProfilesService } from '../profiles/profiles.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let refreshTokensService: RefreshTokensService;
   let usersService: UsersService;
   let authService: AuthService;
 
@@ -25,6 +23,7 @@ describe('AuthController', () => {
             getKakaoAccount: jest.fn(),
             login: jest.fn(),
             renewAccessToken: jest.fn(),
+            logout: jest.fn(),
           },
         },
         {
@@ -40,16 +39,10 @@ describe('AuthController', () => {
             getOrCreateProfile: jest.fn(),
           },
         },
-        {
-          provide: RefreshTokensService,
-          useValue: { deleteRefreshToken: jest.fn() },
-        },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    refreshTokensService =
-      module.get<RefreshTokensService>(RefreshTokensService);
     authService = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
   });
@@ -113,10 +106,8 @@ describe('AuthController', () => {
 
   it('logout received token deleted', async () => {
     const requestMock = { refreshToken: 'refresh token' };
-    const token = {} as RefreshToken;
-    jest
-      .spyOn(refreshTokensService, 'deleteRefreshToken')
-      .mockResolvedValue(token);
+
+    jest.spyOn(authService, 'logout');
 
     const response = controller.logout(requestMock);
 

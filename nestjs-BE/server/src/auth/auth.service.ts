@@ -40,6 +40,10 @@ export class AuthService {
     };
   }
 
+  async logout(refreshToken: string) {
+    await this.refreshTokensService.deleteRefreshToken(refreshToken);
+  }
+
   private async createAccessToken(userUuid: string): Promise<string> {
     const payload = { sub: userUuid };
     const accessToken = await this.jwtService.signAsync(payload, {
