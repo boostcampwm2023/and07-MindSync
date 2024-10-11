@@ -1,4 +1,10 @@
-import { Controller, Post, Body, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  NotFoundException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -70,6 +76,11 @@ export class AuthController {
 
   @Post('logout')
   @Public()
+  @ApiOperation({ summary: 'Log out user' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'User logged out',
+  })
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
     await this.authService.logout(refreshTokenDto.refreshToken);
     return { statusCode: 204, message: 'No Content' };
