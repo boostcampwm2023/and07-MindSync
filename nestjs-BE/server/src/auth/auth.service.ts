@@ -1,8 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { stringify } from 'qs';
 import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
+import { UsersService } from '../users/users.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +16,24 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private refreshTokensService: RefreshTokensService,
+    private usersService: UsersService,
+    private profilesService: ProfilesService,
   ) {}
+
+  async kakaoLogin(kakaoUserId: number) {
+    const kakaoUserAccount = await this.getKakaoAccount(kakaoUserId);
+    if (!kakaoUserAccount) throw new NotFoundException();
+    const userData = { email: kakaoUserAccount.email };
+    const user = await this.usersService.getOrCreateUser(userData);
+    const profileData = {
+      userUuid: user.uuid,
+      image: this.configService.get<string>('BASE_IMAGE_URL'),
+      nickname: '익명의 사용자',
+    };
+    await this.profilesService.getOrCreateProfile(profileData);
+    const tokenData = await this.login(user.uuid);
+    return tokenData;
+  }
 
   async getKakaoAccount(kakaoUserId: number) {
     const url = `https://kapi.kakao.com/v2/user/me`;

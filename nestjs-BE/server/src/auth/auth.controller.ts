@@ -1,28 +1,14 @@
-import {
-  Controller,
-  Post,
-  Body,
-  NotFoundException,
-  HttpStatus,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { KakaoUserDto } from './dto/kakao-user.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { UsersService } from '../users/users.service';
-import { ProfilesService } from '../profiles/profiles.service';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private usersService: UsersService,
-    private profilesService: ProfilesService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('kakao-oauth')
   @Public()
@@ -36,19 +22,9 @@ export class AuthController {
     description: 'Not Found.',
   })
   async kakaoLogin(@Body() kakaoUserDto: KakaoUserDto) {
-    const kakaoUserAccount = await this.authService.getKakaoAccount(
+    const tokenData = await this.authService.kakaoLogin(
       kakaoUserDto.kakaoUserId,
     );
-    if (!kakaoUserAccount) throw new NotFoundException();
-    const userData = { email: kakaoUserAccount.email };
-    const user = await this.usersService.getOrCreateUser(userData);
-    const profileData = {
-      userUuid: user.uuid,
-      image: this.configService.get<string>('BASE_IMAGE_URL'),
-      nickname: '익명의 사용자',
-    };
-    await this.profilesService.getOrCreateProfile(profileData);
-    const tokenData = await this.authService.login(user.uuid);
     return { statusCode: HttpStatus.OK, message: 'OK', data: tokenData };
   }
 
