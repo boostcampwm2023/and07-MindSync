@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RefreshToken, User } from '@prisma/client';
@@ -124,16 +124,5 @@ describe('AuthController', () => {
       statusCode: 204,
       message: 'No Content',
     });
-  });
-
-  it('logout received token not found', async () => {
-    const requestMock = { refreshToken: 'bad refresh token' };
-    jest
-      .spyOn(refreshTokensService, 'deleteRefreshToken')
-      .mockResolvedValue(null);
-
-    const response = controller.logout(requestMock);
-
-    await expect(response).rejects.toThrow(BadRequestException);
   });
 });

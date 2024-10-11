@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Post, Body, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -79,10 +73,9 @@ export class AuthController {
   @Post('logout')
   @Public()
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
-    const token = await this.refreshTokensService.deleteRefreshToken(
+    await this.refreshTokensService.deleteRefreshToken(
       refreshTokenDto.refreshToken,
     );
-    if (!token) throw new BadRequestException();
     return { statusCode: 204, message: 'No Content' };
   }
 }
