@@ -30,15 +30,6 @@ export class AuthService {
     return responseBody.kakao_account;
   }
 
-  private async createAccessToken(userUuid: string): Promise<string> {
-    const payload = { sub: userUuid };
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: '5m',
-    });
-    return accessToken;
-  }
-
   async login(userUuid: string) {
     const accessToken = await this.createAccessToken(userUuid);
     const refreshToken =
@@ -47,6 +38,15 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken.token,
     };
+  }
+
+  private async createAccessToken(userUuid: string): Promise<string> {
+    const payload = { sub: userUuid };
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: '5m',
+    });
+    return accessToken;
   }
 
   async renewAccessToken(refreshToken: string): Promise<string> {
