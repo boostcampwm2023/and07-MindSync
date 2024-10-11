@@ -42,7 +42,7 @@ describe('AuthController (e2e)', () => {
       .expect(HttpStatus.CREATED)
       .expect((res) => {
         expect(res.body.statusCode).toBe(HttpStatus.OK);
-        expect(res.body.message).toBe('Success');
+        expect(res.body.message).toBe('OK');
         expect(res.body.data.access_token).toMatch(
           /^[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+$/,
         );

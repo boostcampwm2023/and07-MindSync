@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@prisma/client';
@@ -65,8 +65,8 @@ describe('AuthController', () => {
     const response = controller.kakaoLogin(requestMock);
 
     await expect(response).resolves.toEqual({
-      statusCode: 200,
-      message: 'Success',
+      statusCode: HttpStatus.OK,
+      message: 'OK',
       data: tokenMock,
     });
   });
@@ -89,8 +89,8 @@ describe('AuthController', () => {
     const response = controller.renewAccessToken(requestMock);
 
     await expect(response).resolves.toEqual({
-      statusCode: 200,
-      message: 'Success',
+      statusCode: HttpStatus.OK,
+      message: 'OK',
       data: { access_token: 'new access token' },
     });
   });
@@ -112,7 +112,7 @@ describe('AuthController', () => {
     const response = controller.logout(requestMock);
 
     await expect(response).resolves.toEqual({
-      statusCode: 204,
+      statusCode: HttpStatus.NO_CONTENT,
       message: 'No Content',
     });
   });

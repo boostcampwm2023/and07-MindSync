@@ -28,11 +28,11 @@ export class AuthController {
   @Public()
   @ApiOperation({ summary: 'kakao login' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Return the token data.',
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Not Found.',
   })
   async kakaoLogin(@Body() kakaoUserDto: KakaoUserDto) {
@@ -49,18 +49,18 @@ export class AuthController {
     };
     await this.profilesService.getOrCreateProfile(profileData);
     const tokenData = await this.authService.login(user.uuid);
-    return { statusCode: 200, message: 'Success', data: tokenData };
+    return { statusCode: HttpStatus.OK, message: 'OK', data: tokenData };
   }
 
   @Post('token')
   @Public()
   @ApiOperation({ summary: 'Renew Access Token' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Return the access token data.',
   })
   @ApiResponse({
-    status: 401,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Refresh token expired. Please log in again.',
   })
   async renewAccessToken(@Body() refreshTokenDto: RefreshTokenDto) {
@@ -68,8 +68,8 @@ export class AuthController {
       refreshTokenDto.refreshToken,
     );
     return {
-      statusCode: 200,
-      message: 'Success',
+      statusCode: HttpStatus.OK,
+      message: 'OK',
       data: { access_token: accessToken },
     };
   }
@@ -83,6 +83,6 @@ export class AuthController {
   })
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
     await this.authService.logout(refreshTokenDto.refreshToken);
-    return { statusCode: 204, message: 'No Content' };
+    return { statusCode: HttpStatus.NO_CONTENT, message: 'No Content' };
   }
 }
