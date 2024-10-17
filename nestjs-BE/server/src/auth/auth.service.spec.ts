@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { RefreshToken } from '@prisma/client';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 import { ConfigModule } from '@nestjs/config';
+import { NotFoundException } from '@nestjs/common';
+import { RefreshToken } from '@prisma/client';
+import { AuthService } from './auth.service';
+import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
+import { UsersService } from '../users/users.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 const fetchSpy = jest.spyOn(global, 'fetch');
 
@@ -11,6 +14,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
   let refreshTokensService: RefreshTokensService;
+  let usersService: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,6 +28,14 @@ describe('AuthService', () => {
             findRefreshToken: jest.fn(),
           },
         },
+        {
+          provide: UsersService,
+          useValue: { getOrCreateUser: jest.fn() },
+        },
+        {
+          provide: ProfilesService,
+          useValue: { getOrCreateProfile: jest.fn() },
+        },
       ],
     })
       .overrideProvider(JwtService)
@@ -34,45 +46,78 @@ describe('AuthService', () => {
     jwtService = module.get<JwtService>(JwtService);
     refreshTokensService =
       module.get<RefreshTokensService>(RefreshTokensService);
+    usersService = module.get<UsersService>(UsersService);
   });
 
   afterEach(() => {
     fetchSpy.mockRestore();
   });
 
-  it('login success', async () => {
-    jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
-    jest.spyOn(refreshTokensService, 'createRefreshToken').mockResolvedValue({
-      token: 'refresh token',
-    } as unknown as RefreshToken);
-
-    const tokens = service.login('user uuid');
-
-    await expect(tokens).resolves.toEqual({
+  describe('kakaoLogin', () => {
+    const kakaoUserId = 0;
+    const kakaoUser = { email: 'test@email.com' };
+    const user = { uuid: 'user uuid' };
+    const tokens = {
       access_token: 'access token',
       refresh_token: 'refresh token',
+    };
+
+    it('kakao user exist', async () => {
+      jest.spyOn(service, 'getKakaoAccount').mockResolvedValue(kakaoUser);
+      jest.spyOn(service, 'login').mockResolvedValue(tokens);
+      (usersService.getOrCreateUser as jest.Mock).mockResolvedValue(user);
+
+      const tokenData = service.kakaoLogin(kakaoUserId);
+
+      await expect(tokenData).resolves.toEqual(tokens);
+    });
+
+    it('kakao user not exist', async () => {
+      jest.spyOn(service, 'getKakaoAccount').mockResolvedValue(null);
+
+      const tokenData = service.kakaoLogin(kakaoUserId);
+
+      await expect(tokenData).rejects.toThrow(NotFoundException);
     });
   });
 
-  it('renewAccessToken success', async () => {
-    jest.spyOn(jwtService, 'verify').mockReturnValue({});
-    jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
-    jest.spyOn(refreshTokensService, 'findRefreshToken').mockResolvedValue({
-      userUuid: 'user uuid',
-    } as RefreshToken);
+  describe('login', () => {
+    it('success', async () => {
+      (jwtService.signAsync as jest.Mock).mockResolvedValue('access token');
+      (refreshTokensService.createRefreshToken as jest.Mock).mockResolvedValue({
+        token: 'refresh token',
+      } as RefreshToken);
 
-    const token = service.renewAccessToken('refresh token');
+      const tokens = service.login('user uuid');
 
-    await expect(token).resolves.toBe('access token');
+      await expect(tokens).resolves.toEqual({
+        access_token: 'access token',
+        refresh_token: 'refresh token',
+      });
+    });
   });
 
-  it('renewAccessToken fail', async () => {
-    jest.spyOn(jwtService, 'verify').mockImplementation(() => {
-      throw new Error();
+  describe('renewAccessToken', () => {
+    it('success', async () => {
+      (jwtService.verify as jest.Mock).mockReturnValue({});
+      (jwtService.signAsync as jest.Mock).mockResolvedValue('access token');
+      (refreshTokensService.findRefreshToken as jest.Mock).mockResolvedValue({
+        userUuid: 'user uuid',
+      } as RefreshToken);
+
+      const token = service.renewAccessToken('refresh token');
+
+      await expect(token).resolves.toBe('access token');
     });
 
-    const token = service.renewAccessToken('refresh token');
+    it('fail', async () => {
+      (jwtService.verify as jest.Mock).mockImplementation(() => {
+        throw new Error();
+      });
 
-    await expect(token).rejects.toThrow();
+      const token = service.renewAccessToken('refresh token');
+
+      await expect(token).rejects.toThrow();
+    });
   });
 });

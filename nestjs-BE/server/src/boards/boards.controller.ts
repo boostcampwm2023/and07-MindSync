@@ -23,7 +23,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../auth/public.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
 import {

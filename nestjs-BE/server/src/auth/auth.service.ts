@@ -1,16 +1,39 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { stringify } from 'qs';
 import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
-import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private refreshTokensService: RefreshTokensService,
     private configService: ConfigService,
+    private refreshTokensService: RefreshTokensService,
+    private usersService: UsersService,
+    private profilesService: ProfilesService,
   ) {}
+
+  async kakaoLogin(kakaoUserId: number) {
+    const kakaoUserAccount = await this.getKakaoAccount(kakaoUserId);
+    if (!kakaoUserAccount) throw new NotFoundException();
+    const userData = { email: kakaoUserAccount.email };
+    const user = await this.usersService.getOrCreateUser(userData);
+    const profileData = {
+      userUuid: user.uuid,
+      image: this.configService.get<string>('BASE_IMAGE_URL'),
+      nickname: '익명의 사용자',
+    };
+    await this.profilesService.getOrCreateProfile(profileData);
+    const tokenData = await this.login(user.uuid);
+    return tokenData;
+  }
 
   async getKakaoAccount(kakaoUserId: number) {
     const url = `https://kapi.kakao.com/v2/user/me`;
@@ -30,15 +53,6 @@ export class AuthService {
     return responseBody.kakao_account;
   }
 
-  private async createAccessToken(userUuid: string): Promise<string> {
-    const payload = { sub: userUuid };
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: '5m',
-    });
-    return accessToken;
-  }
-
   async login(userUuid: string) {
     const accessToken = await this.createAccessToken(userUuid);
     const refreshToken =
@@ -47,6 +61,19 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken.token,
     };
+  }
+
+  async logout(refreshToken: string) {
+    await this.refreshTokensService.deleteRefreshToken(refreshToken);
+  }
+
+  private async createAccessToken(userUuid: string): Promise<string> {
+    const payload = { sub: userUuid };
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: '5m',
+    });
+    return accessToken;
   }
 
   async renewAccessToken(refreshToken: string): Promise<string> {
