@@ -11,9 +11,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UploadService } from '../upload/upload.service';
 import { RequestWithUser } from '../utils/interface';
 

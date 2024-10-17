@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ProfilesService } from './profiles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import generateUuid from '../utils/uuid';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 describe('ProfilesService', () => {
   let profilesService: ProfilesService;

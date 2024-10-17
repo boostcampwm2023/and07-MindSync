@@ -1,9 +1,9 @@
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
 import { UploadService } from '../upload/upload.service';
 import { RequestWithUser } from '../utils/interface';
-import { HttpStatus, NotFoundException } from '@nestjs/common';
 
 describe('ProfilesController', () => {
   let controller: ProfilesController;
