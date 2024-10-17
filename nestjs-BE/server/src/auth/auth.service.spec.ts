@@ -83,10 +83,10 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('success', async () => {
-      jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
-      jest.spyOn(refreshTokensService, 'createRefreshToken').mockResolvedValue({
+      (jwtService.signAsync as jest.Mock).mockResolvedValue('access token');
+      (refreshTokensService.createRefreshToken as jest.Mock).mockResolvedValue({
         token: 'refresh token',
-      } as unknown as RefreshToken);
+      } as RefreshToken);
 
       const tokens = service.login('user uuid');
 
@@ -99,9 +99,9 @@ describe('AuthService', () => {
 
   describe('renewAccessToken', () => {
     it('success', async () => {
-      jest.spyOn(jwtService, 'verify').mockReturnValue({});
-      jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
-      jest.spyOn(refreshTokensService, 'findRefreshToken').mockResolvedValue({
+      (jwtService.verify as jest.Mock).mockReturnValue({});
+      (jwtService.signAsync as jest.Mock).mockResolvedValue('access token');
+      (refreshTokensService.findRefreshToken as jest.Mock).mockResolvedValue({
         userUuid: 'user uuid',
       } as RefreshToken);
 
@@ -111,7 +111,7 @@ describe('AuthService', () => {
     });
 
     it('fail', async () => {
-      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+      (jwtService.verify as jest.Mock).mockImplementation(() => {
         throw new Error();
       });
 

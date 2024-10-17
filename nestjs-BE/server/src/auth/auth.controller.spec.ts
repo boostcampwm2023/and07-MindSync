@@ -37,7 +37,7 @@ describe('AuthController', () => {
         access_token: 'access token',
       };
 
-      jest.spyOn(authService, 'kakaoLogin').mockResolvedValue(tokenMock);
+      (authService.kakaoLogin as jest.Mock).mockResolvedValue(tokenMock);
 
       const response = controller.kakaoLogin(requestMock);
 
@@ -49,9 +49,9 @@ describe('AuthController', () => {
     });
 
     it('kakao login fail', async () => {
-      jest
-        .spyOn(authService, 'kakaoLogin')
-        .mockRejectedValue(new NotFoundException());
+      (authService.kakaoLogin as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
       const response = controller.kakaoLogin(requestMock);
 
@@ -63,9 +63,9 @@ describe('AuthController', () => {
     const requestMock = { refreshToken: 'refresh token' };
 
     it('respond new access token', async () => {
-      jest
-        .spyOn(authService, 'renewAccessToken')
-        .mockResolvedValue('new access token');
+      (authService.renewAccessToken as jest.Mock).mockResolvedValue(
+        'new access token',
+      );
 
       const response = controller.renewAccessToken(requestMock);
 
@@ -77,9 +77,9 @@ describe('AuthController', () => {
     });
 
     it('received expired token', async () => {
-      jest
-        .spyOn(authService, 'renewAccessToken')
-        .mockRejectedValue(new Error());
+      (authService.renewAccessToken as jest.Mock).mockRejectedValue(
+        new Error(),
+      );
 
       const response = controller.renewAccessToken(requestMock);
 
@@ -90,8 +90,6 @@ describe('AuthController', () => {
   describe('logout', () => {
     it('received token deleted', async () => {
       const requestMock = { refreshToken: 'refresh token' };
-
-      jest.spyOn(authService, 'logout');
 
       const response = controller.logout(requestMock);
 
