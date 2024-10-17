@@ -34,8 +34,10 @@ export class ProfilesController {
     status: 401,
     description: 'Unauthorized.',
   })
-  async findProfile(@Req() req: RequestWithUser) {
-    const profile = await this.profilesService.findProfile(req.user.uuid);
+  async findProfileByUserUuid(@Req() req: RequestWithUser) {
+    const profile = await this.profilesService.findProfileByUserUuid(
+      req.user.uuid,
+    );
     if (!profile) throw new NotFoundException();
     return { statusCode: 200, message: 'Success', data: profile };
   }

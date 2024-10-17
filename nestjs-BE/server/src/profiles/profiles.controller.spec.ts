@@ -16,7 +16,10 @@ describe('ProfilesController', () => {
       providers: [
         {
           provide: ProfilesService,
-          useValue: { findProfile: jest.fn(), updateProfile: jest.fn() },
+          useValue: {
+            findProfileByUserUuid: jest.fn(),
+            updateProfile: jest.fn(),
+          },
         },
         { provide: UploadService, useValue: { uploadFile: jest.fn() } },
       ],
@@ -35,25 +38,29 @@ describe('ProfilesController', () => {
       image: 'www.test.com/image',
       nickname: 'test nickname',
     };
-    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(testProfile);
+    jest
+      .spyOn(profilesService, 'findProfileByUserUuid')
+      .mockResolvedValue(testProfile);
 
-    const response = controller.findProfile(requestMock);
+    const response = controller.findProfileByUserUuid(requestMock);
 
     await expect(response).resolves.toEqual({
       statusCode: 200,
       message: 'Success',
       data: testProfile,
     });
-    expect(profilesService.findProfile).toHaveBeenCalledWith(
+    expect(profilesService.findProfileByUserUuid).toHaveBeenCalledWith(
       requestMock.user.uuid,
     );
   });
 
   it('findProfile not found profile', async () => {
     const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
-    jest.spyOn(profilesService, 'findProfile').mockResolvedValue(null);
+    jest
+      .spyOn(profilesService, 'findProfileByUserUuid')
+      .mockResolvedValue(null);
 
-    const response = controller.findProfile(requestMock);
+    const response = controller.findProfileByUserUuid(requestMock);
 
     await expect(response).rejects.toThrow(NotFoundException);
   });

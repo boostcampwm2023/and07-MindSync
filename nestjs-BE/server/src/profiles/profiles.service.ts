@@ -9,7 +9,7 @@ import generateUuid from '../utils/uuid';
 export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
-  async findProfile(userUuid: string): Promise<Profile | null> {
+  async findProfileByUserUuid(userUuid: string): Promise<Profile | null> {
     return this.prisma.profile.findUnique({ where: { userUuid } });
   }
 
