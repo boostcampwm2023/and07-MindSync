@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Profile, Prisma } from '@prisma/client';
+import { v4 as uuid } from 'uuid';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import generateUuid from '../utils/uuid';
 
 @Injectable()
 export class ProfilesService {
@@ -28,7 +28,7 @@ export class ProfilesService {
       where: { userUuid: data.userUuid },
       update: {},
       create: {
-        uuid: generateUuid(),
+        uuid: uuid(),
         userUuid: data.userUuid,
         image: data.image,
         nickname: data.nickname,

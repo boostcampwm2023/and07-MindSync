@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { v4 as uuid } from 'uuid';
 import { ProfilesService } from './profiles.service';
 import { PrismaService } from '../prisma/prisma.service';
-import generateUuid from '../utils/uuid';
 
 describe('ProfilesService', () => {
   let profilesService: ProfilesService;
@@ -35,11 +35,11 @@ describe('ProfilesService', () => {
       image: 'www.test.com',
       nickname: 'test nickname',
     };
-    const uuid = generateUuid();
-    const testProfile = { uuid: generateUuid(), userUuid: uuid, ...data };
+    const userUuid = uuid();
+    const testProfile = { uuid: uuid(), userUuid: userUuid, ...data };
     jest.spyOn(prisma.profile, 'update').mockResolvedValue(testProfile);
 
-    const profile = profilesService.updateProfile(uuid, data);
+    const profile = profilesService.updateProfile(userUuid, data);
 
     await expect(profile).resolves.toEqual(testProfile);
   });
@@ -58,7 +58,7 @@ describe('ProfilesService', () => {
         ),
       );
 
-    const profile = profilesService.updateProfile(generateUuid(), data);
+    const profile = profilesService.updateProfile(uuid(), data);
 
     await expect(profile).resolves.toBeNull();
   });
