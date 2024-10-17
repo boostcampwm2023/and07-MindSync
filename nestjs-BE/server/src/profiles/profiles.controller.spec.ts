@@ -3,7 +3,7 @@ import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
 import { UploadService } from '../upload/upload.service';
 import { RequestWithUser } from '../utils/interface';
-import { NotFoundException } from '@nestjs/common';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 
 describe('ProfilesController', () => {
   let controller: ProfilesController;
@@ -45,7 +45,7 @@ describe('ProfilesController', () => {
     const response = controller.findProfileByUserUuid(requestMock);
 
     await expect(response).resolves.toEqual({
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       message: 'Success',
       data: testProfile,
     });
@@ -84,7 +84,7 @@ describe('ProfilesController', () => {
     const response = controller.update(imageMock, requestMock, bodyMock);
 
     await expect(response).resolves.toEqual({
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       message: 'Success',
       data: testProfile,
     });

@@ -8,6 +8,7 @@ import {
   Request as Req,
   ValidationPipe,
   NotFoundException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilesService } from './profiles.service';
@@ -27,11 +28,11 @@ export class ProfilesController {
   @Get()
   @ApiOperation({ summary: 'Get profile' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Return the profile data.',
   })
   @ApiResponse({
-    status: 401,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized.',
   })
   async findProfileByUserUuid(@Req() req: RequestWithUser) {
@@ -39,18 +40,18 @@ export class ProfilesController {
       req.user.uuid,
     );
     if (!profile) throw new NotFoundException();
-    return { statusCode: 200, message: 'Success', data: profile };
+    return { statusCode: HttpStatus.OK, message: 'Success', data: profile };
   }
 
   @Patch()
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update profile' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Profile has been successfully updated.',
   })
   @ApiResponse({
-    status: 401,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized.',
   })
   async update(
@@ -67,6 +68,6 @@ export class ProfilesController {
       updateProfileDto,
     );
     if (!profile) throw new NotFoundException();
-    return { statusCode: 200, message: 'Success', data: profile };
+    return { statusCode: HttpStatus.OK, message: 'Success', data: profile };
   }
 }
