@@ -81,39 +81,43 @@ describe('AuthService', () => {
     });
   });
 
-  it('login success', async () => {
-    jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
-    jest.spyOn(refreshTokensService, 'createRefreshToken').mockResolvedValue({
-      token: 'refresh token',
-    } as unknown as RefreshToken);
+  describe('login', () => {
+    it('success', async () => {
+      jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
+      jest.spyOn(refreshTokensService, 'createRefreshToken').mockResolvedValue({
+        token: 'refresh token',
+      } as unknown as RefreshToken);
 
-    const tokens = service.login('user uuid');
+      const tokens = service.login('user uuid');
 
-    await expect(tokens).resolves.toEqual({
-      access_token: 'access token',
-      refresh_token: 'refresh token',
+      await expect(tokens).resolves.toEqual({
+        access_token: 'access token',
+        refresh_token: 'refresh token',
+      });
     });
   });
 
-  it('renewAccessToken success', async () => {
-    jest.spyOn(jwtService, 'verify').mockReturnValue({});
-    jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
-    jest.spyOn(refreshTokensService, 'findRefreshToken').mockResolvedValue({
-      userUuid: 'user uuid',
-    } as RefreshToken);
+  describe('renewAccessToken', () => {
+    it('success', async () => {
+      jest.spyOn(jwtService, 'verify').mockReturnValue({});
+      jest.spyOn(jwtService, 'signAsync').mockResolvedValue('access token');
+      jest.spyOn(refreshTokensService, 'findRefreshToken').mockResolvedValue({
+        userUuid: 'user uuid',
+      } as RefreshToken);
 
-    const token = service.renewAccessToken('refresh token');
+      const token = service.renewAccessToken('refresh token');
 
-    await expect(token).resolves.toBe('access token');
-  });
-
-  it('renewAccessToken fail', async () => {
-    jest.spyOn(jwtService, 'verify').mockImplementation(() => {
-      throw new Error();
+      await expect(token).resolves.toBe('access token');
     });
 
-    const token = service.renewAccessToken('refresh token');
+    it('fail', async () => {
+      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
+        throw new Error();
+      });
 
-    await expect(token).rejects.toThrow();
+      const token = service.renewAccessToken('refresh token');
+
+      await expect(token).rejects.toThrow();
+    });
   });
 });

@@ -28,70 +28,77 @@ describe('AuthController', () => {
     authService = module.get<AuthService>(AuthService);
   });
 
-  it('kakaoLogin', async () => {
+  describe('kakaoLogin', () => {
     const requestMock = { kakaoUserId: 0 };
-    const tokenMock = {
-      refresh_token: 'refresh token',
-      access_token: 'access token',
-    };
 
-    jest.spyOn(authService, 'kakaoLogin').mockResolvedValue(tokenMock);
+    it('success', async () => {
+      const tokenMock = {
+        refresh_token: 'refresh token',
+        access_token: 'access token',
+      };
 
-    const response = controller.kakaoLogin(requestMock);
+      jest.spyOn(authService, 'kakaoLogin').mockResolvedValue(tokenMock);
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: tokenMock,
+      const response = controller.kakaoLogin(requestMock);
+
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: tokenMock,
+      });
+    });
+
+    it('kakao login fail', async () => {
+      jest
+        .spyOn(authService, 'kakaoLogin')
+        .mockRejectedValue(new NotFoundException());
+
+      const response = controller.kakaoLogin(requestMock);
+
+      await expect(response).rejects.toThrow(NotFoundException);
     });
   });
 
-  it('kakaoLogin kakao login fail', async () => {
-    const requestMock = { kakaoUserId: 0 };
-
-    jest
-      .spyOn(authService, 'kakaoLogin')
-      .mockRejectedValue(new NotFoundException());
-
-    const response = controller.kakaoLogin(requestMock);
-
-    await expect(response).rejects.toThrow(NotFoundException);
-  });
-
-  it('renewAccessToken respond new access token', async () => {
+  describe('renewAccessToken', () => {
     const requestMock = { refreshToken: 'refresh token' };
-    jest
-      .spyOn(authService, 'renewAccessToken')
-      .mockResolvedValue('new access token');
 
-    const response = controller.renewAccessToken(requestMock);
+    it('respond new access token', async () => {
+      jest
+        .spyOn(authService, 'renewAccessToken')
+        .mockResolvedValue('new access token');
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: { access_token: 'new access token' },
+      const response = controller.renewAccessToken(requestMock);
+
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: { access_token: 'new access token' },
+      });
+    });
+
+    it('received expired token', async () => {
+      jest
+        .spyOn(authService, 'renewAccessToken')
+        .mockRejectedValue(new Error());
+
+      const response = controller.renewAccessToken(requestMock);
+
+      await expect(response).rejects.toThrow(Error);
     });
   });
 
-  it('renewAccessToken received expired token', async () => {
-    const requestMock = { refreshToken: 'refresh token' };
-    jest.spyOn(authService, 'renewAccessToken').mockRejectedValue(new Error());
+  describe('logout', () => {
+    it('received token deleted', async () => {
+      const requestMock = { refreshToken: 'refresh token' };
 
-    const response = controller.renewAccessToken(requestMock);
+      jest.spyOn(authService, 'logout');
 
-    await expect(response).rejects.toThrow(Error);
-  });
+      const response = controller.logout(requestMock);
 
-  it('logout received token deleted', async () => {
-    const requestMock = { refreshToken: 'refresh token' };
-
-    jest.spyOn(authService, 'logout');
-
-    const response = controller.logout(requestMock);
-
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.NO_CONTENT,
-      message: 'No Content',
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.NO_CONTENT,
+        message: 'No Content',
+      });
     });
   });
 });
