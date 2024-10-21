@@ -30,84 +30,87 @@ describe('ProfilesController', () => {
     uploadService = module.get<UploadService>(UploadService);
   });
 
-  it('findProfile found profile', async () => {
-    const requestMock = { user: { uuid: 'user test uuid' } } as RequestWithUser;
-    const testProfile = {
-      uuid: 'profile test uuid',
-      userUuid: requestMock.user.uuid,
-      image: 'www.test.com/image',
-      nickname: 'test nickname',
-    };
-    jest
-      .spyOn(profilesService, 'findProfileByUserUuid')
-      .mockResolvedValue(testProfile);
-
-    const response = controller.findProfileByUserUuid(requestMock);
-
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: testProfile,
-    });
-    expect(profilesService.findProfileByUserUuid).toHaveBeenCalledWith(
-      requestMock.user.uuid,
-    );
-  });
-
-  it('findProfile not found profile', async () => {
+  describe('findProfile', () => {
     const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
-    jest
-      .spyOn(profilesService, 'findProfileByUserUuid')
-      .mockResolvedValue(null);
 
-    const response = controller.findProfileByUserUuid(requestMock);
+    it('found profile', async () => {
+      const testProfile = {
+        uuid: 'profile test uuid',
+        userUuid: requestMock.user.uuid,
+        image: 'www.test.com/image',
+        nickname: 'test nickname',
+      };
 
-    await expect(response).rejects.toThrow(NotFoundException);
+      jest
+        .spyOn(profilesService, 'findProfileByUserUuid')
+        .mockResolvedValue(testProfile);
+
+      const response = controller.findProfileByUserUuid(requestMock);
+
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'Success',
+        data: testProfile,
+      });
+      expect(profilesService.findProfileByUserUuid).toHaveBeenCalledWith(
+        requestMock.user.uuid,
+      );
+    });
+
+    it('not found profile', async () => {
+      jest
+        .spyOn(profilesService, 'findProfileByUserUuid')
+        .mockResolvedValue(null);
+
+      const response = controller.findProfileByUserUuid(requestMock);
+
+      await expect(response).rejects.toThrow(NotFoundException);
+    });
   });
 
-  it('update updated profile', async () => {
+  describe('update', () => {
     const imageMock = {} as Express.Multer.File;
     const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
     const bodyMock = {
       nickname: 'test nickname',
     };
     const testImageUrl = 'www.test.com/image';
-    const testProfile = {
-      uuid: 'profile test uuid',
-      userUuid: requestMock.user.uuid,
-      image: 'www.test.com/image',
-      nickname: 'test nickname',
-    };
-    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
-    jest.spyOn(profilesService, 'updateProfile').mockResolvedValue(testProfile);
 
-    const response = controller.update(imageMock, requestMock, bodyMock);
+    it('updated profile', async () => {
+      const testProfile = {
+        uuid: 'profile test uuid',
+        userUuid: requestMock.user.uuid,
+        image: 'www.test.com/image',
+        nickname: 'test nickname',
+      };
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'Success',
-      data: testProfile,
+      jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
+      jest
+        .spyOn(profilesService, 'updateProfile')
+        .mockResolvedValue(testProfile);
+
+      const response = controller.update(imageMock, requestMock, bodyMock);
+
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'Success',
+        data: testProfile,
+      });
+      expect(uploadService.uploadFile).toHaveBeenCalled();
+      expect(uploadService.uploadFile).toHaveBeenCalledWith(imageMock);
+      expect(profilesService.updateProfile).toHaveBeenCalledWith(
+        requestMock.user.uuid,
+        { nickname: bodyMock.nickname, image: testImageUrl },
+      );
     });
-    expect(uploadService.uploadFile).toHaveBeenCalled();
-    expect(uploadService.uploadFile).toHaveBeenCalledWith(imageMock);
-    expect(profilesService.updateProfile).toHaveBeenCalledWith(
-      requestMock.user.uuid,
-      { nickname: bodyMock.nickname, image: testImageUrl },
-    );
-  });
 
-  it('update not found user', async () => {
-    const imageMock = {} as Express.Multer.File;
-    const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
-    const bodyMock = {
-      nickname: 'test nickname',
-    };
-    const testImageUrl = 'www.test.com/image';
-    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
-    jest.spyOn(profilesService, 'updateProfile').mockResolvedValue(null);
+    it('not found user', async () => {
+      jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
+      jest.spyOn(profilesService, 'updateProfile').mockResolvedValue(null);
 
-    const response = controller.update(imageMock, requestMock, bodyMock);
+      const response = controller.update(imageMock, requestMock, bodyMock);
 
-    await expect(response).rejects.toThrow(NotFoundException);
+      await expect(response).rejects.toThrow(NotFoundException);
+    });
   });
 });

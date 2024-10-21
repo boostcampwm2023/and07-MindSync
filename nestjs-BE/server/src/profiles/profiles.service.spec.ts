@@ -30,36 +30,36 @@ describe('ProfilesService', () => {
     prisma = module.get<PrismaService>(PrismaService);
   });
 
-  it('updateProfile updated', async () => {
+  describe('updateProfile', () => {
     const data = {
       image: 'www.test.com',
       nickname: 'test nickname',
     };
-    const userUuid = uuid();
-    const testProfile = { uuid: uuid(), userUuid: userUuid, ...data };
-    jest.spyOn(prisma.profile, 'update').mockResolvedValue(testProfile);
 
-    const profile = profilesService.updateProfile(userUuid, data);
+    it('updated', async () => {
+      const userUuid = uuid();
+      const testProfile = { uuid: uuid(), userUuid: userUuid, ...data };
 
-    await expect(profile).resolves.toEqual(testProfile);
-  });
+      jest.spyOn(prisma.profile, 'update').mockResolvedValue(testProfile);
 
-  it("updateProfile user_id doesn't exists", async () => {
-    const data = {
-      image: 'www.test.com',
-      nickname: 'test nickname',
-    };
-    jest
-      .spyOn(prisma.profile, 'update')
-      .mockRejectedValue(
-        new PrismaClientKnownRequestError(
-          'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
-          { code: 'P2025', clientVersion: '' },
-        ),
-      );
+      const profile = profilesService.updateProfile(userUuid, data);
 
-    const profile = profilesService.updateProfile(uuid(), data);
+      await expect(profile).resolves.toEqual(testProfile);
+    });
 
-    await expect(profile).resolves.toBeNull();
+    it("user_id doesn't exists", async () => {
+      jest
+        .spyOn(prisma.profile, 'update')
+        .mockRejectedValue(
+          new PrismaClientKnownRequestError(
+            'An operation failed because it depends on one or more records that were required but not found. Record to update not found.',
+            { code: 'P2025', clientVersion: '' },
+          ),
+        );
+
+      const profile = profilesService.updateProfile(uuid(), data);
+
+      await expect(profile).resolves.toBeNull();
+    });
   });
 });
