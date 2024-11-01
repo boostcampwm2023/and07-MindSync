@@ -1,14 +1,16 @@
-import { HttpStatus, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
-import { UploadService } from '../upload/upload.service';
 import { RequestWithUser } from '../utils/interface';
 
 describe('ProfilesController', () => {
   let controller: ProfilesController;
   let profilesService: ProfilesService;
-  let uploadService: UploadService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,13 +23,11 @@ describe('ProfilesController', () => {
             updateProfile: jest.fn(),
           },
         },
-        { provide: UploadService, useValue: { uploadFile: jest.fn() } },
       ],
     }).compile();
 
     controller = module.get<ProfilesController>(ProfilesController);
     profilesService = module.get<ProfilesService>(ProfilesService);
-    uploadService = module.get<UploadService>(UploadService);
   });
 
   describe('findProfile', () => {
@@ -72,9 +72,9 @@ describe('ProfilesController', () => {
     const imageMock = {} as Express.Multer.File;
     const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
     const bodyMock = {
+      uuid: 'profile test uuid',
       nickname: 'test nickname',
     };
-    const testImageUrl = 'www.test.com/image';
 
     it('updated profile', async () => {
       const testProfile = {
@@ -84,33 +84,41 @@ describe('ProfilesController', () => {
         nickname: 'test nickname',
       };
 
-      jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
       jest
         .spyOn(profilesService, 'updateProfile')
         .mockResolvedValue(testProfile);
 
-      const response = controller.update(imageMock, requestMock, bodyMock);
+      const response = controller.updateProfile(
+        imageMock,
+        requestMock,
+        bodyMock,
+      );
 
       await expect(response).resolves.toEqual({
         statusCode: HttpStatus.OK,
         message: 'Success',
         data: testProfile,
       });
-      expect(uploadService.uploadFile).toHaveBeenCalled();
-      expect(uploadService.uploadFile).toHaveBeenCalledWith(imageMock);
       expect(profilesService.updateProfile).toHaveBeenCalledWith(
         requestMock.user.uuid,
-        { nickname: bodyMock.nickname, image: testImageUrl },
+        bodyMock.uuid,
+        imageMock,
+        bodyMock,
       );
     });
 
     it('not found user', async () => {
-      jest.spyOn(uploadService, 'uploadFile').mockResolvedValue(testImageUrl);
-      jest.spyOn(profilesService, 'updateProfile').mockResolvedValue(null);
+      jest
+        .spyOn(profilesService, 'updateProfile')
+        .mockRejectedValue(new ForbiddenException());
 
-      const response = controller.update(imageMock, requestMock, bodyMock);
+      const response = controller.updateProfile(
+        imageMock,
+        requestMock,
+        bodyMock,
+      );
 
-      await expect(response).rejects.toThrow(NotFoundException);
+      await expect(response).rejects.toThrow(ForbiddenException);
     });
   });
 });
