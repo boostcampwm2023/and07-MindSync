@@ -18,7 +18,11 @@ export class ProfilesService {
   ) {}
 
   async findProfileByUserUuid(userUuid: string): Promise<Profile | null> {
-    return this.prisma.profile.findUnique({ where: { userUuid } });
+    const profile = await this.prisma.profile.findUnique({
+      where: { userUuid },
+    });
+    if (!profile) throw new NotFoundException();
+    return profile;
   }
 
   async findProfileByProfileUuid(uuid: string): Promise<Profile | null> {

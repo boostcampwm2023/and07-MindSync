@@ -7,7 +7,6 @@ import {
   UploadedFile,
   Request as Req,
   ValidationPipe,
-  NotFoundException,
   HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -35,7 +34,6 @@ export class ProfilesController {
     const profile = await this.profilesService.findProfileByUserUuid(
       req.user.uuid,
     );
-    if (!profile) throw new NotFoundException();
     return { statusCode: HttpStatus.OK, message: 'Success', data: profile };
   }
 

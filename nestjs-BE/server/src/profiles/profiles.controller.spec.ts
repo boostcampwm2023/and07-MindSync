@@ -60,7 +60,7 @@ describe('ProfilesController', () => {
     it('not found profile', async () => {
       jest
         .spyOn(profilesService, 'findProfileByUserUuid')
-        .mockResolvedValue(null);
+        .mockRejectedValue(new NotFoundException());
 
       const response = controller.findProfileByUserUuid(requestMock);
 

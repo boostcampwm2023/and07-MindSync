@@ -20,6 +20,7 @@ describe('ProfilesService', () => {
           provide: PrismaService,
           useValue: {
             profile: {
+              findUnique: jest.fn(),
               update: jest.fn(),
             },
           },
@@ -35,6 +36,31 @@ describe('ProfilesService', () => {
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
     uploadService = module.get<UploadService>(UploadService);
+  });
+
+  describe('findProfileByUserUuid', () => {
+    const userUuid = 'user uuid';
+    const profile = { uuid: 'profile uuid', userUuid };
+
+    beforeEach(() => {
+      (prisma.profile.findUnique as jest.Mock).mockResolvedValue(profile);
+    });
+
+    it('found', async () => {
+      const res = profilesService.findProfileByUserUuid(userUuid);
+
+      await expect(res).resolves.toEqual(profile);
+    });
+
+    it('not found', async () => {
+      (prisma.profile.findUnique as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
+
+      const res = profilesService.findProfileByUserUuid(userUuid);
+
+      await expect(res).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('updateProfile', () => {
