@@ -24,15 +24,15 @@ export class InviteCodesController {
   @Post()
   @ApiOperation({ summary: 'Create invite code' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'The invite code has been successfully created.',
   })
   @ApiResponse({
-    status: 400,
+    status: HttpStatus.BAD_REQUEST,
     description: 'Space code input is missing.',
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Space not found.',
   })
   async create(@Body() createInviteCodeDto: CreateInviteCodeDto) {
@@ -42,7 +42,7 @@ export class InviteCodesController {
     const inviteCode =
       await this.inviteCodesService.createInviteCode(spaceUuid);
     return {
-      statusCode: 201,
+      statusCode: HttpStatus.CREATED,
       message: 'Created',
       data: { invite_code: inviteCode.inviteCode },
     };
@@ -51,15 +51,15 @@ export class InviteCodesController {
   @Get(':inviteCode')
   @ApiOperation({ summary: 'Find space by invite code' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Returns a space associated with the invite code.',
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Invite code not found.',
   })
   @ApiResponse({
-    status: 410,
+    status: HttpStatus.GONE,
     description: 'Invite code has expired',
   })
   async findSpace(@Param('inviteCode') inviteCode: string) {
@@ -73,6 +73,6 @@ export class InviteCodesController {
     const space = await this.spacesService.findSpaceBySpaceUuid(
       inviteCodeData.spaceUuid,
     );
-    return { statusCode: 200, message: 'Success', data: space };
+    return { statusCode: HttpStatus.OK, message: 'Success', data: space };
   }
 }
