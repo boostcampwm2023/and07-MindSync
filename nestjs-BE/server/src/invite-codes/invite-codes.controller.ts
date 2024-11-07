@@ -1,25 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  NotFoundException,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
-import { SpacesService } from '../spaces/spaces.service';
 
 @Controller('inviteCodes')
 @ApiTags('inviteCodes')
 export class InviteCodesController {
-  constructor(
-    private readonly inviteCodesService: InviteCodesService,
-    private readonly spacesService: SpacesService,
-  ) {}
+  constructor(private readonly inviteCodesService: InviteCodesService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create invite code' })
@@ -61,16 +48,7 @@ export class InviteCodesController {
     description: 'Invite code has expired',
   })
   async findSpace(@Param('inviteCode') inviteCode: string) {
-    const inviteCodeData =
-      await this.inviteCodesService.findInviteCode(inviteCode);
-    if (!inviteCodeData) throw new NotFoundException();
-    if (this.inviteCodesService.checkExpiry(inviteCodeData.expiryDate)) {
-      this.inviteCodesService.deleteInviteCode(inviteCode);
-      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
-    }
-    const space = await this.spacesService.findSpaceBySpaceUuid(
-      inviteCodeData.spaceUuid,
-    );
+    const space = await this.inviteCodesService.findSpace(inviteCode);
     return { statusCode: HttpStatus.OK, message: 'Success', data: space };
   }
 }

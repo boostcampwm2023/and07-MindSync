@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InviteCode, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -19,6 +24,16 @@ export class InviteCodesService {
     return this.prisma.inviteCode.findUnique({
       where: { inviteCode: inviteCode },
     });
+  }
+
+  async findSpace(inviteCode: string) {
+    const inviteCodeData = await this.findInviteCode(inviteCode);
+    if (!inviteCodeData) throw new NotFoundException();
+    if (this.checkExpiry(inviteCodeData.expiryDate)) {
+      this.deleteInviteCode(inviteCode);
+      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
+    }
+    return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
   }
 
   async createInviteCode(spaceUuid: string): Promise<InviteCode> {
