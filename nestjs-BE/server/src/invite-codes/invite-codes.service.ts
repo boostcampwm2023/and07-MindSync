@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InviteCode, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -6,10 +6,14 @@ import {
   INVITE_CODE_LENGTH,
 } from '../config/magic-number';
 import generateUuid from '../utils/uuid';
+import { SpacesService } from '../spaces/spaces.service';
 
 @Injectable()
 export class InviteCodesService {
-  constructor(protected prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly spacesService: SpacesService,
+  ) {}
 
   async findInviteCode(inviteCode: string): Promise<InviteCode | null> {
     return this.prisma.inviteCode.findUnique({
@@ -18,6 +22,8 @@ export class InviteCodesService {
   }
 
   async createInviteCode(spaceUuid: string): Promise<InviteCode> {
+    const space = await this.spacesService.findSpaceBySpaceUuid(spaceUuid);
+    if (!space) throw new NotFoundException();
     return this.prisma.inviteCode.create({
       data: {
         uuid: generateUuid(),
