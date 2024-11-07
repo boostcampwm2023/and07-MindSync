@@ -1,16 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Profile, Prisma } from '@prisma/client';
+import { v4 as uuid } from 'uuid';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
-import { Profile, Prisma } from '@prisma/client';
-import generateUuid from '../utils/uuid';
+import { PrismaService } from '../prisma/prisma.service';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class ProfilesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private uploadService: UploadService,
+  ) {}
 
-  async findProfile(userUuid: string): Promise<Profile | null> {
-    return this.prisma.profile.findUnique({ where: { userUuid } });
+  async findProfileByUserUuid(userUuid: string): Promise<Profile | null> {
+    const profile = await this.prisma.profile.findUnique({
+      where: { userUuid },
+    });
+    if (!profile) throw new NotFoundException();
+    return profile;
   }
 
   async findProfileByProfileUuid(uuid: string): Promise<Profile | null> {
@@ -28,7 +40,7 @@ export class ProfilesService {
       where: { userUuid: data.userUuid },
       update: {},
       create: {
-        uuid: generateUuid(),
+        uuid: uuid(),
         userUuid: data.userUuid,
         image: data.image,
         nickname: data.nickname,
@@ -38,12 +50,18 @@ export class ProfilesService {
 
   async updateProfile(
     userUuid: string,
+    profileUuid: string,
+    image: Express.Multer.File,
     updateProfileDto: UpdateProfileDto,
   ): Promise<Profile | null> {
+    await this.verifyUserProfile(userUuid, profileUuid);
+    if (image) {
+      updateProfileDto.image = await this.uploadService.uploadFile(image);
+    }
     try {
       return await this.prisma.profile.update({
         where: { userUuid },
-        data: { ...updateProfileDto },
+        data: updateProfileDto,
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -52,5 +70,15 @@ export class ProfilesService {
         throw err;
       }
     }
+  }
+
+  async verifyUserProfile(
+    userUuid: string,
+    profileUuid: string,
+  ): Promise<boolean> {
+    const profile = await this.findProfileByProfileUuid(profileUuid);
+    if (!profile) throw new NotFoundException();
+    if (userUuid !== profile.userUuid) throw new ForbiddenException();
+    return true;
   }
 }
