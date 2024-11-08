@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardsService } from './boards.service';
 import { getModelToken } from '@nestjs/mongoose';
-import { Board, BoardDocument } from './schemas/board.schema';
 import { Model, Query } from 'mongoose';
+import { BoardsService } from './boards.service';
+import { Board, BoardDocument } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 
 describe('BoardsService', () => {

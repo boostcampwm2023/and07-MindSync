@@ -11,8 +11,6 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
-import { BoardsService } from './boards.service';
-import { CreateBoardDto } from './dto/create-board.dto';
 import {
   ApiBody,
   ApiConsumes,
@@ -23,7 +21,10 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../auth/decorators/public.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
+import { BoardsService } from './boards.service';
+import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
 import {
@@ -34,9 +35,8 @@ import {
   RestoreBoardFailure,
   RestoreBoardSuccess,
 } from './swagger/boards.type';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from '../upload/upload.service';
-import { ConfigService } from '@nestjs/config';
+import { Public } from '../auth/decorators/public.decorator';
 
 const BOARD_EXPIRE_DAY = 7;
 

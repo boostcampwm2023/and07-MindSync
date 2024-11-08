@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { BoardsService } from './boards.service';
 import { BoardsController } from './boards.controller';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Board, BoardSchema } from './schemas/board.schema';
 import { UploadModule } from '../upload/upload.module';
 
