@@ -1,15 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InviteCode, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   INVITE_CODE_EXPIRY_HOURS,
   INVITE_CODE_LENGTH,
 } from '../config/magic-number';
-import { InviteCode, Prisma } from '@prisma/client';
 import generateUuid from '../utils/uuid';
+import { SpacesService } from '../spaces/spaces.service';
 
 @Injectable()
 export class InviteCodesService {
-  constructor(protected prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly spacesService: SpacesService,
+  ) {}
 
   async findInviteCode(inviteCode: string): Promise<InviteCode | null> {
     return this.prisma.inviteCode.findUnique({
@@ -17,7 +26,19 @@ export class InviteCodesService {
     });
   }
 
+  async findSpace(inviteCode: string) {
+    const inviteCodeData = await this.findInviteCode(inviteCode);
+    if (!inviteCodeData) throw new NotFoundException();
+    if (this.checkExpiry(inviteCodeData.expiryDate)) {
+      this.deleteInviteCode(inviteCode);
+      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
+    }
+    return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
+  }
+
   async createInviteCode(spaceUuid: string): Promise<InviteCode> {
+    const space = await this.spacesService.findSpaceBySpaceUuid(spaceUuid);
+    if (!space) throw new NotFoundException();
     return this.prisma.inviteCode.create({
       data: {
         uuid: generateUuid(),
