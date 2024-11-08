@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { Model, Query } from 'mongoose';
+import { Model } from 'mongoose';
 import { BoardsService } from './boards.service';
-import { Board, BoardDocument } from './schemas/board.schema';
+import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 
 describe('BoardsService', () => {
@@ -30,9 +30,8 @@ describe('BoardsService', () => {
       spaceId: 'space uuid',
     } as CreateBoardDto;
     const imageMock = 'www.test.com/image';
-    jest
-      .spyOn(model, 'create')
-      .mockResolvedValue('created board' as unknown as BoardDocument[]);
+
+    (model.create as jest.Mock).mockResolvedValue('created board');
 
     const board = service.create(data, imageMock);
 
@@ -41,11 +40,11 @@ describe('BoardsService', () => {
   });
 
   it('findBySpaceId', async () => {
-    jest.spyOn(model, 'find').mockReturnValue({
+    (model.find as jest.Mock).mockReturnValue({
       exec: async () => {
         return 'board list' as unknown as Board[];
       },
-    } as Query<Board[], BoardDocument>);
+    });
 
     const boards = service.findBySpaceId('space uuid');
 
