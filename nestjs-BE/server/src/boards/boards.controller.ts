@@ -22,7 +22,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
@@ -35,7 +34,6 @@ import {
   RestoreBoardFailure,
   RestoreBoardSuccess,
 } from './swagger/boards.type';
-import { UploadService } from '../upload/upload.service';
 import { Public } from '../auth/decorators/public.decorator';
 
 const BOARD_EXPIRE_DAY = 7;
@@ -43,11 +41,7 @@ const BOARD_EXPIRE_DAY = 7;
 @Controller('boards')
 @ApiTags('boards')
 export class BoardsController {
-  constructor(
-    private boardsService: BoardsService,
-    private uploadService: UploadService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private boardsService: BoardsService) {}
 
   @ApiOperation({
     summary: '보드 생성',
@@ -67,14 +61,14 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const imageUrl = image
-      ? await this.uploadService.uploadFile(image)
-      : this.configService.get<string>('APP_ICON_URL');
-    const document = await this.boardsService.create(createBoardDto, imageUrl);
+    const document = await this.boardsService.createBoard(
+      createBoardDto,
+      image,
+    );
     const responseData = {
       boardId: document.uuid,
       date: document.createdAt,
-      imageUrl,
+      imageUrl: document.imageUrl,
     };
     return {
       statusCode: HttpStatus.CREATED,

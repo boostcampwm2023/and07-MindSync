@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
 import { v4 } from 'uuid';
 import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class BoardsService {
-  constructor(@InjectModel(Board.name) private boardModel: Model<Board>) {}
+  constructor(
+    @InjectModel(Board.name) private boardModel: Model<Board>,
+    private uploadService: UploadService,
+    private configService: ConfigService,
+  ) {}
 
   async create(
     createBoardDto: CreateBoardDto,
@@ -25,6 +31,16 @@ export class BoardsService {
       restoredAt: now,
     });
     return board;
+  }
+
+  async createBoard(
+    createBoardDto: CreateBoardDto,
+    image: Express.Multer.File | undefined,
+  ) {
+    const imageUrl = image
+      ? await this.uploadService.uploadFile(image)
+      : this.configService.get<string>('APP_ICON_URL');
+    return this.create(createBoardDto, imageUrl);
   }
 
   async findBySpaceId(spaceId: string): Promise<Board[]> {
