@@ -36,8 +36,6 @@ import {
 } from './swagger/boards.type';
 import { Public } from '../auth/decorators/public.decorator';
 
-const BOARD_EXPIRE_DAY = 7;
-
 @Controller('boards')
 @ApiTags('boards')
 export class BoardsController {
@@ -94,32 +92,10 @@ export class BoardsController {
   @Get('list')
   async findBySpaceId(@Query('spaceId') spaceId: string) {
     const boardList = await this.boardsService.findBySpaceId(spaceId);
-    const responseData = boardList.reduce<Array<any>>((list, board) => {
-      let isDeleted = false;
-
-      if (board.deletedAt && board.deletedAt > board.restoredAt) {
-        const expireDate = new Date(board.deletedAt);
-        expireDate.setDate(board.deletedAt.getDate() + BOARD_EXPIRE_DAY);
-        if (new Date() > expireDate) {
-          this.boardsService.deleteExpiredBoard(board.uuid);
-          return list;
-        }
-        isDeleted = true;
-      }
-
-      list.push({
-        boardId: board.uuid,
-        boardName: board.boardName,
-        createdAt: board.createdAt,
-        imageUrl: board.imageUrl,
-        isDeleted,
-      });
-      return list;
-    }, []);
     return {
       statusCode: HttpStatus.OK,
       message: 'Retrieved board list.',
-      data: responseData,
+      data: boardList,
     };
   }
 

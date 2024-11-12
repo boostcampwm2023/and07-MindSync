@@ -7,6 +7,8 @@ import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UploadService } from '../upload/upload.service';
 
+const BOARD_EXPIRE_DAY = 7;
+
 @Injectable()
 export class BoardsService {
   constructor(
@@ -44,7 +46,30 @@ export class BoardsService {
   }
 
   async findBySpaceId(spaceId: string): Promise<Board[]> {
-    return this.boardModel.find({ spaceId }).exec();
+    const boardList = await this.boardModel.find({ spaceId }).exec();
+    const filteredList = boardList.reduce<Array<any>>((list, board) => {
+      let isDeleted = false;
+
+      if (board.deletedAt && board.deletedAt > board.restoredAt) {
+        const expireDate = new Date(board.deletedAt);
+        expireDate.setDate(board.deletedAt.getDate() + BOARD_EXPIRE_DAY);
+        if (new Date() > expireDate) {
+          this.deleteExpiredBoard(board.uuid);
+          return list;
+        }
+        isDeleted = true;
+      }
+
+      list.push({
+        boardId: board.uuid,
+        boardName: board.boardName,
+        createdAt: board.createdAt,
+        imageUrl: board.imageUrl,
+        isDeleted,
+      });
+      return list;
+    }, []);
+    return filteredList;
   }
 
   async deleteBoard(boardId: string) {
