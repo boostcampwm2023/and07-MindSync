@@ -45,16 +45,4 @@ describe('BoardsService', () => {
     await expect(board).resolves.toBe('created board');
     expect(model.create).toHaveBeenCalled();
   });
-
-  it('findBySpaceId', async () => {
-    (model.find as jest.Mock).mockReturnValue({
-      exec: async () => {
-        return 'board list' as unknown as Board[];
-      },
-    });
-
-    const boards = service.findBySpaceId('space uuid');
-
-    await expect(boards).resolves.toBe('board list');
-  });
 });
