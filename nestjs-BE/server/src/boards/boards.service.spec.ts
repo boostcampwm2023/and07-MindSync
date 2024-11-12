@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 import { Model } from 'mongoose';
 import { BoardsService } from './boards.service';
 import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { UploadService } from '../upload/upload.service';
 
 describe('BoardsService', () => {
   let service: BoardsService;
@@ -11,11 +13,16 @@ describe('BoardsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       providers: [
         BoardsService,
         {
           provide: getModelToken(Board.name),
           useValue: { create: jest.fn(), find: jest.fn() },
+        },
+        {
+          provide: UploadService,
+          useValue: { uploadFile: jest.fn() },
         },
       ],
     }).compile();

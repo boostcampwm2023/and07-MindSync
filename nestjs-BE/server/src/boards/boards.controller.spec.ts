@@ -4,14 +4,11 @@ import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { UpdateWriteOpResult } from 'mongoose';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
-import { Board } from './schemas/board.schema';
-import { UploadService } from '../upload/upload.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 
 describe('BoardsController', () => {
   let controller: BoardsController;
   let boardsService: BoardsService;
-  let uploadService: UploadService;
   let configService: ConfigService;
 
   beforeEach(async () => {
@@ -22,15 +19,9 @@ describe('BoardsController', () => {
         {
           provide: BoardsService,
           useValue: {
-            create: jest.fn(),
+            createBoard: jest.fn(),
             deleteBoard: jest.fn(),
             restoreBoard: jest.fn(),
-          },
-        },
-        {
-          provide: UploadService,
-          useValue: {
-            uploadFile: jest.fn(),
           },
         },
       ],
@@ -38,7 +29,6 @@ describe('BoardsController', () => {
 
     controller = module.get<BoardsController>(BoardsController);
     boardsService = module.get<BoardsService>(BoardsService);
-    uploadService = module.get<UploadService>(UploadService);
     configService = module.get<ConfigService>(ConfigService);
   });
 
@@ -50,11 +40,11 @@ describe('BoardsController', () => {
     const imageMock = { filename: 'image' } as Express.Multer.File;
 
     it('created board', async () => {
-      jest.spyOn(uploadService, 'uploadFile').mockResolvedValue('image url');
-      jest.spyOn(boardsService, 'create').mockResolvedValue({
+      (boardsService.createBoard as jest.Mock).mockResolvedValue({
         uuid: 'board uuid',
-        createdAt: 'created date' as unknown as Date,
-      } as Board);
+        createdAt: 'created date',
+        imageUrl: 'image url',
+      });
 
       const board = controller.createBoard(bodyMock, imageMock);
 
@@ -67,18 +57,17 @@ describe('BoardsController', () => {
           imageUrl: 'image url',
         },
       });
-      expect(uploadService.uploadFile).toHaveBeenCalled();
     });
 
     it('request does not have image file', async () => {
-      jest.spyOn(boardsService, 'create').mockResolvedValue({
+      (boardsService.createBoard as jest.Mock).mockResolvedValue({
         uuid: 'board uuid',
-        createdAt: 'created date' as unknown as Date,
-      } as Board);
+        createdAt: 'created date',
+      });
 
       const response = controller.createBoard(
         bodyMock,
-        null as unknown as Express.Multer.File,
+        undefined as Express.Multer.File,
       );
 
       await expect(response).resolves.toEqual({
@@ -90,7 +79,6 @@ describe('BoardsController', () => {
           imageUrl: configService.get<string>('APP_ICON_URL'),
         },
       });
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
     });
   });
 
