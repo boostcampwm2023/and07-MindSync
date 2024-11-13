@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { UpdateWriteOpResult } from 'mongoose';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -86,9 +85,9 @@ describe('BoardsController', () => {
     const bodyMock = { boardId: 'board uuid' };
 
     it('success', async () => {
-      jest.spyOn(boardsService, 'deleteBoard').mockResolvedValue({
+      (boardsService.deleteBoard as jest.Mock).mockResolvedValue({
         matchedCount: 1,
-      } as UpdateWriteOpResult);
+      });
 
       const response = controller.deleteBoard(bodyMock);
 
@@ -99,9 +98,9 @@ describe('BoardsController', () => {
     });
 
     it('fail', async () => {
-      jest.spyOn(boardsService, 'deleteBoard').mockResolvedValue({
-        matchedCount: 0,
-      } as UpdateWriteOpResult);
+      (boardsService.deleteBoard as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
       const response = controller.deleteBoard(bodyMock);
 
@@ -113,9 +112,9 @@ describe('BoardsController', () => {
     const bodyMock = { boardId: 'board uuid' };
 
     it('success', async () => {
-      jest.spyOn(boardsService, 'restoreBoard').mockResolvedValue({
+      (boardsService.restoreBoard as jest.Mock).mockResolvedValue({
         matchedCount: 1,
-      } as UpdateWriteOpResult);
+      });
 
       const response = controller.restoreBoard(bodyMock);
 
@@ -126,9 +125,9 @@ describe('BoardsController', () => {
     });
 
     it('fail', async () => {
-      jest.spyOn(boardsService, 'restoreBoard').mockResolvedValue({
-        matchedCount: 0,
-      } as UpdateWriteOpResult);
+      (boardsService.restoreBoard as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
       const response = controller.restoreBoard(bodyMock);
 
