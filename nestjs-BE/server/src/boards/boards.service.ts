@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
@@ -74,7 +74,14 @@ export class BoardsService {
 
   async deleteBoard(boardId: string) {
     const now = new Date();
-    return this.boardModel.updateOne({ uuid: boardId }, { deletedAt: now });
+    const board = await this.boardModel.updateOne(
+      { uuid: boardId },
+      { deletedAt: now },
+    );
+    if (!board.matchedCount) {
+      throw new NotFoundException('Target board not found.');
+    }
+    return board;
   }
 
   async deleteExpiredBoard(boardId: string) {
@@ -83,6 +90,13 @@ export class BoardsService {
 
   async restoreBoard(boardId: string) {
     const now = new Date();
-    return this.boardModel.updateOne({ uuid: boardId }, { restoredAt: now });
+    const board = await this.boardModel.updateOne(
+      { uuid: boardId },
+      { restoredAt: now },
+    );
+    if (!board.matchedCount) {
+      throw new NotFoundException('Target board not found.');
+    }
+    return board;
   }
 }

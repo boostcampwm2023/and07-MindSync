@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Query,
   Patch,
-  NotFoundException,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
@@ -112,12 +111,7 @@ export class BoardsController {
   @Public()
   @Patch('delete')
   async deleteBoard(@Body() deleteBoardDto: DeleteBoardDto) {
-    const updateResult = await this.boardsService.deleteBoard(
-      deleteBoardDto.boardId,
-    );
-    if (!updateResult.matchedCount) {
-      throw new NotFoundException('Target board not found.');
-    }
+    await this.boardsService.deleteBoard(deleteBoardDto.boardId);
     return { statusCode: HttpStatus.OK, message: 'Board deleted.' };
   }
 
@@ -134,12 +128,7 @@ export class BoardsController {
   @Public()
   @Patch('restore')
   async restoreBoard(@Body() resotreBoardDto: RestoreBoardDto) {
-    const updateResult = await this.boardsService.restoreBoard(
-      resotreBoardDto.boardId,
-    );
-    if (!updateResult.matchedCount) {
-      throw new NotFoundException('Target board not found.');
-    }
+    await this.boardsService.restoreBoard(resotreBoardDto.boardId);
     return { statusCode: HttpStatus.OK, message: 'Board restored.' };
   }
 }
