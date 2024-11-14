@@ -7,12 +7,9 @@ import {
   HttpStatus,
   Query,
   Patch,
-  NotFoundException,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
-import { BoardsService } from './boards.service';
-import { CreateBoardDto } from './dto/create-board.dto';
 import {
   ApiBody,
   ApiConsumes,
@@ -23,7 +20,9 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../auth/decorators/public.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { BoardsService } from './boards.service';
+import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { RestoreBoardDto } from './dto/restore-board.dto';
 import {
@@ -34,20 +33,12 @@ import {
   RestoreBoardFailure,
   RestoreBoardSuccess,
 } from './swagger/boards.type';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadService } from '../upload/upload.service';
-import { ConfigService } from '@nestjs/config';
-
-const BOARD_EXPIRE_DAY = 7;
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('boards')
 @ApiTags('boards')
 export class BoardsController {
-  constructor(
-    private boardsService: BoardsService,
-    private uploadService: UploadService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private boardsService: BoardsService) {}
 
   @ApiOperation({
     summary: '보드 생성',
@@ -67,14 +58,14 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const imageUrl = image
-      ? await this.uploadService.uploadFile(image)
-      : this.configService.get<string>('APP_ICON_URL');
-    const document = await this.boardsService.create(createBoardDto, imageUrl);
+    const document = await this.boardsService.createBoard(
+      createBoardDto,
+      image,
+    );
     const responseData = {
       boardId: document.uuid,
       date: document.createdAt,
-      imageUrl,
+      imageUrl: document.imageUrl,
     };
     return {
       statusCode: HttpStatus.CREATED,
@@ -100,32 +91,10 @@ export class BoardsController {
   @Get('list')
   async findBySpaceId(@Query('spaceId') spaceId: string) {
     const boardList = await this.boardsService.findBySpaceId(spaceId);
-    const responseData = boardList.reduce<Array<any>>((list, board) => {
-      let isDeleted = false;
-
-      if (board.deletedAt && board.deletedAt > board.restoredAt) {
-        const expireDate = new Date(board.deletedAt);
-        expireDate.setDate(board.deletedAt.getDate() + BOARD_EXPIRE_DAY);
-        if (new Date() > expireDate) {
-          this.boardsService.deleteExpiredBoard(board.uuid);
-          return list;
-        }
-        isDeleted = true;
-      }
-
-      list.push({
-        boardId: board.uuid,
-        boardName: board.boardName,
-        createdAt: board.createdAt,
-        imageUrl: board.imageUrl,
-        isDeleted,
-      });
-      return list;
-    }, []);
     return {
       statusCode: HttpStatus.OK,
       message: 'Retrieved board list.',
-      data: responseData,
+      data: boardList,
     };
   }
 
@@ -142,12 +111,7 @@ export class BoardsController {
   @Public()
   @Patch('delete')
   async deleteBoard(@Body() deleteBoardDto: DeleteBoardDto) {
-    const updateResult = await this.boardsService.deleteBoard(
-      deleteBoardDto.boardId,
-    );
-    if (!updateResult.matchedCount) {
-      throw new NotFoundException('Target board not found.');
-    }
+    await this.boardsService.deleteBoard(deleteBoardDto.boardId);
     return { statusCode: HttpStatus.OK, message: 'Board deleted.' };
   }
 
@@ -164,12 +128,7 @@ export class BoardsController {
   @Public()
   @Patch('restore')
   async restoreBoard(@Body() resotreBoardDto: RestoreBoardDto) {
-    const updateResult = await this.boardsService.restoreBoard(
-      resotreBoardDto.boardId,
-    );
-    if (!updateResult.matchedCount) {
-      throw new NotFoundException('Target board not found.');
-    }
+    await this.boardsService.restoreBoard(resotreBoardDto.boardId);
     return { statusCode: HttpStatus.OK, message: 'Board restored.' };
   }
 }

@@ -1,13 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Board } from './schemas/board.schema';
+import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
-import { CreateBoardDto } from './dto/create-board.dto';
 import { v4 } from 'uuid';
+import { Board } from './schemas/board.schema';
+import { CreateBoardDto } from './dto/create-board.dto';
+import { UploadService } from '../upload/upload.service';
+
+const BOARD_EXPIRE_DAY = 7;
 
 @Injectable()
 export class BoardsService {
-  constructor(@InjectModel(Board.name) private boardModel: Model<Board>) {}
+  constructor(
+    @InjectModel(Board.name) private boardModel: Model<Board>,
+    private uploadService: UploadService,
+    private configService: ConfigService,
+  ) {}
 
   async create(
     createBoardDto: CreateBoardDto,
@@ -27,13 +35,53 @@ export class BoardsService {
     return board;
   }
 
+  async createBoard(
+    createBoardDto: CreateBoardDto,
+    image: Express.Multer.File | undefined,
+  ) {
+    const imageUrl = image
+      ? await this.uploadService.uploadFile(image)
+      : this.configService.get<string>('APP_ICON_URL');
+    return this.create(createBoardDto, imageUrl);
+  }
+
   async findBySpaceId(spaceId: string): Promise<Board[]> {
-    return this.boardModel.find({ spaceId }).exec();
+    const boardList = await this.boardModel.find({ spaceId }).exec();
+    const filteredList = boardList.reduce<Array<any>>((list, board) => {
+      let isDeleted = false;
+
+      if (board.deletedAt && board.deletedAt > board.restoredAt) {
+        const expireDate = new Date(board.deletedAt);
+        expireDate.setDate(board.deletedAt.getDate() + BOARD_EXPIRE_DAY);
+        if (new Date() > expireDate) {
+          this.deleteExpiredBoard(board.uuid);
+          return list;
+        }
+        isDeleted = true;
+      }
+
+      list.push({
+        boardId: board.uuid,
+        boardName: board.boardName,
+        createdAt: board.createdAt,
+        imageUrl: board.imageUrl,
+        isDeleted,
+      });
+      return list;
+    }, []);
+    return filteredList;
   }
 
   async deleteBoard(boardId: string) {
     const now = new Date();
-    return this.boardModel.updateOne({ uuid: boardId }, { deletedAt: now });
+    const board = await this.boardModel.updateOne(
+      { uuid: boardId },
+      { deletedAt: now },
+    );
+    if (!board.matchedCount) {
+      throw new NotFoundException('Target board not found.');
+    }
+    return board;
   }
 
   async deleteExpiredBoard(boardId: string) {
@@ -42,6 +90,13 @@ export class BoardsService {
 
   async restoreBoard(boardId: string) {
     const now = new Date();
-    return this.boardModel.updateOne({ uuid: boardId }, { restoredAt: now });
+    const board = await this.boardModel.updateOne(
+      { uuid: boardId },
+      { restoredAt: now },
+    );
+    if (!board.matchedCount) {
+      throw new NotFoundException('Target board not found.');
+    }
+    return board;
   }
 }

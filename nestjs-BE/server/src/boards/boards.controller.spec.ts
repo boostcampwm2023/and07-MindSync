@@ -1,17 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
-import { UploadService } from '../upload/upload.service';
-import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { UpdateWriteOpResult } from 'mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('BoardsController', () => {
   let controller: BoardsController;
   let boardsService: BoardsService;
-  let uploadService: UploadService;
   let configService: ConfigService;
 
   beforeEach(async () => {
@@ -22,15 +18,9 @@ describe('BoardsController', () => {
         {
           provide: BoardsService,
           useValue: {
-            create: jest.fn(),
+            createBoard: jest.fn(),
             deleteBoard: jest.fn(),
             restoreBoard: jest.fn(),
-          },
-        },
-        {
-          provide: UploadService,
-          useValue: {
-            uploadFile: jest.fn(),
           },
         },
       ],
@@ -38,110 +28,110 @@ describe('BoardsController', () => {
 
     controller = module.get<BoardsController>(BoardsController);
     boardsService = module.get<BoardsService>(BoardsService);
-    uploadService = module.get<UploadService>(UploadService);
     configService = module.get<ConfigService>(ConfigService);
   });
 
-  it('createBoard created board', async () => {
+  describe('createBoard', () => {
     const bodyMock = {
       boardName: 'board name',
       spaceId: 'space uuid',
     } as CreateBoardDto;
     const imageMock = { filename: 'image' } as Express.Multer.File;
-    jest.spyOn(uploadService, 'uploadFile').mockResolvedValue('image url');
-    jest.spyOn(boardsService, 'create').mockResolvedValue({
-      uuid: 'board uuid',
-      createdAt: 'created date' as unknown as Date,
-    } as Board);
 
-    const board = controller.createBoard(bodyMock, imageMock);
-
-    await expect(board).resolves.toEqual({
-      statusCode: HttpStatus.CREATED,
-      message: 'Board created.',
-      data: {
-        boardId: 'board uuid',
-        date: 'created date',
+    it('created board', async () => {
+      (boardsService.createBoard as jest.Mock).mockResolvedValue({
+        uuid: 'board uuid',
+        createdAt: 'created date',
         imageUrl: 'image url',
-      },
+      });
+
+      const board = controller.createBoard(bodyMock, imageMock);
+
+      await expect(board).resolves.toEqual({
+        statusCode: HttpStatus.CREATED,
+        message: 'Board created.',
+        data: {
+          boardId: 'board uuid',
+          date: 'created date',
+          imageUrl: 'image url',
+        },
+      });
     });
-    expect(uploadService.uploadFile).toHaveBeenCalled();
-  });
 
-  it('createBoard request does not have image file', async () => {
-    const bodyMock = {
-      boardName: 'board name',
-      spaceId: 'space uuid',
-    } as CreateBoardDto;
-    jest.spyOn(boardsService, 'create').mockResolvedValue({
-      uuid: 'board uuid',
-      createdAt: 'created date' as unknown as Date,
-    } as Board);
+    it('request does not have image file', async () => {
+      (boardsService.createBoard as jest.Mock).mockResolvedValue({
+        uuid: 'board uuid',
+        createdAt: 'created date',
+      });
 
-    const response = controller.createBoard(
-      bodyMock,
-      null as unknown as Express.Multer.File,
-    );
+      const response = controller.createBoard(
+        bodyMock,
+        undefined as Express.Multer.File,
+      );
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.CREATED,
-      message: 'Board created.',
-      data: {
-        boardId: 'board uuid',
-        date: 'created date',
-        imageUrl: configService.get<string>('APP_ICON_URL'),
-      },
-    });
-    expect(uploadService.uploadFile).not.toHaveBeenCalled();
-  });
-
-  it('deleteBoard success', async () => {
-    const bodyMock = { boardId: 'board uuid' };
-    jest.spyOn(boardsService, 'deleteBoard').mockResolvedValue({
-      matchedCount: 1,
-    } as UpdateWriteOpResult);
-
-    const response = controller.deleteBoard(bodyMock);
-
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'Board deleted.',
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.CREATED,
+        message: 'Board created.',
+        data: {
+          boardId: 'board uuid',
+          date: 'created date',
+          imageUrl: configService.get<string>('APP_ICON_URL'),
+        },
+      });
     });
   });
 
-  it('deleteBoard fail', async () => {
+  describe('deleteBoard', () => {
     const bodyMock = { boardId: 'board uuid' };
-    jest.spyOn(boardsService, 'deleteBoard').mockResolvedValue({
-      matchedCount: 0,
-    } as UpdateWriteOpResult);
 
-    const response = controller.deleteBoard(bodyMock);
+    it('success', async () => {
+      (boardsService.deleteBoard as jest.Mock).mockResolvedValue({
+        matchedCount: 1,
+      });
 
-    await expect(response).rejects.toThrow(NotFoundException);
-  });
+      const response = controller.deleteBoard(bodyMock);
 
-  it('restoreBoard success', async () => {
-    const bodyMock = { boardId: 'board uuid' };
-    jest.spyOn(boardsService, 'restoreBoard').mockResolvedValue({
-      matchedCount: 1,
-    } as UpdateWriteOpResult);
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'Board deleted.',
+      });
+    });
 
-    const response = controller.restoreBoard(bodyMock);
+    it('fail', async () => {
+      (boardsService.deleteBoard as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'Board restored.',
+      const response = controller.deleteBoard(bodyMock);
+
+      await expect(response).rejects.toThrow(NotFoundException);
     });
   });
 
-  it('restoreBoard fail', async () => {
+  describe('restoreBoard', () => {
     const bodyMock = { boardId: 'board uuid' };
-    jest.spyOn(boardsService, 'restoreBoard').mockResolvedValue({
-      matchedCount: 0,
-    } as UpdateWriteOpResult);
 
-    const response = controller.restoreBoard(bodyMock);
+    it('success', async () => {
+      (boardsService.restoreBoard as jest.Mock).mockResolvedValue({
+        matchedCount: 1,
+      });
 
-    await expect(response).rejects.toThrow(NotFoundException);
+      const response = controller.restoreBoard(bodyMock);
+
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'Board restored.',
+      });
+    });
+
+    it('fail', async () => {
+      (boardsService.restoreBoard as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
+
+      const response = controller.restoreBoard(bodyMock);
+
+      await expect(response).rejects.toThrow(NotFoundException);
+    });
   });
 });
