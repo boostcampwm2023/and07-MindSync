@@ -11,6 +11,7 @@ import {
   INVITE_CODE_LENGTH,
 } from '../config/magic-number';
 import generateUuid from '../utils/uuid';
+import { checkExpiry } from '../utils/date';
 import { SpacesService } from '../spaces/spaces.service';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class InviteCodesService {
   async findSpace(inviteCode: string) {
     const inviteCodeData = await this.findInviteCode(inviteCode);
     if (!inviteCodeData) throw new NotFoundException();
-    if (this.checkExpiry(inviteCodeData.expiryDate)) {
+    if (checkExpiry(inviteCodeData.expiryDate)) {
       this.deleteInviteCode(inviteCode);
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
@@ -70,11 +71,6 @@ export class InviteCodesService {
     const expiryDate = new Date(currentDate);
     expiryDate.setHours(currentDate.getHours() + INVITE_CODE_EXPIRY_HOURS);
     return expiryDate;
-  }
-
-  checkExpiry(expiryDate: Date) {
-    const currentTimestamp = new Date();
-    return expiryDate < currentTimestamp ? true : false;
   }
 
   private generateShortInviteCode(length: number) {

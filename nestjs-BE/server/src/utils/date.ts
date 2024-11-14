@@ -13,3 +13,8 @@ export function getExpiryDate({
 
   return expiryDate;
 }
+
+export function checkExpiry(targetDate: Date) {
+  const currentTimestamp = new Date();
+  return targetDate < currentTimestamp ? true : false;
+}
