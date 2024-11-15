@@ -5,7 +5,6 @@ import {
   Patch,
   UseInterceptors,
   UploadedFile,
-  Request as Req,
   ValidationPipe,
   HttpStatus,
 } from '@nestjs/common';
@@ -13,7 +12,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { RequestWithUser } from '../utils/interface';
+import { User } from '../auth/decorators/user.decorator';
 
 @Controller('profiles')
 @ApiTags('profiles')
@@ -30,10 +29,8 @@ export class ProfilesController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized.',
   })
-  async findProfileByUserUuid(@Req() req: RequestWithUser) {
-    const profile = await this.profilesService.findProfileByUserUuid(
-      req.user.uuid,
-    );
+  async findProfileByUserUuid(@User('uuid') userUuid: string) {
+    const profile = await this.profilesService.findProfileByUserUuid(userUuid);
     return { statusCode: HttpStatus.OK, message: 'Success', data: profile };
   }
 
@@ -50,12 +47,12 @@ export class ProfilesController {
   })
   async updateProfile(
     @UploadedFile() image: Express.Multer.File,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
     @Body(new ValidationPipe({ whitelist: true }))
     updateProfileDto: UpdateProfileDto,
   ) {
     const profile = await this.profilesService.updateProfile(
-      req.user.uuid,
+      userUuid,
       updateProfileDto.uuid,
       image,
       updateProfileDto,

@@ -5,7 +5,6 @@ import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
-import { RequestWithUser } from '../utils/interface';
 
 describe('SpacesController', () => {
   let controller: SpacesController;
@@ -35,10 +34,10 @@ describe('SpacesController', () => {
 
   it('create created', async () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
     const profileMock = {
       uuid: 'profile uuid',
-      userUuid: requestMock.user.uuid,
+      userUuid: userUuidMock,
     } as Profile;
     const bodyMock = {
       name: 'new space name',
@@ -48,7 +47,7 @@ describe('SpacesController', () => {
 
     (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
 
-    const response = controller.createSpace(iconMock, bodyMock, requestMock);
+    const response = controller.createSpace(iconMock, bodyMock, userUuidMock);
 
     await expect(response).resolves.toEqual({
       statusCode: HttpStatus.CREATED,
@@ -56,7 +55,7 @@ describe('SpacesController', () => {
       data: spaceMock,
     });
     expect(spacesService.createSpace).toHaveBeenCalledWith(
-      requestMock.user.uuid,
+      userUuidMock,
       bodyMock.profileUuid,
       iconMock,
       bodyMock,
@@ -64,7 +63,7 @@ describe('SpacesController', () => {
   });
 
   it('create profile uuid needed', async () => {
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
     const bodyMock = {
       name: 'new space name',
     } as CreateSpaceRequestDto;
@@ -72,7 +71,7 @@ describe('SpacesController', () => {
     const response = controller.createSpace(
       undefined as Express.Multer.File,
       bodyMock,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).rejects.toThrow(BadRequestException);
@@ -82,14 +81,14 @@ describe('SpacesController', () => {
   it('findOne found space', async () => {
     const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     (spacesService.findSpace as jest.Mock).mockResolvedValue(spaceMock);
 
     const response = controller.findSpace(
       spaceMock.uuid,
       profileUuid,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).resolves.toEqual({
@@ -101,12 +100,12 @@ describe('SpacesController', () => {
 
   it('findOne profile_uuid missing', async () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     const response = controller.findSpace(
       spaceMock.uuid,
       undefined,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).rejects.toThrow(BadRequestException);
@@ -117,7 +116,7 @@ describe('SpacesController', () => {
     const profileUuid = 'profile uuid';
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
     const spaceMock = { uuid: spaceUuid } as Space;
 
     (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
@@ -127,7 +126,7 @@ describe('SpacesController', () => {
       spaceUuid,
       profileUuid,
       bodyMock,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).resolves.toEqual({
@@ -141,14 +140,14 @@ describe('SpacesController', () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const spaceUuid = 'space uuid';
     const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     const response = controller.updateSpace(
       iconMock,
       spaceUuid,
       undefined,
       bodyMock,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).rejects.toThrow(BadRequestException);
@@ -158,14 +157,14 @@ describe('SpacesController', () => {
   it('joinSpace', async () => {
     const spaceMock = { uuid: 'space uuid' };
     const bodyMock = { profileUuid: 'profile uuid' };
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     (spacesService.joinSpace as jest.Mock).mockResolvedValue(spaceMock);
 
     const response = controller.joinSpace(
       spaceMock.uuid,
       bodyMock,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).resolves.toEqual({
@@ -178,14 +177,14 @@ describe('SpacesController', () => {
   it('leaveSpace', async () => {
     const spaceMock = { uuid: 'space uuid' };
     const profileMock = { uuid: 'profile uuid' };
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     (spacesService.leaveSpace as jest.Mock).mockResolvedValue(undefined);
 
     const response = controller.leaveSpace(
       spaceMock.uuid,
       profileMock.uuid,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).resolves.toEqual({
@@ -197,7 +196,7 @@ describe('SpacesController', () => {
   it('findProfilesInSpace', async () => {
     const spaceMock = { uuid: 'space uuid' };
     const profileMock = { uuid: 'profile uuid' };
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
     const profilesMock = [];
 
     (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue(
@@ -207,7 +206,7 @@ describe('SpacesController', () => {
     const response = controller.findProfilesInSpace(
       spaceMock.uuid,
       profileMock.uuid,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).resolves.toEqual({
@@ -219,14 +218,14 @@ describe('SpacesController', () => {
 
   it('findProfilesInSpace space uuid needed', async () => {
     const spaceMock = { uuid: 'space uuid' };
-    const requestMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue([]);
 
     const response = controller.findProfilesInSpace(
       spaceMock.uuid,
       undefined,
-      requestMock,
+      userUuidMock,
     );
 
     await expect(response).rejects.toThrow(BadRequestException);

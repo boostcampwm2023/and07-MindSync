@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { HttpStatus } from '@nestjs/common';
-import { RequestWithUser } from '../utils/interface';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -24,14 +23,14 @@ describe('UsersController', () => {
   });
 
   it('findUserJoinedSpaces', async () => {
-    const reqMock = { user: { uuid: 'user uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
     const spacesMock = [];
 
     (usersService.findUserJoinedSpaces as jest.Mock).mockResolvedValue(
       spacesMock,
     );
 
-    const response = controller.findUserJoinedSpaces(reqMock);
+    const response = controller.findUserJoinedSpaces(userUuidMock);
 
     await expect(response).resolves.toEqual({
       statusCode: HttpStatus.OK,
