@@ -6,7 +6,6 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
-import { RequestWithUser } from '../utils/interface';
 
 describe('ProfilesController', () => {
   let controller: ProfilesController;
@@ -31,12 +30,12 @@ describe('ProfilesController', () => {
   });
 
   describe('findProfile', () => {
-    const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
 
     it('found profile', async () => {
       const testProfile = {
         uuid: 'profile test uuid',
-        userUuid: requestMock.user.uuid,
+        userUuid: userUuidMock,
         image: 'www.test.com/image',
         nickname: 'test nickname',
       };
@@ -45,7 +44,7 @@ describe('ProfilesController', () => {
         .spyOn(profilesService, 'findProfileByUserUuid')
         .mockResolvedValue(testProfile);
 
-      const response = controller.findProfileByUserUuid(requestMock);
+      const response = controller.findProfileByUserUuid(userUuidMock);
 
       await expect(response).resolves.toEqual({
         statusCode: HttpStatus.OK,
@@ -53,7 +52,7 @@ describe('ProfilesController', () => {
         data: testProfile,
       });
       expect(profilesService.findProfileByUserUuid).toHaveBeenCalledWith(
-        requestMock.user.uuid,
+        userUuidMock,
       );
     });
 
@@ -62,7 +61,7 @@ describe('ProfilesController', () => {
         .spyOn(profilesService, 'findProfileByUserUuid')
         .mockRejectedValue(new NotFoundException());
 
-      const response = controller.findProfileByUserUuid(requestMock);
+      const response = controller.findProfileByUserUuid(userUuidMock);
 
       await expect(response).rejects.toThrow(NotFoundException);
     });
@@ -70,7 +69,7 @@ describe('ProfilesController', () => {
 
   describe('update', () => {
     const imageMock = {} as Express.Multer.File;
-    const requestMock = { user: { uuid: 'test uuid' } } as RequestWithUser;
+    const userUuidMock = 'user uuid';
     const bodyMock = {
       uuid: 'profile test uuid',
       nickname: 'test nickname',
@@ -79,7 +78,7 @@ describe('ProfilesController', () => {
     it('updated profile', async () => {
       const testProfile = {
         uuid: 'profile test uuid',
-        userUuid: requestMock.user.uuid,
+        userUuid: userUuidMock,
         image: 'www.test.com/image',
         nickname: 'test nickname',
       };
@@ -90,7 +89,7 @@ describe('ProfilesController', () => {
 
       const response = controller.updateProfile(
         imageMock,
-        requestMock,
+        userUuidMock,
         bodyMock,
       );
 
@@ -100,7 +99,7 @@ describe('ProfilesController', () => {
         data: testProfile,
       });
       expect(profilesService.updateProfile).toHaveBeenCalledWith(
-        requestMock.user.uuid,
+        userUuidMock,
         bodyMock.uuid,
         imageMock,
         bodyMock,
@@ -114,7 +113,7 @@ describe('ProfilesController', () => {
 
       const response = controller.updateProfile(
         imageMock,
-        requestMock,
+        userUuidMock,
         bodyMock,
       );
 

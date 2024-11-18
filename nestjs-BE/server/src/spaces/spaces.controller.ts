@@ -7,7 +7,6 @@ import {
   Param,
   UseInterceptors,
   UploadedFile,
-  Request as Req,
   ValidationPipe,
   Header,
   HttpStatus,
@@ -21,7 +20,7 @@ import { SpacesService } from './spaces.service';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { JoinSpaceRequestDto } from './dto/join-space.dto';
-import { RequestWithUser } from '../utils/interface';
+import { User } from '../auth/decorators/user.decorator';
 
 @Controller('spaces')
 @ApiTags('spaces')
@@ -61,11 +60,11 @@ export class SpacesController {
       }),
     )
     createSpaceDto: CreateSpaceRequestDto,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
   ) {
     if (!createSpaceDto.profileUuid) throw new BadRequestException();
     const space = await this.spacesService.createSpace(
-      req.user.uuid,
+      userUuid,
       createSpaceDto.profileUuid,
       icon,
       createSpaceDto,
@@ -99,11 +98,11 @@ export class SpacesController {
   async findSpace(
     @Param('space_uuid') spaceUuid: string,
     @Query('profile_uuid') profileUuid: string,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
   ) {
     if (!profileUuid) throw new BadRequestException();
     const space = await this.spacesService.findSpace(
-      req.user.uuid,
+      userUuid,
       profileUuid,
       spaceUuid,
     );
@@ -139,11 +138,11 @@ export class SpacesController {
     @Query('profile_uuid') profileUuid: string,
     @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
     updateSpaceDto: UpdateSpaceRequestDto,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
   ) {
     if (!profileUuid) throw new BadRequestException();
     const space = await this.spacesService.updateSpace(
-      req.user.uuid,
+      userUuid,
       profileUuid,
       spaceUuid,
       icon,
@@ -188,10 +187,10 @@ export class SpacesController {
       }),
     )
     joinSpaceDto: JoinSpaceRequestDto,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
   ) {
     const space = await this.spacesService.joinSpace(
-      req.user.uuid,
+      userUuid,
       joinSpaceDto.profileUuid,
       spaceUuid,
     );
@@ -219,9 +218,9 @@ export class SpacesController {
   async leaveSpace(
     @Param('space_uuid') spaceUuid: string,
     @Param('profile_uuid') profileUuid: string,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
   ) {
-    await this.spacesService.leaveSpace(req.user.uuid, profileUuid, spaceUuid);
+    await this.spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
     return { statusCode: HttpStatus.OK, message: 'OK' };
   }
 
@@ -251,11 +250,11 @@ export class SpacesController {
   async findProfilesInSpace(
     @Param('space_uuid') spaceUuid: string,
     @Query('profile_uuid') profileUuid: string,
-    @Req() req: RequestWithUser,
+    @User('uuid') userUuid: string,
   ) {
     if (!profileUuid) throw new BadRequestException();
     const profiles = await this.spacesService.findProfilesInSpace(
-      req.user.uuid,
+      userUuid,
       profileUuid,
       spaceUuid,
     );
