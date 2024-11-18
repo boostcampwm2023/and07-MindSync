@@ -1,20 +1,12 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserPrismaDto } from './dto/create-user.dto';
 import { Space, User } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
-import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly profilesService: ProfilesService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getOrCreateUser(data: CreateUserPrismaDto): Promise<User> {
     return this.prisma.$transaction(async () => {
@@ -50,16 +42,5 @@ export class UsersService {
     });
 
     return spaces;
-  }
-
-  async verifyUserProfile(
-    userUuid: string,
-    profileUuid: string,
-  ): Promise<boolean> {
-    const profile =
-      await this.profilesService.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new NotFoundException();
-    if (userUuid !== profile.userUuid) throw new ForbiddenException();
-    return true;
   }
 }
