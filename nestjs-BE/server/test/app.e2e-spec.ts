@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { sign } from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { sign } from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
-import { v4 as uuid } from 'uuid';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

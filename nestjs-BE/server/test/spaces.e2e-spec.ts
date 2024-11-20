@@ -1,15 +1,15 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthModule } from '../src/auth/auth.module';
-import { SpacesModule } from '../src/spaces/spaces.module';
-import * as request from 'supertest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PrismaService } from '../src/prisma/prisma.service';
-import { sign } from 'jsonwebtoken';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Profile, Space } from '@prisma/client';
+import * as request from 'supertest';
+import { sign } from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
+import { AuthModule } from '../src/auth/auth.module';
+import { SpacesModule } from '../src/spaces/spaces.module';
+import { PrismaService } from '../src/prisma/prisma.service';
 import { ProfileSpaceModule } from '../src/profile-space/profile-space.module';
 
 describe('SpacesController (e2e)', () => {
