@@ -36,40 +36,42 @@ describe('AuthController (e2e)', () => {
     await app.close();
   });
 
-  it('/auth/kakao-oauth (POST)', () => {
-    fetchSpy.mockResolvedValue({
-      json: async () => {
-        return { kakao_account: { email: 'test@email.com' } };
-      },
-      ok: true,
-    });
-
-    return request(app.getHttpServer())
-      .post('/auth/kakao-oauth')
-      .send({ kakaoUserId: 1 })
-      .expect(HttpStatus.CREATED)
-      .expect((res) => {
-        expect(res.body.statusCode).toBe(HttpStatus.OK);
-        expect(res.body.message).toBe('OK');
-        expect(res.body.data.access_token).toMatch(
-          /^[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+$/,
-        );
-        expect(res.body.data.refresh_token).toMatch(
-          /^[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+$/,
-        );
+  describe('/auth/kakao-oauth (POST)', () => {
+    it('success', () => {
+      fetchSpy.mockResolvedValue({
+        json: async () => {
+          return { kakao_account: { email: 'test@email.com' } };
+        },
+        ok: true,
       });
-  });
 
-  it('/auth/kakao-oauth (POST) received wrong kakao user id', () => {
-    fetchSpy.mockResolvedValue({
-      json: async () => null,
-      ok: false,
+      return request(app.getHttpServer())
+        .post('/auth/kakao-oauth')
+        .send({ kakaoUserId: 1 })
+        .expect(HttpStatus.CREATED)
+        .expect((res) => {
+          expect(res.body.statusCode).toBe(HttpStatus.OK);
+          expect(res.body.message).toBe('OK');
+          expect(res.body.data.access_token).toMatch(
+            /^[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+$/,
+          );
+          expect(res.body.data.refresh_token).toMatch(
+            /^[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+?\.[A-Za-z0-9-_]+$/,
+          );
+        });
     });
 
-    return request(app.getHttpServer())
-      .post('/auth/kakao-oauth')
-      .send({ kakaoUserId: 1 })
-      .expect(HttpStatus.NOT_FOUND)
-      .expect({ statusCode: HttpStatus.NOT_FOUND, message: 'Not Found' });
+    it('received wrong kakao user id', () => {
+      fetchSpy.mockResolvedValue({
+        json: async () => null,
+        ok: false,
+      });
+
+      return request(app.getHttpServer())
+        .post('/auth/kakao-oauth')
+        .send({ kakaoUserId: 1 })
+        .expect(HttpStatus.NOT_FOUND)
+        .expect({ statusCode: HttpStatus.NOT_FOUND, message: 'Not Found' });
+    });
   });
 });

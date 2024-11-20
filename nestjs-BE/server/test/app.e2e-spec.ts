@@ -45,65 +45,71 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
-  it('/login-test (GET) not logged in', () => {
-    return request(app.getHttpServer())
-      .get('/login-test')
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: 401 });
-  });
-
-  it('/login-test (GET) expired access token', () => {
-    const expiredToken = sign(
-      { sub: testUserUuid },
-      configService.get<string>('JWT_ACCESS_SECRET'),
-      { expiresIn: '-5m' },
-    );
-
-    return request(app.getHttpServer())
-      .get('/login-test')
-      .auth(expiredToken, { type: 'bearer' })
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: 401 });
-  });
-
-  it('/login-test (GET) wrong user uuid access token', () => {
-    // access token은 user uuid가 맞는지 검증할 수 없다.
-    const wrongUserUuidToken = sign(
-      { sub: 'wrong uuid' },
-      configService.get<string>('JWT_ACCESS_SECRET'),
-      { expiresIn: '5m' },
-    );
-
-    return request(app.getHttpServer())
-      .get('/login-test')
-      .auth(wrongUserUuidToken, { type: 'bearer' })
-      .expect(HttpStatus.OK)
-      .expect('login success');
-  });
-
-  it('/login-test (GET) wrong secret access token', () => {
-    const invalidToken = sign({ sub: testUserUuid }, 'wrong jwt access token', {
-      expiresIn: '5m',
+  describe('/login-test (GET)', () => {
+    it('not logged in', () => {
+      return request(app.getHttpServer())
+        .get('/login-test')
+        .expect(HttpStatus.UNAUTHORIZED)
+        .expect({ message: 'Unauthorized', statusCode: 401 });
     });
 
-    return request(app.getHttpServer())
-      .get('/login-test')
-      .auth(invalidToken, { type: 'bearer' })
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ message: 'Unauthorized', statusCode: 401 });
-  });
+    it('expired access token', () => {
+      const expiredToken = sign(
+        { sub: testUserUuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '-5m' },
+      );
 
-  it('/login-test (GET) logged in', async () => {
-    const testToken = sign(
-      { sub: testUserUuid },
-      configService.get<string>('JWT_ACCESS_SECRET'),
-      { expiresIn: '5m' },
-    );
+      return request(app.getHttpServer())
+        .get('/login-test')
+        .auth(expiredToken, { type: 'bearer' })
+        .expect(HttpStatus.UNAUTHORIZED)
+        .expect({ message: 'Unauthorized', statusCode: 401 });
+    });
 
-    return request(app.getHttpServer())
-      .get('/login-test')
-      .auth(testToken, { type: 'bearer' })
-      .expect(HttpStatus.OK)
-      .expect('login success');
+    it('wrong user uuid access token', () => {
+      // access token은 user uuid가 맞는지 검증할 수 없다.
+      const wrongUserUuidToken = sign(
+        { sub: 'wrong uuid' },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      return request(app.getHttpServer())
+        .get('/login-test')
+        .auth(wrongUserUuidToken, { type: 'bearer' })
+        .expect(HttpStatus.OK)
+        .expect('login success');
+    });
+
+    it('wrong secret access token', () => {
+      const invalidToken = sign(
+        { sub: testUserUuid },
+        'wrong jwt access token',
+        {
+          expiresIn: '5m',
+        },
+      );
+
+      return request(app.getHttpServer())
+        .get('/login-test')
+        .auth(invalidToken, { type: 'bearer' })
+        .expect(HttpStatus.UNAUTHORIZED)
+        .expect({ message: 'Unauthorized', statusCode: 401 });
+    });
+
+    it('logged in', async () => {
+      const testToken = sign(
+        { sub: testUserUuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      return request(app.getHttpServer())
+        .get('/login-test')
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.OK)
+        .expect('login success');
+    });
   });
 });
