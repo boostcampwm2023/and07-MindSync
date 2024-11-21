@@ -3,12 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
-import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let fetchSpy: jest.SpyInstance;
-  let prisma: PrismaService;
 
   beforeAll(() => {
     fetchSpy = jest.spyOn(global, 'fetch');
@@ -22,12 +20,6 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
-
-    await prisma.refreshToken.deleteMany({});
-    await prisma.profile.deleteMany({});
-    await prisma.user.deleteMany({});
   });
 
   afterEach(async () => {

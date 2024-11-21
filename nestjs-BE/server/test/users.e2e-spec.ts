@@ -31,21 +31,15 @@ describe('UsersController (e2e)', () => {
 
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
+  });
 
-    await prisma.user.deleteMany({});
-
+  beforeEach(async () => {
     testUser = await prisma.user.create({ data: { uuid: uuid() } });
     testToken = sign(
       { sub: testUser.uuid },
       configService.get<string>('JWT_ACCESS_SECRET'),
       { expiresIn: '5m' },
     );
-  });
-
-  beforeEach(async () => {
-    await prisma.profileSpace.deleteMany({});
-    await prisma.profile.deleteMany({});
-    await prisma.space.deleteMany({});
   });
 
   afterAll(async () => {

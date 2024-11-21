@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { User } from '@prisma/client';
 import { sign } from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import * as request from 'supertest';
@@ -9,8 +10,9 @@ import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let configService: ConfigService;
-  let testUserUuid: string;
+  let testUser: User;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -22,16 +24,11 @@ describe('AppController (e2e)', () => {
     await app.init();
 
     configService = moduleFixture.get<ConfigService>(ConfigService);
-    const prisma: PrismaService =
-      moduleFixture.get<PrismaService>(PrismaService);
+    prisma = moduleFixture.get<PrismaService>(PrismaService);
+  });
 
-    await prisma.kakaoUser.deleteMany({});
-    await prisma.user.deleteMany({});
-
-    testUserUuid = uuid();
-    await prisma.user.create({
-      data: { uuid: testUserUuid },
-    });
+  beforeEach(async () => {
+    testUser = await prisma.user.create({ data: { uuid: uuid() } });
   });
 
   afterAll(async () => {
@@ -55,7 +52,7 @@ describe('AppController (e2e)', () => {
 
     it('expired access token', () => {
       const expiredToken = sign(
-        { sub: testUserUuid },
+        { sub: testUser.uuid },
         configService.get<string>('JWT_ACCESS_SECRET'),
         { expiresIn: '-5m' },
       );
@@ -84,7 +81,7 @@ describe('AppController (e2e)', () => {
 
     it('wrong secret access token', () => {
       const invalidToken = sign(
-        { sub: testUserUuid },
+        { sub: testUser.uuid },
         'wrong jwt access token',
         {
           expiresIn: '5m',
@@ -100,7 +97,7 @@ describe('AppController (e2e)', () => {
 
     it('logged in', async () => {
       const testToken = sign(
-        { sub: testUserUuid },
+        { sub: testUser.uuid },
         configService.get<string>('JWT_ACCESS_SECRET'),
         { expiresIn: '5m' },
       );

@@ -38,9 +38,6 @@ describe('SpacesController (e2e)', () => {
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
 
-    await prisma.profile.deleteMany({});
-    await prisma.user.deleteMany({});
-
     const testUser = await prisma.user.create({ data: { uuid: uuid() } });
     testProfile = await prisma.profile.create({
       data: {
@@ -59,9 +56,6 @@ describe('SpacesController (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.space.deleteMany({});
-    await prisma.profileSpace.deleteMany({});
-
     testSpace = await prisma.space.create({
       data: {
         uuid: uuid(),
