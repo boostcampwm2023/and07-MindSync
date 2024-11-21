@@ -43,9 +43,9 @@ describe('UsersController (e2e)', () => {
   });
 
   beforeEach(async () => {
+    await prisma.profileSpace.deleteMany({});
     await prisma.profile.deleteMany({});
     await prisma.space.deleteMany({});
-    await prisma.profileSpace.deleteMany({});
   });
 
   afterAll(async () => {
