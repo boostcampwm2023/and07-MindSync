@@ -310,6 +310,9 @@ describe('SpacesController (e2e)', () => {
         expect(res.body.statusCode).toBe(HttpStatus.OK);
         expect(res.body.data.uuid).toBe(testSpace.uuid);
         expect(res.body.data.name).toBe(newSpace.name);
+        expect(res.body.data.icon).not.toBe(
+          configService.get<string>('APP_ICON_URL'),
+        );
         expect(res.body.data.icon).toMatch(imageRegExp);
       });
   });
@@ -379,6 +382,26 @@ describe('SpacesController (e2e)', () => {
       .attach('icon', newSpace.icon, { contentType: newSpace.iconContentType })
       .expect(HttpStatus.BAD_REQUEST)
       .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
+  });
+
+  it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) icon is string', async () => {
+    const newSpace = {
+      name: 'new test space',
+      icon: 'string value',
+    };
+    await prisma.profileSpace.create({
+      data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
+    });
+
+    return request(app.getHttpServer())
+      .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+      .auth(testToken, { type: 'bearer' })
+      .send({ name: newSpace.name, icon: newSpace.icon })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect((res) => {
+        expect(res.body.message).toBe('icon is string');
+        expect(res.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      });
   });
 
   it('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH) unauthorized', async () => {
