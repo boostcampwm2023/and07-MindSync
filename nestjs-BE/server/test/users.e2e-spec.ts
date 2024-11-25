@@ -31,9 +31,9 @@ describe('UsersController (e2e)', () => {
 
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
+  });
 
-    await prisma.user.deleteMany({});
-
+  beforeEach(async () => {
     testUser = await prisma.user.create({ data: { uuid: uuid() } });
     testToken = sign(
       { sub: testUser.uuid },
@@ -42,64 +42,63 @@ describe('UsersController (e2e)', () => {
     );
   });
 
-  beforeEach(async () => {
-    await prisma.profile.deleteMany({});
-    await prisma.space.deleteMany({});
-    await prisma.profileSpace.deleteMany({});
-  });
-
   afterAll(async () => {
     await app.close();
   });
 
-  it('users/spaces (GET)', async () => {
-    const SPACE_NUMBER = 5;
+  describe('users/spaces (GET)', () => {
+    it('success', async () => {
+      const SPACE_NUMBER = 5;
 
-    const profile = await prisma.profile.create({
-      data: {
-        uuid: uuid(),
-        userUuid: testUser.uuid,
-        image: 'test image',
-        nickname: 'test nickname',
-      },
-    });
-    const spacePromises = Array.from({ length: SPACE_NUMBER }, async () => {
-      const space = await prisma.space.create({
-        data: { uuid: uuid(), name: 'test space', icon: 'test icon' },
-      });
-      await prisma.profileSpace.create({
+      const profile = await prisma.profile.create({
         data: {
-          profileUuid: profile.uuid,
-          spaceUuid: space.uuid,
+          uuid: uuid(),
+          userUuid: testUser.uuid,
+          image: 'test image',
+          nickname: 'test nickname',
         },
       });
-      return space;
-    });
-    const spaces = await Promise.all(spacePromises);
-
-    return request(app.getHttpServer())
-      .get('/users/spaces')
-      .auth(testToken, { type: 'bearer' })
-      .expect(HttpStatus.OK)
-      .expect((res) => {
-        expect(res.body.statusCode).toBe(HttpStatus.OK);
-        expect(res.body.message).toBe('OK');
-        expect(res.body.data).toEqual(expect.arrayContaining(spaces));
+      const spacePromises = Array.from({ length: SPACE_NUMBER }, async () => {
+        const space = await prisma.space.create({
+          data: { uuid: uuid(), name: 'test space', icon: 'test icon' },
+        });
+        await prisma.profileSpace.create({
+          data: {
+            profileUuid: profile.uuid,
+            spaceUuid: space.uuid,
+          },
+        });
+        return space;
       });
-  });
+      const spaces = await Promise.all(spacePromises);
 
-  it('users/spaces (GET) no joined spaces', async () => {
-    return request(app.getHttpServer())
-      .get('/users/spaces')
-      .auth(testToken, { type: 'bearer' })
-      .expect(HttpStatus.OK)
-      .expect({ statusCode: HttpStatus.OK, message: 'OK', data: [] });
-  });
+      return request(app.getHttpServer())
+        .get('/users/spaces')
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.OK)
+        .expect((res) => {
+          expect(res.body.statusCode).toBe(HttpStatus.OK);
+          expect(res.body.message).toBe('OK');
+          expect(res.body.data).toEqual(expect.arrayContaining(spaces));
+        });
+    });
 
-  it('users/spaces (GET)', async () => {
-    return request(app.getHttpServer())
-      .get('/users/spaces')
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect({ statusCode: HttpStatus.UNAUTHORIZED, message: 'Unauthorized' });
+    it('no joined spaces', async () => {
+      return request(app.getHttpServer())
+        .get('/users/spaces')
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.OK)
+        .expect({ statusCode: HttpStatus.OK, message: 'OK', data: [] });
+    });
+
+    it('user not logged in', async () => {
+      return request(app.getHttpServer())
+        .get('/users/spaces')
+        .expect(HttpStatus.UNAUTHORIZED)
+        .expect({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized',
+        });
+    });
   });
 });
