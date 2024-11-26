@@ -8,6 +8,7 @@ import * as ExpiryModule from '../utils/date';
 
 describe('InviteCodesService', () => {
   let inviteCodesService: InviteCodesService;
+  let prisma: PrismaService;
   let spacesService: SpacesService;
 
   beforeEach(async () => {
@@ -16,7 +17,11 @@ describe('InviteCodesService', () => {
         InviteCodesService,
         {
           provide: PrismaService,
-          useValue: {},
+          useValue: {
+            inviteCode: {
+              create: jest.fn(),
+            },
+          },
         },
         {
           provide: SpacesService,
@@ -28,6 +33,7 @@ describe('InviteCodesService', () => {
     }).compile();
 
     inviteCodesService = module.get<InviteCodesService>(InviteCodesService);
+    prisma = module.get<PrismaService>(PrismaService);
     spacesService = module.get<SpacesService>(SpacesService);
   });
 
@@ -87,6 +93,29 @@ describe('InviteCodesService', () => {
 
       await expect(space).rejects.toThrow(HttpException);
       expect(deleteInviteCodeSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('createInviteCode', () => {
+    const testSpace: Space = {
+      uuid: 'test uuid',
+      name: 'test space',
+      icon: 'test icon',
+    };
+
+    beforeEach(() => {
+      (spacesService.findSpaceBySpaceUuid as jest.Mock).mockResolvedValue(
+        testSpace,
+      );
+    });
+
+    it('space not found', async () => {
+      (spacesService.findSpaceBySpaceUuid as jest.Mock).mockResolvedValue(null);
+
+      const inviteCode = inviteCodesService.createInviteCode(testSpace.uuid);
+
+      await expect(inviteCode).rejects.toThrow(NotFoundException);
+      expect(prisma.inviteCode.create).not.toHaveBeenCalled();
     });
   });
 });
