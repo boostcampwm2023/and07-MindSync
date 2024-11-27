@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InviteCode, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -47,6 +48,13 @@ export class InviteCodesService {
         spaceUuid: spaceUuid,
         expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
       },
+    });
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async deleteExpiredInviteCode() {
+    await this.prisma.inviteCode.deleteMany({
+      where: { expiryDate: { lt: new Date() } },
     });
   }
 
