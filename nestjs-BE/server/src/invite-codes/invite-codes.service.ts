@@ -32,7 +32,7 @@ export class InviteCodesService {
     const inviteCodeData = await this.findInviteCode(inviteCode);
     if (!inviteCodeData) throw new NotFoundException();
     if (checkExpiry(inviteCodeData.expiryDate)) {
-      this.deleteInviteCode(inviteCode);
+      await this.deleteInviteCode(inviteCode);
       throw new HttpException('Invite code has expired.', HttpStatus.GONE);
     }
     return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
