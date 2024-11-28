@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InviteCode, Prisma } from '@prisma/client';
+import { v4 as uuid } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   INVITE_CODE_EXPIRY_HOURS,
   INVITE_CODE_LENGTH,
 } from '../config/magic-number';
-import generateUuid from '../utils/uuid';
 import { checkExpiry, getExpiryDate } from '../utils/date';
 import { SpacesService } from '../spaces/spaces.service';
 
@@ -43,7 +43,7 @@ export class InviteCodesService {
     if (!space) throw new NotFoundException();
     return this.prisma.inviteCode.create({
       data: {
-        uuid: generateUuid(),
+        uuid: uuid(),
         inviteCode: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
         spaceUuid: spaceUuid,
         expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
