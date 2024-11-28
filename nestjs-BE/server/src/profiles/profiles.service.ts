@@ -77,7 +77,7 @@ export class ProfilesService {
     profileUuid: string,
   ): Promise<boolean> {
     const profile = await this.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new NotFoundException();
+    if (!profile) throw new ForbiddenException();
     if (userUuid !== profile.userUuid) throw new ForbiddenException();
     return true;
   }

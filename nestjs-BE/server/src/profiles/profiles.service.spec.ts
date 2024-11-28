@@ -145,7 +145,7 @@ describe('ProfilesService', () => {
 
       const res = profilesService.verifyUserProfile(userUuid, profileUuid);
 
-      await expect(res).rejects.toThrow(NotFoundException);
+      await expect(res).rejects.toThrow(ForbiddenException);
     });
 
     it('profile user not own', async () => {

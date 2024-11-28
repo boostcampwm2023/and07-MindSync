@@ -12,16 +12,16 @@ import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { UpdateSpacePrismaDto } from './dto/update-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
-import { UsersService } from '../users/users.service';
 import { UploadService } from '../upload/upload.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
   let prisma: PrismaService;
   let configService: ConfigService;
   let profileSpaceService: ProfileSpaceService;
-  let usersService: UsersService;
   let uploadService: UploadService;
+  let profilesService: ProfilesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,7 +45,7 @@ describe('SpacesService', () => {
           },
         },
         {
-          provide: UsersService,
+          provide: ProfilesService,
           useValue: { verifyUserProfile: jest.fn(async () => true) },
         },
         {
@@ -59,8 +59,8 @@ describe('SpacesService', () => {
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
     profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
-    usersService = module.get<UsersService>(UsersService);
     uploadService = module.get<UploadService>(UploadService);
+    profilesService = module.get<ProfilesService>(ProfilesService);
   });
 
   describe('findSpace', () => {
@@ -85,7 +85,7 @@ describe('SpacesService', () => {
     });
 
     it('profile user not own', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new ForbiddenException(),
       );
 
@@ -128,7 +128,7 @@ describe('SpacesService', () => {
     });
 
     it('profile not found', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new NotFoundException(),
       );
 
@@ -185,7 +185,7 @@ describe('SpacesService', () => {
         name: 'new space name',
       } as CreateSpacePrismaDto;
 
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new NotFoundException(),
       );
 
@@ -206,7 +206,7 @@ describe('SpacesService', () => {
         name: 'new space name',
       } as CreateSpacePrismaDto;
 
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new ForbiddenException(),
       );
 
@@ -328,7 +328,7 @@ describe('SpacesService', () => {
     it('profile user not own', async () => {
       const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
 
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new ForbiddenException(),
       );
 
@@ -368,7 +368,7 @@ describe('SpacesService', () => {
     it('profile not found', async () => {
       const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
 
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new NotFoundException(),
       );
 
@@ -426,7 +426,7 @@ describe('SpacesService', () => {
     });
 
     it('profile not found', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new NotFoundException(),
       );
 
@@ -436,7 +436,7 @@ describe('SpacesService', () => {
     });
 
     it('profile user not own', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new ForbiddenException(),
       );
 
@@ -511,7 +511,7 @@ describe('SpacesService', () => {
     });
 
     it('profile not found', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new NotFoundException(),
       );
 
@@ -521,7 +521,7 @@ describe('SpacesService', () => {
     });
 
     it('profile user not own', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new ForbiddenException(),
       );
 
@@ -550,7 +550,7 @@ describe('SpacesService', () => {
     const spaceUuid = 'space uuid';
 
     it('profile not found', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new NotFoundException(),
       );
 
@@ -564,7 +564,7 @@ describe('SpacesService', () => {
     });
 
     it('profile user not own', async () => {
-      (usersService.verifyUserProfile as jest.Mock).mockRejectedValue(
+      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
         new ForbiddenException(),
       );
 

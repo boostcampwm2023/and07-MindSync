@@ -11,8 +11,8 @@ import { UpdateSpacePrismaDto } from './dto/update-space.dto';
 import { CreateSpacePrismaDto } from './dto/create-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
-import { UsersService } from '../users/users.service';
 import { UploadService } from '../upload/upload.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class SpacesService {
@@ -20,8 +20,8 @@ export class SpacesService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly profileSpaceService: ProfileSpaceService,
-    private readonly usersService: UsersService,
     private readonly uploadService: UploadService,
+    private readonly profilesService: ProfilesService,
   ) {}
 
   async findSpaceBySpaceUuid(spaceUuid: string): Promise<Space | null> {
@@ -33,7 +33,7 @@ export class SpacesService {
     profileUuid: string,
     spaceUuid: string,
   ): Promise<Space> {
-    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     const space = await this.findSpaceBySpaceUuid(spaceUuid);
     if (!space) throw new NotFoundException();
     const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
@@ -50,7 +50,7 @@ export class SpacesService {
     icon: Express.Multer.File,
     createSpaceDto: CreateSpacePrismaDto,
   ): Promise<Space> {
-    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : this.configService.get<string>('APP_ICON_URL');
@@ -72,7 +72,7 @@ export class SpacesService {
     icon: Express.Multer.File,
     updateSpaceDto: UpdateSpacePrismaDto,
   ): Promise<Space> {
-    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
       profileUuid,
       spaceUuid,
@@ -106,7 +106,7 @@ export class SpacesService {
     profileUuid: string,
     spaceUuid: string,
   ): Promise<Space> {
-    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     try {
       await this.profileSpaceService.createProfileSpace(profileUuid, spaceUuid);
     } catch (err) {
@@ -131,7 +131,7 @@ export class SpacesService {
     profileUuid: string,
     spaceUuid: string,
   ): Promise<void> {
-    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     try {
       await this.profileSpaceService.deleteProfileSpace(profileUuid, spaceUuid);
     } catch (err) {
@@ -157,7 +157,7 @@ export class SpacesService {
     profileUuid: string,
     spaceUuid: string,
   ): Promise<Profile[]> {
-    await this.usersService.verifyUserProfile(userUuid, profileUuid);
+    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
       profileUuid,
       spaceUuid,
