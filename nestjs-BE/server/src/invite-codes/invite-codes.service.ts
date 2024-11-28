@@ -87,14 +87,16 @@ export class InviteCodesService {
   }
 
   private async generateUniqueInviteCode(length: number): Promise<string> {
-    let inviteCode: string;
-    let inviteCodeData: InviteCode | null;
+    return this.prisma.$transaction(async () => {
+      let inviteCode: string;
+      let inviteCodeData: InviteCode | null;
 
-    do {
-      inviteCode = this.generateShortInviteCode(length);
-      inviteCodeData = await this.findInviteCode(inviteCode);
-    } while (inviteCodeData !== null);
+      do {
+        inviteCode = this.generateShortInviteCode(length);
+        inviteCodeData = await this.findInviteCode(inviteCode);
+      } while (inviteCodeData !== null);
 
-    return inviteCode;
+      return inviteCode;
+    });
   }
 }
