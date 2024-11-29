@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpException, NotFoundException } from '@nestjs/common';
+import { GoneException, NotFoundException } from '@nestjs/common';
 import { InviteCode, Space } from '@prisma/client';
 import { InviteCodesService } from './invite-codes.service';
 import { SpacesService } from '../spaces/spaces.service';
@@ -91,7 +91,7 @@ describe('InviteCodesService', () => {
 
       const space = inviteCodesService.findSpace(testInviteCode);
 
-      await expect(space).rejects.toThrow(HttpException);
+      await expect(space).rejects.toThrow(GoneException);
       expect(deleteInviteCodeSpy).toHaveBeenCalled();
     });
   });

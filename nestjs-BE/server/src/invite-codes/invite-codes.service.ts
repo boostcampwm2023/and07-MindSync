@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InviteCode, Prisma } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
@@ -33,7 +28,7 @@ export class InviteCodesService {
     if (!inviteCodeData) throw new NotFoundException();
     if (checkExpiry(inviteCodeData.expiryDate)) {
       await this.deleteInviteCode(inviteCode);
-      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
+      throw new GoneException('Invite code has expired.');
     }
     return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
   }
