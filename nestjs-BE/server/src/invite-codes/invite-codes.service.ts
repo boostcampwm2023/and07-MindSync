@@ -1,16 +1,12 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InviteCode, Prisma } from '@prisma/client';
+import { v4 as uuid } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   INVITE_CODE_EXPIRY_HOURS,
   INVITE_CODE_LENGTH,
 } from '../config/magic-number';
-import generateUuid from '../utils/uuid';
 import { checkExpiry, getExpiryDate } from '../utils/date';
 import { SpacesService } from '../spaces/spaces.service';
 
@@ -31,8 +27,8 @@ export class InviteCodesService {
     const inviteCodeData = await this.findInviteCode(inviteCode);
     if (!inviteCodeData) throw new NotFoundException();
     if (checkExpiry(inviteCodeData.expiryDate)) {
-      this.deleteInviteCode(inviteCode);
-      throw new HttpException('Invite code has expired.', HttpStatus.GONE);
+      await this.deleteInviteCode(inviteCode);
+      throw new GoneException('Invite code has expired.');
     }
     return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
   }
@@ -42,11 +38,18 @@ export class InviteCodesService {
     if (!space) throw new NotFoundException();
     return this.prisma.inviteCode.create({
       data: {
-        uuid: generateUuid(),
+        uuid: uuid(),
         inviteCode: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
         spaceUuid: spaceUuid,
         expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
       },
+    });
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async deleteExpiredInviteCode() {
+    await this.prisma.inviteCode.deleteMany({
+      where: { expiryDate: { lt: new Date() } },
     });
   }
 
@@ -79,14 +82,16 @@ export class InviteCodesService {
   }
 
   private async generateUniqueInviteCode(length: number): Promise<string> {
-    let inviteCode: string;
-    let inviteCodeData: InviteCode | null;
+    return this.prisma.$transaction(async () => {
+      let inviteCode: string;
+      let inviteCodeData: InviteCode | null;
 
-    do {
-      inviteCode = this.generateShortInviteCode(length);
-      inviteCodeData = await this.findInviteCode(inviteCode);
-    } while (inviteCodeData !== null);
+      do {
+        inviteCode = this.generateShortInviteCode(length);
+        inviteCodeData = await this.findInviteCode(inviteCode);
+      } while (inviteCodeData !== null);
 
-    return inviteCode;
+      return inviteCode;
+    });
   }
 }
