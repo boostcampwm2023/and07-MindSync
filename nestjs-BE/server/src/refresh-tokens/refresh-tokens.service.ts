@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Prisma, RefreshToken } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
@@ -42,6 +43,13 @@ export class RefreshTokensService {
         throw err;
       }
     }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async deleteExpiredRefreshTokens() {
+    await this.prisma.refreshToken.deleteMany({
+      where: { expiryDate: { lt: new Date() } },
+    });
   }
 
   private createToken(): string {
