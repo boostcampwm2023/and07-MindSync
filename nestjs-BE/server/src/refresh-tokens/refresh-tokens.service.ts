@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
-import { v4 as uuid } from 'uuid';
-import { Prisma, RefreshToken } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Prisma, RefreshToken } from '@prisma/client';
+import { v4 as uuid } from 'uuid';
+import { PrismaService } from '../prisma/prisma.service';
 import { getExpiryDate } from '../utils/date';
 
 @Injectable()
