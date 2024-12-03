@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MaxLength } from 'class-validator';
-import { MAX_NAME_LENGTH } from '../../config/magic-number';
+import { MAX_NAME_LENGTH } from '../../config/constants';
 
 export class CreateProfileDto {
   userUuid: string;

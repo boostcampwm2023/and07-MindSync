@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateProfileDto } from './create-profile.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { MaxLength } from 'class-validator';
-import { MAX_NAME_LENGTH } from '../../config/magic-number';
+import { MAX_NAME_LENGTH } from '../../config/constants';
 
 export class UpdateProfileDto extends PartialType(CreateProfileDto) {
   @MaxLength(MAX_NAME_LENGTH)
