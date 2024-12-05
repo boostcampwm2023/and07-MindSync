@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { MAX_NAME_LENGTH } from '../../config/constants';
 import { Expose } from 'class-transformer';
 import { v4 as uuid } from 'uuid';
+import { MAX_NAME_LENGTH } from '../../config/constants';
 
 export class CreateSpaceRequestDto {
   @IsString()

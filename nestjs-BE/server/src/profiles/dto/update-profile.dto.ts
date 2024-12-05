@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateProfileDto } from './create-profile.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { MaxLength } from 'class-validator';
+import { CreateProfileDto } from './create-profile.dto';
 import { MAX_NAME_LENGTH } from '../../config/constants';
 
 export class UpdateProfileDto extends PartialType(CreateProfileDto) {

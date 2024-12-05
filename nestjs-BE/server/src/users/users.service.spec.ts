@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { KakaoUser, User } from '@prisma/client';
+import { v4 as uuid } from 'uuid';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { v4 as uuid } from 'uuid';
-import { KakaoUser, User } from '@prisma/client';
 
 describe('UsersService', () => {
   let usersService: UsersService;

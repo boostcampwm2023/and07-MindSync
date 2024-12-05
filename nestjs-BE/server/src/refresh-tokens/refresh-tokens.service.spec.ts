@@ -1,11 +1,11 @@
+import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { v4 as uuid } from 'uuid';
 import { RefreshTokensService } from './refresh-tokens.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtModule } from '@nestjs/jwt';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { ConfigModule } from '@nestjs/config';
 import { getExpiryDate } from '../utils/date';
-import { v4 as uuid } from 'uuid';
 
 jest.useFakeTimers();
 
