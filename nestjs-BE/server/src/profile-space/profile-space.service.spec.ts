@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ProfileSpace } from '@prisma/client';
 import { ProfileSpaceService } from './profile-space.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ProfileSpace } from '@prisma/client';
 
 describe('ProfileSpaceService', () => {
   let profileSpaceService: ProfileSpaceService;

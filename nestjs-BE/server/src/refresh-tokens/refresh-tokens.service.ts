@@ -6,6 +6,7 @@ import { Prisma, RefreshToken } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { getExpiryDate } from '../utils/date';
+import { REFRESH_TOKEN_EXPIRY_WEEKS } from '../config/constants';
 
 @Injectable()
 export class RefreshTokensService {
@@ -19,7 +20,7 @@ export class RefreshTokensService {
     return this.prisma.refreshToken.create({
       data: {
         token: this.createToken(),
-        expiryDate: getExpiryDate({ week: 2 }),
+        expiryDate: getExpiryDate({ week: REFRESH_TOKEN_EXPIRY_WEEKS }),
         userUuid,
       },
     });

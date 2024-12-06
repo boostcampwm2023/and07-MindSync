@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   INVITE_CODE_EXPIRY_HOURS,
   INVITE_CODE_LENGTH,
-} from '../config/magic-number';
+} from '../config/constants';
 import { checkExpiry, getExpiryDate } from '../utils/date';
 import { SpacesService } from '../spaces/spaces.service';
 

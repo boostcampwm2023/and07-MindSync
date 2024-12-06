@@ -1,6 +1,6 @@
 import { BadRequestException, HttpStatus } from '@nestjs/common';
-import { Profile, Space } from '@prisma/client';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Profile, Space } from '@prisma/client';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';

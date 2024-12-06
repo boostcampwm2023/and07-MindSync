@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { BoardTree } from './schemas/board-tree.schema';
 import { Model } from 'mongoose';
+import { BoardTree } from './schemas/board-tree.schema';
 import { CrdtTree } from '../crdt/crdt-tree';
 import { Operation } from '../crdt/operation';
 

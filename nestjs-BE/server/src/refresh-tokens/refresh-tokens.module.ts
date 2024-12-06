@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { RefreshTokensService } from './refresh-tokens.service';
 import { JwtModule } from '@nestjs/jwt';
+import { RefreshTokensService } from './refresh-tokens.service';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
-import { MAX_NAME_LENGTH } from '../../config/magic-number';
+import { MAX_NAME_LENGTH } from '../../config/constants';
 
 export class UpdateSpaceRequestDto {
   @IsOptional()
