@@ -1,4 +1,7 @@
+import { UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import {
+  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -13,11 +16,27 @@ import {
 } from '../crdt/operation';
 
 @WebSocketGateway({ namespace: 'board' })
-export class BoardTreesGateway {
-  constructor(private boardTreesService: BoardTreesService) {}
+export class BoardTreesGateway implements OnGatewayConnection {
+  constructor(
+    private boardTreesService: BoardTreesService,
+    private jwtService: JwtService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
+
+  handleConnection(client: Socket, token: string) {
+    if (!token) {
+      client.disconnect();
+      throw new UnauthorizedException();
+    }
+    try {
+      this.jwtService.verify(token);
+    } catch (error) {
+      client.disconnect();
+      throw new UnauthorizedException();
+    }
+  }
 
   @SubscribeMessage('joinBoard')
   async handleJoinBoard(client: Socket, payload: string) {
