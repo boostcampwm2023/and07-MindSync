@@ -23,9 +23,10 @@ export class InviteCodesController {
     description: 'Space not found.',
   })
   async createInviteCode(@Body() createInviteCodeDto: CreateInviteCodeDto) {
-    const spaceUuid = createInviteCodeDto.space_uuid;
-    const inviteCode =
-      await this.inviteCodesService.createInviteCode(spaceUuid);
+    const inviteCode = await this.inviteCodesService.createInviteCode(
+      createInviteCodeDto.profileUuid,
+      createInviteCodeDto.spaceUuid,
+    );
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Created',

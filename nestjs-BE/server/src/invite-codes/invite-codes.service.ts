@@ -1,4 +1,9 @@
-import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  GoneException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InviteCode, Prisma } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
@@ -9,12 +14,14 @@ import {
 } from '../config/constants';
 import { checkExpiry, getExpiryDate } from '../utils/date';
 import { SpacesService } from '../spaces/spaces.service';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
 @Injectable()
 export class InviteCodesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly spacesService: SpacesService,
+    private readonly profileSpaceService: ProfileSpaceService,
   ) {}
 
   async findInviteCode(inviteCode: string): Promise<InviteCode | null> {
@@ -33,9 +40,13 @@ export class InviteCodesService {
     return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
   }
 
-  async createInviteCode(spaceUuid: string): Promise<InviteCode> {
-    const space = await this.spacesService.findSpaceBySpaceUuid(spaceUuid);
-    if (!space) throw new NotFoundException();
+  async createInviteCode(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<InviteCode> {
+    if (!this.profileSpaceService.isProfileInSpace(profileUuid, spaceUuid)) {
+      throw new ForbiddenException();
+    }
     return this.prisma.inviteCode.create({
       data: {
         uuid: uuid(),
