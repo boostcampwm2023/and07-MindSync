@@ -44,7 +44,11 @@ export class InviteCodesService {
     profileUuid: string,
     spaceUuid: string,
   ): Promise<InviteCode> {
-    if (!this.profileSpaceService.isProfileInSpace(profileUuid, spaceUuid)) {
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) {
       throw new ForbiddenException();
     }
     return this.prisma.inviteCode.create({
