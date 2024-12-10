@@ -1,40 +1,36 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GoneException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  GoneException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InviteCode, Space } from '@prisma/client';
 import { InviteCodesService } from './invite-codes.service';
 import { SpacesService } from '../spaces/spaces.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import * as ExpiryModule from '../utils/date';
 
 describe('InviteCodesService', () => {
   let inviteCodesService: InviteCodesService;
   let prisma: PrismaService;
   let spacesService: SpacesService;
+  let profileSpaceService: ProfileSpaceService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         InviteCodesService,
-        {
-          provide: PrismaService,
-          useValue: {
-            inviteCode: {
-              create: jest.fn(),
-            },
-          },
-        },
-        {
-          provide: SpacesService,
-          useValue: {
-            findSpaceBySpaceUuid: jest.fn(),
-          },
-        },
+        { provide: PrismaService, useValue: { inviteCode: {} } },
+        { provide: SpacesService, useValue: {} },
+        { provide: ProfileSpaceService, useValue: {} },
       ],
     }).compile();
 
     inviteCodesService = module.get<InviteCodesService>(InviteCodesService);
     prisma = module.get<PrismaService>(PrismaService);
     spacesService = module.get<SpacesService>(SpacesService);
+    profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
   });
 
   describe('findSpace', () => {
@@ -61,9 +57,7 @@ describe('InviteCodesService', () => {
       deleteInviteCodeSpy = jest
         .spyOn(inviteCodesService, 'deleteInviteCode')
         .mockResolvedValue(null);
-      (spacesService.findSpaceBySpaceUuid as jest.Mock).mockResolvedValue(
-        testSpace,
-      );
+      spacesService.findSpaceBySpaceUuid = jest.fn(async () => testSpace);
     });
 
     afterEach(() => {
@@ -97,24 +91,29 @@ describe('InviteCodesService', () => {
   });
 
   describe('createInviteCode', () => {
-    const testSpace: Space = {
-      uuid: 'test uuid',
-      name: 'test space',
-      icon: 'test icon',
-    };
+    const testProfileUuid = 'test profile uuid';
+    const testSpaceUuid = 'test space uuid';
+    const testInviteCode = { inviteCode: 'test invite code' } as InviteCode;
 
     beforeEach(() => {
-      (spacesService.findSpaceBySpaceUuid as jest.Mock).mockResolvedValue(
-        testSpace,
+      profileSpaceService.isProfileInSpace = jest.fn(async () => true);
+      prisma.$transaction = jest.fn(async () => undefined);
+      (prisma.inviteCode.create as jest.Mock) = jest.fn(
+        async () => testInviteCode,
       );
     });
 
     it('space not found', async () => {
-      (spacesService.findSpaceBySpaceUuid as jest.Mock).mockResolvedValue(null);
+      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
+        false,
+      );
 
-      const inviteCode = inviteCodesService.createInviteCode(testSpace.uuid);
+      const inviteCode = inviteCodesService.createInviteCode(
+        testProfileUuid,
+        testSpaceUuid,
+      );
 
-      await expect(inviteCode).rejects.toThrow(NotFoundException);
+      await expect(inviteCode).rejects.toThrow(ForbiddenException);
       expect(prisma.inviteCode.create).not.toHaveBeenCalled();
     });
   });

@@ -1,8 +1,14 @@
-import { GoneException, HttpStatus, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  GoneException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Space } from '@prisma/client';
+import { InviteCode, Space } from '@prisma/client';
 import { InviteCodesController } from './invite-codes.controller';
 import { InviteCodesService } from './invite-codes.service';
+import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
 
 describe('InviteCodesController', () => {
   let controller: InviteCodesController;
@@ -16,6 +22,40 @@ describe('InviteCodesController', () => {
 
     controller = module.get<InviteCodesController>(InviteCodesController);
     inviteCodesService = module.get<InviteCodesService>(InviteCodesService);
+  });
+
+  describe('createInviteCode', () => {
+    const testDto: CreateInviteCodeDto = {
+      profileUuid: 'test profile uuid',
+      spaceUuid: 'test space uuid',
+    };
+    const testInviteCode: InviteCode = {
+      inviteCode: 'test invite code',
+    } as InviteCode;
+
+    beforeEach(() => {
+      inviteCodesService.createInviteCode = jest.fn(async () => testInviteCode);
+    });
+
+    it('success', async () => {
+      const inviteCode = controller.createInviteCode(testDto);
+
+      await expect(inviteCode).resolves.toEqual({
+        statusCode: HttpStatus.CREATED,
+        message: 'Created',
+        data: { invite_code: testInviteCode.inviteCode },
+      });
+    });
+
+    it('profile not in space', async () => {
+      (inviteCodesService.createInviteCode as jest.Mock).mockRejectedValue(
+        new ForbiddenException(),
+      );
+
+      const inviteCode = controller.createInviteCode(testDto);
+
+      await expect(inviteCode).rejects.toThrow(ForbiddenException);
+    });
   });
 
   describe('findSpace', () => {
