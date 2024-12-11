@@ -52,13 +52,21 @@ export class InviteCodesService {
     if (!isProfileInSpace) {
       throw new ForbiddenException();
     }
-    return this.prisma.inviteCode.create({
-      data: {
-        uuid: uuid(),
-        inviteCode: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
-        spaceUuid: spaceUuid,
-        expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
-      },
+    return this.prisma.$transaction(async () => {
+      let inviteCode: string;
+
+      do {
+        inviteCode = generateRandomString(INVITE_CODE_LENGTH);
+      } while (await this.findInviteCode(inviteCode));
+
+      return this.prisma.inviteCode.create({
+        data: {
+          uuid: uuid(),
+          inviteCode,
+          spaceUuid,
+          expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
+        },
+      });
     });
   }
 
