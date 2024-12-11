@@ -13,6 +13,7 @@ import {
   INVITE_CODE_LENGTH,
 } from '../config/constants';
 import { checkExpiry, getExpiryDate } from '../utils/date';
+import { generateRandomString } from '../utils/random-string';
 import { SpacesService } from '../spaces/spaces.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
@@ -84,25 +85,13 @@ export class InviteCodesService {
     }
   }
 
-  private generateShortInviteCode(length: number) {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let inviteCode = '';
-    for (let i = 0; i < length; i++) {
-      inviteCode += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
-    }
-    return inviteCode;
-  }
-
   private async generateUniqueInviteCode(length: number): Promise<string> {
     return this.prisma.$transaction(async () => {
       let inviteCode: string;
       let inviteCodeData: InviteCode | null;
 
       do {
-        inviteCode = this.generateShortInviteCode(length);
+        inviteCode = generateRandomString(length);
         inviteCodeData = await this.findInviteCode(inviteCode);
       } while (inviteCodeData !== null);
 
