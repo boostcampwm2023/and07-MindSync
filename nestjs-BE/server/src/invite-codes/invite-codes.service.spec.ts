@@ -97,10 +97,23 @@ describe('InviteCodesService', () => {
 
     beforeEach(() => {
       profileSpaceService.isProfileInSpace = jest.fn(async () => true);
-      prisma.$transaction = jest.fn(async () => undefined);
+      (prisma.$transaction as jest.Mock) = jest.fn(async (callback) =>
+        callback(),
+      );
+      jest.spyOn(inviteCodesService, 'findInviteCode').mockResolvedValue(null);
       (prisma.inviteCode.create as jest.Mock) = jest.fn(
         async () => testInviteCode,
       );
+    });
+
+    it('created', async () => {
+      const inviteCode = inviteCodesService.createInviteCode(
+        testProfileUuid,
+        testSpaceUuid,
+      );
+
+      await expect(inviteCode).resolves.toEqual(testInviteCode);
+      expect(inviteCodesService.findInviteCode).toHaveBeenCalledTimes(1);
     });
 
     it('space not found', async () => {
