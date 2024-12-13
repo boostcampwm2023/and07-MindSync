@@ -1,4 +1,9 @@
-import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  GoneException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InviteCode, Prisma } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
@@ -8,13 +13,16 @@ import {
   INVITE_CODE_LENGTH,
 } from '../config/constants';
 import { checkExpiry, getExpiryDate } from '../utils/date';
+import { generateRandomString } from '../utils/random-string';
 import { SpacesService } from '../spaces/spaces.service';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
 @Injectable()
 export class InviteCodesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly spacesService: SpacesService,
+    private readonly profileSpaceService: ProfileSpaceService,
   ) {}
 
   async findInviteCode(inviteCode: string): Promise<InviteCode | null> {
@@ -33,16 +41,32 @@ export class InviteCodesService {
     return this.spacesService.findSpaceBySpaceUuid(inviteCodeData.spaceUuid);
   }
 
-  async createInviteCode(spaceUuid: string): Promise<InviteCode> {
-    const space = await this.spacesService.findSpaceBySpaceUuid(spaceUuid);
-    if (!space) throw new NotFoundException();
-    return this.prisma.inviteCode.create({
-      data: {
-        uuid: uuid(),
-        inviteCode: await this.generateUniqueInviteCode(INVITE_CODE_LENGTH),
-        spaceUuid: spaceUuid,
-        expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
-      },
+  async createInviteCode(
+    profileUuid: string,
+    spaceUuid: string,
+  ): Promise<InviteCode> {
+    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
+      profileUuid,
+      spaceUuid,
+    );
+    if (!isProfileInSpace) {
+      throw new ForbiddenException();
+    }
+    return this.prisma.$transaction(async () => {
+      let inviteCode: string;
+
+      do {
+        inviteCode = generateRandomString(INVITE_CODE_LENGTH);
+      } while (await this.findInviteCode(inviteCode));
+
+      return this.prisma.inviteCode.create({
+        data: {
+          uuid: uuid(),
+          inviteCode,
+          spaceUuid,
+          expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
+        },
+      });
     });
   }
 
@@ -69,25 +93,13 @@ export class InviteCodesService {
     }
   }
 
-  private generateShortInviteCode(length: number) {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let inviteCode = '';
-    for (let i = 0; i < length; i++) {
-      inviteCode += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
-    }
-    return inviteCode;
-  }
-
   private async generateUniqueInviteCode(length: number): Promise<string> {
     return this.prisma.$transaction(async () => {
       let inviteCode: string;
       let inviteCodeData: InviteCode | null;
 
       do {
-        inviteCode = this.generateShortInviteCode(length);
+        inviteCode = generateRandomString(length);
         inviteCodeData = await this.findInviteCode(inviteCode);
       } while (inviteCodeData !== null);
 
