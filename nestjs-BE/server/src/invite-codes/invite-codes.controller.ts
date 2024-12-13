@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
+import { User } from '../auth/decorators/user.decorator';
 
 @Controller('inviteCodes')
 @ApiTags('inviteCodes')
@@ -22,8 +23,12 @@ export class InviteCodesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found.',
   })
-  async createInviteCode(@Body() createInviteCodeDto: CreateInviteCodeDto) {
+  async createInviteCode(
+    @Body() createInviteCodeDto: CreateInviteCodeDto,
+    @User('uuid') userUuid: string,
+  ) {
     const inviteCode = await this.inviteCodesService.createInviteCode(
+      userUuid,
       createInviteCodeDto.profileUuid,
       createInviteCodeDto.spaceUuid,
     );
