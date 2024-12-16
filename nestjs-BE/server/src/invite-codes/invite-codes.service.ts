@@ -15,7 +15,6 @@ import {
 import { checkExpiry, getExpiryDate } from '../utils/date';
 import { generateRandomString } from '../utils/random-string';
 import { SpacesService } from '../spaces/spaces.service';
-import { ProfilesService } from '../profiles/profiles.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
 @Injectable()
@@ -23,7 +22,6 @@ export class InviteCodesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly spacesService: SpacesService,
-    private readonly profilesService: ProfilesService,
     private readonly profileSpaceService: ProfileSpaceService,
   ) {}
 
@@ -44,11 +42,9 @@ export class InviteCodesService {
   }
 
   async createInviteCode(
-    userUuid: string,
     profileUuid: string,
     spaceUuid: string,
   ): Promise<InviteCode> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
       profileUuid,
       spaceUuid,
