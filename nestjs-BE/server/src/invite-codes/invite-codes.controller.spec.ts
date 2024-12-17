@@ -9,6 +9,8 @@ import { InviteCode, Space } from '@prisma/client';
 import { InviteCodesController } from './invite-codes.controller';
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
+import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
+import { ProfilesService } from '../profiles/profiles.service';
 
 describe('InviteCodesController', () => {
   let controller: InviteCodesController;
@@ -17,7 +19,11 @@ describe('InviteCodesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [InviteCodesController],
-      providers: [{ provide: InviteCodesService, useValue: {} }],
+      providers: [
+        { provide: InviteCodesService, useValue: {} },
+        { provide: ProfilesService, useValue: {} },
+        MatchUserProfileGuard,
+      ],
     }).compile();
 
     controller = module.get<InviteCodesController>(InviteCodesController);
