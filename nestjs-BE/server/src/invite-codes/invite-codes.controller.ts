@@ -6,6 +6,7 @@ import {
   Param,
   HttpStatus,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { InviteCodesService } from './invite-codes.service';
@@ -32,7 +33,10 @@ export class InviteCodesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found.',
   })
-  async createInviteCode(@Body() createInviteCodeDto: CreateInviteCodeDto) {
+  async createInviteCode(
+    @Body(new ValidationPipe({ transform: true, whitelist: true }))
+    createInviteCodeDto: CreateInviteCodeDto,
+  ) {
     const inviteCode = await this.inviteCodesService.createInviteCode(
       createInviteCodeDto.profileUuid,
       createInviteCodeDto.spaceUuid,
