@@ -36,7 +36,7 @@ describe('InviteController (e2e)', () => {
     await app.close();
   });
 
-  describe('/inviteCodes (POST)', () => {
+  describe('/inviteCodes/:space_uuid (POST)', () => {
     let testToken: string;
     let testSpace: Space;
     let testProfile: Profile;
@@ -70,9 +70,9 @@ describe('InviteController (e2e)', () => {
 
     it('create invite code', () => {
       return request(app.getHttpServer())
-        .post('/inviteCodes')
+        .post(`/inviteCodes/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
-        .send({ profile_uuid: testProfile.uuid, space_uuid: testSpace.uuid })
+        .send({ profile_uuid: testProfile.uuid })
         .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.body.statusCode).toBe(HttpStatus.CREATED);
