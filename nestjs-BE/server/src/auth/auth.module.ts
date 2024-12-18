@@ -7,9 +7,11 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MatchUserProfileGuard } from './guards/match-user-profile.guard';
+import { IsProfileInSpaceGuard } from './guards/is-profile-in-space.guard';
 import { UsersModule } from '../users/users.module';
 import { ProfilesModule } from '../profiles/profiles.module';
 import { RefreshTokensModule } from '../refresh-tokens/refresh-tokens.module';
+import { ProfileSpaceModule } from '../profile-space/profile-space.module';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { RefreshTokensModule } from '../refresh-tokens/refresh-tokens.module';
     JwtModule,
     ProfilesModule,
     RefreshTokensModule,
+    ProfileSpaceModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -25,7 +28,14 @@ import { RefreshTokensModule } from '../refresh-tokens/refresh-tokens.module';
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     MatchUserProfileGuard,
+    IsProfileInSpaceGuard,
   ],
-  exports: [AuthService, MatchUserProfileGuard, ProfilesModule],
+  exports: [
+    AuthService,
+    MatchUserProfileGuard,
+    ProfilesModule,
+    IsProfileInSpaceGuard,
+    ProfileSpaceModule,
+  ],
 })
 export class AuthModule {}

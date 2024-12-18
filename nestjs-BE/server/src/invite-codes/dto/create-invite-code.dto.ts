@@ -7,18 +7,10 @@ export class CreateInviteCodeDto {
   @ApiProperty({
     example: uuid(),
     description: 'Profile UUID',
+    name: 'profile_uuid',
   })
   @IsNotEmpty()
   @IsString()
   @Expose({ name: 'profile_uuid' })
   profileUuid: string;
-
-  @ApiProperty({
-    example: uuid(),
-    description: 'Space UUID',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @Expose({ name: 'space_uuid' })
-  spaceUuid: string;
 }

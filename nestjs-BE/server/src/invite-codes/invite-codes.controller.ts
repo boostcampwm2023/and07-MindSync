@@ -2,25 +2,26 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   Param,
   HttpStatus,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
 import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
+import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
 
 @Controller('inviteCodes')
 @ApiTags('inviteCodes')
 export class InviteCodesController {
   constructor(private readonly inviteCodesService: InviteCodesService) {}
 
-  @Post()
+  @Post(':space_uuid')
   @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @ApiOperation({ summary: 'Create invite code' })
+  @ApiBody({ type: CreateInviteCodeDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The invite code has been successfully created.',
@@ -33,14 +34,9 @@ export class InviteCodesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found.',
   })
-  async createInviteCode(
-    @Body(new ValidationPipe({ transform: true, whitelist: true }))
-    createInviteCodeDto: CreateInviteCodeDto,
-  ) {
-    const inviteCode = await this.inviteCodesService.createInviteCode(
-      createInviteCodeDto.profileUuid,
-      createInviteCodeDto.spaceUuid,
-    );
+  async createInviteCode(@Param('space_uuid') spaceUuid: string) {
+    const inviteCode =
+      await this.inviteCodesService.createInviteCode(spaceUuid);
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Created',
