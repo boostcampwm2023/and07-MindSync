@@ -8,9 +8,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InviteCode, Space } from '@prisma/client';
 import { InviteCodesController } from './invite-codes.controller';
 import { InviteCodesService } from './invite-codes.service';
-import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
 import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 import { ProfilesService } from '../profiles/profiles.service';
+import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
 describe('InviteCodesController', () => {
   let controller: InviteCodesController;
@@ -22,7 +23,9 @@ describe('InviteCodesController', () => {
       providers: [
         { provide: InviteCodesService, useValue: {} },
         { provide: ProfilesService, useValue: {} },
+        { provide: ProfileSpaceService, useValue: {} },
         MatchUserProfileGuard,
+        IsProfileInSpaceGuard,
       ],
     }).compile();
 
@@ -31,10 +34,7 @@ describe('InviteCodesController', () => {
   });
 
   describe('createInviteCode', () => {
-    const testDto: CreateInviteCodeDto = {
-      profileUuid: 'test profile uuid',
-      spaceUuid: 'test space uuid',
-    };
+    const testSpaceUuid = 'test space uuid';
     const testInviteCode: InviteCode = {
       inviteCode: 'test invite code',
     } as InviteCode;
@@ -44,7 +44,7 @@ describe('InviteCodesController', () => {
     });
 
     it('success', async () => {
-      const inviteCode = controller.createInviteCode(testDto);
+      const inviteCode = controller.createInviteCode(testSpaceUuid);
 
       await expect(inviteCode).resolves.toEqual({
         statusCode: HttpStatus.CREATED,
@@ -58,7 +58,7 @@ describe('InviteCodesController', () => {
         new ForbiddenException(),
       );
 
-      const inviteCode = controller.createInviteCode(testDto);
+      const inviteCode = controller.createInviteCode(testSpaceUuid);
 
       await expect(inviteCode).rejects.toThrow(ForbiddenException);
     });
