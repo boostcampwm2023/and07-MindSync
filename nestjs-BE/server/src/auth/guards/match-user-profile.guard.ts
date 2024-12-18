@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -14,9 +15,7 @@ export class MatchUserProfileGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const userUuid = request.user.uuid;
     const profileUuid = request.body.profile_uuid || request.query.profileUuid;
-    if (!profileUuid || !userUuid) {
-      throw new ForbiddenException();
-    }
+    if (!profileUuid || !userUuid) throw new BadRequestException();
     const profile =
       await this.profilesService.findProfileByProfileUuid(profileUuid);
     if (!profile || userUuid !== profile.userUuid) {
