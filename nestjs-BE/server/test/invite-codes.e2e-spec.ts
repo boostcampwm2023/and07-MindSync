@@ -7,11 +7,8 @@ import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import { InviteCodesModule } from '../src/invite-codes/invite-codes.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { generateRandomString } from '../src/utils/random-string';
-import {
-  INVITE_CODE_EXPIRY_HOURS,
-  INVITE_CODE_LENGTH,
-} from '../src/config/constants';
+import * as RandomStringModule from '../src/utils/random-string';
+import { INVITE_CODE_EXPIRY_HOURS } from '../src/config/constants';
 import { getExpiryDate } from '../src/utils/date';
 
 describe('InviteController (e2e)', () => {
@@ -40,6 +37,7 @@ describe('InviteController (e2e)', () => {
     let testToken: string;
     let testSpace: Space;
     let testProfile: Profile;
+    let generateRandomStringSpy: jest.SpyInstance;
 
     beforeAll(async () => {
       const testUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -66,18 +64,30 @@ describe('InviteController (e2e)', () => {
         configService.get<string>('JWT_ACCESS_SECRET'),
         { expiresIn: '5m' },
       );
+
+      generateRandomStringSpy = jest.spyOn(
+        RandomStringModule,
+        'generateRandomString',
+      );
+    });
+
+    afterEach(() => {
+      generateRandomStringSpy.mockRestore();
     });
 
     it('create invite code', () => {
+      const testString = generateTestString();
+      generateRandomStringSpy.mockReturnValue(testString);
+
       return request(app.getHttpServer())
         .post(`/inviteCodes/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
         .send({ profile_uuid: testProfile.uuid })
         .expect(HttpStatus.CREATED)
-        .expect((res) => {
-          expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-          expect(res.body.message).toBe('Created');
-          expect(res.body.data.invite_code).toMatch(/^[A-Za-z0-9]{10}$/);
+        .expect({
+          statusCode: HttpStatus.CREATED,
+          message: 'Created',
+          data: { invite_code: testString },
         });
     });
 
@@ -162,7 +172,7 @@ describe('InviteController (e2e)', () => {
       testInviteCode = await prisma.inviteCode.create({
         data: {
           uuid: uuid(),
-          inviteCode: generateRandomString(INVITE_CODE_LENGTH),
+          inviteCode: generateTestString(),
           spaceUuid: testSpace.uuid,
           expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
         },
@@ -180,5 +190,21 @@ describe('InviteController (e2e)', () => {
           data: testSpace,
         });
     });
+
+    it('respond not found if invite code does not exist', () => {
+      return request(app.getHttpServer())
+        .get(`/inviteCodes/${generateTestString()}`)
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.NOT_FOUND)
+        .expect({ statusCode: HttpStatus.NOT_FOUND, message: 'Not Found' });
+    });
   });
 });
+
+let stringCount = 0;
+
+function generateTestString() {
+  const testString = `invite${stringCount}`;
+  stringCount += 1;
+  return testString;
+}
