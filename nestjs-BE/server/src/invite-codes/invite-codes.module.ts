@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { InviteCodesService } from './invite-codes.service';
 import { InviteCodesController } from './invite-codes.controller';
 import { SpacesModule } from '../spaces/spaces.module';
-import { ProfileSpaceModule } from '../profile-space/profile-space.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [SpacesModule, ProfileSpaceModule],
+  imports: [AuthModule, SpacesModule],
   controllers: [InviteCodesController],
   providers: [InviteCodesService],
 })
