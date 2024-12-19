@@ -193,10 +193,41 @@ describe('InviteController (e2e)', () => {
 
     it('respond not found if invite code does not exist', () => {
       return request(app.getHttpServer())
-        .get(`/inviteCodes/${generateTestString()}`)
+        .get(`/inviteCodes/notfound`)
         .auth(testToken, { type: 'bearer' })
         .expect(HttpStatus.NOT_FOUND)
         .expect({ statusCode: HttpStatus.NOT_FOUND, message: 'Not Found' });
+    });
+
+    it('respond unauthorized if access token is missed', () => {
+      return request(app.getHttpServer())
+        .get(`/inviteCodes/notfound`)
+        .expect(HttpStatus.UNAUTHORIZED)
+        .expect({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized',
+        });
+    });
+
+    it('respond gone if invite code is expired', async () => {
+      const newInviteCode = await prisma.inviteCode.create({
+        data: {
+          uuid: uuid(),
+          inviteCode: generateTestString(),
+          spaceUuid: testSpace.uuid,
+          expiryDate: getExpiryDate({ hour: -1 }),
+        },
+      });
+
+      return request(app.getHttpServer())
+        .get(`/inviteCodes/${newInviteCode.inviteCode}`)
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.GONE)
+        .expect({
+          statusCode: HttpStatus.GONE,
+          message: 'Invite code has expired.',
+          error: 'Gone',
+        });
     });
   });
 });
