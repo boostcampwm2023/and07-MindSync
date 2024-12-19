@@ -80,6 +80,64 @@ describe('InviteController (e2e)', () => {
           expect(res.body.data.invite_code).toMatch(/^[A-Za-z0-9]{10}$/);
         });
     });
+
+    it('respond bad request when profile uuid is missing', () => {
+      return request(app.getHttpServer())
+        .post(`/inviteCodes/${testSpace.uuid}`)
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect({ statusCode: HttpStatus.BAD_REQUEST, message: 'Bad Request' });
+    });
+
+    it('respond unauthorized when access token is missing', () => {
+      return request(app.getHttpServer())
+        .post(`/inviteCodes/${testSpace.uuid}`)
+        .expect(HttpStatus.UNAUTHORIZED)
+        .expect({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized',
+        });
+    });
+
+    it('respond 403 forbidden if profile is not in space', async () => {
+      const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const newProfile = await prisma.profile.create({
+        data: {
+          uuid: uuid(),
+          userUuid: newUser.uuid,
+          image: 'test image',
+          nickname: 'test nickname',
+        },
+      });
+      const newToken = sign(
+        { sub: newUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      return request(app.getHttpServer())
+        .post(`/inviteCodes/${testSpace.uuid}`)
+        .auth(newToken, { type: 'bearer' })
+        .send({ profile_uuid: newProfile.uuid })
+        .expect(HttpStatus.FORBIDDEN)
+        .expect({ statusCode: HttpStatus.FORBIDDEN, message: 'Forbidden' });
+    });
+
+    it('respond 403 forbidden if user does not own profile', async () => {
+      const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const newToken = sign(
+        { sub: newUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      return request(app.getHttpServer())
+        .post(`/inviteCodes/${testSpace.uuid}`)
+        .auth(newToken, { type: 'bearer' })
+        .send({ profile_uuid: testProfile.uuid })
+        .expect(HttpStatus.FORBIDDEN)
+        .expect({ statusCode: HttpStatus.FORBIDDEN, message: 'Forbidden' });
+    });
   });
 
   describe('/inviteCodes/:inviteCode (GET)', () => {
