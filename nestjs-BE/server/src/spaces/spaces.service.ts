@@ -28,19 +28,9 @@ export class SpacesService {
     return this.prisma.space.findUnique({ where: { uuid: spaceUuid } });
   }
 
-  async findSpace(
-    userUuid: string,
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<Space> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
+  async findSpace(spaceUuid: string): Promise<Space> {
     const space = await this.findSpaceBySpaceUuid(spaceUuid);
     if (!space) throw new NotFoundException();
-    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
-      profileUuid,
-      spaceUuid,
-    );
-    if (!isProfileInSpace) throw new ForbiddenException();
     return space;
   }
 
