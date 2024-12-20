@@ -14,7 +14,7 @@ export class MatchUserProfileGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userUuid = request.user.uuid;
-    const profileUuid = request.body.profile_uuid || request.query.profileUuid;
+    const profileUuid = request.body.profile_uuid || request.query.profile_uuid;
     if (!profileUuid || !userUuid) throw new BadRequestException();
     const profile =
       await this.profilesService.findProfileByProfileUuid(profileUuid);
