@@ -8,7 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Space } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { SpacesService } from './spaces.service';
-import { CreateSpacePrismaDto } from './dto/create-space.dto';
+import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpacePrismaDto } from './dto/update-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
@@ -88,8 +88,6 @@ describe('SpacesService', () => {
   });
 
   describe('createSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
     const icon = { filename: 'icon' } as Express.Multer.File;
     const iconUrlMock = 'www.test.com/image';
 
@@ -107,14 +105,9 @@ describe('SpacesService', () => {
     it('created', async () => {
       const createSpaceDto = {
         name: 'new space name',
-      } as CreateSpacePrismaDto;
+      } as CreateSpaceDto;
 
-      const space = await spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        icon,
-        createSpaceDto,
-      );
+      const space = await spacesService.createSpace(icon, createSpaceDto);
 
       expect(space.uuid).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -125,59 +118,12 @@ describe('SpacesService', () => {
       expect(prisma.space.create).toHaveBeenCalled();
     });
 
-    it('profile not found', async () => {
-      const createSpaceDto = {
-        name: 'new space name',
-      } as CreateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const space = spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        icon,
-        createSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(NotFoundException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.create).not.toHaveBeenCalled();
-    });
-
-    it('profile user not own', async () => {
-      const createSpaceDto = {
-        name: 'new space name',
-      } as CreateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const space = spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        icon,
-        createSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.create).not.toHaveBeenCalledWith();
-    });
-
     it('icon not requested', async () => {
       const createSpaceDto = {
         name: 'new space name',
-      } as CreateSpacePrismaDto;
+      } as CreateSpaceDto;
 
-      const space = await spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        undefined,
-        createSpaceDto,
-      );
+      const space = await spacesService.createSpace(undefined, createSpaceDto);
 
       expect(space.uuid).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,

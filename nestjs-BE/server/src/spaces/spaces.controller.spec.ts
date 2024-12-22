@@ -8,7 +8,7 @@ import { Profile, Space } from '@prisma/client';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
-import { CreateSpaceRequestDto } from './dto/create-space.dto';
+import { CreateSpaceDto } from './dto/create-space.dto';
 import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
 import { ProfilesService } from '../profiles/profiles.service';
@@ -43,7 +43,7 @@ describe('SpacesController', () => {
     spacesService = module.get<SpacesService>(SpacesService);
   });
 
-  it('create created', async () => {
+  describe('createSpace', () => {
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const userUuidMock = 'user uuid';
     const profileMock = {
@@ -53,40 +53,24 @@ describe('SpacesController', () => {
     const bodyMock = {
       name: 'new space name',
       profileUuid: profileMock.uuid,
-    } as CreateSpaceRequestDto;
+    } as CreateSpaceDto;
     const spaceMock = { uuid: 'space uuid' } as Space;
 
-    (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
+    it('created', async () => {
+      (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
 
-    const response = controller.createSpace(iconMock, bodyMock, userUuidMock);
+      const response = controller.createSpace(iconMock, bodyMock);
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data: spaceMock,
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.CREATED,
+        message: 'Created',
+        data: spaceMock,
+      });
+      expect(spacesService.createSpace).toHaveBeenCalledWith(
+        iconMock,
+        bodyMock,
+      );
     });
-    expect(spacesService.createSpace).toHaveBeenCalledWith(
-      userUuidMock,
-      bodyMock.profileUuid,
-      iconMock,
-      bodyMock,
-    );
-  });
-
-  it('create profile uuid needed', async () => {
-    const userUuidMock = 'user uuid';
-    const bodyMock = {
-      name: 'new space name',
-    } as CreateSpaceRequestDto;
-
-    const response = controller.createSpace(
-      undefined as Express.Multer.File,
-      bodyMock,
-      userUuidMock,
-    );
-
-    await expect(response).rejects.toThrow(BadRequestException);
-    expect(spacesService.createSpace).not.toHaveBeenCalled();
   });
 
   describe('findOne', () => {
