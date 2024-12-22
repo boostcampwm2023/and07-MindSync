@@ -1,10 +1,18 @@
-import { BadRequestException, HttpStatus } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Profile, Space } from '@prisma/client';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { CreateSpaceRequestDto } from './dto/create-space.dto';
+import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
+import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
+import { ProfilesService } from '../profiles/profiles.service';
+import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
 describe('SpacesController', () => {
   let controller: SpacesController;
@@ -18,13 +26,16 @@ describe('SpacesController', () => {
           provide: SpacesService,
           useValue: {
             createSpace: jest.fn(),
-            findSpace: jest.fn(),
             updateSpace: jest.fn(),
             joinSpace: jest.fn(),
             leaveSpace: jest.fn(),
             findProfilesInSpace: jest.fn(),
           },
         },
+        { provide: ProfilesService, useValue: {} },
+        { provide: ProfileSpaceService, useValue: {} },
+        MatchUserProfileGuard,
+        IsProfileInSpaceGuard,
       ],
     }).compile();
 
@@ -78,37 +89,32 @@ describe('SpacesController', () => {
     expect(spacesService.createSpace).not.toHaveBeenCalled();
   });
 
-  it('findOne found space', async () => {
-    const profileUuid = 'profile uuid';
+  describe('findOne', () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
-    const userUuidMock = 'user uuid';
 
-    (spacesService.findSpace as jest.Mock).mockResolvedValue(spaceMock);
-
-    const response = controller.findSpace(
-      spaceMock.uuid,
-      profileUuid,
-      userUuidMock,
-    );
-
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: spaceMock,
+    beforeEach(() => {
+      spacesService.findSpace = jest.fn(async () => spaceMock);
     });
-  });
 
-  it('findOne profile_uuid missing', async () => {
-    const spaceMock = { uuid: 'space uuid' } as Space;
-    const userUuidMock = 'user uuid';
+    it('found space', async () => {
+      const response = controller.findSpace(spaceMock.uuid);
 
-    const response = controller.findSpace(
-      spaceMock.uuid,
-      undefined,
-      userUuidMock,
-    );
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: spaceMock,
+      });
+    });
 
-    await expect(response).rejects.toThrow(BadRequestException);
+    it('space not found', async () => {
+      (spacesService.findSpace as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
+
+      const response = controller.findSpace(spaceMock.uuid);
+
+      await expect(response).rejects.toThrow(NotFoundException);
+    });
   });
 
   it('updateSpace update space', async () => {

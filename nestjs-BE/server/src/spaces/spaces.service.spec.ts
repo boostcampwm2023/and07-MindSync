@@ -64,8 +64,6 @@ describe('SpacesService', () => {
   });
 
   describe('findSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     beforeEach(() => {
@@ -75,68 +73,15 @@ describe('SpacesService', () => {
     });
 
     it('found space', async () => {
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
+      const space = spacesService.findSpace(spaceMock.uuid);
 
       await expect(space).resolves.toEqual(spaceMock);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(spacesService.findSpaceBySpaceUuid).not.toHaveBeenCalled();
-    });
-
-    it('profile not joined space', async () => {
-      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
-        false,
-      );
-
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(profileSpaceService.isProfileInSpace).toHaveBeenCalled();
     });
 
     it('space not found', async () => {
       jest.spyOn(spacesService, 'findSpaceBySpaceUuid').mockResolvedValue(null);
 
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
-
-      await expect(space).rejects.toThrow(NotFoundException);
-      expect(profileSpaceService.isProfileInSpace).not.toHaveBeenCalled();
-    });
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
+      const space = spacesService.findSpace(spaceMock.uuid);
 
       await expect(space).rejects.toThrow(NotFoundException);
     });
