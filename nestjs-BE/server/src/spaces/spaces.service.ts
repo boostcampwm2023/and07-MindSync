@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma, Profile, Space } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 import { UpdateSpacePrismaDto } from './dto/update-space.dto';
-import { CreateSpacePrismaDto } from './dto/create-space.dto';
+import { CreateSpaceDto } from './dto/create-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
@@ -35,12 +35,9 @@ export class SpacesService {
   }
 
   async createSpace(
-    userUuid: string,
-    profileUuid: string,
     icon: Express.Multer.File,
-    createSpaceDto: CreateSpacePrismaDto,
+    createSpaceDto: CreateSpaceDto,
   ): Promise<Space> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
     const iconUrl = icon
       ? await this.uploadService.uploadFile(icon)
       : this.configService.get<string>('APP_ICON_URL');
@@ -51,7 +48,10 @@ export class SpacesService {
         icon: iconUrl,
       },
     });
-    await this.profileSpaceService.createProfileSpace(profileUuid, space.uuid);
+    await this.profileSpaceService.createProfileSpace(
+      createSpaceDto.profileUuid,
+      space.uuid,
+    );
     return space;
   }
 

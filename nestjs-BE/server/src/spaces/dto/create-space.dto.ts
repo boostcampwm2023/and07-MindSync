@@ -4,7 +4,7 @@ import { Expose } from 'class-transformer';
 import { v4 as uuid } from 'uuid';
 import { MAX_NAME_LENGTH } from '../../config/constants';
 
-export class CreateSpaceRequestDto {
+export class CreateSpaceDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(MAX_NAME_LENGTH)
@@ -14,17 +14,16 @@ export class CreateSpaceRequestDto {
   @IsString()
   @IsNotEmpty()
   @Expose({ name: 'profile_uuid' })
-  @ApiProperty({ example: uuid(), description: 'Profile uuid' })
+  @ApiProperty({
+    name: 'profile_uuid',
+    example: uuid(),
+    description: 'Profile uuid',
+  })
   profileUuid: string;
 
   @ApiProperty({
     example: 'space-icon.png',
     description: 'Profile icon for the space',
   })
-  icon: string;
-}
-
-export class CreateSpacePrismaDto {
-  name: string;
   icon: string;
 }

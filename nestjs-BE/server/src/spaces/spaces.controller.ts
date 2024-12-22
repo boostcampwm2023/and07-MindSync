@@ -18,7 +18,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
-import { CreateSpaceRequestDto } from './dto/create-space.dto';
+import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceRequestDto } from './dto/update-space.dto';
 import { JoinSpaceRequestDto } from './dto/join-space.dto';
 import { User } from '../auth/decorators/user.decorator';
@@ -31,6 +31,7 @@ export class SpacesController {
   constructor(private readonly spacesService: SpacesService) {}
 
   @Post()
+  @UseGuards(MatchUserProfileGuard)
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Create space' })
   @ApiResponse({
@@ -62,16 +63,9 @@ export class SpacesController {
         disableErrorMessages: true,
       }),
     )
-    createSpaceDto: CreateSpaceRequestDto,
-    @User('uuid') userUuid: string,
+    createSpaceDto: CreateSpaceDto,
   ) {
-    if (!createSpaceDto.profileUuid) throw new BadRequestException();
-    const space = await this.spacesService.createSpace(
-      userUuid,
-      createSpaceDto.profileUuid,
-      icon,
-      createSpaceDto,
-    );
+    const space = await this.spacesService.createSpace(icon, createSpaceDto);
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 
