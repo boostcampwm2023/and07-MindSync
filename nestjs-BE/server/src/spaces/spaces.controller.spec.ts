@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Profile, Space } from '@prisma/client';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
-import { UpdateSpaceRequestDto } from './dto/update-space.dto';
+import { UpdateSpaceDto } from './dto/update-space.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
@@ -101,47 +101,33 @@ describe('SpacesController', () => {
     });
   });
 
-  it('updateSpace update space', async () => {
+  describe('updateSpace', () => {
     const spaceUuid = 'space uuid';
-    const profileUuid = 'profile uuid';
     const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-    const userUuidMock = 'user uuid';
+    const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
     const spaceMock = { uuid: spaceUuid } as Space;
 
-    (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
+    it('update space', async () => {
+      (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
 
-    const response = controller.updateSpace(
-      iconMock,
-      spaceUuid,
-      profileUuid,
-      bodyMock,
-      userUuidMock,
-    );
+      const response = controller.updateSpace(iconMock, spaceUuid, bodyMock);
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: spaceMock,
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: spaceMock,
+      });
     });
-  });
 
-  it('updateSpace profile uuid needed', async () => {
-    const iconMock = { filename: 'icon' } as Express.Multer.File;
-    const spaceUuid = 'space uuid';
-    const bodyMock = { name: 'new space name' } as UpdateSpaceRequestDto;
-    const userUuidMock = 'user uuid';
+    it('space not found', async () => {
+      (spacesService.updateSpace as jest.Mock).mockRejectedValue(
+        new NotFoundException(),
+      );
 
-    const response = controller.updateSpace(
-      iconMock,
-      spaceUuid,
-      undefined,
-      bodyMock,
-      userUuidMock,
-    );
+      const response = controller.updateSpace(iconMock, spaceUuid, bodyMock);
 
-    await expect(response).rejects.toThrow(BadRequestException);
-    expect(spacesService.updateSpace).not.toHaveBeenCalled();
+      await expect(response).rejects.toThrow(NotFoundException);
+    });
   });
 
   it('joinSpace', async () => {

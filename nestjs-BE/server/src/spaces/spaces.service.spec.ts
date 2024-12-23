@@ -9,7 +9,7 @@ import { Space } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
-import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { UpdateSpaceDto } from './dto/update-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
@@ -136,8 +136,6 @@ describe('SpacesService', () => {
   });
 
   describe('updateSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const iconUrlMock = 'www.test.com/image';
@@ -157,11 +155,9 @@ describe('SpacesService', () => {
     });
 
     it('update space', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+      const updateSpaceDto = { name: 'new space name' } as UpdateSpaceDto;
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         iconMock,
         updateSpaceDto,
@@ -177,11 +173,9 @@ describe('SpacesService', () => {
     });
 
     it('icon not requested', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+      const updateSpaceDto = { name: 'new space name' } as UpdateSpaceDto;
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         undefined,
         updateSpaceDto,
@@ -197,11 +191,9 @@ describe('SpacesService', () => {
     });
 
     it('name not requested', async () => {
-      const updateSpaceDto = {} as UpdateSpacePrismaDto;
+      const updateSpaceDto = {} as UpdateSpaceDto;
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         iconMock,
         updateSpaceDto,
@@ -216,68 +208,8 @@ describe('SpacesService', () => {
       expect(prisma.space.update).toHaveBeenCalled();
     });
 
-    it('profile user not own', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-        iconMock,
-        updateSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.update).not.toHaveBeenCalled();
-    });
-
-    it('profile not joined space', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
-
-      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
-        false,
-      );
-
-      const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-        iconMock,
-        updateSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.update).not.toHaveBeenCalled();
-    });
-
-    it('profile not found', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-        iconMock,
-        updateSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(NotFoundException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.update).not.toHaveBeenCalled();
-    });
-
     it('update fail', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+      const updateSpaceDto = { name: 'new space name' } as UpdateSpaceDto;
 
       (prisma.space.update as jest.Mock).mockRejectedValue(
         new PrismaClientKnownRequestError('', {
@@ -287,8 +219,6 @@ describe('SpacesService', () => {
       );
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         iconMock,
         updateSpaceDto,
