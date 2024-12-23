@@ -18,16 +18,7 @@ describe('SpacesController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SpacesController],
       providers: [
-        {
-          provide: SpacesService,
-          useValue: {
-            createSpace: jest.fn(),
-            updateSpace: jest.fn(),
-            joinSpace: jest.fn(),
-            leaveSpace: jest.fn(),
-            findProfilesInSpace: jest.fn(),
-          },
-        },
+        { provide: SpacesService, useValue: {} },
         { provide: ProfilesService, useValue: {} },
         { provide: ProfileSpaceService, useValue: {} },
         MatchUserProfileGuard,
@@ -53,7 +44,7 @@ describe('SpacesController', () => {
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     it('created', async () => {
-      (spacesService.createSpace as jest.Mock).mockResolvedValue(spaceMock);
+      spacesService.createSpace = jest.fn(async () => spaceMock);
 
       const response = controller.createSpace(iconMock, bodyMock);
 
@@ -103,9 +94,11 @@ describe('SpacesController', () => {
     const bodyMock = { name: 'new space name' } as UpdateSpaceDto;
     const spaceMock = { uuid: spaceUuid } as Space;
 
-    it('update space', async () => {
-      (spacesService.updateSpace as jest.Mock).mockResolvedValue(spaceMock);
+    beforeEach(() => {
+      spacesService.updateSpace = jest.fn(async () => spaceMock);
+    });
 
+    it('update space', async () => {
       const response = controller.updateSpace(iconMock, spaceUuid, bodyMock);
 
       await expect(response).resolves.toEqual({
@@ -127,12 +120,14 @@ describe('SpacesController', () => {
   });
 
   describe('joinSpace', () => {
+    const spaceMock = { uuid: 'space uuid' } as Space;
+    const profileUuidMock = 'profile uuid';
+
+    beforeEach(() => {
+      spacesService.joinSpace = jest.fn(async () => spaceMock);
+    });
+
     it('join space', async () => {
-      const spaceMock = { uuid: 'space uuid' };
-      const profileUuidMock = 'profile uuid';
-
-      (spacesService.joinSpace as jest.Mock).mockResolvedValue(spaceMock);
-
       const response = controller.joinSpace(spaceMock.uuid, profileUuidMock);
 
       await expect(response).resolves.toEqual({
@@ -144,12 +139,14 @@ describe('SpacesController', () => {
   });
 
   describe('leaveSpace', () => {
+    const spaceMock = { uuid: 'space uuid' };
+    const profileMock = { uuid: 'profile uuid' };
+
+    beforeEach(() => {
+      spacesService.leaveSpace = jest.fn(async () => undefined);
+    });
+
     it('leave space', async () => {
-      const spaceMock = { uuid: 'space uuid' };
-      const profileMock = { uuid: 'profile uuid' };
-
-      (spacesService.leaveSpace as jest.Mock).mockResolvedValue(undefined);
-
       const response = controller.leaveSpace(spaceMock.uuid, profileMock.uuid);
 
       await expect(response).resolves.toEqual({
@@ -160,14 +157,14 @@ describe('SpacesController', () => {
   });
 
   describe('findProfilesInSpace', () => {
+    const spaceMock = { uuid: 'space uuid' };
+    const profilesMock = [];
+
+    beforeEach(() => {
+      spacesService.findProfilesInSpace = jest.fn(async () => profilesMock);
+    });
+
     it('get profiles', async () => {
-      const spaceMock = { uuid: 'space uuid' };
-      const profilesMock = [];
-
-      (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue(
-        profilesMock,
-      );
-
       const response = controller.findProfilesInSpace(spaceMock.uuid);
 
       await expect(response).resolves.toEqual({
