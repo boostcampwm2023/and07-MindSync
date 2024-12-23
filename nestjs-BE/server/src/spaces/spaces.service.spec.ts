@@ -273,7 +273,6 @@ describe('SpacesService', () => {
   });
 
   describe('leaveSpace', () => {
-    const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
 
@@ -282,14 +281,14 @@ describe('SpacesService', () => {
     });
 
     it('leave space', async () => {
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).resolves.toBeUndefined();
       expect(spacesService.deleteSpace).toHaveBeenCalled();
     });
 
     it('leave space, other profile exist', async () => {
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       (profileSpaceService.isSpaceEmpty as jest.Mock).mockResolvedValue(false);
 
@@ -305,29 +304,9 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).resolves.toBeUndefined();
-    });
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(NotFoundException);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
 
     it('profile not joined space', async () => {
@@ -338,7 +317,7 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(NotFoundException);
     });

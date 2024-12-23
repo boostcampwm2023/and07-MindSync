@@ -147,22 +147,19 @@ describe('SpacesController', () => {
     });
   });
 
-  it('leaveSpace', async () => {
-    const spaceMock = { uuid: 'space uuid' };
-    const profileMock = { uuid: 'profile uuid' };
-    const userUuidMock = 'user uuid';
+  describe('leaveSpace', () => {
+    it('leave space', async () => {
+      const spaceMock = { uuid: 'space uuid' };
+      const profileMock = { uuid: 'profile uuid' };
 
-    (spacesService.leaveSpace as jest.Mock).mockResolvedValue(undefined);
+      (spacesService.leaveSpace as jest.Mock).mockResolvedValue(undefined);
 
-    const response = controller.leaveSpace(
-      spaceMock.uuid,
-      profileMock.uuid,
-      userUuidMock,
-    );
+      const response = controller.leaveSpace(spaceMock.uuid, profileMock.uuid);
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+      });
     });
   });
 
