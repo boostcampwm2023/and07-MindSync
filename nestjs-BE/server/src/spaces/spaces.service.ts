@@ -12,7 +12,6 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
-import { ProfilesService } from '../profiles/profiles.service';
 import { omit } from '../utils/omit';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class SpacesService {
     private readonly configService: ConfigService,
     private readonly profileSpaceService: ProfileSpaceService,
     private readonly uploadService: UploadService,
-    private readonly profilesService: ProfilesService,
   ) {}
 
   async findSpaceBySpaceUuid(spaceUuid: string): Promise<Space | null> {
@@ -129,17 +127,7 @@ export class SpacesService {
     } catch (err) {}
   }
 
-  async findProfilesInSpace(
-    userUuid: string,
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<Profile[]> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
-    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
-      profileUuid,
-      spaceUuid,
-    );
-    if (!isProfileInSpace) throw new ForbiddenException();
+  async findProfilesInSpace(spaceUuid: string): Promise<Profile[]> {
     return this.prisma.profile.findMany({
       where: { spaces: { some: { spaceUuid } } },
     });

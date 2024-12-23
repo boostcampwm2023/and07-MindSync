@@ -10,8 +10,6 @@ import {
   ValidationPipe,
   Header,
   HttpStatus,
-  Query,
-  BadRequestException,
   Delete,
   UseGuards,
 } from '@nestjs/common';
@@ -20,7 +18,6 @@ import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
-import { User } from '../auth/decorators/user.decorator';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
 import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 
@@ -213,8 +210,16 @@ export class SpacesController {
   }
 
   @Get(':space_uuid/profiles')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @Header('Cache-Control', 'no-store')
   @ApiOperation({ summary: 'Get profiles joined space.' })
+  @ApiQuery({
+    name: 'profile_uuid',
+    type: String,
+    description: 'profile uuid',
+    required: true,
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successfully get profiles.',
@@ -235,17 +240,8 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Profile not found.',
   })
-  async findProfilesInSpace(
-    @Param('space_uuid') spaceUuid: string,
-    @Query('profile_uuid') profileUuid: string,
-    @User('uuid') userUuid: string,
-  ) {
-    if (!profileUuid) throw new BadRequestException();
-    const profiles = await this.spacesService.findProfilesInSpace(
-      userUuid,
-      profileUuid,
-      spaceUuid,
-    );
+  async findProfilesInSpace(@Param('space_uuid') spaceUuid: string) {
+    const profiles = await this.spacesService.findProfilesInSpace(spaceUuid);
     return { statusCode: HttpStatus.OK, message: 'OK', data: profiles };
   }
 }
