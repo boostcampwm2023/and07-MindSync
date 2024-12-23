@@ -1,8 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { Expose } from 'class-transformer';
+import { v4 as uuid } from 'uuid';
 import { MAX_NAME_LENGTH } from '../../config/constants';
 
-export class UpdateSpaceRequestDto {
+export class UpdateSpaceDto {
+  @IsString()
+  @IsNotEmpty()
+  @Expose({ name: 'profile_uuid' })
+  @ApiProperty({
+    name: 'profile_uuid',
+    example: uuid(),
+    description: 'Profile uuid',
+  })
+  profileUuid: string;
+
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -20,10 +32,5 @@ export class UpdateSpaceRequestDto {
     description: 'Updated space icon',
     required: false,
   })
-  icon: string;
-}
-
-export class UpdateSpacePrismaDto {
-  name: string;
   icon: string;
 }

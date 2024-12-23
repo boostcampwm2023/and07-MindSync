@@ -7,12 +7,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Prisma, Profile, Space } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
-import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { UpdateSpaceDto } from './dto/update-space.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
 import { ProfilesService } from '../profiles/profiles.service';
+import { omit } from '../utils/omit';
 
 @Injectable()
 export class SpacesService {
@@ -56,26 +57,22 @@ export class SpacesService {
   }
 
   async updateSpace(
-    userUuid: string,
-    profileUuid: string,
     spaceUuid: string,
     icon: Express.Multer.File,
-    updateSpaceDto: UpdateSpacePrismaDto,
+    updateSpaceDto: UpdateSpaceDto,
   ): Promise<Space> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
-    const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
-      profileUuid,
-      spaceUuid,
-    );
-    if (!isProfileInSpace) throw new ForbiddenException();
+    const updateData: Partial<UpdateSpaceDto> = omit(updateSpaceDto, [
+      'icon',
+      'profileUuid',
+    ]);
     if (icon) {
-      updateSpaceDto.icon = await this.uploadService.uploadFile(icon);
+      updateData.icon = await this.uploadService.uploadFile(icon);
     }
     let space: Space;
     try {
       space = await this.prisma.space.update({
         where: { uuid: spaceUuid },
-        data: updateSpaceDto,
+        data: updateData,
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {

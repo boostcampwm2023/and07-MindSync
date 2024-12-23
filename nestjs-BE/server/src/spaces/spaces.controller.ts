@@ -19,7 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
-import { UpdateSpaceRequestDto } from './dto/update-space.dto';
+import { UpdateSpaceDto } from './dto/update-space.dto';
 import { JoinSpaceRequestDto } from './dto/join-space.dto';
 import { User } from '../auth/decorators/user.decorator';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
@@ -106,6 +106,8 @@ export class SpacesController {
   }
 
   @Patch(':space_uuid')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Update space by space_uuid' })
   @ApiResponse({
@@ -131,15 +133,16 @@ export class SpacesController {
   async updateSpace(
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
-    @Query('profile_uuid') profileUuid: string,
-    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    updateSpaceDto: UpdateSpaceRequestDto,
-    @User('uuid') userUuid: string,
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        disableErrorMessages: true,
+      }),
+    )
+    updateSpaceDto: UpdateSpaceDto,
   ) {
-    if (!profileUuid) throw new BadRequestException();
     const space = await this.spacesService.updateSpace(
-      userUuid,
-      profileUuid,
       spaceUuid,
       icon,
       updateSpaceDto,
