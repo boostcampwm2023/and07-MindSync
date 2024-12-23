@@ -20,7 +20,6 @@ import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
-import { JoinSpaceRequestDto } from './dto/join-space.dto';
 import { User } from '../auth/decorators/user.decorator';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
 import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
@@ -150,7 +149,8 @@ export class SpacesController {
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 
-  @Post(':space_uuid/join')
+  @Post(':space_uuid/profiles/:profile_uuid')
+  @UseGuards(MatchUserProfileGuard)
   @ApiOperation({ summary: 'Join space' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -178,21 +178,9 @@ export class SpacesController {
   })
   async joinSpace(
     @Param('space_uuid') spaceUuid: string,
-    @Body(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        disableErrorMessages: true,
-      }),
-    )
-    joinSpaceDto: JoinSpaceRequestDto,
-    @User('uuid') userUuid: string,
+    @Param('profile_uuid') profileUuid: string,
   ) {
-    const space = await this.spacesService.joinSpace(
-      userUuid,
-      joinSpaceDto.profileUuid,
-      spaceUuid,
-    );
+    const space = await this.spacesService.joinSpace(profileUuid, spaceUuid);
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 

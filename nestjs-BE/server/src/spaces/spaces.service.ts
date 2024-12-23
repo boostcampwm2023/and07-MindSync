@@ -88,12 +88,7 @@ export class SpacesService {
     return this.prisma.space.delete({ where: { uuid: spaceUuid } });
   }
 
-  async joinSpace(
-    userUuid: string,
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<Space> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
+  async joinSpace(profileUuid: string, spaceUuid: string): Promise<Space> {
     try {
       await this.profileSpaceService.createProfileSpace(profileUuid, spaceUuid);
     } catch (err) {
