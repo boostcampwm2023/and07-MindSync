@@ -21,7 +21,6 @@ describe('SpacesService', () => {
   let configService: ConfigService;
   let profileSpaceService: ProfileSpaceService;
   let uploadService: UploadService;
-  let profilesService: ProfilesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -44,10 +43,7 @@ describe('SpacesService', () => {
             isProfileInSpace: jest.fn(async () => true),
           },
         },
-        {
-          provide: ProfilesService,
-          useValue: { verifyUserProfile: jest.fn(async () => true) },
-        },
+        { provide: ProfilesService, useValue: {} },
         {
           provide: UploadService,
           useValue: { uploadFile: jest.fn() },
@@ -60,7 +56,6 @@ describe('SpacesService', () => {
     configService = module.get<ConfigService>(ConfigService);
     profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
     uploadService = module.get<UploadService>(UploadService);
-    profilesService = module.get<ProfilesService>(ProfilesService);
   });
 
   describe('findSpace', () => {
@@ -320,54 +315,6 @@ describe('SpacesService', () => {
       const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('findProfilesInSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const res = spacesService.findProfilesInSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-      );
-
-      await expect(res).rejects.toThrow(NotFoundException);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const res = spacesService.findProfilesInSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-      );
-
-      await expect(res).rejects.toThrow(ForbiddenException);
-    });
-
-    it('profile not joined space', async () => {
-      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
-        false,
-      );
-
-      const res = spacesService.findProfilesInSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-      );
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
   });
 });

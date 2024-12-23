@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Profile, Space } from '@prisma/client';
 import { SpacesController } from './spaces.controller';
@@ -163,41 +159,22 @@ describe('SpacesController', () => {
     });
   });
 
-  it('findProfilesInSpace', async () => {
-    const spaceMock = { uuid: 'space uuid' };
-    const profileMock = { uuid: 'profile uuid' };
-    const userUuidMock = 'user uuid';
-    const profilesMock = [];
+  describe('findProfilesInSpace', () => {
+    it('get profiles', async () => {
+      const spaceMock = { uuid: 'space uuid' };
+      const profilesMock = [];
 
-    (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue(
-      profilesMock,
-    );
+      (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue(
+        profilesMock,
+      );
 
-    const response = controller.findProfilesInSpace(
-      spaceMock.uuid,
-      profileMock.uuid,
-      userUuidMock,
-    );
+      const response = controller.findProfilesInSpace(spaceMock.uuid);
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: profilesMock,
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: profilesMock,
+      });
     });
-  });
-
-  it('findProfilesInSpace space uuid needed', async () => {
-    const spaceMock = { uuid: 'space uuid' };
-    const userUuidMock = 'user uuid';
-
-    (spacesService.findProfilesInSpace as jest.Mock).mockResolvedValue([]);
-
-    const response = controller.findProfilesInSpace(
-      spaceMock.uuid,
-      undefined,
-      userUuidMock,
-    );
-
-    await expect(response).rejects.toThrow(BadRequestException);
   });
 });
