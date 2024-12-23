@@ -13,7 +13,6 @@ import { UpdateSpaceDto } from './dto/update-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
-import { ProfilesService } from '../profiles/profiles.service';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
@@ -27,27 +26,9 @@ describe('SpacesService', () => {
       imports: [ConfigModule],
       providers: [
         SpacesService,
-        {
-          provide: PrismaService,
-          useValue: {
-            space: { create: jest.fn(), update: jest.fn() },
-            profile: { findMany: jest.fn() },
-          },
-        },
-        {
-          provide: ProfileSpaceService,
-          useValue: {
-            createProfileSpace: jest.fn(),
-            deleteProfileSpace: jest.fn(),
-            isSpaceEmpty: jest.fn(async () => true),
-            isProfileInSpace: jest.fn(async () => true),
-          },
-        },
-        { provide: ProfilesService, useValue: {} },
-        {
-          provide: UploadService,
-          useValue: { uploadFile: jest.fn() },
-        },
+        { provide: PrismaService, useValue: { space: {} } },
+        { provide: ProfileSpaceService, useValue: {} },
+        { provide: UploadService, useValue: {} },
       ],
     }).compile();
 
@@ -87,14 +68,15 @@ describe('SpacesService', () => {
     const iconUrlMock = 'www.test.com/image';
 
     beforeEach(() => {
-      (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
-      (prisma.space.create as jest.Mock).mockImplementation((args) => {
+      uploadService.uploadFile = jest.fn(async () => iconUrlMock);
+      (prisma.space.create as jest.Mock) = jest.fn(async (args) => {
         return {
           uuid: args.data.uuid,
           name: args.data.name,
           icon: args.data.icon,
         };
       });
+      profileSpaceService.createProfileSpace = jest.fn();
     });
 
     it('created', async () => {
@@ -136,8 +118,8 @@ describe('SpacesService', () => {
     const iconUrlMock = 'www.test.com/image';
 
     beforeEach(() => {
-      (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
-      (prisma.space.update as jest.Mock).mockImplementation(async (args) => {
+      uploadService.uploadFile = jest.fn(async () => iconUrlMock);
+      (prisma.space.update as jest.Mock) = jest.fn(async (args) => {
         const space = {
           uuid: args.where.uuid,
           name: args.data.name ? args.data.name : 'test space',
@@ -232,6 +214,7 @@ describe('SpacesService', () => {
       jest
         .spyOn(spacesService, 'findSpaceBySpaceUuid')
         .mockResolvedValue(space);
+      profileSpaceService.createProfileSpace = jest.fn();
     });
 
     it('join space', async () => {
@@ -272,6 +255,8 @@ describe('SpacesService', () => {
     const spaceUuid = 'space uuid';
 
     beforeEach(() => {
+      profileSpaceService.isSpaceEmpty = jest.fn(async () => true);
+      profileSpaceService.deleteProfileSpace = jest.fn();
       jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
     });
 
