@@ -185,9 +185,11 @@ export class SpacesController {
   }
 
   @Delete(':space_uuid/profiles/:profile_uuid')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @ApiOperation({ summary: 'Leave space' })
   @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
+    status: HttpStatus.OK,
     description: 'Successfully left the space.',
   })
   @ApiResponse({
@@ -205,9 +207,8 @@ export class SpacesController {
   async leaveSpace(
     @Param('space_uuid') spaceUuid: string,
     @Param('profile_uuid') profileUuid: string,
-    @User('uuid') userUuid: string,
   ) {
-    await this.spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+    await this.spacesService.leaveSpace(profileUuid, spaceUuid);
     return { statusCode: HttpStatus.OK, message: 'OK' };
   }
 

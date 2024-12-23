@@ -108,12 +108,7 @@ export class SpacesService {
     return this.findSpaceBySpaceUuid(spaceUuid);
   }
 
-  async leaveSpace(
-    userUuid: string,
-    profileUuid: string,
-    spaceUuid: string,
-  ): Promise<void> {
-    await this.profilesService.verifyUserProfile(userUuid, profileUuid);
+  async leaveSpace(profileUuid: string, spaceUuid: string): Promise<void> {
     try {
       await this.profileSpaceService.deleteProfileSpace(profileUuid, spaceUuid);
     } catch (err) {
