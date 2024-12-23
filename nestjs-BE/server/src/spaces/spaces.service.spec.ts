@@ -229,7 +229,6 @@ describe('SpacesService', () => {
   });
 
   describe('joinSpace', () => {
-    const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
     const space = { uuid: spaceUuid } as Space;
@@ -241,29 +240,9 @@ describe('SpacesService', () => {
     });
 
     it('join space', async () => {
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(profileUuid, spaceUuid);
 
       await expect(res).resolves.toEqual(space);
-    });
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(NotFoundException);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
 
     it('conflict', async () => {
@@ -274,7 +253,7 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(ConflictException);
     });
@@ -287,7 +266,7 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(ForbiddenException);
     });

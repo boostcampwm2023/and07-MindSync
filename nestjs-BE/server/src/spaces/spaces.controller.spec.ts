@@ -130,23 +130,20 @@ describe('SpacesController', () => {
     });
   });
 
-  it('joinSpace', async () => {
-    const spaceMock = { uuid: 'space uuid' };
-    const bodyMock = { profileUuid: 'profile uuid' };
-    const userUuidMock = 'user uuid';
+  describe('joinSpace', () => {
+    it('join space', async () => {
+      const spaceMock = { uuid: 'space uuid' };
+      const profileUuidMock = 'profile uuid';
 
-    (spacesService.joinSpace as jest.Mock).mockResolvedValue(spaceMock);
+      (spacesService.joinSpace as jest.Mock).mockResolvedValue(spaceMock);
 
-    const response = controller.joinSpace(
-      spaceMock.uuid,
-      bodyMock,
-      userUuidMock,
-    );
+      const response = controller.joinSpace(spaceMock.uuid, profileUuidMock);
 
-    await expect(response).resolves.toEqual({
-      statusCode: HttpStatus.CREATED,
-      message: 'Created',
-      data: spaceMock,
+      await expect(response).resolves.toEqual({
+        statusCode: HttpStatus.CREATED,
+        message: 'Created',
+        data: spaceMock,
+      });
     });
   });
 
