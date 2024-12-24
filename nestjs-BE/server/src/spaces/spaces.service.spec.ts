@@ -8,12 +8,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Space } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { SpacesService } from './spaces.service';
-import { CreateSpacePrismaDto } from './dto/create-space.dto';
-import { UpdateSpacePrismaDto } from './dto/update-space.dto';
+import { CreateSpaceDto } from './dto/create-space.dto';
+import { UpdateSpaceDto } from './dto/update-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
-import { ProfilesService } from '../profiles/profiles.service';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
@@ -21,37 +20,15 @@ describe('SpacesService', () => {
   let configService: ConfigService;
   let profileSpaceService: ProfileSpaceService;
   let uploadService: UploadService;
-  let profilesService: ProfilesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
         SpacesService,
-        {
-          provide: PrismaService,
-          useValue: {
-            space: { create: jest.fn(), update: jest.fn() },
-            profile: { findMany: jest.fn() },
-          },
-        },
-        {
-          provide: ProfileSpaceService,
-          useValue: {
-            createProfileSpace: jest.fn(),
-            deleteProfileSpace: jest.fn(),
-            isSpaceEmpty: jest.fn(async () => true),
-            isProfileInSpace: jest.fn(async () => true),
-          },
-        },
-        {
-          provide: ProfilesService,
-          useValue: { verifyUserProfile: jest.fn(async () => true) },
-        },
-        {
-          provide: UploadService,
-          useValue: { uploadFile: jest.fn() },
-        },
+        { provide: PrismaService, useValue: { space: {} } },
+        { provide: ProfileSpaceService, useValue: {} },
+        { provide: UploadService, useValue: {} },
       ],
     }).compile();
 
@@ -60,12 +37,9 @@ describe('SpacesService', () => {
     configService = module.get<ConfigService>(ConfigService);
     profileSpaceService = module.get<ProfileSpaceService>(ProfileSpaceService);
     uploadService = module.get<UploadService>(UploadService);
-    profilesService = module.get<ProfilesService>(ProfilesService);
   });
 
   describe('findSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
     const spaceMock = { uuid: 'space uuid' } as Space;
 
     beforeEach(() => {
@@ -75,101 +49,42 @@ describe('SpacesService', () => {
     });
 
     it('found space', async () => {
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
+      const space = spacesService.findSpace(spaceMock.uuid);
 
       await expect(space).resolves.toEqual(spaceMock);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(spacesService.findSpaceBySpaceUuid).not.toHaveBeenCalled();
-    });
-
-    it('profile not joined space', async () => {
-      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
-        false,
-      );
-
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(profileSpaceService.isProfileInSpace).toHaveBeenCalled();
     });
 
     it('space not found', async () => {
       jest.spyOn(spacesService, 'findSpaceBySpaceUuid').mockResolvedValue(null);
 
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
-
-      await expect(space).rejects.toThrow(NotFoundException);
-      expect(profileSpaceService.isProfileInSpace).not.toHaveBeenCalled();
-    });
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const space = spacesService.findSpace(
-        userUuid,
-        profileUuid,
-        spaceMock.uuid,
-      );
+      const space = spacesService.findSpace(spaceMock.uuid);
 
       await expect(space).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('createSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
     const icon = { filename: 'icon' } as Express.Multer.File;
     const iconUrlMock = 'www.test.com/image';
 
     beforeEach(() => {
-      (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
-      (prisma.space.create as jest.Mock).mockImplementation((args) => {
+      uploadService.uploadFile = jest.fn(async () => iconUrlMock);
+      (prisma.space.create as jest.Mock) = jest.fn(async (args) => {
         return {
           uuid: args.data.uuid,
           name: args.data.name,
           icon: args.data.icon,
         };
       });
+      profileSpaceService.createProfileSpace = jest.fn();
     });
 
     it('created', async () => {
       const createSpaceDto = {
         name: 'new space name',
-      } as CreateSpacePrismaDto;
+      } as CreateSpaceDto;
 
-      const space = await spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        icon,
-        createSpaceDto,
-      );
+      const space = await spacesService.createSpace(icon, createSpaceDto);
 
       expect(space.uuid).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -180,59 +95,12 @@ describe('SpacesService', () => {
       expect(prisma.space.create).toHaveBeenCalled();
     });
 
-    it('profile not found', async () => {
-      const createSpaceDto = {
-        name: 'new space name',
-      } as CreateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const space = spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        icon,
-        createSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(NotFoundException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.create).not.toHaveBeenCalled();
-    });
-
-    it('profile user not own', async () => {
-      const createSpaceDto = {
-        name: 'new space name',
-      } as CreateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const space = spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        icon,
-        createSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.create).not.toHaveBeenCalledWith();
-    });
-
     it('icon not requested', async () => {
       const createSpaceDto = {
         name: 'new space name',
-      } as CreateSpacePrismaDto;
+      } as CreateSpaceDto;
 
-      const space = await spacesService.createSpace(
-        userUuid,
-        profileUuid,
-        undefined,
-        createSpaceDto,
-      );
+      const space = await spacesService.createSpace(undefined, createSpaceDto);
 
       expect(space.uuid).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -245,15 +113,13 @@ describe('SpacesService', () => {
   });
 
   describe('updateSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
     const iconMock = { filename: 'icon' } as Express.Multer.File;
     const iconUrlMock = 'www.test.com/image';
 
     beforeEach(() => {
-      (uploadService.uploadFile as jest.Mock).mockResolvedValue(iconUrlMock);
-      (prisma.space.update as jest.Mock).mockImplementation(async (args) => {
+      uploadService.uploadFile = jest.fn(async () => iconUrlMock);
+      (prisma.space.update as jest.Mock) = jest.fn(async (args) => {
         const space = {
           uuid: args.where.uuid,
           name: args.data.name ? args.data.name : 'test space',
@@ -266,11 +132,9 @@ describe('SpacesService', () => {
     });
 
     it('update space', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+      const updateSpaceDto = { name: 'new space name' } as UpdateSpaceDto;
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         iconMock,
         updateSpaceDto,
@@ -286,11 +150,9 @@ describe('SpacesService', () => {
     });
 
     it('icon not requested', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+      const updateSpaceDto = { name: 'new space name' } as UpdateSpaceDto;
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         undefined,
         updateSpaceDto,
@@ -306,11 +168,9 @@ describe('SpacesService', () => {
     });
 
     it('name not requested', async () => {
-      const updateSpaceDto = {} as UpdateSpacePrismaDto;
+      const updateSpaceDto = {} as UpdateSpaceDto;
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         iconMock,
         updateSpaceDto,
@@ -325,68 +185,8 @@ describe('SpacesService', () => {
       expect(prisma.space.update).toHaveBeenCalled();
     });
 
-    it('profile user not own', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-        iconMock,
-        updateSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.update).not.toHaveBeenCalled();
-    });
-
-    it('profile not joined space', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
-
-      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
-        false,
-      );
-
-      const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-        iconMock,
-        updateSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(ForbiddenException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.update).not.toHaveBeenCalled();
-    });
-
-    it('profile not found', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
-
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-        iconMock,
-        updateSpaceDto,
-      );
-
-      await expect(space).rejects.toThrow(NotFoundException);
-      expect(uploadService.uploadFile).not.toHaveBeenCalled();
-      expect(prisma.space.update).not.toHaveBeenCalled();
-    });
-
     it('update fail', async () => {
-      const updateSpaceDto = { name: 'new space name' } as UpdateSpacePrismaDto;
+      const updateSpaceDto = { name: 'new space name' } as UpdateSpaceDto;
 
       (prisma.space.update as jest.Mock).mockRejectedValue(
         new PrismaClientKnownRequestError('', {
@@ -396,8 +196,6 @@ describe('SpacesService', () => {
       );
 
       const space = spacesService.updateSpace(
-        userUuid,
-        profileUuid,
         spaceUuid,
         iconMock,
         updateSpaceDto,
@@ -408,7 +206,6 @@ describe('SpacesService', () => {
   });
 
   describe('joinSpace', () => {
-    const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
     const space = { uuid: spaceUuid } as Space;
@@ -417,32 +214,13 @@ describe('SpacesService', () => {
       jest
         .spyOn(spacesService, 'findSpaceBySpaceUuid')
         .mockResolvedValue(space);
+      profileSpaceService.createProfileSpace = jest.fn();
     });
 
     it('join space', async () => {
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(profileUuid, spaceUuid);
 
       await expect(res).resolves.toEqual(space);
-    });
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(NotFoundException);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
 
     it('conflict', async () => {
@@ -453,7 +231,7 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(ConflictException);
     });
@@ -466,30 +244,31 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.joinSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.joinSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(ForbiddenException);
     });
   });
 
   describe('leaveSpace', () => {
-    const userUuid = 'user uuid';
     const profileUuid = 'profile uuid';
     const spaceUuid = 'space uuid';
 
     beforeEach(() => {
+      profileSpaceService.isSpaceEmpty = jest.fn(async () => true);
+      profileSpaceService.deleteProfileSpace = jest.fn();
       jest.spyOn(spacesService, 'deleteSpace').mockResolvedValue(null);
     });
 
     it('leave space', async () => {
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).resolves.toBeUndefined();
       expect(spacesService.deleteSpace).toHaveBeenCalled();
     });
 
     it('leave space, other profile exist', async () => {
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       (profileSpaceService.isSpaceEmpty as jest.Mock).mockResolvedValue(false);
 
@@ -505,29 +284,9 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).resolves.toBeUndefined();
-    });
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(NotFoundException);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
 
     it('profile not joined space', async () => {
@@ -538,57 +297,9 @@ describe('SpacesService', () => {
         }),
       );
 
-      const res = spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+      const res = spacesService.leaveSpace(profileUuid, spaceUuid);
 
       await expect(res).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('findProfilesInSpace', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const spaceUuid = 'space uuid';
-
-    it('profile not found', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new NotFoundException(),
-      );
-
-      const res = spacesService.findProfilesInSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-      );
-
-      await expect(res).rejects.toThrow(NotFoundException);
-    });
-
-    it('profile user not own', async () => {
-      (profilesService.verifyUserProfile as jest.Mock).mockRejectedValue(
-        new ForbiddenException(),
-      );
-
-      const res = spacesService.findProfilesInSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-      );
-
-      await expect(res).rejects.toThrow(ForbiddenException);
-    });
-
-    it('profile not joined space', async () => {
-      (profileSpaceService.isProfileInSpace as jest.Mock).mockResolvedValue(
-        false,
-      );
-
-      const res = spacesService.findProfilesInSpace(
-        userUuid,
-        profileUuid,
-        spaceUuid,
-      );
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
   });
 });

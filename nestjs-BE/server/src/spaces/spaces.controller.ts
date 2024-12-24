@@ -10,17 +10,16 @@ import {
   ValidationPipe,
   Header,
   HttpStatus,
-  Query,
-  BadRequestException,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
-import { CreateSpaceRequestDto } from './dto/create-space.dto';
-import { UpdateSpaceRequestDto } from './dto/update-space.dto';
-import { JoinSpaceRequestDto } from './dto/join-space.dto';
-import { User } from '../auth/decorators/user.decorator';
+import { CreateSpaceDto } from './dto/create-space.dto';
+import { UpdateSpaceDto } from './dto/update-space.dto';
+import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
+import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 
 @Controller('spaces')
 @ApiTags('spaces')
@@ -28,6 +27,7 @@ export class SpacesController {
   constructor(private readonly spacesService: SpacesService) {}
 
   @Post()
+  @UseGuards(MatchUserProfileGuard)
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Create space' })
   @ApiResponse({
@@ -59,22 +59,23 @@ export class SpacesController {
         disableErrorMessages: true,
       }),
     )
-    createSpaceDto: CreateSpaceRequestDto,
-    @User('uuid') userUuid: string,
+    createSpaceDto: CreateSpaceDto,
   ) {
-    if (!createSpaceDto.profileUuid) throw new BadRequestException();
-    const space = await this.spacesService.createSpace(
-      userUuid,
-      createSpaceDto.profileUuid,
-      icon,
-      createSpaceDto,
-    );
+    const space = await this.spacesService.createSpace(icon, createSpaceDto);
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 
   @Get(':space_uuid')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @Header('Cache-Control', 'no-store')
   @ApiOperation({ summary: 'Get space by space uuid' })
+  @ApiQuery({
+    name: 'profile_uuid',
+    type: String,
+    description: 'profile uuid',
+    required: true,
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Return the space data.',
@@ -95,21 +96,14 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found. Profile not found',
   })
-  async findSpace(
-    @Param('space_uuid') spaceUuid: string,
-    @Query('profile_uuid') profileUuid: string,
-    @User('uuid') userUuid: string,
-  ) {
-    if (!profileUuid) throw new BadRequestException();
-    const space = await this.spacesService.findSpace(
-      userUuid,
-      profileUuid,
-      spaceUuid,
-    );
+  async findSpace(@Param('space_uuid') spaceUuid: string) {
+    const space = await this.spacesService.findSpace(spaceUuid);
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 
   @Patch(':space_uuid')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Update space by space_uuid' })
   @ApiResponse({
@@ -135,15 +129,16 @@ export class SpacesController {
   async updateSpace(
     @UploadedFile() icon: Express.Multer.File,
     @Param('space_uuid') spaceUuid: string,
-    @Query('profile_uuid') profileUuid: string,
-    @Body(new ValidationPipe({ whitelist: true, disableErrorMessages: true }))
-    updateSpaceDto: UpdateSpaceRequestDto,
-    @User('uuid') userUuid: string,
+    @Body(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        disableErrorMessages: true,
+      }),
+    )
+    updateSpaceDto: UpdateSpaceDto,
   ) {
-    if (!profileUuid) throw new BadRequestException();
     const space = await this.spacesService.updateSpace(
-      userUuid,
-      profileUuid,
       spaceUuid,
       icon,
       updateSpaceDto,
@@ -151,7 +146,8 @@ export class SpacesController {
     return { statusCode: HttpStatus.OK, message: 'OK', data: space };
   }
 
-  @Post(':space_uuid/join')
+  @Post(':space_uuid/profiles/:profile_uuid')
+  @UseGuards(MatchUserProfileGuard)
   @ApiOperation({ summary: 'Join space' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -179,28 +175,18 @@ export class SpacesController {
   })
   async joinSpace(
     @Param('space_uuid') spaceUuid: string,
-    @Body(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        disableErrorMessages: true,
-      }),
-    )
-    joinSpaceDto: JoinSpaceRequestDto,
-    @User('uuid') userUuid: string,
+    @Param('profile_uuid') profileUuid: string,
   ) {
-    const space = await this.spacesService.joinSpace(
-      userUuid,
-      joinSpaceDto.profileUuid,
-      spaceUuid,
-    );
+    const space = await this.spacesService.joinSpace(profileUuid, spaceUuid);
     return { statusCode: HttpStatus.CREATED, message: 'Created', data: space };
   }
 
   @Delete(':space_uuid/profiles/:profile_uuid')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @ApiOperation({ summary: 'Leave space' })
   @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
+    status: HttpStatus.OK,
     description: 'Successfully left the space.',
   })
   @ApiResponse({
@@ -218,15 +204,22 @@ export class SpacesController {
   async leaveSpace(
     @Param('space_uuid') spaceUuid: string,
     @Param('profile_uuid') profileUuid: string,
-    @User('uuid') userUuid: string,
   ) {
-    await this.spacesService.leaveSpace(userUuid, profileUuid, spaceUuid);
+    await this.spacesService.leaveSpace(profileUuid, spaceUuid);
     return { statusCode: HttpStatus.OK, message: 'OK' };
   }
 
   @Get(':space_uuid/profiles')
+  @UseGuards(MatchUserProfileGuard)
+  @UseGuards(IsProfileInSpaceGuard)
   @Header('Cache-Control', 'no-store')
   @ApiOperation({ summary: 'Get profiles joined space.' })
+  @ApiQuery({
+    name: 'profile_uuid',
+    type: String,
+    description: 'profile uuid',
+    required: true,
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successfully get profiles.',
@@ -247,17 +240,8 @@ export class SpacesController {
     status: HttpStatus.NOT_FOUND,
     description: 'Profile not found.',
   })
-  async findProfilesInSpace(
-    @Param('space_uuid') spaceUuid: string,
-    @Query('profile_uuid') profileUuid: string,
-    @User('uuid') userUuid: string,
-  ) {
-    if (!profileUuid) throw new BadRequestException();
-    const profiles = await this.spacesService.findProfilesInSpace(
-      userUuid,
-      profileUuid,
-      spaceUuid,
-    );
+  async findProfilesInSpace(@Param('space_uuid') spaceUuid: string) {
+    const profiles = await this.spacesService.findProfilesInSpace(spaceUuid);
     return { statusCode: HttpStatus.OK, message: 'OK', data: profiles };
   }
 }
