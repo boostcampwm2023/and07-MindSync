@@ -87,10 +87,6 @@ describe('InviteCodesService', () => {
     const testInviteCode = { inviteCode: 'test invite code' } as InviteCode;
 
     beforeEach(() => {
-      (prisma.$transaction as jest.Mock) = jest.fn(async (callback) =>
-        callback(),
-      );
-      jest.spyOn(inviteCodesService, 'findInviteCode').mockResolvedValue(null);
       (prisma.inviteCode.create as jest.Mock) = jest.fn(
         async () => testInviteCode,
       );
@@ -100,7 +96,7 @@ describe('InviteCodesService', () => {
       const inviteCode = inviteCodesService.createInviteCode(testSpaceUuid);
 
       await expect(inviteCode).resolves.toEqual(testInviteCode);
-      expect(inviteCodesService.findInviteCode).toHaveBeenCalledTimes(1);
+      expect(prisma.inviteCode.create).toHaveBeenCalledTimes(1);
     });
   });
 });
