@@ -19,7 +19,11 @@ describe('SpacesController (e2e)', () => {
   let testProfile: Profile;
   let configService: ConfigService;
   let prisma: PrismaService;
-  const testImagePath = resolve(__dirname, './base_image.png');
+
+  let testImage: Buffer;
+  const uuidRegExp =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  let imageRegExp: RegExp;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +41,14 @@ describe('SpacesController (e2e)', () => {
 
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
+
+    testImage = await readFile(resolve(__dirname, './base_image.png'));
+    const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
+      'S3_BUCKET_NAME',
+    )}\\.s3\\.${configService.get<string>(
+      'AWS_REGION',
+    )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
+    imageRegExp = new RegExp(imageUrlPattern);
 
     const testUser = await prisma.user.create({ data: { uuid: uuid() } });
     testProfile = await prisma.profile.create({
@@ -70,41 +82,47 @@ describe('SpacesController (e2e)', () => {
   });
 
   describe('/spaces (POST)', () => {
-    it('success', () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
+    let testUser: User;
+    let testProfile: Profile;
+    let testToken: string;
 
-      const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
-        'S3_BUCKET_NAME',
-      )}\\.s3\\.${configService.get<string>(
-        'AWS_REGION',
-      )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
-      const imageRegExp = new RegExp(imageUrlPattern);
+    beforeEach(async () => {
+      testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testProfile = await prisma.profile.create({
+        data: {
+          uuid: uuid(),
+          userUuid: testUser.uuid,
+          image: 'test image',
+          nickname: 'test nickname',
+        },
+      });
+      testToken = sign(
+        { sub: testUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+    });
+
+    it('respond created when space create success', () => {
+      const newSpace = { name: 'new test space', icon: testImage };
 
       return request(app.getHttpServer())
         .post('/spaces')
         .auth(testToken, { type: 'bearer' })
         .field('name', newSpace.name)
         .field('profile_uuid', testProfile.uuid)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.body.message).toBe('Created');
           expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-          expect(res.body.data.uuid).toMatch(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-          );
+          expect(res.body.data.uuid).toMatch(uuidRegExp);
           expect(res.body.data.name).toBe(newSpace.name);
           expect(res.body.data.icon).toMatch(imageRegExp);
         });
     });
 
-    it('without space image', () => {
+    it('respond created when request without space image', () => {
       const newSpace = { name: 'new test space' };
 
       return request(app.getHttpServer())
@@ -115,9 +133,7 @@ describe('SpacesController (e2e)', () => {
         .expect((res) => {
           expect(res.body.message).toBe('Created');
           expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-          expect(res.body.data.uuid).toMatch(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-          );
+          expect(res.body.data.uuid).toMatch(uuidRegExp);
           expect(res.body.data.name).toBe(newSpace.name);
           expect(res.body.data.icon).toBe(
             configService.get<string>('APP_ICON_URL'),
@@ -125,10 +141,10 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it('without profile uuid', () => {
+    it('respond bad request when request without profile uuid', () => {
       const newSpace = {
         name: 'new test space',
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
 
@@ -143,9 +159,9 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
     });
 
-    it('without space name', () => {
+    it('respond bad request when request without space name', () => {
       const newSpace = {
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
 
@@ -160,7 +176,7 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
     });
 
-    it('user not logged in', () => {
+    it('respond unauthorized when user is not logged in', () => {
       return request(app.getHttpServer())
         .post('/spaces')
         .expect(HttpStatus.UNAUTHORIZED)
@@ -170,10 +186,10 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it("profile user doesn't have", async () => {
+    it('respond forbidden when user does not own profile', async () => {
       const newSpace = {
         name: 'new test space',
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
       const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -198,10 +214,10 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
     });
 
-    it('profilie not found', () => {
+    it('respond forbidden when profile not found', () => {
       const newSpace = {
         name: 'new test space',
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
 
@@ -213,8 +229,8 @@ describe('SpacesController (e2e)', () => {
         .attach('icon', newSpace.icon, {
           contentType: newSpace.iconContentType,
         })
-        .expect(HttpStatus.NOT_FOUND)
-        .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
+        .expect(HttpStatus.FORBIDDEN)
+        .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
     });
   });
 
@@ -336,64 +352,66 @@ describe('SpacesController (e2e)', () => {
     });
   });
 
-  describe('/spaces/:space_uuid?profile_uuid={profile_uuid} (PATCH)', () => {
-    it('update success', async () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
-      await prisma.profileSpace.create({
-        data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
+  describe('/spaces/:space_uuid (PATCH)', () => {
+    let testUser: User;
+    let testProfile: Profile;
+    let testSpace: Space;
+    let testToken: string;
+
+    beforeEach(async () => {
+      testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testProfile = await prisma.profile.create({
+        data: {
+          uuid: uuid(),
+          userUuid: testUser.uuid,
+          image: 'test image',
+          nickname: 'test nickname',
+        },
       });
-      const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
-        'S3_BUCKET_NAME',
-      )}\\.s3\\.${configService.get<string>(
-        'AWS_REGION',
-      )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
-      const imageRegExp = new RegExp(imageUrlPattern);
+      testToken = sign(
+        { sub: testUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+      testSpace = await prisma.space.create({
+        data: {
+          uuid: uuid(),
+          name: 'test space',
+          icon: configService.get<string>('APP_ICON_URL'),
+        },
+      });
+      await prisma.profileSpace.create({
+        data: { profileUuid: testProfile.uuid, spaceUuid: testSpace.uuid },
+      });
+    });
+
+    it('respond ok when space update success', async () => {
+      const newSpace = { name: 'new test space', icon: testImage };
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+        .patch(`/spaces/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
         .field('name', newSpace.name)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .field('profile_uuid', testProfile.uuid)
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body.message).toBe('OK');
           expect(res.body.statusCode).toBe(HttpStatus.OK);
           expect(res.body.data.uuid).toBe(testSpace.uuid);
           expect(res.body.data.name).toBe(newSpace.name);
-          expect(res.body.data.icon).not.toBe(
-            configService.get<string>('APP_ICON_URL'),
-          );
           expect(res.body.data.icon).toMatch(imageRegExp);
         });
     });
 
-    it('request without name', async () => {
-      const newSpace = {
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
-      const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
-        'S3_BUCKET_NAME',
-      )}\\.s3\\.${configService.get<string>(
-        'AWS_REGION',
-      )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
-      const imageRegExp = new RegExp(imageUrlPattern);
-      await prisma.profileSpace.create({
-        data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
-      });
+    it('respond ok when request without name', async () => {
+      const newSpace = { icon: testImage };
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+        .patch(`/spaces/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .field('profile_uuid', testProfile.uuid)
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.OK)
         .expect((res) => {
           expect(res.body.message).toBe('OK');
@@ -404,16 +422,13 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it('request without icon', async () => {
+    it('respond ok when request without icon', async () => {
       const newSpace = { name: 'new test space' };
-      await prisma.profileSpace.create({
-        data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
-      });
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+        .patch(`/spaces/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
-        .send({ name: newSpace.name })
+        .send({ name: newSpace.name, profile_uuid: testProfile.uuid })
         .expect(HttpStatus.OK)
         .expect({
           message: 'OK',
@@ -426,37 +441,49 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it('profile uuid needed', async () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
+    it('respond ok when request without icon (Content-Type multipart/form-data)', async () => {
+      const newSpace = { name: 'new test space' };
 
       return request(app.getHttpServer())
         .patch(`/spaces/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
         .field('name', newSpace.name)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .field('profile_uuid', testProfile.uuid)
+        .expect(HttpStatus.OK)
+        .expect({
+          message: 'OK',
+          statusCode: HttpStatus.OK,
+          data: {
+            uuid: testSpace.uuid,
+            name: newSpace.name,
+            icon: configService.get<string>('APP_ICON_URL'),
+          },
+        });
+    });
+
+    it('respond bad request when profile uuid needed', async () => {
+      const newSpace = { name: 'new test space', icon: testImage };
+
+      return request(app.getHttpServer())
+        .patch(`/spaces/${testSpace.uuid}`)
+        .auth(testToken, { type: 'bearer' })
+        .field('name', newSpace.name)
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.BAD_REQUEST)
         .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
     });
 
-    it('icon is string', async () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: 'string value',
-      };
-      await prisma.profileSpace.create({
-        data: { spaceUuid: testSpace.uuid, profileUuid: testProfile.uuid },
-      });
+    it('respond bad request when icon is string', async () => {
+      const newSpace = { name: 'new test space', icon: 'string value' };
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+        .patch(`/spaces/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
-        .send({ name: newSpace.name, icon: newSpace.icon })
+        .send({
+          name: newSpace.name,
+          icon: newSpace.icon,
+          profile_uuid: testProfile.uuid,
+        })
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {
           expect(res.body.message).toBe('icon is string');
@@ -464,14 +491,30 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it('unauthorized', async () => {
-      const icon = await readFile(resolve(__dirname, './base_image.png'));
-      const newSpace = { name: 'new test space', icon };
+    it('respond bad request when icon is string (Content-Type: multipart/form-data)', async () => {
+      const newSpace = { name: 'new test space', icon: 'string value' };
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${testProfile.uuid}`)
+        .patch(`/spaces/${testSpace.uuid}`)
+        .auth(testToken, { type: 'bearer' })
         .field('name', newSpace.name)
-        .attach('icon', newSpace.icon)
+        .field('icon', newSpace.icon)
+        .field('profile_uuid', testProfile.uuid)
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect((res) => {
+          expect(res.body.message).toBe('icon is string');
+          expect(res.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        });
+    });
+
+    it('respond unauthorized when access token not include', async () => {
+      const newSpace = { name: 'new test space', icon: testImage };
+
+      return request(app.getHttpServer())
+        .patch(`/spaces/${testSpace.uuid}`)
+        .field('name', newSpace.name)
+        .field('profile_uuid', testProfile.uuid)
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.UNAUTHORIZED)
         .expect({
           message: 'Unauthorized',
@@ -479,12 +522,27 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it("profile user doesn't have", async () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
+    it('respond forbidden when user does not own profile', async () => {
+      const newSpace = { name: 'new test space', icon: testImage };
+      const newUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const newToken = sign(
+        { sub: newUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      return request(app.getHttpServer())
+        .patch(`/spaces/${testSpace.uuid}`)
+        .auth(newToken, { type: 'bearer' })
+        .field('name', newSpace.name)
+        .field('profile_uuid', testProfile.uuid)
+        .attach('icon', newSpace.icon, 'base_image.png')
+        .expect(HttpStatus.FORBIDDEN)
+        .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
+    });
+
+    it('respond forbidden when profile not joined space', async () => {
+      const newSpace = { name: 'new test space', icon: testImage };
       const newUser = await prisma.user.create({ data: { uuid: uuid() } });
       const newProfile = await prisma.profile.create({
         data: {
@@ -494,64 +552,33 @@ describe('SpacesController (e2e)', () => {
           nickname: 'test nickname',
         },
       });
-      await prisma.profileSpace.create({
-        data: { spaceUuid: testSpace.uuid, profileUuid: newProfile.uuid },
-      });
+      const newToken = sign(
+        { sub: newUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
-        .auth(testToken, { type: 'bearer' })
+        .patch(`/spaces/${testSpace.uuid}`)
+        .auth(newToken, { type: 'bearer' })
         .field('name', newSpace.name)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .field('profile_uuid', newProfile.uuid)
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.FORBIDDEN)
         .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
     });
 
-    it('profile not joined space', async () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
-      const newUser = await prisma.user.create({ data: { uuid: uuid() } });
-      const newProfile = await prisma.profile.create({
-        data: {
-          uuid: uuid(),
-          userUuid: newUser.uuid,
-          image: 'test image',
-          nickname: 'test nickname',
-        },
-      });
+    it('respond forbidden when profile not found', () => {
+      const newSpace = { name: 'new test space', icon: testImage };
 
       return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${newProfile.uuid}`)
+        .patch(`/spaces/${testSpace.uuid}`)
         .auth(testToken, { type: 'bearer' })
         .field('name', newSpace.name)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .field('profile_uuid', uuid())
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.FORBIDDEN)
         .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
-    });
-
-    it('profile not found', () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
-
-      return request(app.getHttpServer())
-        .patch(`/spaces/${testSpace.uuid}?profile_uuid=${uuid()}`)
-        .auth(testToken, { type: 'bearer' })
-        .field('name', newSpace.name)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
-        .expect(HttpStatus.NOT_FOUND)
-        .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
     });
   });
 
