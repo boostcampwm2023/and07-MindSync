@@ -19,7 +19,11 @@ describe('SpacesController (e2e)', () => {
   let testProfile: Profile;
   let configService: ConfigService;
   let prisma: PrismaService;
-  const testImagePath = resolve(__dirname, './base_image.png');
+
+  let testImage: Buffer;
+  const uuidRegExp =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  let imageRegExp: RegExp;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +41,14 @@ describe('SpacesController (e2e)', () => {
 
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
+
+    testImage = await readFile(resolve(__dirname, './base_image.png'));
+    const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
+      'S3_BUCKET_NAME',
+    )}\\.s3\\.${configService.get<string>(
+      'AWS_REGION',
+    )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
+    imageRegExp = new RegExp(imageUrlPattern);
 
     const testUser = await prisma.user.create({ data: { uuid: uuid() } });
     testProfile = await prisma.profile.create({
@@ -70,41 +82,47 @@ describe('SpacesController (e2e)', () => {
   });
 
   describe('/spaces (POST)', () => {
-    it('success', () => {
-      const newSpace = {
-        name: 'new test space',
-        icon: testImagePath,
-        iconContentType: 'image/png',
-      };
+    let testUser: User;
+    let testProfile: Profile;
+    let testToken: string;
 
-      const imageUrlPattern = `^https\\:\\/\\/${configService.get<string>(
-        'S3_BUCKET_NAME',
-      )}\\.s3\\.${configService.get<string>(
-        'AWS_REGION',
-      )}\\.amazonaws\\.com\\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`;
-      const imageRegExp = new RegExp(imageUrlPattern);
+    beforeEach(async () => {
+      testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testProfile = await prisma.profile.create({
+        data: {
+          uuid: uuid(),
+          userUuid: testUser.uuid,
+          image: 'test image',
+          nickname: 'test nickname',
+        },
+      });
+      testToken = sign(
+        { sub: testUser.uuid },
+        configService.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+    });
+
+    it('respond created when space create success', () => {
+      const newSpace = { name: 'new test space', icon: testImage };
 
       return request(app.getHttpServer())
         .post('/spaces')
         .auth(testToken, { type: 'bearer' })
         .field('name', newSpace.name)
         .field('profile_uuid', testProfile.uuid)
-        .attach('icon', newSpace.icon, {
-          contentType: newSpace.iconContentType,
-        })
+        .attach('icon', newSpace.icon, 'base_image.png')
         .expect(HttpStatus.CREATED)
         .expect((res) => {
           expect(res.body.message).toBe('Created');
           expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-          expect(res.body.data.uuid).toMatch(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-          );
+          expect(res.body.data.uuid).toMatch(uuidRegExp);
           expect(res.body.data.name).toBe(newSpace.name);
           expect(res.body.data.icon).toMatch(imageRegExp);
         });
     });
 
-    it('without space image', () => {
+    it('respond created when request without space image', () => {
       const newSpace = { name: 'new test space' };
 
       return request(app.getHttpServer())
@@ -115,9 +133,7 @@ describe('SpacesController (e2e)', () => {
         .expect((res) => {
           expect(res.body.message).toBe('Created');
           expect(res.body.statusCode).toBe(HttpStatus.CREATED);
-          expect(res.body.data.uuid).toMatch(
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-          );
+          expect(res.body.data.uuid).toMatch(uuidRegExp);
           expect(res.body.data.name).toBe(newSpace.name);
           expect(res.body.data.icon).toBe(
             configService.get<string>('APP_ICON_URL'),
@@ -125,10 +141,10 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it('without profile uuid', () => {
+    it('respond bad request when request without profile uuid', () => {
       const newSpace = {
         name: 'new test space',
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
 
@@ -143,9 +159,9 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
     });
 
-    it('without space name', () => {
+    it('respond bad request when request without space name', () => {
       const newSpace = {
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
 
@@ -160,7 +176,7 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
     });
 
-    it('user not logged in', () => {
+    it('respond unauthorized when user is not logged in', () => {
       return request(app.getHttpServer())
         .post('/spaces')
         .expect(HttpStatus.UNAUTHORIZED)
@@ -170,10 +186,10 @@ describe('SpacesController (e2e)', () => {
         });
     });
 
-    it("profile user doesn't have", async () => {
+    it('respond forbidden when user does not own profile', async () => {
       const newSpace = {
         name: 'new test space',
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
       const newUser = await prisma.user.create({ data: { uuid: uuid() } });
@@ -198,10 +214,10 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
     });
 
-    it('profilie not found', () => {
+    it('respond forbidden when profile not found', () => {
       const newSpace = {
         name: 'new test space',
-        icon: testImagePath,
+        icon: testImage,
         iconContentType: 'image/png',
       };
 
@@ -213,8 +229,8 @@ describe('SpacesController (e2e)', () => {
         .attach('icon', newSpace.icon, {
           contentType: newSpace.iconContentType,
         })
-        .expect(HttpStatus.NOT_FOUND)
-        .expect({ message: 'Not Found', statusCode: HttpStatus.NOT_FOUND });
+        .expect(HttpStatus.FORBIDDEN)
+        .expect({ message: 'Forbidden', statusCode: HttpStatus.FORBIDDEN });
     });
   });
 
