@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  UseInterceptors,
   UploadedFile,
   ValidationPipe,
   Header,
@@ -13,7 +12,6 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
@@ -103,7 +101,6 @@ export class SpacesController {
   @Patch(':space_uuid')
   @UseGuards(MatchUserProfileGuard)
   @UseGuards(IsProfileInSpaceGuard)
-  @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Update space by space_uuid' })
   @ApiResponse({
     status: HttpStatus.OK,

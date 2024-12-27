@@ -21,6 +21,9 @@ export class SpacesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(MulterFileMiddleware('icon'))
-      .forRoutes({ path: '/spaces', method: RequestMethod.POST });
+      .forRoutes(
+        { path: '/spaces', method: RequestMethod.POST },
+        { path: '/spaces/:space_uuid', method: RequestMethod.PATCH },
+      );
   }
 }
