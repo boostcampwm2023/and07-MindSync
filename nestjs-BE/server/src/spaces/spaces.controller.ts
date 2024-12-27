@@ -28,7 +28,6 @@ export class SpacesController {
 
   @Post()
   @UseGuards(MatchUserProfileGuard)
-  @UseInterceptors(FileInterceptor('icon'))
   @ApiOperation({ summary: 'Create space' })
   @ApiResponse({
     status: HttpStatus.CREATED,
