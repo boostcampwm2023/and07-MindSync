@@ -13,7 +13,10 @@ export class IsProfileInSpaceGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const profileUuid = request.body.profile_uuid || request.query.profile_uuid;
+    const profileUuid =
+      request.body.profile_uuid ||
+      request.query.profile_uuid ||
+      request.params.profile_uuid;
     const spaceUuid = request.params.space_uuid;
     if (!profileUuid || !spaceUuid) throw new BadRequestException();
     const isProfileInSpace = await this.profileSpaceService.isProfileInSpace(
