@@ -31,6 +31,10 @@ export class InviteCodesController {
     description: 'Space code input is missing.',
   })
   @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'need access token',
+  })
+  @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Space not found.',
   })
@@ -49,6 +53,10 @@ export class InviteCodesController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns a space associated with the invite code.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'need access token',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,

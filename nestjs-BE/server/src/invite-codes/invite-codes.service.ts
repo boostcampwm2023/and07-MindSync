@@ -35,22 +35,25 @@ export class InviteCodesService {
   }
 
   async createInviteCode(spaceUuid: string): Promise<InviteCode> {
-    return this.prisma.$transaction(async () => {
-      let inviteCode: string;
+    let inviteCode: InviteCode;
+    const newUuid = uuid();
 
-      do {
-        inviteCode = generateRandomString(INVITE_CODE_LENGTH);
-      } while (await this.findInviteCode(inviteCode));
+    do {
+      try {
+        inviteCode = await this.prisma.inviteCode.create({
+          data: {
+            uuid: newUuid,
+            inviteCode: generateRandomString(INVITE_CODE_LENGTH),
+            spaceUuid,
+            expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
+          },
+        });
+      } catch (err) {
+        if (err.code !== 'P2002') throw err;
+      }
+    } while (!inviteCode);
 
-      return this.prisma.inviteCode.create({
-        data: {
-          uuid: uuid(),
-          inviteCode,
-          spaceUuid,
-          expiryDate: getExpiryDate({ hour: INVITE_CODE_EXPIRY_HOURS }),
-        },
-      });
-    });
+    return inviteCode;
   }
 
   @Cron(CronExpression.EVERY_HOUR)
