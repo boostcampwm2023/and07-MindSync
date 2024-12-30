@@ -59,10 +59,8 @@ export class SpacesService {
     icon: Express.Multer.File,
     updateSpaceDto: UpdateSpaceDto,
   ): Promise<Space> {
-    const updateData: Partial<UpdateSpaceDto> = omit(updateSpaceDto, [
-      'icon',
-      'profileUuid',
-    ]);
+    const updateData: Partial<Pick<UpdateSpaceDto, 'name'> & { icon: string }> =
+      omit(updateSpaceDto, ['icon', 'profileUuid']);
     if (icon) {
       updateData.icon = await this.uploadService.uploadFile(icon);
     }

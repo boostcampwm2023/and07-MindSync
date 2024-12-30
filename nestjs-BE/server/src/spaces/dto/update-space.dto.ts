@@ -26,11 +26,10 @@ export class UpdateSpaceDto {
   })
   name: string;
 
-  @IsOptional()
   @ApiProperty({
-    example: 'new image',
-    description: 'Updated space icon',
+    example: 'space-icon.png',
+    description: 'New space icon to change',
     required: false,
   })
-  icon: string;
+  icon: Express.Multer.File;
 }

@@ -24,6 +24,7 @@ export class CreateSpaceDto {
   @ApiProperty({
     example: 'space-icon.png',
     description: 'Profile icon for the space',
+    required: false,
   })
-  icon: string;
+  icon: Express.Multer.File;
 }
