@@ -444,7 +444,7 @@ describe('SpacesController (e2e)', () => {
         .expect({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
     });
 
-    it('respond bad request when icon is string', async () => {
+    it('respond ok request when icon is string. icon is ignored', async () => {
       const newSpace = { name: 'new test space', icon: 'string value' };
 
       return request(app.getHttpServer())
@@ -455,14 +455,19 @@ describe('SpacesController (e2e)', () => {
           icon: newSpace.icon,
           profile_uuid: testProfile.uuid,
         })
-        .expect(HttpStatus.BAD_REQUEST)
+        .expect(HttpStatus.OK)
         .expect((res) => {
-          expect(res.body.message).toBe('icon is string');
-          expect(res.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+          expect(res.body.message).toBe('OK');
+          expect(res.body.statusCode).toBe(HttpStatus.OK);
+          expect(res.body.data.uuid).toBe(testSpace.uuid);
+          expect(res.body.data.name).toBe(newSpace.name);
+          expect(res.body.data.icon).toBe(
+            configService.get<string>('APP_ICON_URL'),
+          );
         });
     });
 
-    it('respond bad request when icon is string (Content-Type: multipart/form-data)', async () => {
+    it('respond ok when icon is string. icon is ignored (Content-Type: multipart/form-data)', async () => {
       const newSpace = { name: 'new test space', icon: 'string value' };
 
       return request(app.getHttpServer())
@@ -471,10 +476,15 @@ describe('SpacesController (e2e)', () => {
         .field('name', newSpace.name)
         .field('icon', newSpace.icon)
         .field('profile_uuid', testProfile.uuid)
-        .expect(HttpStatus.BAD_REQUEST)
+        .expect(HttpStatus.OK)
         .expect((res) => {
-          expect(res.body.message).toBe('icon is string');
-          expect(res.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+          expect(res.body.message).toBe('OK');
+          expect(res.body.statusCode).toBe(HttpStatus.OK);
+          expect(res.body.data.uuid).toBe(testSpace.uuid);
+          expect(res.body.data.name).toBe(newSpace.name);
+          expect(res.body.data.icon).toBe(
+            configService.get<string>('APP_ICON_URL'),
+          );
         });
     });
 
