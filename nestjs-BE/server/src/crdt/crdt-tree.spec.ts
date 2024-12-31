@@ -2,8 +2,8 @@ import { CrdtTree } from './crdt-tree';
 import { Node } from './node';
 
 it('crdt tree 동기화', () => {
-  const tree1 = new CrdtTree<string>('1');
-  const tree2 = new CrdtTree<string>('2');
+  const tree1 = new CrdtTree('1');
+  const tree2 = new CrdtTree('2');
 
   const op_1_1 = tree1.generateOperationAdd('a', 'root', 'hello');
   const op_1_2 = tree1.generateOperationAdd('b', 'root', 'hi');
@@ -45,7 +45,7 @@ it('crdt tree 동기화', () => {
 });
 
 it('crdt tree 역직렬화', () => {
-  const tree = new CrdtTree<string>('1');
+  const tree = new CrdtTree('1');
 
   const op1 = tree.generateOperationAdd('a', 'root', 'hello');
   const op2 = tree.generateOperationAdd('b', 'root', 'hi');
@@ -56,13 +56,13 @@ it('crdt tree 역직렬화', () => {
 
   expect(JSON.stringify(tree));
 
-  const parsedTree = CrdtTree.parse<string>(JSON.stringify(tree));
+  const parsedTree = CrdtTree.parse(JSON.stringify(tree));
 
   expect(JSON.stringify(tree)).toEqual(JSON.stringify(parsedTree));
 });
 
 it('crdt tree 순환', () => {
-  const tree = new CrdtTree<string>('1');
+  const tree = new CrdtTree('1');
 
   const op1 = tree.generateOperationAdd('a', 'root', 'hello');
   const op2 = tree.generateOperationAdd('b', 'root', 'hi');
@@ -72,5 +72,5 @@ it('crdt tree 순환', () => {
   const op6 = tree.generateOperationMove('b', 'a');
 
   tree.applyOperations([op1, op2, op3, op4, op5, op6]);
-  expect((tree.tree.get('b') as Node<string>).parentId).toEqual('root');
+  expect((tree.tree.get('b') as Node).parentId).toEqual('root');
 });

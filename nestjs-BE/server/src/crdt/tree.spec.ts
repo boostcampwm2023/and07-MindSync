@@ -1,7 +1,7 @@
 import { Tree } from './tree';
 
 it('isAncestor', () => {
-  const tree = new Tree<string>();
+  const tree = new Tree();
 
   tree.addNode('a', 'root', 'test');
   tree.addNode('b', 'a', 'test');

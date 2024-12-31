@@ -1,18 +1,18 @@
 import { Node } from './node';
 
-export class Tree<T> {
-  nodes = new Map<string, Node<T>>();
+export class Tree {
+  nodes = new Map<string, Node>();
 
   constructor() {
-    this.nodes.set('root', new Node<T>('root'));
+    this.nodes.set('root', new Node('root'));
   }
 
-  get(id: string): Node<T> | undefined {
+  get(id: string): Node | undefined {
     return this.nodes.get(id);
   }
 
-  addNode(targetId: string, parentId: string, description: T) {
-    const newNode = new Node<T>(targetId, parentId, description);
+  addNode(targetId: string, parentId: string, description: string) {
+    const newNode = new Node(targetId, parentId, description);
 
     const parentNode = this.nodes.get(parentId);
     if (!parentNode) return;
@@ -32,7 +32,7 @@ export class Tree<T> {
     targetNode.parentId = parentId;
   }
 
-  removeNode(targetId: string): Node<T> | undefined {
+  removeNode(targetId: string): Node | undefined {
     const targetNode = this.nodes.get(targetId);
     if (!targetNode) return;
 
@@ -46,7 +46,7 @@ export class Tree<T> {
     return this.nodes.get(targetId);
   }
 
-  updateNode(targetId: string, description: T) {
+  updateNode(targetId: string, description: string) {
     const targetNode = this.nodes.get(targetId);
     if (!targetNode) return;
 
@@ -66,12 +66,12 @@ export class Tree<T> {
     return false;
   }
 
-  static parse<T>(json: string) {
+  static parse(json: string) {
     const { nodes } = JSON.parse(json);
-    const tree = new Tree<T>();
-    tree.nodes = new Map<string, Node<T>>();
+    const tree = new Tree();
+    tree.nodes = new Map<string, Node>();
     nodes.forEach((nodeJson) => {
-      const node = Node.parse<T>(JSON.stringify(nodeJson));
+      const node = Node.parse(JSON.stringify(nodeJson));
       tree.nodes.set(node.targetId, node);
     });
     return tree;

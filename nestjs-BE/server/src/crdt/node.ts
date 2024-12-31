@@ -1,22 +1,22 @@
-export class Node<T> {
+export class Node {
   targetId: string;
   parentId: string;
-  description: T | null;
+  description?: string;
   children = new Array<string>();
 
   constructor(
     targetId: string,
     parentId: string = '0',
-    description: T | null = null,
+    description: string = null,
   ) {
     this.targetId = targetId;
     this.parentId = parentId;
     this.description = description;
   }
 
-  static parse<T>(json: string) {
+  static parse(json: string) {
     const parsedJson = JSON.parse(json);
-    const node = new Node<T>(
+    const node = new Node(
       parsedJson.targetId,
       parsedJson.parentId,
       parsedJson.description,
