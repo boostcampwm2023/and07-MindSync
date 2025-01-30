@@ -60,10 +60,10 @@ export class BoardTreesGateway implements OnGatewayConnection {
     const { boardId, operation: serializedOperation } = payloadObject;
 
     const operationTypeMap = {
-      add: OperationAdd.parse<string>,
-      delete: OperationDelete.parse<string>,
-      move: OperationMove.parse<string>,
-      update: OperationUpdate.parse<string>,
+      add: OperationAdd.parse,
+      delete: OperationDelete.parse,
+      move: OperationMove.parse,
+      update: OperationUpdate.parse,
     };
 
     const operation =
