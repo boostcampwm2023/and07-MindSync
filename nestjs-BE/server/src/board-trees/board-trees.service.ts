@@ -11,7 +11,7 @@ export class BoardTreesService {
     @InjectModel(BoardTree.name) private boardTreeModel: Model<BoardTree>,
   ) {}
 
-  private boardTrees = new Map<string, CrdtTree<string>>();
+  private boardTrees = new Map<string, CrdtTree>();
 
   async create(boardId: string, tree: string) {
     const createdTree = new this.boardTreeModel({
@@ -33,16 +33,16 @@ export class BoardTreesService {
   async initBoardTree(boardId: string, boardName: string) {
     const existingTree = await this.findByBoardId(boardId);
     if (existingTree) {
-      this.boardTrees.set(boardId, CrdtTree.parse<string>(existingTree.tree));
+      this.boardTrees.set(boardId, CrdtTree.parse(existingTree.tree));
     } else {
-      const newTree = new CrdtTree<string>(boardId);
+      const newTree = new CrdtTree(boardId);
       newTree.tree.get('root').description = boardName;
       this.create(boardId, JSON.stringify(newTree));
       this.boardTrees.set(boardId, newTree);
     }
   }
 
-  applyOperation(boardId: string, operation: Operation<string>) {
+  applyOperation(boardId: string, operation: Operation) {
     const boardTree = this.boardTrees.get(boardId);
     boardTree.applyOperation(operation);
   }
