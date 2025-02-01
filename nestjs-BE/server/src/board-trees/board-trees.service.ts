@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BoardTree } from './schemas/board-tree.schema';
+import { BoardOperation } from './schemas/board-operation.schema';
 import { CrdtTree } from '../crdt/crdt-tree';
 import { Operation } from '../crdt/operation';
 
@@ -9,6 +10,8 @@ import { Operation } from '../crdt/operation';
 export class BoardTreesService {
   constructor(
     @InjectModel(BoardTree.name) private boardTreeModel: Model<BoardTree>,
+    @InjectModel(BoardOperation.name)
+    private boardOperationModel: Model<BoardOperation>,
   ) {}
 
   private boardTrees = new Map<string, CrdtTree>();
@@ -56,5 +59,9 @@ export class BoardTreesService {
     this.boardTreeModel
       .updateOne({ boardId }, { tree: JSON.stringify(tree) })
       .exec();
+  }
+
+  async createOperationLog(operation: BoardOperation) {
+    return this.boardOperationModel.create({ operation });
   }
 }

@@ -14,6 +14,7 @@ import {
   OperationMove,
   OperationUpdate,
 } from '../crdt/operation';
+import type { BoardOperation } from './schemas/board-operation.schema';
 
 @WebSocketGateway({ namespace: 'board' })
 export class BoardTreesGateway implements OnGatewayConnection {
@@ -74,5 +75,10 @@ export class BoardTreesGateway implements OnGatewayConnection {
     client.broadcast
       .to(boardId)
       .emit('operationFromServer', serializedOperation);
+  }
+
+  @SubscribeMessage('createOperation')
+  handleCreateOperation(client: Socket, operation: BoardOperation) {
+    client.broadcast.to(operation.boardId).emit('operation', operation);
   }
 }
