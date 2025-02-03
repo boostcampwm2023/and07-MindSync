@@ -64,4 +64,8 @@ export class BoardTreesService {
   async createOperationLog(operation: BoardOperation) {
     return this.boardOperationModel.create({ operation });
   }
+
+  async getOperationLogs(boardId: string) {
+    return this.boardOperationModel.find({ boardId });
+  }
 }

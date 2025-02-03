@@ -82,4 +82,10 @@ export class BoardTreesGateway implements OnGatewayConnection {
     await this.boardTreesService.createOperationLog(operation);
     client.broadcast.to(operation.boardId).emit('operation', operation);
   }
+
+  @SubscribeMessage('getOperations')
+  async handleGetOperations(client: Socket, boardId: string) {
+    const operations = await this.boardTreesService.getOperationLogs(boardId);
+    client.emit('getOperations', operations);
+  }
 }
