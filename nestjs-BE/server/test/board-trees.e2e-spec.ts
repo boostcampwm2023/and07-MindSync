@@ -3,6 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BoardTreesModule } from '../src/board-trees/board-trees.module';
+import { io } from 'socket.io-client';
+
+const PORT = 3000;
 
 describe('BoardTreesGateway (e2e)', () => {
   let app: INestApplication;
@@ -25,9 +28,21 @@ describe('BoardTreesGateway (e2e)', () => {
     app = module.createNestApplication();
 
     await app.init();
+    await app.listen(PORT);
   });
 
   afterAll(async () => {
     await app.close();
+  });
+
+  describe('socket connection', () => {
+    it('fail', (done) => {
+      const socket = io(`http://localhost:${PORT}`);
+      socket.on('connect', () => {
+        expect('this is connected').toBe('this is connected');
+        socket.disconnect();
+        done();
+      });
+    });
   });
 });
