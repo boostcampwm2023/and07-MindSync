@@ -1,4 +1,3 @@
-import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -23,13 +22,11 @@ export class BoardTreesGateway implements OnGatewayConnection {
   handleConnection(client: Socket, token: string) {
     if (!token) {
       client.disconnect();
-      throw new UnauthorizedException();
     }
     try {
       this.jwtService.verify(token);
     } catch (error) {
       client.disconnect();
-      throw new UnauthorizedException();
     }
   }
 
