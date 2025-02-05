@@ -37,10 +37,13 @@ describe('BoardTreesGateway (e2e)', () => {
 
   describe('socket connection', () => {
     it('fail', (done) => {
-      const socket = io(`http://localhost:${PORT}`);
+      const socket = io(`ws://localhost:${PORT}/board`);
+
       socket.on('connect', () => {
         expect('this is connected').toBe('this is connected');
-        socket.disconnect();
+      });
+
+      socket.on('disconnect', () => {
         done();
       });
     });
