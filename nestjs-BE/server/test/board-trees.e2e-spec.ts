@@ -74,5 +74,25 @@ describe('BoardTreesGateway (e2e)', () => {
 
       expect(error.message).toBe('token is invalid');
     });
+
+    it('success', async () => {
+      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const testToken = sign(
+        { sub: testUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      const connected = await new Promise((resolve) => {
+        const socket = io(serverUrl, { auth: { token: testToken } });
+        socket.on('connect', () => {
+          const connected = socket.connected;
+          socket.disconnect();
+          resolve(connected);
+        });
+      });
+
+      expect(connected).toBeTruthy();
+    });
   });
 });
