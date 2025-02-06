@@ -2,8 +2,8 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BoardTreesModule } from '../src/board-trees/board-trees.module';
 import { io } from 'socket.io-client';
+import { BoardTreesModule } from '../src/board-trees/board-trees.module';
 
 const PORT = 3000;
 
