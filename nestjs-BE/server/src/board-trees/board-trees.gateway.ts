@@ -1,16 +1,17 @@
 import { JwtService } from '@nestjs/jwt';
 import {
-  OnGatewayConnection,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { BoardTreesService } from './board-trees.service';
 import type { BoardOperation } from './schemas/board-operation.schema';
 
 @WebSocketGateway({ namespace: 'board' })
-export class BoardTreesGateway implements OnGatewayConnection {
+export class BoardTreesGateway implements OnGatewayInit {
   constructor(
     private boardTreesService: BoardTreesService,
     private jwtService: JwtService,
@@ -19,15 +20,19 @@ export class BoardTreesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket, token: string) {
-    if (!token) {
-      client.disconnect();
-    }
-    try {
-      this.jwtService.verify(token);
-    } catch (error) {
-      client.disconnect();
-    }
+  afterInit(server: Server) {
+    server.use((socket, next) => {
+      const token = socket.handshake.auth.token;
+      if (!token) {
+        next(new WsException('access token required'));
+      }
+      try {
+        this.jwtService.verify(token);
+        next();
+      } catch (error) {
+        next(new WsException('token is invalid'));
+      }
+    });
   }
 
   @SubscribeMessage('joinBoard')
