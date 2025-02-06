@@ -2,13 +2,19 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
+import { sign } from 'jsonwebtoken';
 import { io } from 'socket.io-client';
+import { v4 as uuid } from 'uuid';
 import { BoardTreesModule } from '../src/board-trees/board-trees.module';
+import { PrismaModule } from '../src/prisma/prisma.module';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 const PORT = 3000;
 
 describe('BoardTreesGateway (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
+  let config: ConfigService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +28,7 @@ describe('BoardTreesGateway (e2e)', () => {
           }),
         }),
         BoardTreesModule,
+        PrismaModule,
       ],
     }).compile();
 
@@ -29,6 +36,9 @@ describe('BoardTreesGateway (e2e)', () => {
 
     await app.init();
     await app.listen(PORT);
+
+    prisma = module.get<PrismaService>(PrismaService);
+    config = module.get<ConfigService>(ConfigService);
   });
 
   afterAll(async () => {
@@ -45,6 +55,24 @@ describe('BoardTreesGateway (e2e)', () => {
         expect(error.message).toBe('access token required');
         done();
       });
+    });
+
+    it('fail when access token is invalid', async () => {
+      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const testToken = sign(
+        { sub: testUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '-5m' },
+      );
+
+      const error: Error = await new Promise((resolve) => {
+        const socket = io(serverUrl, { auth: { token: testToken } });
+        socket.on('connect_error', (error) => {
+          resolve(error);
+        });
+      });
+
+      expect(error.message).toBe('token is invalid');
     });
   });
 });
