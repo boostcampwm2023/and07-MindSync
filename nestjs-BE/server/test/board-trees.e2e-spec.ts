@@ -36,8 +36,10 @@ describe('BoardTreesGateway (e2e)', () => {
   });
 
   describe('socket connection', () => {
+    const serverUrl = `ws://localhost:${PORT}/board`;
+
     it('fail when access token is not included', (done) => {
-      const socket = io(`ws://localhost:${PORT}/board`);
+      const socket = io(serverUrl);
 
       socket.on('connect_error', (error) => {
         expect(error.message).toBe('access token required');
