@@ -6,6 +6,7 @@ import {
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
+import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
 import { BoardTreesService } from './board-trees.service';
 import type { BoardOperation } from './schemas/board-operation.schema';
@@ -15,6 +16,7 @@ export class BoardTreesGateway implements OnGatewayInit {
   constructor(
     private boardTreesService: BoardTreesService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   @WebSocketServer()
@@ -27,7 +29,9 @@ export class BoardTreesGateway implements OnGatewayInit {
         next(new WsException('access token required'));
       }
       try {
-        this.jwtService.verify(token);
+        this.jwtService.verify(token, {
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+        });
         next();
       } catch (error) {
         next(new WsException('token is invalid'));
