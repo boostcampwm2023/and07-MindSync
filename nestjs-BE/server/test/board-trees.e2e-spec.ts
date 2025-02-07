@@ -45,7 +45,7 @@ describe('BoardTreesGateway (e2e)', () => {
     await app.close();
   });
 
-  describe('socket connection', () => {
+  describe('socket connection authentication', () => {
     const serverUrl = `ws://localhost:${PORT}/board`;
 
     it('fail when access token is not included', (done) => {
