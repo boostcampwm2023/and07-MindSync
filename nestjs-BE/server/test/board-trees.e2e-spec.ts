@@ -124,5 +124,22 @@ describe('BoardTreesGateway (e2e)', () => {
         'board id required',
       );
     });
+
+    it('join board', async () => {
+      const boardId = 'board id';
+
+      const response = await new Promise((resolve) => {
+        const socket = io(serverUrl, {
+          auth: { token: testToken },
+          query: { boardId },
+        });
+        socket.on('board_joined', (boardId) => {
+          socket.disconnect();
+          resolve(boardId);
+        });
+      });
+
+      expect(response).toBe(boardId);
+    });
   });
 });
