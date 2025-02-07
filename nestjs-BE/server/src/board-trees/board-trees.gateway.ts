@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import {
+  OnGatewayConnection,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
@@ -12,7 +13,7 @@ import { BoardTreesService } from './board-trees.service';
 import type { BoardOperation } from './schemas/board-operation.schema';
 
 @WebSocketGateway({ namespace: 'board' })
-export class BoardTreesGateway implements OnGatewayInit {
+export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
   constructor(
     private boardTreesService: BoardTreesService,
     private jwtService: JwtService,
@@ -39,11 +40,16 @@ export class BoardTreesGateway implements OnGatewayInit {
     });
   }
 
-  @SubscribeMessage('joinBoard')
-  async handleJoinBoard(client: Socket, payload: string) {
-    const payloadObject = JSON.parse(payload);
-    client.join(payloadObject.boardId);
-    client.emit('boardJoined');
+  handleConnection(client: Socket) {
+    const query = client.handshake.query;
+    const boardId = query.boardId;
+
+    if (!boardId) {
+      client.emit('board_id_required', new WsException('board id required'));
+      client.disconnect();
+    }
+    client.join(boardId);
+    client.emit('board_joined', boardId);
   }
 
   @SubscribeMessage('createOperation')
