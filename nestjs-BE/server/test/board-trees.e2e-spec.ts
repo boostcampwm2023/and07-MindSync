@@ -65,14 +65,14 @@ describe('BoardTreesGateway (e2e)', () => {
         { expiresIn: '-5m' },
       );
 
-      const error: Error = await new Promise((resolve) => {
+      const error = new Promise((resolve, reject) => {
         const socket = io(serverUrl, { auth: { token: testToken } });
         socket.on('connect_error', (error) => {
-          resolve(error);
+          reject(error);
         });
       });
 
-      expect(error.message).toBe('token is invalid');
+      await expect(error).rejects.toHaveProperty('message', 'token is invalid');
     });
 
     it('success', async () => {
@@ -110,16 +110,19 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('board_id_required error when board id not included', async () => {
-      const error: Error = await new Promise((resolve) => {
+      const error = new Promise((resolve, reject) => {
         const socket = io(serverUrl, {
           auth: { token: testToken },
         });
         socket.on('board_id_required', (error) => {
-          resolve(error);
+          reject(error);
         });
       });
 
-      expect(error.message).toBe('board id required');
+      await expect(error).rejects.toHaveProperty(
+        'message',
+        'board id required',
+      );
     });
   });
 });
