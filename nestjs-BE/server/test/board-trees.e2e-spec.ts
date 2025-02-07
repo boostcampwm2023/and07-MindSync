@@ -95,4 +95,31 @@ describe('BoardTreesGateway (e2e)', () => {
       expect(connected).toBeTruthy();
     });
   });
+
+  describe('join board on connection', () => {
+    const serverUrl = `ws://localhost:${PORT}/board`;
+    let testToken: string;
+
+    beforeEach(async () => {
+      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testToken = sign(
+        { sub: testUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+    });
+
+    it('board_id_required error when board id not included', async () => {
+      const error: Error = await new Promise((resolve) => {
+        const socket = io(serverUrl, {
+          auth: { token: testToken },
+        });
+        socket.on('board_id_required', (error) => {
+          resolve(error);
+        });
+      });
+
+      expect(error.message).toBe('board id required');
+    });
+  });
 });
