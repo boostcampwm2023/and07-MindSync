@@ -3,9 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { sign } from 'jsonwebtoken';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 import { BoardTreesModule } from '../src/board-trees/board-trees.module';
+import { BoardTreesService } from '../src/board-trees/board-trees.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
@@ -16,6 +17,7 @@ describe('BoardTreesGateway (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let config: ConfigService;
+  let boardTreesService: BoardTreesService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,6 +42,7 @@ describe('BoardTreesGateway (e2e)', () => {
 
     prisma = module.get<PrismaService>(PrismaService);
     config = module.get<ConfigService>(ConfigService);
+    boardTreesService = module.get<BoardTreesService>(BoardTreesService);
   });
 
   afterAll(async () => {
@@ -138,6 +141,59 @@ describe('BoardTreesGateway (e2e)', () => {
       });
 
       expect(response).toBe(boardId);
+    });
+  });
+
+  describe('createOperation', () => {
+    const boardId = 'board id';
+    let testToken: string;
+    let client: Socket;
+
+    beforeEach(async () => {
+      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testToken = sign(
+        { sub: testUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      await new Promise((resolve) => {
+        client = io(serverUrl, {
+          auth: { token: testToken },
+          query: { boardId },
+        });
+        client.on('board_joined', () => {
+          resolve(null);
+        });
+      });
+    });
+
+    afterEach(() => {
+      if (client.connected) {
+        client.disconnect();
+      }
+    });
+
+    it('create operation', async () => {
+      const testOperation = {
+        boardId: uuid(),
+        type: 'add',
+        parentId: 'root',
+        content: 'new node',
+      };
+
+      await new Promise((resolve) => {
+        client.on('operationCreated', () => {
+          resolve(null);
+        });
+
+        client.emit('createOperation', testOperation);
+      });
+
+      const operations = await boardTreesService.getOperationLogs(
+        testOperation.boardId,
+      );
+      expect(operations).toContainEqual(testOperation);
     });
   });
 });
