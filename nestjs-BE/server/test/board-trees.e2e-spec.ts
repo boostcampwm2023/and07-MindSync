@@ -12,6 +12,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 const PORT = 3000;
 
 describe('BoardTreesGateway (e2e)', () => {
+  const serverUrl = `ws://localhost:${PORT}/board`;
   let app: INestApplication;
   let prisma: PrismaService;
   let config: ConfigService;
@@ -46,8 +47,6 @@ describe('BoardTreesGateway (e2e)', () => {
   });
 
   describe('socket connection authentication', () => {
-    const serverUrl = `ws://localhost:${PORT}/board`;
-
     it('fail when access token is not included', (done) => {
       const socket = io(serverUrl);
 
@@ -97,7 +96,6 @@ describe('BoardTreesGateway (e2e)', () => {
   });
 
   describe('join board on connection', () => {
-    const serverUrl = `ws://localhost:${PORT}/board`;
     let testToken: string;
 
     beforeEach(async () => {
