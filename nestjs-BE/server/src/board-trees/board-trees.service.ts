@@ -66,6 +66,9 @@ export class BoardTreesService {
   }
 
   async getOperationLogs(boardId: string) {
-    return this.boardOperationModel.find({ boardId });
+    return this.boardOperationModel
+      .find({ boardId })
+      .select('-_id -__v')
+      .lean();
   }
 }
