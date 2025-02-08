@@ -195,5 +195,44 @@ describe('BoardTreesGateway (e2e)', () => {
       );
       expect(operations).toContainEqual(testOperation);
     });
+
+    it('other client received operation', async () => {
+      let otherClient: Socket;
+
+      const otherUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const otherToken = sign(
+        { sub: otherUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      await new Promise((resolve) => {
+        otherClient = io(serverUrl, {
+          auth: { token: otherToken },
+          query: { boardId },
+        });
+        otherClient.on('board_joined', () => {
+          resolve(null);
+        });
+      });
+
+      const testOperation = {
+        boardId,
+        type: 'add',
+        parentId: 'root',
+        content: 'new node',
+      };
+
+      const response = await new Promise((resolve) => {
+        otherClient.on('operation', (operation) => {
+          otherClient.disconnect();
+          resolve(operation);
+        });
+
+        client.emit('createOperation', testOperation);
+      });
+
+      expect(response).toEqual(testOperation);
+    });
   });
 });
