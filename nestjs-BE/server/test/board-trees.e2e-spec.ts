@@ -103,12 +103,12 @@ describe('BoardTreesGateway (e2e)', () => {
       testToken = await createUserToken(prisma, config);
     });
 
-    it('board_id_required error when board id not included', async () => {
+    it('boardIdRequired error when board id not included', async () => {
       const error = new Promise((resolve, reject) => {
         const socket = io(serverUrl, {
           auth: { token: testToken },
         });
-        socket.on('board_id_required', (error) => {
+        socket.on('boardIdRequired', (error) => {
           reject(error);
         });
       });
@@ -127,7 +127,7 @@ describe('BoardTreesGateway (e2e)', () => {
           auth: { token: testToken },
           query: { boardId },
         });
-        socket.on('board_joined', (boardId) => {
+        socket.on('boardJoined', (boardId) => {
           socket.disconnect();
           resolve(boardId);
         });
@@ -258,7 +258,7 @@ async function createClientSocket(
   let client: Socket;
   await new Promise((resolve) => {
     client = io(uri, opts);
-    client.on('board_joined', () => {
+    client.on('boardJoined', () => {
       resolve(null);
     });
   });

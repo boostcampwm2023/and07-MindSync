@@ -42,11 +42,11 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     const boardId = query.boardId;
 
     if (!boardId) {
-      client.emit('board_id_required', new WsException('board id required'));
+      client.emit('boardIdRequired', new WsException('board id required'));
       client.disconnect();
     }
     client.join(boardId);
-    client.emit('board_joined', boardId);
+    client.emit('boardJoined', boardId);
   }
 
   @SubscribeMessage('createOperation')
