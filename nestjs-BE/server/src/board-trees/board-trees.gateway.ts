@@ -5,7 +5,6 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { ConfigService } from '@nestjs/config';
@@ -20,9 +19,6 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-
-  @WebSocketServer()
-  server: Server;
 
   afterInit(server: Server) {
     server.use((socket, next) => {
