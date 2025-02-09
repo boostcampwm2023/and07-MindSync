@@ -9,6 +9,7 @@ import { BoardTreesModule } from '../src/board-trees/board-trees.module';
 import { BoardTreesService } from '../src/board-trees/board-trees.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import type { BoardOperation } from '../src/board-trees/schemas/board-operation.schema';
 
 const PORT = 3000;
 
@@ -233,6 +234,64 @@ describe('BoardTreesGateway (e2e)', () => {
       });
 
       expect(response).toEqual(testOperation);
+    });
+  });
+
+  describe('getOperations', () => {
+    const boardId = uuid();
+    let testToken: string;
+    let testOperations: BoardOperation[];
+    let client: Socket;
+
+    beforeEach(async () => {
+      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testToken = sign(
+        { sub: testUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+
+      await new Promise((resolve) => {
+        client = io(serverUrl, {
+          auth: { token: testToken },
+          query: { boardId },
+        });
+        client.on('board_joined', () => {
+          resolve(null);
+        });
+      });
+
+      testOperations = Array.from({ length: 5 }, () => {
+        return {
+          boardId,
+          type: 'add',
+          parentId: 'root',
+          content: 'new node',
+        } as BoardOperation;
+      });
+      await Promise.all(
+        testOperations.map((operation) =>
+          boardTreesService.createOperationLog(operation as BoardOperation),
+        ),
+      );
+    });
+
+    afterEach(() => {
+      if (client.connected) {
+        client.disconnect();
+      }
+    });
+
+    it('get operation logs', async () => {
+      const response = await new Promise((resolve) => {
+        client.on('getOperations', (operationLogs) => {
+          resolve(operationLogs);
+        });
+
+        client.emit('getOperations', boardId);
+      });
+
+      expect(response).toEqual(expect.arrayContaining(testOperations));
     });
   });
 });
