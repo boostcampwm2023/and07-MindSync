@@ -164,13 +164,7 @@ describe('BoardTreesGateway (e2e)', () => {
         content: 'new node',
       };
 
-      await new Promise((resolve) => {
-        client.on('operationCreated', () => {
-          resolve(null);
-        });
-
-        client.emit('createOperation', testOperation);
-      });
+      await client.emitWithAck('createOperation', testOperation);
 
       const operations = await boardTreesService.getOperationLogs(
         testOperation.boardId,
@@ -240,13 +234,7 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('get operation logs', async () => {
-      const response = await new Promise((resolve) => {
-        client.on('getOperations', (operationLogs) => {
-          resolve(operationLogs);
-        });
-
-        client.emit('getOperations', boardId);
-      });
+      const response = await client.emitWithAck('getOperations', boardId);
 
       expect(response).toEqual(expect.arrayContaining(testOperations));
     });
