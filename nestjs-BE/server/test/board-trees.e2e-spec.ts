@@ -9,6 +9,8 @@ import { BoardTreesModule } from '../src/board-trees/board-trees.module';
 import { BoardTreesService } from '../src/board-trees/board-trees.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+
+import type { ManagerOptions, SocketOptions } from 'socket.io-client';
 import type { BoardOperation } from '../src/board-trees/schemas/board-operation.schema';
 
 const PORT = 3000;
@@ -158,14 +160,9 @@ describe('BoardTreesGateway (e2e)', () => {
         { expiresIn: '5m' },
       );
 
-      await new Promise((resolve) => {
-        client = io(serverUrl, {
-          auth: { token: testToken },
-          query: { boardId },
-        });
-        client.on('board_joined', () => {
-          resolve(null);
-        });
+      client = await createClientSocket(serverUrl, {
+        auth: { token: testToken },
+        query: { boardId },
       });
     });
 
@@ -198,8 +195,6 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('other client received operation', async () => {
-      let otherClient: Socket;
-
       const otherUser = await prisma.user.create({ data: { uuid: uuid() } });
       const otherToken = sign(
         { sub: otherUser.uuid },
@@ -207,14 +202,9 @@ describe('BoardTreesGateway (e2e)', () => {
         { expiresIn: '5m' },
       );
 
-      await new Promise((resolve) => {
-        otherClient = io(serverUrl, {
-          auth: { token: otherToken },
-          query: { boardId },
-        });
-        otherClient.on('board_joined', () => {
-          resolve(null);
-        });
+      const otherClient = await createClientSocket(serverUrl, {
+        auth: { token: otherToken },
+        query: { boardId },
       });
 
       const testOperation = {
@@ -251,14 +241,9 @@ describe('BoardTreesGateway (e2e)', () => {
         { expiresIn: '5m' },
       );
 
-      await new Promise((resolve) => {
-        client = io(serverUrl, {
-          auth: { token: testToken },
-          query: { boardId },
-        });
-        client.on('board_joined', () => {
-          resolve(null);
-        });
+      client = await createClientSocket(serverUrl, {
+        auth: { token: testToken },
+        query: { boardId },
       });
 
       testOperations = Array.from({ length: 5 }, () => {
@@ -295,3 +280,17 @@ describe('BoardTreesGateway (e2e)', () => {
     });
   });
 });
+
+async function createClientSocket(
+  uri: string,
+  opts: Partial<ManagerOptions & SocketOptions>,
+) {
+  let client: Socket;
+  await new Promise((resolve) => {
+    client = io(uri, opts);
+    client.on('board_joined', () => {
+      resolve(null);
+    });
+  });
+  return client;
+}
