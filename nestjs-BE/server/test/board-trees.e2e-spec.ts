@@ -81,12 +81,7 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('success', async () => {
-      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
-      const testToken = sign(
-        { sub: testUser.uuid },
-        config.get<string>('JWT_ACCESS_SECRET'),
-        { expiresIn: '5m' },
-      );
+      const testToken = await createUserToken(prisma, config);
 
       const connected = await new Promise((resolve) => {
         const socket = io(serverUrl, { auth: { token: testToken } });
@@ -105,12 +100,7 @@ describe('BoardTreesGateway (e2e)', () => {
     let testToken: string;
 
     beforeEach(async () => {
-      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
-      testToken = sign(
-        { sub: testUser.uuid },
-        config.get<string>('JWT_ACCESS_SECRET'),
-        { expiresIn: '5m' },
-      );
+      testToken = await createUserToken(prisma, config);
     });
 
     it('board_id_required error when board id not included', async () => {
@@ -153,13 +143,7 @@ describe('BoardTreesGateway (e2e)', () => {
     let client: Socket;
 
     beforeEach(async () => {
-      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
-      testToken = sign(
-        { sub: testUser.uuid },
-        config.get<string>('JWT_ACCESS_SECRET'),
-        { expiresIn: '5m' },
-      );
-
+      testToken = await createUserToken(prisma, config);
       client = await createClientSocket(serverUrl, {
         auth: { token: testToken },
         query: { boardId },
@@ -195,13 +179,7 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('other client received operation', async () => {
-      const otherUser = await prisma.user.create({ data: { uuid: uuid() } });
-      const otherToken = sign(
-        { sub: otherUser.uuid },
-        config.get<string>('JWT_ACCESS_SECRET'),
-        { expiresIn: '5m' },
-      );
-
+      const otherToken = await createUserToken(prisma, config);
       const otherClient = await createClientSocket(serverUrl, {
         auth: { token: otherToken },
         query: { boardId },
@@ -234,13 +212,7 @@ describe('BoardTreesGateway (e2e)', () => {
     let client: Socket;
 
     beforeEach(async () => {
-      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
-      testToken = sign(
-        { sub: testUser.uuid },
-        config.get<string>('JWT_ACCESS_SECRET'),
-        { expiresIn: '5m' },
-      );
-
+      testToken = await createUserToken(prisma, config);
       client = await createClientSocket(serverUrl, {
         auth: { token: testToken },
         query: { boardId },
@@ -280,6 +252,16 @@ describe('BoardTreesGateway (e2e)', () => {
     });
   });
 });
+
+async function createUserToken(prisma: PrismaService, config: ConfigService) {
+  const user = await prisma.user.create({ data: { uuid: uuid() } });
+  const token = sign(
+    { sub: user.uuid },
+    config.get<string>('JWT_ACCESS_SECRET'),
+    { expiresIn: '5m' },
+  );
+  return token;
+}
 
 async function createClientSocket(
   uri: string,
