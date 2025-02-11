@@ -15,6 +15,15 @@ import type { BoardOperation } from '../src/board-trees/schemas/board-operation.
 
 const PORT = 3000;
 
+type WsException = {
+  status: string;
+  message: string;
+  cause: {
+    pattern: string;
+    data: object;
+  };
+};
+
 describe('BoardTreesGateway (e2e)', () => {
   const serverUrl = `ws://localhost:${PORT}/board`;
   let app: INestApplication;
@@ -233,8 +242,24 @@ describe('BoardTreesGateway (e2e)', () => {
       }
     });
 
+    it('exception if access token not include', async () => {
+      const response: WsException = await new Promise((resolve) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('getOperations', { boardId });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('access token required');
+      expect(response.cause.pattern).toBe('getOperations');
+    });
+
     it('get operation logs', async () => {
-      const response = await client.emitWithAck('getOperations', boardId);
+      const response = await client.emitWithAck('getOperations', {
+        boardId,
+        token: testToken,
+      });
 
       expect(response).toEqual(expect.arrayContaining(testOperations));
     });
