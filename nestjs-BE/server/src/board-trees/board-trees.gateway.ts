@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayInit,
@@ -51,8 +52,12 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     client.emit('boardJoined', boardId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @SubscribeMessage('createOperation')
-  async handleCreateOperation(client: Socket, operation: BoardOperation) {
+  async handleCreateOperation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('operation') operation: BoardOperation,
+  ) {
     await this.boardTreesService.createOperationLog(operation);
     client.broadcast.to(operation.boardId).emit('operation', operation);
     return { status: true };
