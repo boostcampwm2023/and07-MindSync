@@ -165,6 +165,26 @@ describe('BoardTreesGateway (e2e)', () => {
       }
     });
 
+    it('fail if access token not included', async () => {
+      const testOperation = {
+        boardId: uuid(),
+        type: 'add',
+        parentId: 'root',
+        content: 'new node',
+      };
+
+      const response: WsException = await new Promise((resolve) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('createOperation', { operation: testOperation });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('access token required');
+      expect(response.cause.pattern).toBe('createOperation');
+    });
+
     it('create operation', async () => {
       const testOperation = {
         boardId: uuid(),
@@ -173,7 +193,10 @@ describe('BoardTreesGateway (e2e)', () => {
         content: 'new node',
       };
 
-      await client.emitWithAck('createOperation', testOperation);
+      await client.emitWithAck('createOperation', {
+        operation: testOperation,
+        token: testToken,
+      });
 
       const operations = await boardTreesService.getOperationLogs(
         testOperation.boardId,
@@ -201,7 +224,10 @@ describe('BoardTreesGateway (e2e)', () => {
           resolve(operation);
         });
 
-        client.emit('createOperation', testOperation);
+        client.emit('createOperation', {
+          operation: testOperation,
+          token: testToken,
+        });
       });
 
       expect(response).toEqual(testOperation);
