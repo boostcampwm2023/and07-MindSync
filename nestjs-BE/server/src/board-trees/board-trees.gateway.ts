@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   MessageBody,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { BoardTreesService } from './board-trees.service';
 import type { BoardOperation } from './schemas/board-operation.schema';
 
@@ -56,9 +58,10 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     return { status: true };
   }
 
+  @UseGuards(JwtAuthGuard)
   @SubscribeMessage('getOperations')
   async handleGetOperations(
-    @MessageBody() boardId: string,
+    @MessageBody('boardId') boardId: string,
   ): Promise<BoardOperation[]> {
     const operations = await this.boardTreesService.getOperationLogs(boardId);
     return operations;
