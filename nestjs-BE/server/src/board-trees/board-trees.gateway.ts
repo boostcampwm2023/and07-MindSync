@@ -11,7 +11,7 @@ import {
 } from '@nestjs/websockets';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
-import { WsJwtAuthGuard } from './guards/jwt-auth.guard';
+import { WsJwtAuthGuard } from './guards/ws-jwt-auth.guard';
 import { BoardTreesService } from './board-trees.service';
 import type { BoardOperation } from './schemas/board-operation.schema';
 

@@ -3,7 +3,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
 import { sign } from 'jsonwebtoken';
-import { WsJwtAuthGuard } from './jwt-auth.guard';
+import { WsJwtAuthGuard } from './ws-jwt-auth.guard';
 
 import type { ExecutionContext } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
