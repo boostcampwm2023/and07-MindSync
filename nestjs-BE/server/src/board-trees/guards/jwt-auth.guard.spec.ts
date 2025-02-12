@@ -3,7 +3,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
 import { sign } from 'jsonwebtoken';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { WsJwtAuthGuard } from './jwt-auth.guard';
 
 import type { ExecutionContext } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
@@ -11,7 +11,7 @@ import type { TestingModule } from '@nestjs/testing';
 const JWT_ACCESS_SECRET = 'access token secret';
 
 describe('JwtAuthGuard', () => {
-  let guard: JwtAuthGuard;
+  let guard: WsJwtAuthGuard;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,7 +24,7 @@ describe('JwtAuthGuard', () => {
     const jwtService = module.get<JwtService>(JwtService);
     const configService = module.get<ConfigService>(ConfigService);
 
-    guard = new JwtAuthGuard(jwtService, configService);
+    guard = new WsJwtAuthGuard(jwtService, configService);
   });
 
   it('throw WsException when token not included', () => {
