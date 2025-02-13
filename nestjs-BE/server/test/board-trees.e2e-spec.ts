@@ -193,10 +193,17 @@ describe('BoardTreesGateway (e2e)', () => {
         content: 'new node',
       };
 
-      await client.emitWithAck('createOperation', {
+      const response = client.emitWithAck('createOperation', {
         operation: testOperation,
         token: testToken,
       });
+      const exceptionPromise = new Promise((_, reject) => {
+        client.on('exception', () => {
+          reject(new Error('exception occured'));
+        });
+      });
+
+      await Promise.race([response, exceptionPromise]);
 
       const operations = await boardTreesService.getOperationLogs(
         testOperation.boardId,
@@ -218,7 +225,7 @@ describe('BoardTreesGateway (e2e)', () => {
         content: 'new node',
       };
 
-      const response = await new Promise((resolve) => {
+      const response = new Promise((resolve) => {
         otherClient.on('operation', (operation) => {
           otherClient.disconnect();
           resolve(operation);
@@ -229,8 +236,16 @@ describe('BoardTreesGateway (e2e)', () => {
           token: testToken,
         });
       });
+      const exceptionPromise = new Promise((_, reject) => {
+        client.on('exception', () => {
+          otherClient.disconnect();
+          reject(new Error('exception occured'));
+        });
+      });
 
-      expect(response).toEqual(testOperation);
+      await Promise.race([response, exceptionPromise]);
+
+      await expect(response).resolves.toEqual(testOperation);
     });
   });
 
@@ -282,10 +297,17 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('get operation logs', async () => {
-      const response = await client.emitWithAck('getOperations', {
+      const response = client.emitWithAck('getOperations', {
         boardId,
         token: testToken,
       });
+      const exceptionPromise = new Promise((_, reject) => {
+        client.on('exception', () => {
+          reject(new Error('exception occured'));
+        });
+      });
+
+      await Promise.race([response, exceptionPromise]);
 
       expect(response).toEqual(expect.arrayContaining(testOperations));
     });
