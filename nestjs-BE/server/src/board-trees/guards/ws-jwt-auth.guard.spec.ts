@@ -28,11 +28,7 @@ describe('JwtAuthGuard', () => {
   });
 
   it('throw WsException when token not included', () => {
-    const context: ExecutionContext = {
-      switchToWs: () => ({
-        getData: () => ({}),
-      }),
-    } as ExecutionContext;
+    const context = createExecutionContext({});
 
     expect(() => guard.canActivate(context)).toThrow(WsException);
   });
@@ -41,11 +37,7 @@ describe('JwtAuthGuard', () => {
     const testToken = sign({ sub: 'test uuid' }, JWT_ACCESS_SECRET, {
       expiresIn: '-5m',
     });
-    const context: ExecutionContext = {
-      switchToWs: () => ({
-        getData: () => ({ token: testToken }),
-      }),
-    } as ExecutionContext;
+    const context = createExecutionContext({ token: testToken });
 
     expect(() => guard.canActivate(context)).toThrow(WsException);
   });
@@ -54,11 +46,7 @@ describe('JwtAuthGuard', () => {
     const testToken = sign({ sub: 'test uuid' }, JWT_ACCESS_SECRET, {
       expiresIn: '5m',
     });
-    const context: ExecutionContext = {
-      switchToWs: () => ({
-        getData: () => ({ token: testToken }),
-      }),
-    } as ExecutionContext;
+    const context = createExecutionContext({ token: testToken });
 
     expect(guard.canActivate(context)).toBeTruthy();
   });
@@ -68,15 +56,20 @@ describe('JwtAuthGuard', () => {
     const testToken = sign({ sub: testUuid }, JWT_ACCESS_SECRET, {
       expiresIn: '5m',
     });
-    const data = { token: testToken };
-    const context: ExecutionContext = {
-      switchToWs: () => ({
-        getData: () => data,
-      }),
-    } as ExecutionContext;
+    const context = createExecutionContext({ token: testToken });
 
     guard.canActivate(context);
 
     expect(context.switchToWs().getData().user).toEqual({ uuid: testUuid });
   });
 });
+
+function createExecutionContext(payload: object): ExecutionContext {
+  const innerPayload = { ...payload };
+  const context: ExecutionContext = {
+    switchToWs: () => ({
+      getData: () => innerPayload,
+    }),
+  } as ExecutionContext;
+  return context;
+}
