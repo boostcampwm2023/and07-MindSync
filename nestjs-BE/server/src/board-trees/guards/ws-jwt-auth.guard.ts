@@ -16,9 +16,10 @@ export class WsJwtAuthGuard implements CanActivate {
       throw new WsException('access token required');
     }
     try {
-      this.jwtService.verify(request.token, {
+      const payload = this.jwtService.verify(request.token, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
+      request.user = { uuid: payload.sub };
     } catch (error) {
       throw new WsException('access token invalid');
     }
