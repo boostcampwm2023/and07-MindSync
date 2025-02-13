@@ -62,4 +62,21 @@ describe('JwtAuthGuard', () => {
 
     expect(guard.canActivate(context)).toBeTruthy();
   });
+
+  it('add data when successful', () => {
+    const testUuid = 'test uuid';
+    const testToken = sign({ sub: testUuid }, JWT_ACCESS_SECRET, {
+      expiresIn: '5m',
+    });
+    const data = { token: testToken };
+    const context: ExecutionContext = {
+      switchToWs: () => ({
+        getData: () => data,
+      }),
+    } as ExecutionContext;
+
+    guard.canActivate(context);
+
+    expect(context.switchToWs().getData().user).toEqual({ uuid: testUuid });
+  });
 });
