@@ -148,6 +148,57 @@ describe('BoardTreesGateway (e2e)', () => {
     });
   });
 
+  describe('Checking if WsMatchUserProfileGuard is applied', () => {
+    const boardId = uuid();
+    let testToken: string;
+    let client: Socket;
+
+    beforeEach(async () => {
+      const testUser = await createUser(prisma);
+      testToken = await createUserToken(testUser.uuid, config);
+      client = await createClientSocket(serverUrl, {
+        auth: { token: testToken },
+        query: { boardId },
+      });
+    });
+
+    afterEach(() => {
+      if (client.connected) {
+        client.disconnect();
+      }
+    });
+
+    it('createOperation', async () => {
+      const response: WsException = await new Promise((resolve, reject) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('createOperation', { token: testToken }, (response) => {
+          reject(response);
+        });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('profile uuid or user uuid required');
+      expect(response.cause.pattern).toBe('createOperation');
+    });
+
+    it('getOperations', async () => {
+      const response: WsException = await new Promise((resolve, reject) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('getOperations', { token: testToken }, (response) => {
+          reject(response);
+        });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('profile uuid or user uuid required');
+      expect(response.cause.pattern).toBe('getOperations');
+    });
+  });
+
   describe('createOperation', () => {
     const boardId = 'board id';
     let testToken: string;
