@@ -90,7 +90,8 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('success', async () => {
-      const testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      const testToken = await createUserToken(testUser.uuid, config);
 
       const connected = await new Promise((resolve) => {
         const socket = io(serverUrl, { auth: { token: testToken } });
@@ -109,7 +110,8 @@ describe('BoardTreesGateway (e2e)', () => {
     let testToken: string;
 
     beforeEach(async () => {
-      testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      testToken = await createUserToken(testUser.uuid, config);
     });
 
     it('boardIdRequired error when board id not included', async () => {
@@ -152,7 +154,8 @@ describe('BoardTreesGateway (e2e)', () => {
     let client: Socket;
 
     beforeEach(async () => {
-      testToken = await createUserToken(prisma, config);
+      const user = await createUser(prisma);
+      testToken = await createUserToken(user.uuid, config);
       client = await createClientSocket(serverUrl, {
         auth: { token: testToken },
         query: { boardId },
@@ -212,7 +215,8 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('other client received operation', async () => {
-      const otherToken = await createUserToken(prisma, config);
+      const otherUser = await createUser(prisma);
+      const otherToken = await createUserToken(otherUser.uuid, config);
       const otherClient = await createClientSocket(serverUrl, {
         auth: { token: otherToken },
         query: { boardId },
@@ -256,7 +260,8 @@ describe('BoardTreesGateway (e2e)', () => {
     let client: Socket;
 
     beforeEach(async () => {
-      testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      testToken = await createUserToken(testUser.uuid, config);
       client = await createClientSocket(serverUrl, {
         auth: { token: testToken },
         query: { boardId },
@@ -314,10 +319,13 @@ describe('BoardTreesGateway (e2e)', () => {
   });
 });
 
-async function createUserToken(prisma: PrismaService, config: ConfigService) {
-  const user = await prisma.user.create({ data: { uuid: uuid() } });
+async function createUser(prisma: PrismaService) {
+  return prisma.user.create({ data: { uuid: uuid() } });
+}
+
+async function createUserToken(userUuid: string, config: ConfigService) {
   const token = sign(
-    { sub: user.uuid },
+    { sub: userUuid },
     config.get<string>('JWT_ACCESS_SECRET'),
     { expiresIn: '5m' },
   );
