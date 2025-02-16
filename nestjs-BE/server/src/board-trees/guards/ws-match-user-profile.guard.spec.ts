@@ -29,7 +29,7 @@ describe('WsMatchUserProfileGuard', () => {
     guard = new WsMatchUserProfileGuard(profilesService);
   });
 
-  it('throw WsException when user uuid not included', async () => {
+  it('throw WsException when profile uuid not included', async () => {
     const context = createExecutionContext({});
     Reflect.defineMetadata('user', { uuid: 'user uuid' }, context);
 
@@ -41,7 +41,7 @@ describe('WsMatchUserProfileGuard', () => {
     });
   });
 
-  it('throw WsException when profile uuid not included', async () => {
+  it('throw WsException when user uuid not included', async () => {
     const context = createExecutionContext({ profileUuid: 'profile uuid' });
 
     const res = guard.canActivate(context);
