@@ -8,7 +8,7 @@ export class WsMatchUserProfileGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToWs().getData();
-    const userUuid = request.user?.uuid;
+    const userUuid = Reflect.getMetadata('user', context)?.uuid;
     const profileUuid = request.profileUuid;
     if (!profileUuid || !userUuid)
       throw new WsException('profile uuid or user uuid required');

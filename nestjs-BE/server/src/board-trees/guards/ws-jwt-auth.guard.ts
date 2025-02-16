@@ -19,7 +19,7 @@ export class WsJwtAuthGuard implements CanActivate {
       const payload = this.jwtService.verify(request.token, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       });
-      request.user = { uuid: payload.sub };
+      Reflect.defineMetadata('user', { uuid: payload.sub }, context);
     } catch (error) {
       throw new WsException('access token invalid');
     }
