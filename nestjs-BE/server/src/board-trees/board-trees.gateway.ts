@@ -1,15 +1,19 @@
+import { UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
+import { WsJwtAuthGuard } from './guards/ws-jwt-auth.guard';
 import { BoardTreesService } from './board-trees.service';
+import { WsMatchUserProfileGuard } from './guards/ws-match-user-profile.guard';
 import type { BoardOperation } from './schemas/board-operation.schema';
 
 @WebSocketGateway({ namespace: 'board' })
@@ -19,9 +23,6 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-
-  @WebSocketServer()
-  server: Server;
 
   afterInit(server: Server) {
     server.use((socket, next) => {
@@ -45,23 +46,30 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     const boardId = query.boardId;
 
     if (!boardId) {
-      client.emit('board_id_required', new WsException('board id required'));
+      client.emit('boardIdRequired', new WsException('board id required'));
       client.disconnect();
     }
     client.join(boardId);
-    client.emit('board_joined', boardId);
+    client.emit('boardJoined', boardId);
   }
 
+  @UseGuards(WsJwtAuthGuard, WsMatchUserProfileGuard)
   @SubscribeMessage('createOperation')
-  async handleCreateOperation(client: Socket, operation: BoardOperation) {
+  async handleCreateOperation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('operation') operation: BoardOperation,
+  ) {
     await this.boardTreesService.createOperationLog(operation);
     client.broadcast.to(operation.boardId).emit('operation', operation);
-    client.emit('operationCreated');
+    return { status: true };
   }
 
+  @UseGuards(WsJwtAuthGuard, WsMatchUserProfileGuard)
   @SubscribeMessage('getOperations')
-  async handleGetOperations(client: Socket, boardId: string) {
+  async handleGetOperations(
+    @MessageBody('boardId') boardId: string,
+  ): Promise<BoardOperation[]> {
     const operations = await this.boardTreesService.getOperationLogs(boardId);
-    client.emit('getOperations', operations);
+    return operations;
   }
 }

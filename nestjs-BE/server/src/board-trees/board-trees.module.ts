@@ -8,6 +8,8 @@ import {
   BoardOperation,
   BoardOperationSchema,
 } from './schemas/board-operation.schema';
+import { WsMatchUserProfileGuard } from './guards/ws-match-user-profile.guard';
+import { ProfilesModule } from '../profiles/profiles.module';
 
 @Module({
   imports: [
@@ -16,7 +18,8 @@ import {
       { name: BoardOperation.name, schema: BoardOperationSchema },
     ]),
     JwtModule,
+    ProfilesModule,
   ],
-  providers: [BoardTreesService, BoardTreesGateway],
+  providers: [BoardTreesService, BoardTreesGateway, WsMatchUserProfileGuard],
 })
 export class BoardTreesModule {}

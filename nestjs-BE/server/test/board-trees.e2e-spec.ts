@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Profile } from '@prisma/client';
 import { sign } from 'jsonwebtoken';
 import { io, Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
@@ -14,6 +15,15 @@ import type { ManagerOptions, SocketOptions } from 'socket.io-client';
 import type { BoardOperation } from '../src/board-trees/schemas/board-operation.schema';
 
 const PORT = 3000;
+
+type WsException = {
+  status: string;
+  message: string;
+  cause: {
+    pattern: string;
+    data: object;
+  };
+};
 
 describe('BoardTreesGateway (e2e)', () => {
   const serverUrl = `ws://localhost:${PORT}/board`;
@@ -81,7 +91,8 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('success', async () => {
-      const testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      const testToken = await createUserToken(testUser.uuid, config);
 
       const connected = await new Promise((resolve) => {
         const socket = io(serverUrl, { auth: { token: testToken } });
@@ -100,15 +111,16 @@ describe('BoardTreesGateway (e2e)', () => {
     let testToken: string;
 
     beforeEach(async () => {
-      testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      testToken = await createUserToken(testUser.uuid, config);
     });
 
-    it('board_id_required error when board id not included', async () => {
+    it('boardIdRequired error when board id not included', async () => {
       const error = new Promise((resolve, reject) => {
         const socket = io(serverUrl, {
           auth: { token: testToken },
         });
-        socket.on('board_id_required', (error) => {
+        socket.on('boardIdRequired', (error) => {
           reject(error);
         });
       });
@@ -127,7 +139,7 @@ describe('BoardTreesGateway (e2e)', () => {
           auth: { token: testToken },
           query: { boardId },
         });
-        socket.on('board_joined', (boardId) => {
+        socket.on('boardJoined', (boardId) => {
           socket.disconnect();
           resolve(boardId);
         });
@@ -137,13 +149,120 @@ describe('BoardTreesGateway (e2e)', () => {
     });
   });
 
-  describe('createOperation', () => {
-    const boardId = 'board id';
+  describe('Checking if WsJwtAuthGuard is applied', () => {
+    const boardId = uuid();
+    let client: Socket;
+
+    beforeEach(async () => {
+      const testUser = await createUser(prisma);
+      const testToken = await createUserToken(testUser.uuid, config);
+      client = await createClientSocket(serverUrl, {
+        auth: { token: testToken },
+        query: { boardId },
+      });
+    });
+
+    afterEach(() => {
+      if (client.connected) {
+        client.disconnect();
+      }
+    });
+
+    it('createOperation', async () => {
+      const testOperation = {
+        boardId,
+        type: 'add',
+        parentId: 'root',
+        content: 'new node',
+      };
+
+      const response: WsException = await new Promise((resolve) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('createOperation', { operation: testOperation });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('access token required');
+      expect(response.cause.pattern).toBe('createOperation');
+    });
+
+    it('getOperations', async () => {
+      const response: WsException = await new Promise((resolve) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('getOperations', { boardId });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('access token required');
+      expect(response.cause.pattern).toBe('getOperations');
+    });
+  });
+
+  describe('Checking if WsMatchUserProfileGuard is applied', () => {
+    const boardId = uuid();
     let testToken: string;
     let client: Socket;
 
     beforeEach(async () => {
-      testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      testToken = await createUserToken(testUser.uuid, config);
+      client = await createClientSocket(serverUrl, {
+        auth: { token: testToken },
+        query: { boardId },
+      });
+    });
+
+    afterEach(() => {
+      if (client.connected) {
+        client.disconnect();
+      }
+    });
+
+    it('createOperation', async () => {
+      const response: WsException = await new Promise((resolve, reject) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('createOperation', { token: testToken }, (response) => {
+          reject(response);
+        });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('profile uuid or user uuid required');
+      expect(response.cause.pattern).toBe('createOperation');
+    });
+
+    it('getOperations', async () => {
+      const response: WsException = await new Promise((resolve, reject) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('getOperations', { token: testToken }, (response) => {
+          reject(response);
+        });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('profile uuid or user uuid required');
+      expect(response.cause.pattern).toBe('getOperations');
+    });
+  });
+
+  describe('createOperation', () => {
+    const boardId = 'board id';
+    let testProfile: Profile;
+    let testToken: string;
+    let client: Socket;
+
+    beforeEach(async () => {
+      const user = await createUser(prisma);
+      testProfile = await createProfile(user.uuid, prisma);
+      testToken = await createUserToken(user.uuid, config);
       client = await createClientSocket(serverUrl, {
         auth: { token: testToken },
         query: { boardId },
@@ -164,12 +283,21 @@ describe('BoardTreesGateway (e2e)', () => {
         content: 'new node',
       };
 
-      await new Promise((resolve) => {
-        client.on('operationCreated', () => {
-          resolve(null);
+      await new Promise((resolve, reject) => {
+        client.on('exception', (exception) => {
+          reject(exception);
         });
-
-        client.emit('createOperation', testOperation);
+        client.emit(
+          'createOperation',
+          {
+            operation: testOperation,
+            token: testToken,
+            profileUuid: testProfile.uuid,
+          },
+          (response) => {
+            resolve(response);
+          },
+        );
       });
 
       const operations = await boardTreesService.getOperationLogs(
@@ -179,7 +307,8 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('other client received operation', async () => {
-      const otherToken = await createUserToken(prisma, config);
+      const otherUser = await createUser(prisma);
+      const otherToken = await createUserToken(otherUser.uuid, config);
       const otherClient = await createClientSocket(serverUrl, {
         auth: { token: otherToken },
         query: { boardId },
@@ -192,27 +321,38 @@ describe('BoardTreesGateway (e2e)', () => {
         content: 'new node',
       };
 
-      const response = await new Promise((resolve) => {
+      const response = new Promise((resolve, reject) => {
         otherClient.on('operation', (operation) => {
           otherClient.disconnect();
           resolve(operation);
         });
+        client.on('exception', (exception) => {
+          otherClient.disconnect();
+          reject(exception);
+        });
 
-        client.emit('createOperation', testOperation);
+        client.emit('createOperation', {
+          operation: testOperation,
+          token: testToken,
+          profileUuid: testProfile.uuid,
+        });
       });
 
-      expect(response).toEqual(testOperation);
+      await expect(response).resolves.toEqual(testOperation);
     });
   });
 
   describe('getOperations', () => {
     const boardId = uuid();
     let testToken: string;
+    let testProfile: Profile;
     let testOperations: BoardOperation[];
     let client: Socket;
 
     beforeEach(async () => {
-      testToken = await createUserToken(prisma, config);
+      const testUser = await createUser(prisma);
+      testProfile = await createProfile(testUser.uuid, prisma);
+      testToken = await createUserToken(testUser.uuid, config);
       client = await createClientSocket(serverUrl, {
         auth: { token: testToken },
         query: { boardId },
@@ -240,23 +380,44 @@ describe('BoardTreesGateway (e2e)', () => {
     });
 
     it('get operation logs', async () => {
-      const response = await new Promise((resolve) => {
-        client.on('getOperations', (operationLogs) => {
-          resolve(operationLogs);
+      const response = new Promise((resolve, reject) => {
+        client.on('exception', (exception) => {
+          reject(exception);
         });
-
-        client.emit('getOperations', boardId);
+        client.emit(
+          'getOperations',
+          { boardId, token: testToken, profileUuid: testProfile.uuid },
+          (response: BoardOperation[]) => {
+            resolve(response);
+          },
+        );
       });
 
-      expect(response).toEqual(expect.arrayContaining(testOperations));
+      await expect(response).resolves.toEqual(
+        expect.arrayContaining(testOperations),
+      );
     });
   });
 });
 
-async function createUserToken(prisma: PrismaService, config: ConfigService) {
-  const user = await prisma.user.create({ data: { uuid: uuid() } });
+async function createUser(prisma: PrismaService) {
+  return prisma.user.create({ data: { uuid: uuid() } });
+}
+
+async function createProfile(userUuid: string, prisma: PrismaService) {
+  return prisma.profile.create({
+    data: {
+      uuid: uuid(),
+      userUuid,
+      image: 'test image',
+      nickname: 'test nickname',
+    },
+  });
+}
+
+async function createUserToken(userUuid: string, config: ConfigService) {
   const token = sign(
-    { sub: user.uuid },
+    { sub: userUuid },
     config.get<string>('JWT_ACCESS_SECRET'),
     { expiresIn: '5m' },
   );
@@ -270,7 +431,7 @@ async function createClientSocket(
   let client: Socket;
   await new Promise((resolve) => {
     client = io(uri, opts);
-    client.on('board_joined', () => {
+    client.on('boardJoined', () => {
       resolve(null);
     });
   });
