@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
 import { WsJwtAuthGuard } from './guards/ws-jwt-auth.guard';
 import { BoardTreesService } from './board-trees.service';
+import { WsMatchUserProfileGuard } from './guards/ws-match-user-profile.guard';
 import type { BoardOperation } from './schemas/board-operation.schema';
 
 @WebSocketGateway({ namespace: 'board' })
@@ -52,7 +53,7 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     client.emit('boardJoined', boardId);
   }
 
-  @UseGuards(WsJwtAuthGuard)
+  @UseGuards(WsJwtAuthGuard, WsMatchUserProfileGuard)
   @SubscribeMessage('createOperation')
   async handleCreateOperation(
     @ConnectedSocket() client: Socket,
@@ -63,7 +64,7 @@ export class BoardTreesGateway implements OnGatewayInit, OnGatewayConnection {
     return { status: true };
   }
 
-  @UseGuards(WsJwtAuthGuard)
+  @UseGuards(WsJwtAuthGuard, WsMatchUserProfileGuard)
   @SubscribeMessage('getOperations')
   async handleGetOperations(
     @MessageBody('boardId') boardId: string,
