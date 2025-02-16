@@ -149,6 +149,59 @@ describe('BoardTreesGateway (e2e)', () => {
     });
   });
 
+  describe('Checking if WsJwtAuthGuard is applied', () => {
+    const boardId = uuid();
+    let client: Socket;
+
+    beforeEach(async () => {
+      const testUser = await createUser(prisma);
+      const testToken = await createUserToken(testUser.uuid, config);
+      client = await createClientSocket(serverUrl, {
+        auth: { token: testToken },
+        query: { boardId },
+      });
+    });
+
+    afterEach(() => {
+      if (client.connected) {
+        client.disconnect();
+      }
+    });
+
+    it('createOperation', async () => {
+      const testOperation = {
+        boardId,
+        type: 'add',
+        parentId: 'root',
+        content: 'new node',
+      };
+
+      const response: WsException = await new Promise((resolve) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('createOperation', { operation: testOperation });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('access token required');
+      expect(response.cause.pattern).toBe('createOperation');
+    });
+
+    it('getOperations', async () => {
+      const response: WsException = await new Promise((resolve) => {
+        client.on('exception', (exception) => {
+          resolve(exception);
+        });
+        client.emit('getOperations', { boardId });
+      });
+
+      expect(response.status).toBe('error');
+      expect(response.message).toBe('access token required');
+      expect(response.cause.pattern).toBe('getOperations');
+    });
+  });
+
   describe('Checking if WsMatchUserProfileGuard is applied', () => {
     const boardId = uuid();
     let testToken: string;
@@ -220,26 +273,6 @@ describe('BoardTreesGateway (e2e)', () => {
       if (client.connected) {
         client.disconnect();
       }
-    });
-
-    it('fail if access token not included', async () => {
-      const testOperation = {
-        boardId: uuid(),
-        type: 'add',
-        parentId: 'root',
-        content: 'new node',
-      };
-
-      const response: WsException = await new Promise((resolve) => {
-        client.on('exception', (exception) => {
-          resolve(exception);
-        });
-        client.emit('createOperation', { operation: testOperation });
-      });
-
-      expect(response.status).toBe('error');
-      expect(response.message).toBe('access token required');
-      expect(response.cause.pattern).toBe('createOperation');
     });
 
     it('create operation', async () => {
@@ -344,19 +377,6 @@ describe('BoardTreesGateway (e2e)', () => {
       if (client.connected) {
         client.disconnect();
       }
-    });
-
-    it('exception if access token not include', async () => {
-      const response: WsException = await new Promise((resolve) => {
-        client.on('exception', (exception) => {
-          resolve(exception);
-        });
-        client.emit('getOperations', { boardId });
-      });
-
-      expect(response.status).toBe('error');
-      expect(response.message).toBe('access token required');
-      expect(response.cause.pattern).toBe('getOperations');
     });
 
     it('get operation logs', async () => {
