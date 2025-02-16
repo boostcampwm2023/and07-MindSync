@@ -30,7 +30,8 @@ describe('WsMatchUserProfileGuard', () => {
   });
 
   it('throw WsException when user uuid not included', async () => {
-    const context = createExecutionContext({ user: { uuid: 'user uuid' } });
+    const context = createExecutionContext({});
+    Reflect.defineMetadata('user', { uuid: 'user uuid' }, context);
 
     const res = guard.canActivate(context);
 
@@ -52,10 +53,8 @@ describe('WsMatchUserProfileGuard', () => {
   });
 
   it('bad request if profile not exist', async () => {
-    const context = createExecutionContext({
-      user: { uuid: 'user uuid' },
-      profileUuid: 'profile uuid',
-    });
+    const context = createExecutionContext({ profileUuid: 'profile uuid' });
+    Reflect.defineMetadata('user', { uuid: 'user uuid' }, context);
     (profilesService.findProfileByProfileUuid as jest.Mock).mockReturnValueOnce(
       null,
     );
@@ -69,10 +68,8 @@ describe('WsMatchUserProfileGuard', () => {
   });
 
   it('bad request if profile uuid not match', async () => {
-    const context = createExecutionContext({
-      user: { uuid: 'user uuid' },
-      profileUuid: 'profile uuid',
-    });
+    const context = createExecutionContext({ profileUuid: 'profile uuid' });
+    Reflect.defineMetadata('user', { uuid: 'user uuid' }, context);
     (profilesService.findProfileByProfileUuid as jest.Mock).mockReturnValueOnce(
       { userUuid: 'other user uuid' },
     );
@@ -86,10 +83,8 @@ describe('WsMatchUserProfileGuard', () => {
   });
 
   it('success', async () => {
-    const context = createExecutionContext({
-      user: { uuid: 'user uuid' },
-      profileUuid: 'profile uuid',
-    });
+    const context = createExecutionContext({ profileUuid: 'profile uuid' });
+    Reflect.defineMetadata('user', { uuid: 'user uuid' }, context);
 
     await expect(guard.canActivate(context)).resolves.toBeTruthy();
   });

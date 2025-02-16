@@ -60,7 +60,7 @@ describe('JwtAuthGuard', () => {
 
     guard.canActivate(context);
 
-    expect(context.switchToWs().getData().user).toEqual({ uuid: testUuid });
+    expect(Reflect.getMetadata('user', context)).toEqual({ uuid: testUuid });
   });
 });
 
