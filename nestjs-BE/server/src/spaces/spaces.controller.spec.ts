@@ -5,9 +5,9 @@ import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { CreateSpaceDto } from './dto/create-space.dto';
-import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
 import { ProfilesService } from '../profiles/profiles.service';
+import { MatchUserProfileGuard } from '../profiles/guards/match-user-profile.guard';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 
 describe('SpacesController', () => {

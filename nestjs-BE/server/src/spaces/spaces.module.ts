@@ -10,9 +10,10 @@ import { UploadModule } from '../upload/upload.module';
 import { ProfileSpaceModule } from '../profile-space/profile-space.module';
 import { AuthModule } from '../auth/auth.module';
 import { MulterFileMiddleware } from '../common/middlewares/multer-file.middleware';
+import { ProfilesModule } from '../profiles/profiles.module';
 
 @Module({
-  imports: [ProfileSpaceModule, UploadModule, AuthModule],
+  imports: [ProfileSpaceModule, UploadModule, AuthModule, ProfilesModule],
   controllers: [SpacesController],
   providers: [SpacesService],
   exports: [SpacesService],

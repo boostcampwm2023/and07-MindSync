@@ -14,7 +14,7 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from '../auth/decorators/user.decorator';
-import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
+import { MatchUserProfileGuard } from './guards/match-user-profile.guard';
 
 @Controller('profiles')
 @ApiTags('profiles')
