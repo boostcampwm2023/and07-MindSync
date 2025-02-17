@@ -10,15 +10,7 @@ describe('ProfilesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProfilesController],
-      providers: [
-        {
-          provide: ProfilesService,
-          useValue: {
-            findProfileByUserUuid: jest.fn(),
-            updateProfile: jest.fn(),
-          },
-        },
-      ],
+      providers: [{ provide: ProfilesService, useValue: {} }],
     }).compile();
 
     controller = module.get<ProfilesController>(ProfilesController);
@@ -36,9 +28,7 @@ describe('ProfilesController', () => {
         nickname: 'test nickname',
       };
 
-      jest
-        .spyOn(profilesService, 'findProfileByUserUuid')
-        .mockResolvedValue(testProfile);
+      profilesService.findProfileByUserUuid = jest.fn(async () => testProfile);
 
       const response = controller.findProfileByUserUuid(userUuidMock);
 
@@ -69,9 +59,7 @@ describe('ProfilesController', () => {
         nickname: 'test nickname',
       };
 
-      jest
-        .spyOn(profilesService, 'updateProfile')
-        .mockResolvedValue(testProfile);
+      profilesService.updateProfile = jest.fn(async () => testProfile);
 
       const response = controller.updateProfile(
         imageMock,
