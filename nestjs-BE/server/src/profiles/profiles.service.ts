@@ -29,12 +29,6 @@ export class ProfilesService {
     return this.prisma.profile.findUnique({ where: { uuid } });
   }
 
-  async findProfiles(profileUuids: string[]): Promise<Profile[]> {
-    return this.prisma.profile.findMany({
-      where: { uuid: { in: profileUuids } },
-    });
-  }
-
   async getOrCreateProfile(data: CreateProfileDto): Promise<Profile> {
     return this.prisma.profile.upsert({
       where: { userUuid: data.userUuid },
