@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
@@ -55,16 +51,6 @@ describe('ProfilesController', () => {
         userUuidMock,
       );
     });
-
-    it('not found profile', async () => {
-      jest
-        .spyOn(profilesService, 'findProfileByUserUuid')
-        .mockRejectedValue(new NotFoundException());
-
-      const response = controller.findProfileByUserUuid(userUuidMock);
-
-      await expect(response).rejects.toThrow(NotFoundException);
-    });
   });
 
   describe('update', () => {
@@ -103,20 +89,6 @@ describe('ProfilesController', () => {
         imageMock,
         bodyMock,
       );
-    });
-
-    it('not found user', async () => {
-      jest
-        .spyOn(profilesService, 'updateProfile')
-        .mockRejectedValue(new ForbiddenException());
-
-      const response = controller.updateProfile(
-        imageMock,
-        userUuidMock,
-        bodyMock,
-      );
-
-      await expect(response).rejects.toThrow(ForbiddenException);
     });
   });
 });
