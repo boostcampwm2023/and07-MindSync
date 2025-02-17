@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Profile, Prisma } from '@prisma/client';
 import { v4 as uuid } from 'uuid';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -44,11 +40,9 @@ export class ProfilesService {
 
   async updateProfile(
     userUuid: string,
-    profileUuid: string,
     image: Express.Multer.File,
     updateProfileDto: UpdateProfileDto,
   ): Promise<Profile | null> {
-    await this.verifyUserProfile(userUuid, profileUuid);
     if (image) {
       updateProfileDto.image = await this.uploadService.uploadFile(image);
     }
@@ -64,15 +58,5 @@ export class ProfilesService {
         throw err;
       }
     }
-  }
-
-  async verifyUserProfile(
-    userUuid: string,
-    profileUuid: string,
-  ): Promise<boolean> {
-    const profile = await this.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new ForbiddenException();
-    if (userUuid !== profile.userUuid) throw new ForbiddenException();
-    return true;
   }
 }

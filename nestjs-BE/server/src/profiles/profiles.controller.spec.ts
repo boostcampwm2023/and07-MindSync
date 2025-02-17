@@ -100,7 +100,6 @@ describe('ProfilesController', () => {
       });
       expect(profilesService.updateProfile).toHaveBeenCalledWith(
         userUuidMock,
-        bodyMock.uuid,
         imageMock,
         bodyMock,
       );

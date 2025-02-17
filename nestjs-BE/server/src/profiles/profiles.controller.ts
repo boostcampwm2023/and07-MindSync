@@ -7,12 +7,14 @@ import {
   UploadedFile,
   ValidationPipe,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from '../auth/decorators/user.decorator';
+import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 
 @Controller('profiles')
 @ApiTags('profiles')
@@ -35,6 +37,7 @@ export class ProfilesController {
   }
 
   @Patch()
+  @UseGuards(MatchUserProfileGuard)
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update profile' })
   @ApiResponse({
@@ -53,7 +56,6 @@ export class ProfilesController {
   ) {
     const profile = await this.profilesService.updateProfile(
       userUuid,
-      updateProfileDto.uuid,
       image,
       updateProfileDto,
     );
