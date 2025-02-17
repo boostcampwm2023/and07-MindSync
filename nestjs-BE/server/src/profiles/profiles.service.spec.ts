@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
 
 describe('ProfilesService', () => {
-  let profilesService: ProfilesService;
+  let service: ProfilesService;
   let prisma: PrismaService;
   let configService: ConfigService;
   let uploadService: UploadService;
@@ -16,23 +16,12 @@ describe('ProfilesService', () => {
       imports: [ConfigModule],
       providers: [
         ProfilesService,
-        {
-          provide: PrismaService,
-          useValue: {
-            profile: {
-              findUnique: jest.fn(),
-              update: jest.fn(),
-            },
-          },
-        },
-        {
-          provide: UploadService,
-          useValue: { uploadFile: jest.fn() },
-        },
+        { provide: PrismaService, useValue: { profile: {} } },
+        { provide: UploadService, useValue: {} },
       ],
     }).compile();
 
-    profilesService = module.get<ProfilesService>(ProfilesService);
+    service = module.get<ProfilesService>(ProfilesService);
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
     uploadService = module.get<UploadService>(UploadService);
@@ -43,11 +32,11 @@ describe('ProfilesService', () => {
     const profile = { uuid: 'profile uuid', userUuid };
 
     beforeEach(() => {
-      (prisma.profile.findUnique as jest.Mock).mockResolvedValue(profile);
+      (prisma.profile.findUnique as jest.Mock) = jest.fn(async () => profile);
     });
 
     it('found', async () => {
-      const res = profilesService.findProfileByUserUuid(userUuid);
+      const res = service.findProfileByUserUuid(userUuid);
 
       await expect(res).resolves.toEqual(profile);
     });
@@ -57,7 +46,7 @@ describe('ProfilesService', () => {
         new NotFoundException(),
       );
 
-      const res = profilesService.findProfileByUserUuid(userUuid);
+      const res = service.findProfileByUserUuid(userUuid);
 
       await expect(res).rejects.toThrow(NotFoundException);
     });
@@ -70,23 +59,21 @@ describe('ProfilesService', () => {
     const imageUrl = 'www.test.com/image';
 
     beforeEach(() => {
-      (uploadService.uploadFile as jest.Mock).mockResolvedValue(imageUrl);
-      (prisma.profile.update as jest.Mock).mockImplementation(async (args) => {
-        return {
-          uuid: profileUuid,
-          userUuid,
-          nickname: args.data.nickname ? args.data.nickname : 'test nickname',
-          image: args.data.image
-            ? args.data.image
-            : configService.get<string>('BASE_IMAGE_URL'),
-        };
-      });
+      uploadService.uploadFile = jest.fn(async () => imageUrl);
+      (prisma.profile.update as jest.Mock) = jest.fn(async (args) => ({
+        uuid: profileUuid,
+        userUuid,
+        nickname: args.data.nickname ? args.data.nickname : 'test nickname',
+        image: args.data.image
+          ? args.data.image
+          : configService.get<string>('BASE_IMAGE_URL'),
+      }));
     });
 
     it('updated', async () => {
       const data = { nickname: 'new nickname' };
 
-      const profile = profilesService.updateProfile(userUuid, image, data);
+      const profile = service.updateProfile(userUuid, image, data);
 
       await expect(profile).resolves.toEqual({
         uuid: profileUuid,
