@@ -1,8 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
+import { sign } from 'jsonwebtoken';
 import * as request from 'supertest';
+import { v4 as uuid } from 'uuid';
 import { AuthModule } from '../src/auth/auth.module';
+import { PrismaService } from '../src/prisma/prisma.service';
 import { ProfilesModule } from '../src/profiles/profiles.module';
 
 import type { INestApplication } from '@nestjs/common';
@@ -10,6 +13,8 @@ import type { TestingModule } from '@nestjs/testing';
 
 describe('ProfilesController (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
+  let config: ConfigService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +28,9 @@ describe('ProfilesController (e2e)', () => {
     app = module.createNestApplication();
 
     await app.init();
+
+    prisma = module.get<PrismaService>(PrismaService);
+    config = module.get<ConfigService>(ConfigService);
   });
 
   afterAll(async () => {
@@ -47,6 +55,30 @@ describe('ProfilesController (e2e)', () => {
         .expect({
           statusCode: HttpStatus.UNAUTHORIZED,
           message: 'Unauthorized',
+        });
+    });
+  });
+
+  describe('Checking if MatchUserProfileGuard is applied', () => {
+    let testToken: string;
+
+    beforeEach(async () => {
+      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      testToken = sign(
+        { sub: testUser.uuid },
+        config.get<string>('JWT_ACCESS_SECRET'),
+        { expiresIn: '5m' },
+      );
+    });
+
+    it('/profiles (PATCH)', () => {
+      return request(app.getHttpServer())
+        .patch('/profiles')
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Bad Request',
         });
     });
   });
