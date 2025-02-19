@@ -63,7 +63,7 @@ describe('ProfilesController (e2e)', () => {
     let testToken: string;
 
     beforeEach(async () => {
-      const testUser = await prisma.user.create({ data: { uuid: uuid() } });
+      const testUser = await createUser(prisma);
       testToken = sign(
         { sub: testUser.uuid },
         config.get<string>('JWT_ACCESS_SECRET'),
@@ -83,3 +83,7 @@ describe('ProfilesController (e2e)', () => {
     });
   });
 });
+
+async function createUser(prisma: PrismaService) {
+  return prisma.user.create({ data: { uuid: uuid() } });
+}
