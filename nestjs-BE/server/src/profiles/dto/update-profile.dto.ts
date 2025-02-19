@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MaxLength } from 'class-validator';
+import { IsOptional, MaxLength } from 'class-validator';
 import { MAX_NAME_LENGTH } from '../../config/constants';
 
 export class UpdateProfileDto {
+  @IsOptional()
   @MaxLength(MAX_NAME_LENGTH)
   @ApiProperty({
     example: 'new nickname',
