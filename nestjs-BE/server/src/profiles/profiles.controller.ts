@@ -49,6 +49,10 @@ export class ProfilesController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized.',
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Inappropriate profile uuid requested.',
+  })
   async updateProfile(
     @UploadedFile() image: Express.Multer.File,
     @Param('profile_uuid') profileUuid: string,
