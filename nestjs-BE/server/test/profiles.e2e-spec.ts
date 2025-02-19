@@ -10,6 +10,7 @@ import { ProfilesModule } from '../src/profiles/profiles.module';
 
 import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
+import type { Profile } from '@prisma/client';
 
 describe('ProfilesController (e2e)', () => {
   let app: INestApplication;
@@ -78,6 +79,30 @@ describe('ProfilesController (e2e)', () => {
         });
     });
   });
+
+  describe('/profiles (GET)', () => {
+    const path = '/profiles';
+    let testToken: string;
+    let testProfile: Profile;
+
+    beforeEach(async () => {
+      const testUser = await createUser(prisma);
+      testToken = createToken(testUser.uuid, config);
+      testProfile = await createProfile(testUser.uuid, prisma);
+    });
+
+    it('success', () => {
+      return request(app.getHttpServer())
+        .get(path)
+        .auth(testToken, { type: 'bearer' })
+        .expect(HttpStatus.OK)
+        .expect({
+          statusCode: HttpStatus.OK,
+          message: 'Success',
+          data: testProfile,
+        });
+    });
+  });
 });
 
 async function createUser(prisma: PrismaService) {
@@ -87,5 +112,16 @@ async function createUser(prisma: PrismaService) {
 function createToken(userUuid: string, config: ConfigService) {
   return sign({ sub: userUuid }, config.get<string>('JWT_ACCESS_SECRET'), {
     expiresIn: '5m',
+  });
+}
+
+async function createProfile(userUuid: string, prisma: PrismaService) {
+  return prisma.profile.create({
+    data: {
+      uuid: uuid(),
+      userUuid,
+      image: 'test image',
+      nickname: 'test nickname',
+    },
   });
 }
