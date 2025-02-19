@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Profile, Prisma } from '@prisma/client';
-import { isUndefined, omitBy } from 'lodash';
+import { isUndefined, omit, omitBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -19,12 +19,14 @@ export class ProfilesService {
     private uploadService: UploadService,
   ) {}
 
-  async findProfileByUserUuid(userUuid: string): Promise<Profile | null> {
+  async findProfileByUserUuid(
+    userUuid: string,
+  ): Promise<Omit<Profile, 'userUuid'> | null> {
     const profile = await this.prisma.profile.findUnique({
       where: { userUuid },
     });
     if (!profile) throw new NotFoundException();
-    return profile;
+    return omit(profile, ['userUuid']);
   }
 
   async findProfileByProfileUuid(uuid: string): Promise<Profile | null> {
@@ -48,16 +50,17 @@ export class ProfilesService {
     profileUuid: string,
     image: Express.Multer.File,
     updateProfileDto: UpdateProfileDto,
-  ): Promise<Profile | null> {
+  ): Promise<Omit<Profile, 'userUuid'> | null> {
     const updateData: UpdateData = { nickname: updateProfileDto.nickname };
     if (image) {
       updateData.image = await this.uploadService.uploadFile(image);
     }
     try {
-      return await this.prisma.profile.update({
+      const profile = await this.prisma.profile.update({
         where: { uuid: profileUuid },
         data: omitBy(updateData, isUndefined),
       });
+      return omit(profile, ['userUuid']);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         return null;
