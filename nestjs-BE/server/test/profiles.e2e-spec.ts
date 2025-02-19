@@ -64,11 +64,7 @@ describe('ProfilesController (e2e)', () => {
 
     beforeEach(async () => {
       const testUser = await createUser(prisma);
-      testToken = sign(
-        { sub: testUser.uuid },
-        config.get<string>('JWT_ACCESS_SECRET'),
-        { expiresIn: '5m' },
-      );
+      testToken = createToken(testUser.uuid, config);
     });
 
     it('/profiles (PATCH)', () => {
@@ -86,4 +82,10 @@ describe('ProfilesController (e2e)', () => {
 
 async function createUser(prisma: PrismaService) {
   return prisma.user.create({ data: { uuid: uuid() } });
+}
+
+function createToken(userUuid: string, config: ConfigService) {
+  return sign({ sub: userUuid }, config.get<string>('JWT_ACCESS_SECRET'), {
+    expiresIn: '5m',
+  });
 }
