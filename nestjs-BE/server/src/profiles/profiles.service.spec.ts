@@ -5,6 +5,8 @@ import { ProfilesService } from './profiles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
 
+import type { UpdateProfileDto } from './dto/update-profile.dto';
+
 describe('ProfilesService', () => {
   let service: ProfilesService;
   let prisma: PrismaService;
@@ -71,9 +73,9 @@ describe('ProfilesService', () => {
     });
 
     it('updated', async () => {
-      const data = { nickname: 'new nickname' };
+      const data = { nickname: 'new nickname' } as UpdateProfileDto;
 
-      const profile = service.updateProfile(userUuid, image, data);
+      const profile = service.updateProfile(profileUuid, image, data);
 
       await expect(profile).resolves.toEqual({
         uuid: profileUuid,

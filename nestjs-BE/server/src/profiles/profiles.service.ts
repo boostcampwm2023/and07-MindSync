@@ -1,10 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Profile, Prisma } from '@prisma/client';
+import { isUndefined, omitBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
+
+type UpdateData = {
+  nickname?: string;
+  image?: string;
+};
 
 @Injectable()
 export class ProfilesService {
@@ -39,17 +45,18 @@ export class ProfilesService {
   }
 
   async updateProfile(
-    userUuid: string,
+    profileUuid: string,
     image: Express.Multer.File,
     updateProfileDto: UpdateProfileDto,
   ): Promise<Profile | null> {
+    const updateData: UpdateData = { nickname: updateProfileDto.nickname };
     if (image) {
-      updateProfileDto.image = await this.uploadService.uploadFile(image);
+      updateData.image = await this.uploadService.uploadFile(image);
     }
     try {
       return await this.prisma.profile.update({
-        where: { userUuid },
-        data: updateProfileDto,
+        where: { uuid: profileUuid },
+        data: omitBy(updateData, isUndefined),
       });
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {

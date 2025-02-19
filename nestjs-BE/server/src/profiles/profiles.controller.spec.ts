@@ -3,6 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
 
+import type { UpdateProfileDto } from './dto/update-profile.dto';
+
 describe('ProfilesController', () => {
   let controller: ProfilesController;
   let profilesService: ProfilesService;
@@ -45,16 +47,15 @@ describe('ProfilesController', () => {
 
   describe('update', () => {
     const imageMock = {} as Express.Multer.File;
-    const userUuidMock = 'user uuid';
+    const profileUuidMock = 'profile uuid';
     const bodyMock = {
-      uuid: 'profile test uuid',
       nickname: 'test nickname',
-    };
+    } as UpdateProfileDto;
 
     it('updated profile', async () => {
       const testProfile = {
-        uuid: 'profile test uuid',
-        userUuid: userUuidMock,
+        uuid: profileUuidMock,
+        userUuid: 'user uuid',
         image: 'www.test.com/image',
         nickname: 'test nickname',
       };
@@ -63,7 +64,7 @@ describe('ProfilesController', () => {
 
       const response = controller.updateProfile(
         imageMock,
-        userUuidMock,
+        profileUuidMock,
         bodyMock,
       );
 
@@ -73,7 +74,7 @@ describe('ProfilesController', () => {
         data: testProfile,
       });
       expect(profilesService.updateProfile).toHaveBeenCalledWith(
-        userUuidMock,
+        profileUuidMock,
         imageMock,
         bodyMock,
       );

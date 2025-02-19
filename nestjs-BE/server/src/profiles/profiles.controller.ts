@@ -8,6 +8,7 @@ import {
   ValidationPipe,
   HttpStatus,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
@@ -36,7 +37,7 @@ export class ProfilesController {
     return { statusCode: HttpStatus.OK, message: 'Success', data: profile };
   }
 
-  @Patch()
+  @Patch(':profile_uuid')
   @UseGuards(MatchUserProfileGuard)
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update profile' })
@@ -50,12 +51,12 @@ export class ProfilesController {
   })
   async updateProfile(
     @UploadedFile() image: Express.Multer.File,
-    @User('uuid') userUuid: string,
+    @Param('profile_uuid') profileUuid: string,
     @Body(new ValidationPipe({ whitelist: true }))
     updateProfileDto: UpdateProfileDto,
   ) {
     const profile = await this.profilesService.updateProfile(
-      userUuid,
+      profileUuid,
       image,
       updateProfileDto,
     );
