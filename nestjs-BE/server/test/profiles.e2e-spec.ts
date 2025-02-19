@@ -49,9 +49,12 @@ describe('ProfilesController (e2e)', () => {
         });
     });
 
-    it('/profiles (PATCH)', () => {
+    it('/profiles (PATCH)', async () => {
+      const testUser = await createUser(prisma);
+      const testProfile = await createProfile(testUser.uuid, prisma);
+
       return request(app.getHttpServer())
-        .patch('/profiles')
+        .patch(`/profiles/${testProfile.uuid}`)
         .expect(HttpStatus.UNAUTHORIZED)
         .expect({
           statusCode: HttpStatus.UNAUTHORIZED,
@@ -66,16 +69,17 @@ describe('ProfilesController (e2e)', () => {
     beforeEach(async () => {
       const testUser = await createUser(prisma);
       testToken = createToken(testUser.uuid, config);
+      await createProfile(testUser.uuid, prisma);
     });
 
-    it('/profiles (PATCH)', () => {
+    it('/profiles (PATCH)', async () => {
       return request(app.getHttpServer())
-        .patch('/profiles')
+        .patch(`/profiles/${uuid()}`)
         .auth(testToken, { type: 'bearer' })
-        .expect(HttpStatus.BAD_REQUEST)
+        .expect(HttpStatus.FORBIDDEN)
         .expect({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Bad Request',
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Forbidden',
         });
     });
   });
