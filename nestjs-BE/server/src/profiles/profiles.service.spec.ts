@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { omit } from 'lodash';
 import { ProfilesService } from './profiles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
@@ -40,7 +41,7 @@ describe('ProfilesService', () => {
     it('found', async () => {
       const res = service.findProfileByUserUuid(userUuid);
 
-      await expect(res).resolves.toEqual(profile);
+      await expect(res).resolves.toEqual(omit(profile, ['userUuid']));
     });
 
     it('not found', async () => {
@@ -79,7 +80,6 @@ describe('ProfilesService', () => {
 
       await expect(profile).resolves.toEqual({
         uuid: profileUuid,
-        userUuid,
         image: imageUrl,
         nickname: data.nickname,
       });
