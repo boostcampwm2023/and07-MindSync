@@ -17,7 +17,7 @@ import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
-import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
+import { MatchUserProfileGuard } from '../profiles/guards/match-user-profile.guard';
 
 @Controller('spaces')
 @ApiTags('spaces')

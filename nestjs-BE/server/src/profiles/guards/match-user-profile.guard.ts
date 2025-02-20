@@ -13,7 +13,7 @@ export class MatchUserProfileGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const userUuid = request.user.uuid;
+    const userUuid = request.user?.uuid;
     const profileUuid =
       request.body.profile_uuid ||
       request.query.profile_uuid ||

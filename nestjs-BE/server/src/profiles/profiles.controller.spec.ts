@@ -1,11 +1,9 @@
-import {
-  ForbiddenException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
+
+import type { UpdateProfileDto } from './dto/update-profile.dto';
 
 describe('ProfilesController', () => {
   let controller: ProfilesController;
@@ -14,15 +12,7 @@ describe('ProfilesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProfilesController],
-      providers: [
-        {
-          provide: ProfilesService,
-          useValue: {
-            findProfileByUserUuid: jest.fn(),
-            updateProfile: jest.fn(),
-          },
-        },
-      ],
+      providers: [{ provide: ProfilesService, useValue: {} }],
     }).compile();
 
     controller = module.get<ProfilesController>(ProfilesController);
@@ -40,9 +30,7 @@ describe('ProfilesController', () => {
         nickname: 'test nickname',
       };
 
-      jest
-        .spyOn(profilesService, 'findProfileByUserUuid')
-        .mockResolvedValue(testProfile);
+      profilesService.findProfileByUserUuid = jest.fn(async () => testProfile);
 
       const response = controller.findProfileByUserUuid(userUuidMock);
 
@@ -55,41 +43,28 @@ describe('ProfilesController', () => {
         userUuidMock,
       );
     });
-
-    it('not found profile', async () => {
-      jest
-        .spyOn(profilesService, 'findProfileByUserUuid')
-        .mockRejectedValue(new NotFoundException());
-
-      const response = controller.findProfileByUserUuid(userUuidMock);
-
-      await expect(response).rejects.toThrow(NotFoundException);
-    });
   });
 
   describe('update', () => {
     const imageMock = {} as Express.Multer.File;
-    const userUuidMock = 'user uuid';
+    const profileUuidMock = 'profile uuid';
     const bodyMock = {
-      uuid: 'profile test uuid',
       nickname: 'test nickname',
-    };
+    } as UpdateProfileDto;
 
     it('updated profile', async () => {
       const testProfile = {
-        uuid: 'profile test uuid',
-        userUuid: userUuidMock,
+        uuid: profileUuidMock,
+        userUuid: 'user uuid',
         image: 'www.test.com/image',
         nickname: 'test nickname',
       };
 
-      jest
-        .spyOn(profilesService, 'updateProfile')
-        .mockResolvedValue(testProfile);
+      profilesService.updateProfile = jest.fn(async () => testProfile);
 
       const response = controller.updateProfile(
         imageMock,
-        userUuidMock,
+        profileUuidMock,
         bodyMock,
       );
 
@@ -99,25 +74,10 @@ describe('ProfilesController', () => {
         data: testProfile,
       });
       expect(profilesService.updateProfile).toHaveBeenCalledWith(
-        userUuidMock,
-        bodyMock.uuid,
+        profileUuidMock,
         imageMock,
         bodyMock,
       );
-    });
-
-    it('not found user', async () => {
-      jest
-        .spyOn(profilesService, 'updateProfile')
-        .mockRejectedValue(new ForbiddenException());
-
-      const response = controller.updateProfile(
-        imageMock,
-        userUuidMock,
-        bodyMock,
-      );
-
-      await expect(response).rejects.toThrow(ForbiddenException);
     });
   });
 });

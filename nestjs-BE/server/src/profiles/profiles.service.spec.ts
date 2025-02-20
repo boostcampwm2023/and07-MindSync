@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { omit } from 'lodash';
 import { ProfilesService } from './profiles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
 
+import type { UpdateProfileDto } from './dto/update-profile.dto';
+
 describe('ProfilesService', () => {
-  let profilesService: ProfilesService;
+  let service: ProfilesService;
   let prisma: PrismaService;
   let configService: ConfigService;
   let uploadService: UploadService;
@@ -16,23 +19,12 @@ describe('ProfilesService', () => {
       imports: [ConfigModule],
       providers: [
         ProfilesService,
-        {
-          provide: PrismaService,
-          useValue: {
-            profile: {
-              findUnique: jest.fn(),
-              update: jest.fn(),
-            },
-          },
-        },
-        {
-          provide: UploadService,
-          useValue: { uploadFile: jest.fn() },
-        },
+        { provide: PrismaService, useValue: { profile: {} } },
+        { provide: UploadService, useValue: {} },
       ],
     }).compile();
 
-    profilesService = module.get<ProfilesService>(ProfilesService);
+    service = module.get<ProfilesService>(ProfilesService);
     prisma = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
     uploadService = module.get<UploadService>(UploadService);
@@ -43,13 +35,13 @@ describe('ProfilesService', () => {
     const profile = { uuid: 'profile uuid', userUuid };
 
     beforeEach(() => {
-      (prisma.profile.findUnique as jest.Mock).mockResolvedValue(profile);
+      (prisma.profile.findUnique as jest.Mock) = jest.fn(async () => profile);
     });
 
     it('found', async () => {
-      const res = profilesService.findProfileByUserUuid(userUuid);
+      const res = service.findProfileByUserUuid(userUuid);
 
-      await expect(res).resolves.toEqual(profile);
+      await expect(res).resolves.toEqual(omit(profile, ['userUuid']));
     });
 
     it('not found', async () => {
@@ -57,7 +49,7 @@ describe('ProfilesService', () => {
         new NotFoundException(),
       );
 
-      const res = profilesService.findProfileByUserUuid(userUuid);
+      const res = service.findProfileByUserUuid(userUuid);
 
       await expect(res).rejects.toThrow(NotFoundException);
     });
@@ -70,91 +62,27 @@ describe('ProfilesService', () => {
     const imageUrl = 'www.test.com/image';
 
     beforeEach(() => {
-      jest.spyOn(profilesService, 'verifyUserProfile').mockResolvedValue(true);
-      (uploadService.uploadFile as jest.Mock).mockResolvedValue(imageUrl);
-      (prisma.profile.update as jest.Mock).mockImplementation(async (args) => {
-        return {
-          uuid: profileUuid,
-          userUuid,
-          nickname: args.data.nickname ? args.data.nickname : 'test nickname',
-          image: args.data.image
-            ? args.data.image
-            : configService.get<string>('BASE_IMAGE_URL'),
-        };
-      });
+      uploadService.uploadFile = jest.fn(async () => imageUrl);
+      (prisma.profile.update as jest.Mock) = jest.fn(async (args) => ({
+        uuid: profileUuid,
+        userUuid,
+        nickname: args.data.nickname ? args.data.nickname : 'test nickname',
+        image: args.data.image
+          ? args.data.image
+          : configService.get<string>('BASE_IMAGE_URL'),
+      }));
     });
 
     it('updated', async () => {
-      const data = { nickname: 'new nickname' };
+      const data = { nickname: 'new nickname' } as UpdateProfileDto;
 
-      const profile = profilesService.updateProfile(
-        userUuid,
-        profileUuid,
-        image,
-        data,
-      );
+      const profile = service.updateProfile(profileUuid, image, data);
 
       await expect(profile).resolves.toEqual({
         uuid: profileUuid,
-        userUuid,
         image: imageUrl,
         nickname: data.nickname,
       });
-    });
-
-    it('wrong user uuid', async () => {
-      const data = {};
-
-      jest
-        .spyOn(profilesService, 'verifyUserProfile')
-        .mockRejectedValue(new ForbiddenException());
-
-      const profile = profilesService.updateProfile(
-        userUuid,
-        profileUuid,
-        image,
-        data,
-      );
-
-      await expect(profile).rejects.toThrow(ForbiddenException);
-    });
-  });
-
-  describe('verifyUserProfile', () => {
-    const userUuid = 'user uuid';
-    const profileUuid = 'profile uuid';
-    const image = 'www.test.com';
-    const nickname = 'test nickname';
-
-    beforeEach(() => {
-      jest
-        .spyOn(profilesService, 'findProfileByProfileUuid')
-        .mockResolvedValue({ uuid: profileUuid, userUuid, image, nickname });
-    });
-
-    it('verified', async () => {
-      const res = profilesService.verifyUserProfile(userUuid, profileUuid);
-
-      await expect(res).resolves.toBeTruthy();
-    });
-
-    it('profile not found', async () => {
-      jest
-        .spyOn(profilesService, 'findProfileByProfileUuid')
-        .mockResolvedValue(null);
-
-      const res = profilesService.verifyUserProfile(userUuid, profileUuid);
-
-      await expect(res).rejects.toThrow(ForbiddenException);
-    });
-
-    it('profile user not own', async () => {
-      const res = profilesService.verifyUserProfile(
-        'other user uuid',
-        profileUuid,
-      );
-
-      await expect(res).rejects.toThrow(ForbiddenException);
     });
   });
 });

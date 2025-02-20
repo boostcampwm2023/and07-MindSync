@@ -7,12 +7,15 @@ import {
   UploadedFile,
   ValidationPipe,
   HttpStatus,
+  UseGuards,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from '../auth/decorators/user.decorator';
+import { MatchUserProfileGuard } from './guards/match-user-profile.guard';
 
 @Controller('profiles')
 @ApiTags('profiles')
@@ -34,7 +37,8 @@ export class ProfilesController {
     return { statusCode: HttpStatus.OK, message: 'Success', data: profile };
   }
 
-  @Patch()
+  @Patch(':profile_uuid')
+  @UseGuards(MatchUserProfileGuard)
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update profile' })
   @ApiResponse({
@@ -45,15 +49,18 @@ export class ProfilesController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized.',
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Inappropriate profile uuid requested.',
+  })
   async updateProfile(
     @UploadedFile() image: Express.Multer.File,
-    @User('uuid') userUuid: string,
+    @Param('profile_uuid') profileUuid: string,
     @Body(new ValidationPipe({ whitelist: true }))
     updateProfileDto: UpdateProfileDto,
   ) {
     const profile = await this.profilesService.updateProfile(
-      userUuid,
-      updateProfileDto.uuid,
+      profileUuid,
       image,
       updateProfileDto,
     );

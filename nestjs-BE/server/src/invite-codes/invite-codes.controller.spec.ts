@@ -8,8 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InviteCode, Space } from '@prisma/client';
 import { InviteCodesController } from './invite-codes.controller';
 import { InviteCodesService } from './invite-codes.service';
-import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 import { ProfilesService } from '../profiles/profiles.service';
+import { MatchUserProfileGuard } from '../profiles/guards/match-user-profile.guard';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 

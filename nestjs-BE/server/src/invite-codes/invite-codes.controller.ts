@@ -9,8 +9,8 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { InviteCodesService } from './invite-codes.service';
 import { CreateInviteCodeDto } from './dto/create-invite-code.dto';
-import { MatchUserProfileGuard } from '../auth/guards/match-user-profile.guard';
 import { IsProfileInSpaceGuard } from '../auth/guards/is-profile-in-space.guard';
+import { MatchUserProfileGuard } from '../profiles/guards/match-user-profile.guard';
 
 @Controller('inviteCodes')
 @ApiTags('inviteCodes')

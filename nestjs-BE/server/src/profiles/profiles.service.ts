@@ -1,14 +1,16 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Profile, Prisma } from '@prisma/client';
+import { isUndefined, omit, omitBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
+
+type UpdateData = {
+  nickname?: string;
+  image?: string;
+};
 
 @Injectable()
 export class ProfilesService {
@@ -17,22 +19,18 @@ export class ProfilesService {
     private uploadService: UploadService,
   ) {}
 
-  async findProfileByUserUuid(userUuid: string): Promise<Profile | null> {
+  async findProfileByUserUuid(
+    userUuid: string,
+  ): Promise<Omit<Profile, 'userUuid'> | null> {
     const profile = await this.prisma.profile.findUnique({
       where: { userUuid },
     });
     if (!profile) throw new NotFoundException();
-    return profile;
+    return omit(profile, ['userUuid']);
   }
 
   async findProfileByProfileUuid(uuid: string): Promise<Profile | null> {
     return this.prisma.profile.findUnique({ where: { uuid } });
-  }
-
-  async findProfiles(profileUuids: string[]): Promise<Profile[]> {
-    return this.prisma.profile.findMany({
-      where: { uuid: { in: profileUuids } },
-    });
   }
 
   async getOrCreateProfile(data: CreateProfileDto): Promise<Profile> {
@@ -49,20 +47,20 @@ export class ProfilesService {
   }
 
   async updateProfile(
-    userUuid: string,
     profileUuid: string,
     image: Express.Multer.File,
     updateProfileDto: UpdateProfileDto,
-  ): Promise<Profile | null> {
-    await this.verifyUserProfile(userUuid, profileUuid);
+  ): Promise<Omit<Profile, 'userUuid'> | null> {
+    const updateData: UpdateData = { nickname: updateProfileDto.nickname };
     if (image) {
-      updateProfileDto.image = await this.uploadService.uploadFile(image);
+      updateData.image = await this.uploadService.uploadFile(image);
     }
     try {
-      return await this.prisma.profile.update({
-        where: { userUuid },
-        data: updateProfileDto,
+      const profile = await this.prisma.profile.update({
+        where: { uuid: profileUuid },
+        data: omitBy(updateData, isUndefined),
       });
+      return omit(profile, ['userUuid']);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         return null;
@@ -70,15 +68,5 @@ export class ProfilesService {
         throw err;
       }
     }
-  }
-
-  async verifyUserProfile(
-    userUuid: string,
-    profileUuid: string,
-  ): Promise<boolean> {
-    const profile = await this.findProfileByProfileUuid(profileUuid);
-    if (!profile) throw new ForbiddenException();
-    if (userUuid !== profile.userUuid) throw new ForbiddenException();
-    return true;
   }
 }
