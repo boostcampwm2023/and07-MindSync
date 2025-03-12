@@ -8,13 +8,29 @@ export class UploadService {
   private s3Client: S3Client;
 
   constructor(private configService: ConfigService) {
-    this.s3Client = new S3Client({
-      region: this.configService.get<string>('AWS_REGION'),
+    this.s3Client = new S3Client(this.setS3Option());
+  }
+
+  private setS3Option() {
+    if (process.env.MODE === 'prod') {
+      return {
+        region: this.configService.get<string>('AWS_REGION'),
+        credentials: {
+          accessKeyId: this.configService.get<string>('S3_ACCESS_KEY_ID'),
+          secretAccessKey: this.configService.get<string>(
+            'S3_SECRET_ACCESS_KEY',
+          ),
+        },
+      };
+    }
+    return {
+      endpoint: 'http://localhost:4566',
+      forcePathStyle: true,
       credentials: {
         accessKeyId: this.configService.get<string>('S3_ACCESS_KEY_ID'),
         secretAccessKey: this.configService.get<string>('S3_SECRET_ACCESS_KEY'),
       },
-    });
+    };
   }
 
   async uploadFile(image: Express.Multer.File) {
