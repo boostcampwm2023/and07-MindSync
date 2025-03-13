@@ -14,7 +14,10 @@ import { BoardTreesModule } from './board-trees/board-trees.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.MODE === 'prod' ? '.env' : '.development.env',
+    }),
     AuthModule,
     ScheduleModule.forRoot(),
     ProfilesModule,
