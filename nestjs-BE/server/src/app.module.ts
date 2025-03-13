@@ -24,7 +24,6 @@ import { BoardTreesModule } from './board-trees/board-trees.module';
     SpacesModule,
     BoardsModule,
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_DATABASE_URI'),
