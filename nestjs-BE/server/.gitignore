@@ -32,4 +32,4 @@ lerna-debug.log*
 
 # Environment Variable File
 .env
-.development.env
+.env.development
