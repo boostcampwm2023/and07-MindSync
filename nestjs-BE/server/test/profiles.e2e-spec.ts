@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { readFile } from 'fs/promises';
 import { sign } from 'jsonwebtoken';
@@ -7,6 +7,7 @@ import { omit } from 'lodash';
 import { resolve } from 'path';
 import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
+import { TestConfigModule } from './test-config.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { ProfilesModule } from '../src/profiles/profiles.module';
@@ -22,11 +23,7 @@ describe('ProfilesController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ProfilesModule,
-        AuthModule,
-        ConfigModule.forRoot({ isGlobal: true }),
-      ],
+      imports: [ProfilesModule, AuthModule, TestConfigModule],
     }).compile();
 
     app = module.createNestApplication();

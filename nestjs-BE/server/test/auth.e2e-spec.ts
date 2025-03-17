@@ -1,7 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
+import { TestConfigModule } from './test-config.module';
 import { AuthModule } from '../src/auth/auth.module';
 
 describe('AuthController (e2e)', () => {
@@ -14,7 +14,7 @@ describe('AuthController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule, ConfigModule.forRoot({ isGlobal: true })],
+      imports: [AuthModule, TestConfigModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
