@@ -1,1 +1,3 @@
-export default async function () {}
+export default async function () {
+  await globalThis.mongodb.stop();
+}
