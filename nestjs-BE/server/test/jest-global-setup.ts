@@ -1,6 +1,8 @@
 import { MongoDBContainer } from '@testcontainers/mongodb';
 import { LocalstackContainer } from '@testcontainers/localstack';
+import { MySqlContainer } from '@testcontainers/mysql';
 import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3';
+import { execSync } from 'child_process';
 
 export default async function () {
   const mongoDBContainer = await new MongoDBContainer()
@@ -26,6 +28,17 @@ export default async function () {
   await client.send(createBucketCommand);
   client.destroy();
 
+  const mysqlContainer = await new MySqlContainer()
+    .withExposedPorts({ host: 3306, container: 3306 })
+    .withRootPassword('1234')
+    .withDatabase('mindsync')
+    .start();
+
+  execSync('npx dotenv-cli -e .env.development -- prisma migrate dev', {
+    stdio: 'inherit',
+  });
+
   globalThis.mongodb = mongoDBContainer;
   globalThis.localstack = localStackContainer;
+  globalThis.mysql = mysqlContainer;
 }
