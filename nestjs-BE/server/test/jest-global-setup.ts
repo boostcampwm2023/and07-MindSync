@@ -5,10 +5,20 @@ import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3';
 import { execSync } from 'child_process';
 
 export default async function () {
+  await createMongoDBConatiner();
+  await createLocalstackContainer();
+  await createMysqlContainer();
+}
+
+async function createMongoDBConatiner() {
   const mongoDBContainer = await new MongoDBContainer()
     .withExposedPorts({ host: 27019, container: 27017 })
     .start();
 
+  globalThis.mongodb = mongoDBContainer;
+}
+
+async function createLocalstackContainer() {
   const localStackContainer = await new LocalstackContainer()
     .withExposedPorts({ host: 4566, container: 4566 })
     .start();
@@ -28,6 +38,10 @@ export default async function () {
   await client.send(createBucketCommand);
   client.destroy();
 
+  globalThis.localstack = localStackContainer;
+}
+
+async function createMysqlContainer() {
   const mysqlContainer = await new MySqlContainer()
     .withExposedPorts({ host: 3306, container: 3306 })
     .withRootPassword('1234')
@@ -38,7 +52,5 @@ export default async function () {
     stdio: 'inherit',
   });
 
-  globalThis.mongodb = mongoDBContainer;
-  globalThis.localstack = localStackContainer;
   globalThis.mysql = mysqlContainer;
 }
