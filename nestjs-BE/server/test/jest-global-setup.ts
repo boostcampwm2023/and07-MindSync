@@ -3,14 +3,30 @@ import { LocalstackContainer } from '@testcontainers/localstack';
 import { MySqlContainer } from '@testcontainers/mysql';
 import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3';
 import { execSync } from 'child_process';
+import { config } from 'dotenv';
+import { expand } from 'dotenv-expand';
 
 export default async function () {
-  await createMongoDBConatiner();
-  await createLocalstackContainer();
-  await createMysqlContainer();
+  const processEnv = getProcessEnv();
+  await createMongoDBConatiner(processEnv);
+  await createLocalstackContainer(processEnv);
+  await createMysqlContainer(processEnv);
 }
 
-async function createMongoDBConatiner() {
+function getProcessEnv() {
+  const processEnv = {};
+  const { error, parsed } = config({
+    processEnv,
+    path: './.env.development',
+  });
+  if (error) {
+    throw error;
+  }
+  expand({ parsed, processEnv });
+  return processEnv;
+}
+
+async function createMongoDBConatiner(processEnv) {
   const mongoDBContainer = await new MongoDBContainer()
     .withExposedPorts({ host: 27019, container: 27017 })
     .start();
@@ -18,7 +34,7 @@ async function createMongoDBConatiner() {
   globalThis.mongodb = mongoDBContainer;
 }
 
-async function createLocalstackContainer() {
+async function createLocalstackContainer(processEnv) {
   const localStackContainer = await new LocalstackContainer()
     .withExposedPorts({ host: 4566, container: 4566 })
     .start();
@@ -41,7 +57,7 @@ async function createLocalstackContainer() {
   globalThis.localstack = localStackContainer;
 }
 
-async function createMysqlContainer() {
+async function createMysqlContainer(processEnv) {
   const mysqlContainer = await new MySqlContainer()
     .withExposedPorts({ host: 3306, container: 3306 })
     .withRootPassword('1234')
