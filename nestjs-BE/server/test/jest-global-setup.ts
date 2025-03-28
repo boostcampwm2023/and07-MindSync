@@ -28,7 +28,7 @@ function getProcessEnv() {
 
 async function createMongoDBConatiner(processEnv) {
   const mongoDBContainer = await new MongoDBContainer()
-    .withExposedPorts({ host: 27019, container: 27017 })
+    .withExposedPorts({ host: processEnv.MONGODB_PORT, container: 27017 })
     .start();
 
   globalThis.mongodb = mongoDBContainer;
@@ -36,20 +36,20 @@ async function createMongoDBConatiner(processEnv) {
 
 async function createLocalstackContainer(processEnv) {
   const localStackContainer = await new LocalstackContainer()
-    .withExposedPorts({ host: 4566, container: 4566 })
+    .withExposedPorts({ host: processEnv.S3_PORT, container: 4566 })
     .start();
 
   const client = new S3Client({
-    endpoint: 'http://localhost:4566',
+    endpoint: processEnv.S3_ENDPOINT,
     forcePathStyle: true,
-    region: 'ap-northeast-2',
+    region: processEnv.AWS_REGION,
     credentials: {
-      accessKeyId: 'test',
-      secretAccessKey: 'test',
+      accessKeyId: processEnv.S3_ACCESS_KEY_ID,
+      secretAccessKey: processEnv.S3_SECRET_ACCESS_KEY,
     },
   });
   const createBucketCommand = new CreateBucketCommand({
-    Bucket: 'test-bucket',
+    Bucket: processEnv.S3_BUCKET_NAME,
   });
   await client.send(createBucketCommand);
   client.destroy();
@@ -59,9 +59,9 @@ async function createLocalstackContainer(processEnv) {
 
 async function createMysqlContainer(processEnv) {
   const mysqlContainer = await new MySqlContainer()
-    .withExposedPorts({ host: 3306, container: 3306 })
-    .withRootPassword('1234')
-    .withDatabase('mindsync')
+    .withExposedPorts({ host: processEnv.MYSQL_PORT, container: 3306 })
+    .withRootPassword(processEnv.MYSQL_ROOT_PASSWORD)
+    .withDatabase(processEnv.MYSQL_DATABASE)
     .start();
 
   execSync('npx dotenv-cli -e .env.development -- prisma migrate dev', {
