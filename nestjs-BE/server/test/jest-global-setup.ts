@@ -6,6 +6,10 @@ import { execSync } from 'child_process';
 import { config } from 'dotenv';
 import { expand } from 'dotenv-expand';
 
+interface ProcessEnv {
+  [key: string]: string | undefined;
+}
+
 export default async function () {
   const processEnv = getProcessEnv();
   await createMongoDBConatiner(processEnv);
@@ -26,17 +30,20 @@ function getProcessEnv() {
   return processEnv;
 }
 
-async function createMongoDBConatiner(processEnv) {
+async function createMongoDBConatiner(processEnv: ProcessEnv) {
   const mongoDBContainer = await new MongoDBContainer()
-    .withExposedPorts({ host: processEnv.MONGODB_PORT, container: 27017 })
+    .withExposedPorts({
+      host: Number(processEnv.MONGODB_PORT),
+      container: 27017,
+    })
     .start();
 
   globalThis.mongodb = mongoDBContainer;
 }
 
-async function createLocalstackContainer(processEnv) {
+async function createLocalstackContainer(processEnv: ProcessEnv) {
   const localStackContainer = await new LocalstackContainer()
-    .withExposedPorts({ host: processEnv.S3_PORT, container: 4566 })
+    .withExposedPorts({ host: Number(processEnv.S3_PORT), container: 4566 })
     .start();
 
   const client = new S3Client({
@@ -57,9 +64,9 @@ async function createLocalstackContainer(processEnv) {
   globalThis.localstack = localStackContainer;
 }
 
-async function createMysqlContainer(processEnv) {
+async function createMysqlContainer(processEnv: ProcessEnv) {
   const mysqlContainer = await new MySqlContainer()
-    .withExposedPorts({ host: processEnv.MYSQL_PORT, container: 3306 })
+    .withExposedPorts({ host: Number(processEnv.MYSQL_PORT), container: 3306 })
     .withRootPassword(processEnv.MYSQL_ROOT_PASSWORD)
     .withDatabase(processEnv.MYSQL_DATABASE)
     .start();
