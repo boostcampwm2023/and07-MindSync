@@ -1,8 +1,8 @@
 import { HttpStatus, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { CustomConfigModule } from '../config/custom-config.module';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -10,7 +10,7 @@ describe('AuthController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot()],
+      imports: [CustomConfigModule],
       controllers: [AuthController],
       providers: [
         {

@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { omit } from 'lodash';
 import { ProfilesService } from './profiles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
+import { CustomConfigModule } from '../config/custom-config.module';
 
 import type { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -16,7 +17,7 @@ describe('ProfilesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
+      imports: [CustomConfigModule],
       providers: [
         ProfilesService,
         { provide: PrismaService, useValue: { profile: {} } },

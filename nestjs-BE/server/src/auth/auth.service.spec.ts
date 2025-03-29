@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
 import { NotFoundException } from '@nestjs/common';
 import { RefreshToken } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { RefreshTokensService } from '../refresh-tokens/refresh-tokens.service';
 import { UsersService } from '../users/users.service';
 import { ProfilesService } from '../profiles/profiles.service';
+import { CustomConfigModule } from '../config/custom-config.module';
 
 const fetchSpy = jest.spyOn(global, 'fetch');
 
@@ -18,7 +18,7 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [JwtModule, ConfigModule.forRoot()],
+      imports: [JwtModule, CustomConfigModule],
       providers: [
         AuthService,
         {

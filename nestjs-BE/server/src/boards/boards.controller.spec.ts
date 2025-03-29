@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { CustomConfigModule } from '../config/custom-config.module';
 
 describe('BoardsController', () => {
   let controller: BoardsController;
@@ -12,7 +13,7 @@ describe('BoardsController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
+      imports: [CustomConfigModule],
       controllers: [BoardsController],
       providers: [
         {

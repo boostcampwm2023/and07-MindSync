@@ -1,9 +1,9 @@
-import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { v4 as uuid } from 'uuid';
 import { RefreshTokensService } from './refresh-tokens.service';
+import { CustomConfigModule } from '../config/custom-config.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { getExpiryDate } from '../utils/date';
 
@@ -15,7 +15,7 @@ describe('RefreshTokensService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [JwtModule, ConfigModule.forRoot()],
+      imports: [JwtModule, CustomConfigModule],
       providers: [
         RefreshTokensService,
         {
