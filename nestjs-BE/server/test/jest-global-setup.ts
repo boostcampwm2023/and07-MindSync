@@ -5,6 +5,7 @@ import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3';
 import { execSync } from 'child_process';
 import { config } from 'dotenv';
 import { expand } from 'dotenv-expand';
+import { containers } from './test-containers';
 
 interface ProcessEnv {
   [key: string]: string | undefined;
@@ -38,7 +39,7 @@ async function createMongoDBConatiner(processEnv: ProcessEnv) {
     })
     .start();
 
-  globalThis.mongodb = mongoDBContainer;
+  containers.mongodb = mongoDBContainer;
 }
 
 async function createLocalstackContainer(processEnv: ProcessEnv) {
@@ -61,7 +62,7 @@ async function createLocalstackContainer(processEnv: ProcessEnv) {
   await client.send(createBucketCommand);
   client.destroy();
 
-  globalThis.localstack = localStackContainer;
+  containers.localstack = localStackContainer;
 }
 
 async function createMysqlContainer(processEnv: ProcessEnv) {
@@ -75,5 +76,5 @@ async function createMysqlContainer(processEnv: ProcessEnv) {
     stdio: 'inherit',
   });
 
-  globalThis.mysql = mysqlContainer;
+  containers.mysql = mysqlContainer;
 }

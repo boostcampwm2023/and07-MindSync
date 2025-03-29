@@ -1,5 +1,7 @@
+import { containers } from './test-containers';
+
 export default async function () {
-  await globalThis.mongodb.stop();
-  await globalThis.localstack.stop();
-  await globalThis.mysql.stop();
+  await containers.mongodb.stop();
+  await containers.localstack.stop();
+  await containers.mysql.stop();
 }
