@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Profile } from '@prisma/client';
@@ -38,7 +38,6 @@ describe('BoardTreesGateway (e2e)', () => {
       imports: [
         TestConfigModule,
         MongooseModule.forRootAsync({
-          imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: async (configService: ConfigService) => ({
             uri: configService.get<string>('MONGODB_DATABASE_URI'),
