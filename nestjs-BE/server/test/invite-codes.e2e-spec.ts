@@ -1,10 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { InviteCode, Profile, Space } from '@prisma/client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sign } from 'jsonwebtoken';
 import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
+import { TestConfigModule } from './test-config.module';
 import { InviteCodesModule } from '../src/invite-codes/invite-codes.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as RandomStringModule from '../src/utils/random-string';
@@ -18,7 +19,7 @@ describe('InviteController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [InviteCodesModule, ConfigModule.forRoot({ isGlobal: true })],
+      imports: [InviteCodesModule, TestConfigModule],
     }).compile();
 
     app = module.createNestApplication();

@@ -1,10 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import { sign } from 'jsonwebtoken';
+import { TestConfigModule } from './test-config.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { UsersModule } from '../src/users/users.module';
 import { AuthModule } from '../src/auth/auth.module';
@@ -18,11 +19,7 @@ describe('UsersController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        UsersModule,
-        AuthModule,
-      ],
+      imports: [TestConfigModule, UsersModule, AuthModule],
     }).compile();
 
     app = module.createNestApplication();

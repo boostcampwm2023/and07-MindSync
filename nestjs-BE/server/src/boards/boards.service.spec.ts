@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
 import { Model } from 'mongoose';
 import { BoardsService } from './boards.service';
 import { Board } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UploadService } from '../upload/upload.service';
+import { CustomConfigModule } from '../config/custom-config.module';
 
 describe('BoardsService', () => {
   let service: BoardsService;
@@ -13,7 +13,7 @@ describe('BoardsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
+      imports: [CustomConfigModule],
       providers: [
         BoardsService,
         {

@@ -6,5 +6,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "maxWorkers": "50%"
+  "maxWorkers": "50%",
+  "globalSetup": "./jest-global-setup.ts",
+  "globalTeardown": "./jest-global-teardown.ts"
 }

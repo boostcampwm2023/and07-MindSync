@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Space } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { SpacesService } from './spaces.service';
@@ -13,6 +13,7 @@ import { UpdateSpaceDto } from './dto/update-space.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileSpaceService } from '../profile-space/profile-space.service';
 import { UploadService } from '../upload/upload.service';
+import { CustomConfigModule } from '../config/custom-config.module';
 
 describe('SpacesService', () => {
   let spacesService: SpacesService;
@@ -23,7 +24,7 @@ describe('SpacesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
+      imports: [CustomConfigModule],
       providers: [
         SpacesService,
         { provide: PrismaService, useValue: { space: {} } },

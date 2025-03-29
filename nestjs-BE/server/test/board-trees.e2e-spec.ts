@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Profile } from '@prisma/client';
 import { sign } from 'jsonwebtoken';
 import { io, Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
+import { TestConfigModule } from './test-config.module';
 import { BoardTreesModule } from '../src/board-trees/board-trees.module';
 import { BoardTreesService } from '../src/board-trees/board-trees.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
@@ -35,9 +36,8 @@ describe('BoardTreesGateway (e2e)', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
+        TestConfigModule,
         MongooseModule.forRootAsync({
-          imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: async (configService: ConfigService) => ({
             uri: configService.get<string>('MONGODB_DATABASE_URI'),

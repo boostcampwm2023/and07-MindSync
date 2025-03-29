@@ -1,5 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Profile, Space, User } from '@prisma/client';
 import * as request from 'supertest';
@@ -7,6 +7,7 @@ import { sign } from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
+import { TestConfigModule } from './test-config.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { SpacesModule } from '../src/spaces/spaces.module';
 import { PrismaService } from '../src/prisma/prisma.service';
@@ -24,12 +25,7 @@ describe('SpacesController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        SpacesModule,
-        AuthModule,
-        ProfileSpaceModule,
-      ],
+      imports: [TestConfigModule, SpacesModule, AuthModule, ProfileSpaceModule],
     }).compile();
 
     app = module.createNestApplication();
