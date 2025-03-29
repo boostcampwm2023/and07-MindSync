@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
@@ -11,14 +11,11 @@ import { BoardsModule } from './boards/boards.module';
 import { InviteCodesModule } from './invite-codes/invite-codes.module';
 import { ProfileSpaceModule } from './profile-space/profile-space.module';
 import { BoardTreesModule } from './board-trees/board-trees.module';
+import { CustomConfigModule } from './config/custom-config.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath:
-        process.env.MODE === 'prod' ? '.env.production' : '.env.development',
-    }),
+    CustomConfigModule,
     AuthModule,
     ScheduleModule.forRoot(),
     ProfilesModule,
